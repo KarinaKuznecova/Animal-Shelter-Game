@@ -1,0 +1,6 @@
+Size:20:20
+Fill:3
+AlphaFill:4
+0,0,0,0
+0,1,-1,4,MainMap
+0,1,-1,8,SecondMap

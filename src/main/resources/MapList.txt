@@ -1,0 +1,3 @@
+MainMap:src/main/resources/GameMap.txt
+SecondMap:src/main/resources/GameMap2.txt
+WaterMap:src/main/resources/WaterMap.txt
