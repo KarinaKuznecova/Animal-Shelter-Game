@@ -5,7 +5,7 @@ public class Player implements GameObject {
     private Sprite sprite;
     private AnimatedSprite animatedSprite = null;
     private Rectangle playerRectangle;
-    private int speed = 10;
+    private int speed = 5;
     private Direction direction;
 
     public Player(Sprite playerSprite, int startX, int startY) {
@@ -41,7 +41,10 @@ public class Player implements GameObject {
 
 //        System.out.println("Player x: " + playerRectangle.getX() + " Player Y: " + playerRectangle.getY());
         if (keyboardListener.left()) {
-            if (playerRectangle.getX() < 1 && !game.getGameMap().getPortals().isEmpty()) {
+            if (unwalkableInThisDirection(game, Direction.LEFT)) {
+                System.out.println("INTERSECTS left");
+                playerRectangle.setX(playerRectangle.getX() + 1);
+            } else if (playerRectangle.getX() < 1 && !game.getGameMap().getPortals().isEmpty()) {
                 List<MapTile> portals = game.getGameMap().getPortals();
                 if (nearPortal(portals)) {
                     playerRectangle.setX(playerRectangle.getX() - speed);
@@ -54,7 +57,10 @@ public class Player implements GameObject {
         }
 
         if (keyboardListener.right()) {
-            if (playerRectangle.getX() >= game.getGameMap().mapWidth * Game.TILE_SIZE * Game.ZOOM - playerRectangle.getWidth() * Game.ZOOM
+            if (unwalkableInThisDirection(game, Direction.RIGHT)) {
+                System.out.println("INTERSECTS right");
+                playerRectangle.setX(playerRectangle.getX() - 1);
+            } else if (playerRectangle.getX() >= game.getGameMap().mapWidth * Game.TILE_SIZE * Game.ZOOM - playerRectangle.getWidth() * Game.ZOOM
                     && !game.getGameMap().getPortals().isEmpty()) {
                 List<MapTile> portals = game.getGameMap().getPortals();
                 if (nearPortal(portals)) {
@@ -68,7 +74,10 @@ public class Player implements GameObject {
         }
 
         if (keyboardListener.up()) {
-            if (playerRectangle.getY() > 0) {
+            if (unwalkableInThisDirection(game, Direction.UP)) {
+                System.out.println("INTERSECTS up");
+                playerRectangle.setY(playerRectangle.getY() + 1);
+            } else if (playerRectangle.getY() > 0) {
                 playerRectangle.setY(playerRectangle.getY() - speed);
             }
             newDirection = Direction.UP;
@@ -76,7 +85,10 @@ public class Player implements GameObject {
         }
 
         if (keyboardListener.down()) {
-            if (playerRectangle.getY() < (game.getGameMap().mapHeight * Game.TILE_SIZE - playerRectangle.getHeight()) * Game.ZOOM) {
+            if (unwalkableInThisDirection(game, Direction.DOWN)) {
+                System.out.println("INTERSECTS down");
+                playerRectangle.setY(playerRectangle.getY() - 1);
+            } else if (playerRectangle.getY() < (game.getGameMap().mapHeight * Game.TILE_SIZE - playerRectangle.getHeight()) * Game.ZOOM) {
                 playerRectangle.setY(playerRectangle.getY() + speed);
             }
             newDirection = Direction.DOWN;
@@ -84,6 +96,8 @@ public class Player implements GameObject {
         }
 
         if (newDirection != direction) {
+            System.out.println("Direction: " + direction);
+            System.out.println("New direction: " + newDirection);
             direction = newDirection;
             updateDirection();
         }
@@ -108,6 +122,37 @@ public class Player implements GameObject {
         if (animatedSprite != null && isMoving) {
             animatedSprite.update(game);
         }
+    }
+
+    private boolean unwalkableInThisDirection(Game game, Direction direction) {
+        int xPosition = playerRectangle.getX();
+        int yPosition = playerRectangle.getY();
+
+        List<MapTile> tilesOnLayer = game.getGameMap().getTilesOnLayer(getLayer());
+
+        switch (direction) {
+            case LEFT:
+                xPosition = xPosition - speed;
+                break;
+            case RIGHT:
+                xPosition = xPosition + speed;
+                break;
+            case UP:
+                yPosition = yPosition - speed;
+                break;
+            case DOWN:
+                yPosition = yPosition + speed;
+                break;
+        }
+        if (tilesOnLayer != null) {
+            for (MapTile tile : tilesOnLayer) {
+                if (playerRectangle.potentialIntersects(tile, xPosition, yPosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
     }
 
     private boolean nearPortal(List<MapTile> portals) {
@@ -167,6 +212,6 @@ public class Player implements GameObject {
 
     @Override
     public int getLayer() {
-        return 0;
+        return 1;
     }
 }

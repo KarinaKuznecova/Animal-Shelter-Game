@@ -109,6 +109,12 @@ public class GameMap {
                 }
             }
         }
+        for (GameObject gameObject : gameObjects) {
+            if (maxLayer < gameObject.getLayer()) {
+                maxLayer = gameObject.getLayer();
+                System.out.println("max layer: " + maxLayer);
+            }
+        }
         for (int i = 0; i <= maxLayer; i++) {
             List<MapTile> tiles = layeredTiles.get(i);
             if (tiles != null) {
@@ -134,5 +140,10 @@ public class GameMap {
 
     public List<MapTile> getPortals() {
         return portals;
+    }
+
+
+    public List<MapTile> getTilesOnLayer(int layer) {
+        return layeredTiles.get(layer);
     }
 }

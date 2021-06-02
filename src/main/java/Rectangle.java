@@ -95,6 +95,18 @@ public class Rectangle {
     }
 
     private boolean intersectsByX(MapTile tile) {
-        return !(x > tile.getX() *64  + 32 || tile.getX() * 64 > x + width);
+        return !(x > tile.getX() * 64 + 32 || tile.getX() * 64 > x + width);
+    }
+
+    public boolean potentialIntersects(MapTile tile, int xPos, int yPos) {
+        return (intersectsByX(tile, xPos) && intersectsByY(tile, yPos));
+    }
+
+    private boolean intersectsByY(MapTile tile, int yPos) {
+        return !(yPos > tile.getY() * 64 + 32 || tile.getY() * 64 > yPos + 48);     //48 = 32 + 32/2
+    }
+
+    private boolean intersectsByX(MapTile tile, int xPos) {
+        return !(xPos > tile.getX() * 64 + 32 || tile.getX() * 64 > xPos + width);
     }
 }
