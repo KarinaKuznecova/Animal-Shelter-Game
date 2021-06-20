@@ -46,6 +46,9 @@ public class TileService {
     }
 
     public int getLayerById(int id) {
+        if (id == -1) {
+            return -1;
+        }
         return tileList.get(id).getLayer();
     }
 }

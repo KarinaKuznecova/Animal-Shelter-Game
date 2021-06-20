@@ -37,8 +37,9 @@ public class Animal implements GameObject{
 
     private void updateDirection() {
         if (animatedSprite != null && direction != null) {
-            System.out.println("Direction now is " + direction);
-            System.out.println("range will be : " + (direction.directionNumber * 3) + " and : " + (direction.directionNumber * 3 + 2));
+//            System.out.println("Direction now is " + direction);
+//            System.out.println("range will be : " + (direction.directionNumber * 3) + " and : " + (direction.directionNumber * 3 + 2));
+
 //            animatedSprite.setAnimationRange(direction.directionNumber, direction.directionNumber + 12);          // if vertical
             animatedSprite.setAnimationRange((direction.directionNumber * 3), (direction.directionNumber * 3 + 2)); //if horizontal increase
         }
@@ -118,8 +119,8 @@ public class Animal implements GameObject{
         }
 
         if (newDirection != direction) {
-            System.out.println("Animal Direction: " + direction);
-            System.out.println("Animal New direction: " + newDirection);
+//            System.out.println("Animal Direction: " + direction);
+//            System.out.println("Animal New direction: " + newDirection);
             direction = newDirection;
             updateDirection();
         }
@@ -188,6 +189,7 @@ public class Animal implements GameObject{
 
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
+        System.out.println("Click on animal " + this);
         return false;
     }
 }

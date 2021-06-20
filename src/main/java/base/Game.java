@@ -38,6 +38,7 @@ public class Game extends JFrame implements Runnable {
     public static final String PLAYER_SHEET_PATH = "img/betty.png";
     public static final String RAT_SHEET_PATH = "img/rat.png";
     public static final String MOUSE_SHEET_PATH = "img/mouse.png";
+    public static final String CHICKEN_SHEET_PATH = "img/chicken.png";
     public static final String SPRITES_PATH = "img/sprites.png";
     public static final String TILE_LIST_PATH = "src/main/java/base/map/config/Tile.txt";
     public static final String GAME_MAP_PATH = "src/main/java/base/map/config/GameMap.txt";
@@ -52,13 +53,16 @@ public class Game extends JFrame implements Runnable {
     private Rat rat;
     private Rat rat2;
     private Rat mouse;
+    private Rat chicken;
     private SpriteSheet playerSheet;
     private SpriteSheet ratSheet;
     private SpriteSheet mouseSheet;
+    private SpriteSheet chickenSheet;
     private AnimatedSprite playerAnimations;
     private AnimatedSprite ratAnimations;
     private AnimatedSprite ratAnimations2;
     private AnimatedSprite mouseAnimations;
+    private AnimatedSprite chickenAnimations;
     private TileService tileService;
 
     private GUI gui;
@@ -128,7 +132,7 @@ public class Game extends JFrame implements Runnable {
 
     private void loadUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(0, 0, 1400, 1000);
+        setBounds(0, 0, 1300, 900);
         setLocationRelativeTo(null);
         add(canvas);
         setVisible(true);
@@ -243,6 +247,11 @@ public class Game extends JFrame implements Runnable {
         mouseSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
         mouseAnimations = new AnimatedSprite(mouseSheet, 9, false);
 
+        BufferedImage chickenSheetImage = loadImage(CHICKEN_SHEET_PATH);
+        chickenSheet = new SpriteSheet(chickenSheetImage);
+        chickenSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
+        chickenAnimations = new AnimatedSprite(chickenSheet, 9, false);
+
         System.out.println("Player animations loaded");
     }
 
@@ -251,6 +260,7 @@ public class Game extends JFrame implements Runnable {
         rat = new Rat(ratAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
         rat2 = new Rat(ratAnimations2,getWidth()/2 + 2, getHeight()/2 + 2);
         mouse = new Rat(mouseAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
+        chicken = new Rat(chickenAnimations, getWidth()/2 + 2, getHeight()/2 + 2);
         gui = new GUI(buttons, 5, 5, true);
 
         gameObjectsList = new ArrayList<>();
@@ -258,18 +268,21 @@ public class Game extends JFrame implements Runnable {
         gameObjectsList.add(rat);
         gameObjectsList.add(mouse);
         gameObjectsList.add(rat2);
+        gameObjectsList.add(chicken);
         gameObjectsList.add(gui);
     }
 
     private void loadSDKGUI() {
         List<Tile> tiles = tileService.getTiles();
-        GUIButton[] buttons = new GUIButton[tiles.size()];
+        GUIButton[] buttons = new GUIButton[tiles.size() + 1];
 
-        for (int i = 0; i < buttons.length; i++) {
+        for (int i = 0; i < buttons.length - 1; i++) {
 //            Rectangle tileRectangle = new Rectangle(0, i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);       // vertical on top left side
             Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
             buttons[i] = new SDKButton(this, i, tiles.get(i).getSprite(), tileRectangle);
         }
+        Rectangle tileRectangle = new Rectangle((tiles.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
+        buttons[tiles.size()] = new SDKButton(this, -1, null, tileRectangle);
 
         this.buttons = buttons;
     }

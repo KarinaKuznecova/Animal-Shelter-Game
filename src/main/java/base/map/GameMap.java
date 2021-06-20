@@ -160,6 +160,9 @@ public class GameMap {
     }
 
     public void setTile(int tileX, int tileY, int tileId) {
+        if (tileId == -1) {
+            return;
+        }
         int layer = tileService.getLayerById(tileId);
         boolean foundTile = false;
         if (layeredTiles.get(layer) != null) {

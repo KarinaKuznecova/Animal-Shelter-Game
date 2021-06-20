@@ -7,4 +7,6 @@ Water-22-17-1
 Brick-22-22-1
 Unwalkable-10-17-1
 Portal-18-11-0
-Stones-15-0-2
+Leaves-13-14-2
+BigStone-21-21-1
+Bush-10-27-1
