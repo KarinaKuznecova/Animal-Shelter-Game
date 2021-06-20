@@ -160,54 +160,63 @@ public class GameMap {
     }
 
     public void setTile(int tileX, int tileY, int tileId) {
-//        boolean foundTile = false;
-//        for (MappedTile tile : tileList) {
-//            if (tile.getX() == tileX && tile.getY() == tileY) {
-//                tile.setId(tileId);
-//                foundTile = true;
-//                break;
-//            }
-//        }
-//        if (!foundTile) {
-//            tileList.add(new MappedTile(tileId, tileX, tileY));
-//        }
+        int layer = tileService.getLayerById(tileId);
+        boolean foundTile = false;
+        if (layeredTiles.get(layer) != null) {
+            for (MapTile tile : layeredTiles.get(layer)) {
+                if (tile.getX() == tileX && tile.getY() == tileY) {
+                    tile.setId(tileId);
+                    foundTile = true;
+                    break;
+                }
+            }
+        } else {
+            List<MapTile> tiles = new ArrayList<>();
+            tiles.add(new MapTile(layer, tileId, tileX, tileY));
+            layeredTiles.put(layer, tiles);
+        }
+        if (!foundTile) {
+            layeredTiles.get(layer).add(new MapTile(layer, tileId, tileX, tileY));
+        }
     }
 
-    public void removeTile(int tileX, int tileY) {
-//        tileList.removeIf(tile -> tile.getX() == tileX && tile.getY() == tileY);
+    public void removeTile(int tileX, int tileY, int layer) {
+        if (layeredTiles.get(layer) != null) {
+            layeredTiles.get(layer).removeIf(tile -> tile.getX() == tileX && tile.getY() == tileY);
+        }
     }
 
     public void saveMap() {
-//        try {
-//            int currentLine = 0;
-//
-//            if (mapFile.exists()) {
-//                mapFile.delete();
-//            }
-//
-//            mapFile.createNewFile();
-//            PrintWriter printWriter = new PrintWriter(mapFile);
-//
-//            if (fillTileId >= 0) {
-//                if (comments.containsKey(currentLine)) {
-//                    printWriter.println(comments.get(currentLine));
-//                    currentLine++;
-//                }
-//                printWriter.println("Fill:" + fillTileId);
-//            }
-//
-//            for (MappedTile tile : tileList) {
-//                if (comments.containsKey(currentLine)) {
-//                    printWriter.println(comments.get(currentLine));
-//                }
-//                printWriter.println(tile.getId() + "," + tile.getX() + "," + tile.getY());
-//                currentLine++;
-//            }
-//
-//            printWriter.close();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        System.out.println("Saving map");
+        try {
+            if (mapFile.exists()) {
+                mapFile.delete();
+            }
+            mapFile.createNewFile();
+
+            PrintWriter printWriter = new PrintWriter(mapFile);
+
+            printWriter.println("Size:" + mapWidth + ":" + mapHeight);
+            if (backGroundTileId >= 0) {
+                printWriter.println("Fill:" + backGroundTileId);
+            }
+            if (alphaBackground >= 0) {
+                printWriter.println("AlphaFill:" + alphaBackground);
+            }
+            printWriter.println("//layer,tileId,xPos,yPos,portalDirection");
+            for (List<MapTile> layer : layeredTiles.values()) {
+                for (MapTile tile : layer) {
+                    if (tile.getPortalDirection() != null) {
+                        printWriter.println(tile.getLayer() + "," + tile.getId() + "," + tile.getX() + "," + tile.getY() + "," + tile.getPortalDirection());
+                    } else {
+                        printWriter.println(tile.getLayer() + "," + tile.getId() + "," + tile.getX() + "," + tile.getY());
+                    }
+                }
+            }
+            printWriter.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

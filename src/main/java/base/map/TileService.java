@@ -23,7 +23,8 @@ public class TileService {
                     String tileName = splitLine[0];
                     int spriteXPosition = Integer.parseInt(splitLine[1]);
                     int spriteYPosition = Integer.parseInt(splitLine[2]);
-                    Tile tile = new Tile(tileName, spriteSheet.getSprite(spriteXPosition, spriteYPosition));
+                    int layer = Integer.parseInt(splitLine[3]);
+                    Tile tile = new Tile(tileName, spriteSheet.getSprite(spriteXPosition, spriteYPosition), layer);
                     tileList.add(tile);
                 }
             }
@@ -42,5 +43,9 @@ public class TileService {
 
     public List<Tile> getTiles() {
         return tileList;
+    }
+
+    public int getLayerById(int id) {
+        return tileList.get(id).getLayer();
     }
 }

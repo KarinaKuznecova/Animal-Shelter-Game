@@ -128,7 +128,7 @@ public class Game extends JFrame implements Runnable {
 
     private void loadUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(0, 0, 1000, 800);
+        setBounds(0, 0, 1400, 1000);
         setLocationRelativeTo(null);
         add(canvas);
         setVisible(true);
@@ -255,9 +255,9 @@ public class Game extends JFrame implements Runnable {
 
         gameObjectsList = new ArrayList<>();
         gameObjectsList.add(player);
-//        gameObjectsList.add(rat);
-//        gameObjectsList.add(mouse);
-//        gameObjectsList.add(rat2);
+        gameObjectsList.add(rat);
+        gameObjectsList.add(mouse);
+        gameObjectsList.add(rat2);
         gameObjectsList.add(gui);
     }
 
@@ -299,7 +299,7 @@ public class Game extends JFrame implements Runnable {
     public void rightClick(int x, int y) {
         x = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
         y = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
-        gameMap.removeTile(x, y);
+        gameMap.removeTile(x, y, tileService.getLayerById(selectedTileId));
     }
 
     public void handleCTRL(boolean[] keys) {

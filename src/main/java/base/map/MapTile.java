@@ -3,7 +3,7 @@ package base.map;
 public class MapTile {
 
     private final int layer;
-    private final int id;
+    private int id;
     private final int x;
     private final int y;
     private boolean isPortal;
@@ -22,6 +22,10 @@ public class MapTile {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getX() {
