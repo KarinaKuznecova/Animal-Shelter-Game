@@ -1,0 +1,3 @@
+MainMap:src/main/java/base/map/config/GameMap.txt
+SecondMap:src/main/java/base/map/config/GameMap2.txt
+WaterMap:src/main/java/base/map/config/WaterMap.txt

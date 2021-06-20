@@ -1,3 +1,7 @@
+package base.map;
+
+import base.graphicsService.Sprite;
+
 public class Tile {
 
     public String tileName;

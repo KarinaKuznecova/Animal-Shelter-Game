@@ -1,3 +1,5 @@
+package base.map;
+
 public class MapTile {
 
     private final int layer;

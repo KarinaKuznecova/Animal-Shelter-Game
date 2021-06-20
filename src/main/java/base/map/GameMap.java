@@ -1,3 +1,10 @@
+package base.map;
+
+import base.Game;
+import base.gameObjects.GameObject;
+import base.graphicsService.Rectangle;
+import base.graphicsService.RenderHandler;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -12,8 +19,8 @@ public class GameMap {
 
     int backGroundTileId = -1;
     int alphaBackground = -1;
-    int mapWidth = -1;
-    int mapHeight = -1;
+    public int mapWidth = -1;
+    public int mapHeight = -1;
     int maxLayer = -1;
 
     public GameMap(File mapFile, TileService tileService) {
@@ -50,6 +57,9 @@ public class GameMap {
                     System.out.println("Size of the map is " + mapWidth + " by " + mapHeight + " tiles");
                     continue;
                 }
+                if (line.startsWith("//")) {        //just a comment
+                    continue;
+                }
                 String[] splitLine = line.split(",");
                 if (splitLine.length >= 4) {
                     int layer = Integer.parseInt(splitLine[0]);
@@ -82,7 +92,7 @@ public class GameMap {
         }
     }
 
-    public void renderMap(RenderHandler renderer, GameObject[] gameObjects, int xZoom, int yZoom) {
+    public void renderMap(RenderHandler renderer, ArrayList<GameObject> gameObjects, int xZoom, int yZoom) {
         int tileWidth = Game.TILE_SIZE * xZoom;
         int tileHeight = Game.TILE_SIZE * yZoom;
         renderFixedSizeMap(renderer, gameObjects, xZoom, yZoom, tileWidth, tileHeight);
@@ -98,7 +108,7 @@ public class GameMap {
         }
     }
 
-    private void renderFixedSizeMap(RenderHandler renderer, GameObject[] gameObjects, int xZoom, int yZoom, int tileWidth, int tileHeight) {
+    private void renderFixedSizeMap(RenderHandler renderer, ArrayList<GameObject> gameObjects, int xZoom, int yZoom, int tileWidth, int tileHeight) {
         if (alphaBackground >= 0) {
             renderInSightOfCamera(renderer, xZoom, yZoom, tileWidth, tileHeight, alphaBackground);
         }

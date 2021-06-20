@@ -1,3 +1,7 @@
+package base.navigationService;
+
+import base.Game;
+
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;

@@ -1,3 +1,5 @@
+package base.map;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -6,7 +8,7 @@ import java.util.Scanner;
 
 public class MapService {
 
-    private File mapListFile = new File("src/main/resources/MapList.txt");
+    private File mapListFile = new File("src/main/java/base/map/config/MapList.txt");
     Map<String, String> mapFiles = new HashMap<>();
 
     public MapService() {
@@ -29,7 +31,7 @@ public class MapService {
         }
     }
 
-    String getMapConfig(String mapName) {
+    public String getMapConfig(String mapName) {
         return mapFiles.get(mapName);
     }
 }

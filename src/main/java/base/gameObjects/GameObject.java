@@ -1,3 +1,8 @@
+package base.gameObjects;
+
+import base.Game;
+import base.graphicsService.RenderHandler;
+
 public interface GameObject {
 
     //should be called as often as possible

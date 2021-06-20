@@ -1,3 +1,8 @@
+package base.graphicsService;
+
+import base.Game;
+import base.map.MapTile;
+
 public class Rectangle {
 
     private int x;
@@ -103,10 +108,10 @@ public class Rectangle {
     }
 
     private boolean intersectsByY(MapTile tile, int yPos) {
-        return !(yPos > tile.getY() * 64 + 32 || tile.getY() * 64 > yPos + 48);     //48 = 32 + 32/2
+        return !(yPos > tile.getY() * (Game.TILE_SIZE * Game.ZOOM) + Game.TILE_SIZE || tile.getY() * (Game.TILE_SIZE * Game.ZOOM) > yPos + ((Game.TILE_SIZE * Game.ZOOM) - (Game.TILE_SIZE / 2)));     //48 = 32 + 32/2
     }
 
     private boolean intersectsByX(MapTile tile, int xPos) {
-        return !(xPos > tile.getX() * 64 + 32 || tile.getX() * 64 > xPos + width);
+        return !(xPos > tile.getX() * (Game.TILE_SIZE * Game.ZOOM) + Game.TILE_SIZE || tile.getX() * (Game.TILE_SIZE * Game.ZOOM) > xPos + width);
     }
 }

@@ -1,3 +1,8 @@
+package base.graphicsService;
+
+import base.Game;
+import base.gameObjects.GameObject;
+
 import java.awt.image.BufferedImage;
 
 public class AnimatedSprite  extends Sprite implements GameObject {
@@ -6,6 +11,7 @@ public class AnimatedSprite  extends Sprite implements GameObject {
     private int currentSprite = 0;
     private int speed;
     private int counter;
+    boolean vertical;
 
     private int startSprite = 0;
     private int endSprite;
@@ -21,10 +27,12 @@ public class AnimatedSprite  extends Sprite implements GameObject {
         }
     }
 
-    public AnimatedSprite(SpriteSheet sheet, int speed) {
+    //higher number = slower speed
+    public AnimatedSprite(SpriteSheet sheet, int speed, boolean vertical) {
         sprites = sheet.getLoadedSprites();
         this.speed = speed;
         this.endSprite = sprites.length - 1;
+        this.vertical = vertical;
     }
 
     public AnimatedSprite(SpriteSheet sheet, Rectangle[] positions, int speed) {
@@ -65,8 +73,13 @@ public class AnimatedSprite  extends Sprite implements GameObject {
     }
 
     public void incrementSprite() {
-        currentSprite += 4; //do currentSprite++ if horizontal
-        if (currentSprite > endSprite) {
+        if (vertical) {
+            currentSprite += 4; //do currentSprite++ if horizontal
+        }
+        else {
+            currentSprite++;
+        }
+        if (currentSprite >= endSprite) {
             currentSprite = startSprite;
         }
     }

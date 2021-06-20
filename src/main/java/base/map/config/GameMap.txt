@@ -1,7 +1,7 @@
 Size:20:20
-Fill:1
+Fill:0
 AlphaFill:6
-//layer,tileId,xPos,yPos
+//layer,tileId,xPos,yPos,portalDirection
 0,1,1,1
 0,1,1,2
 2,8,1,3

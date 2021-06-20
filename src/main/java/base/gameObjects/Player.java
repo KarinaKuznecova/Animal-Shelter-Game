@@ -1,4 +1,18 @@
+package base.gameObjects;
+
+import base.Game;
+import base.graphicsService.AnimatedSprite;
+import base.graphicsService.Rectangle;
+import base.graphicsService.RenderHandler;
+import base.graphicsService.Sprite;
+import base.map.MapService;
+import base.map.MapTile;
+import base.navigationService.Direction;
+import base.navigationService.KeyboardListener;
+
 import java.util.List;
+
+import static base.navigationService.Direction.*;
 
 public class Player implements GameObject {
 
@@ -41,7 +55,7 @@ public class Player implements GameObject {
 
 //        System.out.println("Player x: " + playerRectangle.getX() + " Player Y: " + playerRectangle.getY());
         if (keyboardListener.left()) {
-            if (unwalkableInThisDirection(game, Direction.LEFT)) {
+            if (unwalkableInThisDirection(game, LEFT)) {
                 System.out.println("INTERSECTS left");
                 playerRectangle.setX(playerRectangle.getX() + 1);
             } else if (playerRectangle.getX() < 1 && !game.getGameMap().getPortals().isEmpty()) {
@@ -52,12 +66,12 @@ public class Player implements GameObject {
             } else if (playerRectangle.getX() > 0) {
                 playerRectangle.setX(playerRectangle.getX() - speed);
             }
-            newDirection = Direction.LEFT;
+            newDirection = LEFT;
             isMoving = true;
         }
 
         if (keyboardListener.right()) {
-            if (unwalkableInThisDirection(game, Direction.RIGHT)) {
+            if (unwalkableInThisDirection(game, RIGHT)) {
                 System.out.println("INTERSECTS right");
                 playerRectangle.setX(playerRectangle.getX() - 1);
             } else if (playerRectangle.getX() >= game.getGameMap().mapWidth * Game.TILE_SIZE * Game.ZOOM - playerRectangle.getWidth() * Game.ZOOM
@@ -69,29 +83,29 @@ public class Player implements GameObject {
             } else if (playerRectangle.getX() < (game.getGameMap().mapWidth * Game.TILE_SIZE - playerRectangle.getWidth()) * Game.ZOOM) {
                 playerRectangle.setX(playerRectangle.getX() + speed);
             }
-            newDirection = Direction.RIGHT;
+            newDirection = RIGHT;
             isMoving = true;
         }
 
         if (keyboardListener.up()) {
-            if (unwalkableInThisDirection(game, Direction.UP)) {
+            if (unwalkableInThisDirection(game, UP)) {
                 System.out.println("INTERSECTS up");
                 playerRectangle.setY(playerRectangle.getY() + 1);
             } else if (playerRectangle.getY() > 0) {
                 playerRectangle.setY(playerRectangle.getY() - speed);
             }
-            newDirection = Direction.UP;
+            newDirection = UP;
             isMoving = true;
         }
 
         if (keyboardListener.down()) {
-            if (unwalkableInThisDirection(game, Direction.DOWN)) {
+            if (unwalkableInThisDirection(game, DOWN)) {
                 System.out.println("INTERSECTS down");
                 playerRectangle.setY(playerRectangle.getY() - 1);
             } else if (playerRectangle.getY() < (game.getGameMap().mapHeight * Game.TILE_SIZE - playerRectangle.getHeight()) * Game.ZOOM) {
                 playerRectangle.setY(playerRectangle.getY() + speed);
             }
-            newDirection = Direction.DOWN;
+            newDirection = DOWN;
             isMoving = true;
         }
 
