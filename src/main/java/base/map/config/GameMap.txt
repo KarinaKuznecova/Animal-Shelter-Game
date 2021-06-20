@@ -11,6 +11,3 @@ AlphaFill:6
 1,5,4,14
 0,0,-1,4,SecondMap
 0,0,20,4,WaterMap
-0,5,4,-1,SecondMap
-0,5,4,20,SecondMap
-0,5,2,8,SecondMap

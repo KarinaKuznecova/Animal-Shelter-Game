@@ -22,10 +22,10 @@ public class MouseEventListener implements MouseListener, MouseMotionListener {
     @Override       //means just pressed
     public void mousePressed(MouseEvent event) {
         if (event.getButton() == MouseEvent.BUTTON1) {
-//            game.leftClick(event.getX(), event.getY());
+            game.leftClick(event.getX(), event.getY());
         }
         if (event.getButton() == MouseEvent.BUTTON3) {
-//            game.rightClick(event.getX(), event.getY());
+            game.rightClick(event.getX(), event.getY());
         }
     }
 

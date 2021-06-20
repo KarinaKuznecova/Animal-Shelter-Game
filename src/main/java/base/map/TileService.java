@@ -39,4 +39,8 @@ public class TileService {
             System.out.println("tileIndex: " + tileIndex + " is out of bounds");
         }
     }
+
+    public List<Tile> getTiles() {
+        return tileList;
+    }
 }

@@ -1,6 +1,7 @@
 package base.gameObjects;
 
 import base.Game;
+import base.graphicsService.Rectangle;
 import base.graphicsService.RenderHandler;
 
 public interface GameObject {
@@ -12,4 +13,6 @@ public interface GameObject {
     void update(Game game);
 
     int getLayer();
+
+    boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom);
 }

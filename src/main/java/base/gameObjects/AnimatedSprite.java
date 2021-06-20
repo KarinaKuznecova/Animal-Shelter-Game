@@ -1,11 +1,14 @@
-package base.graphicsService;
+package base.gameObjects;
 
 import base.Game;
-import base.gameObjects.GameObject;
+import base.graphicsService.Rectangle;
+import base.graphicsService.RenderHandler;
+import base.graphicsService.Sprite;
+import base.graphicsService.SpriteSheet;
 
 import java.awt.image.BufferedImage;
 
-public class AnimatedSprite  extends Sprite implements GameObject {
+public class AnimatedSprite extends Sprite implements GameObject {
 
     private Sprite[] sprites;
     private int currentSprite = 0;
@@ -98,5 +101,10 @@ public class AnimatedSprite  extends Sprite implements GameObject {
     @Override
     public int getLayer() {
         return 0;
+    }
+
+    @Override
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
+        return false;
     }
 }

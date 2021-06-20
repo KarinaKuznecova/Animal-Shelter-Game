@@ -1,7 +1,6 @@
 package base.gameObjects;
 
 import base.Game;
-import base.graphicsService.AnimatedSprite;
 import base.graphicsService.Rectangle;
 import base.graphicsService.RenderHandler;
 import base.graphicsService.Sprite;
@@ -185,5 +184,10 @@ public class Animal implements GameObject{
     @Override
     public int getLayer() {
         return 1;
+    }
+
+    @Override
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
+        return false;
     }
 }

@@ -7,6 +7,8 @@ import base.graphicsService.RenderHandler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class GameMap {
@@ -17,8 +19,8 @@ public class GameMap {
     private Map<Integer, List<MapTile>> layeredTiles = new HashMap<>();
     private List<MapTile> portals = new ArrayList<>();
 
-    int backGroundTileId = -1;
-    int alphaBackground = -1;
+    int backGroundTileId = -1;      //background of walkable part of the map
+    int alphaBackground = -1;       //outside of walkable part
     public int mapWidth = -1;
     public int mapHeight = -1;
     int maxLayer = -1;
@@ -92,7 +94,7 @@ public class GameMap {
         }
     }
 
-    public void renderMap(RenderHandler renderer, ArrayList<GameObject> gameObjects, int xZoom, int yZoom) {
+    public void renderMap(RenderHandler renderer, List<GameObject> gameObjects, int xZoom, int yZoom) {
         int tileWidth = Game.TILE_SIZE * xZoom;
         int tileHeight = Game.TILE_SIZE * yZoom;
         renderFixedSizeMap(renderer, gameObjects, xZoom, yZoom, tileWidth, tileHeight);
@@ -108,7 +110,7 @@ public class GameMap {
         }
     }
 
-    private void renderFixedSizeMap(RenderHandler renderer, ArrayList<GameObject> gameObjects, int xZoom, int yZoom, int tileWidth, int tileHeight) {
+    private void renderFixedSizeMap(RenderHandler renderer, List<GameObject> gameObjects, int xZoom, int yZoom, int tileWidth, int tileHeight) {
         if (alphaBackground >= 0) {
             renderInSightOfCamera(renderer, xZoom, yZoom, tileWidth, tileHeight, alphaBackground);
         }
@@ -155,5 +157,57 @@ public class GameMap {
 
     public List<MapTile> getTilesOnLayer(int layer) {
         return layeredTiles.get(layer);
+    }
+
+    public void setTile(int tileX, int tileY, int tileId) {
+//        boolean foundTile = false;
+//        for (MappedTile tile : tileList) {
+//            if (tile.getX() == tileX && tile.getY() == tileY) {
+//                tile.setId(tileId);
+//                foundTile = true;
+//                break;
+//            }
+//        }
+//        if (!foundTile) {
+//            tileList.add(new MappedTile(tileId, tileX, tileY));
+//        }
+    }
+
+    public void removeTile(int tileX, int tileY) {
+//        tileList.removeIf(tile -> tile.getX() == tileX && tile.getY() == tileY);
+    }
+
+    public void saveMap() {
+//        try {
+//            int currentLine = 0;
+//
+//            if (mapFile.exists()) {
+//                mapFile.delete();
+//            }
+//
+//            mapFile.createNewFile();
+//            PrintWriter printWriter = new PrintWriter(mapFile);
+//
+//            if (fillTileId >= 0) {
+//                if (comments.containsKey(currentLine)) {
+//                    printWriter.println(comments.get(currentLine));
+//                    currentLine++;
+//                }
+//                printWriter.println("Fill:" + fillTileId);
+//            }
+//
+//            for (MappedTile tile : tileList) {
+//                if (comments.containsKey(currentLine)) {
+//                    printWriter.println(comments.get(currentLine));
+//                }
+//                printWriter.println(tile.getId() + "," + tile.getX() + "," + tile.getY());
+//                currentLine++;
+//            }
+//
+//            printWriter.close();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }

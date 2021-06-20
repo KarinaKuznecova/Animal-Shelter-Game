@@ -1,13 +1,17 @@
 package base;
 
-import base.gameObjects.Animal;
 import base.gameObjects.GameObject;
 import base.gameObjects.Player;
 import base.gameObjects.Rat;
-import base.graphicsService.AnimatedSprite;
+import base.gameObjects.AnimatedSprite;
 import base.graphicsService.RenderHandler;
 import base.graphicsService.SpriteSheet;
+import base.graphicsService.Rectangle;
+import base.gui.GUI;
+import base.gui.GUIButton;
+import base.gui.SDKButton;
 import base.map.GameMap;
+import base.map.Tile;
 import base.map.TileService;
 import base.navigationService.KeyboardListener;
 import base.navigationService.MouseEventListener;
@@ -17,11 +21,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Game extends JFrame implements Runnable {
 
@@ -41,7 +47,7 @@ public class Game extends JFrame implements Runnable {
     private RenderHandler renderer;
     private SpriteSheet spriteSheet;
     private GameMap gameMap;
-    private ArrayList<GameObject> gameObjectsList;
+    private List<GameObject> gameObjectsList;
     private Player player;
     private Rat rat;
     private Rat rat2;
@@ -53,6 +59,11 @@ public class Game extends JFrame implements Runnable {
     private AnimatedSprite ratAnimations;
     private AnimatedSprite ratAnimations2;
     private AnimatedSprite mouseAnimations;
+    private TileService tileService;
+
+    private GUI gui;
+    private GUIButton[] buttons;
+    private int selectedTileId = 2;
 
     private KeyboardListener keyboardListener = new KeyboardListener(this);
     private MouseEventListener mouseEventListener = new MouseEventListener(this);
@@ -62,6 +73,7 @@ public class Game extends JFrame implements Runnable {
         loadControllers();
         loadPlayerAnimatedImages();
         loadMap();
+        loadSDKGUI();
         loadGameObjects();
     }
 
@@ -129,7 +141,7 @@ public class Game extends JFrame implements Runnable {
         System.out.println("Game map loading started");
 
         loadSpriteSheet();
-        TileService tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
+        tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
         gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
 
         System.out.println("Game map loaded");
@@ -139,7 +151,7 @@ public class Game extends JFrame implements Runnable {
         System.out.println("Game map loading started");
 
         loadSpriteSheet();
-        TileService tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
+        tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
         gameMap = new GameMap(new File(mapPath), tileService);
 
         System.out.println("Game map loaded");
@@ -239,12 +251,73 @@ public class Game extends JFrame implements Runnable {
         rat = new Rat(ratAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
         rat2 = new Rat(ratAnimations2,getWidth()/2 + 2, getHeight()/2 + 2);
         mouse = new Rat(mouseAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
+        gui = new GUI(buttons, 5, 5, true);
 
         gameObjectsList = new ArrayList<>();
         gameObjectsList.add(player);
-        gameObjectsList.add(rat);
-        gameObjectsList.add(mouse);
-        gameObjectsList.add(rat2);
+//        gameObjectsList.add(rat);
+//        gameObjectsList.add(mouse);
+//        gameObjectsList.add(rat2);
+        gameObjectsList.add(gui);
+    }
+
+    private void loadSDKGUI() {
+        List<Tile> tiles = tileService.getTiles();
+        GUIButton[] buttons = new GUIButton[tiles.size()];
+
+        for (int i = 0; i < buttons.length; i++) {
+//            Rectangle tileRectangle = new Rectangle(0, i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);       // vertical on top left side
+            Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
+            buttons[i] = new SDKButton(this, i, tiles.get(i).getSprite(), tileRectangle);
+        }
+
+        this.buttons = buttons;
+    }
+
+    public void changeTile(int tileId) {
+        System.out.println("changing tile to new tile : " + tileId);
+        selectedTileId = tileId;
+    }
+
+    public void leftClick(int x, int y) {
+        Rectangle mouseRectangle = new Rectangle(x, y, 1, 1);
+        boolean stoppedChecking = false;
+
+        for (GameObject gameObject : gameObjectsList) {
+            if (!stoppedChecking) {
+                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM);
+            }
+        }
+        if (!stoppedChecking) {
+            x = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
+            y = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
+            gameMap.setTile(x, y, selectedTileId);
+
+        }
+    }
+
+    public void rightClick(int x, int y) {
+        x = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
+        y = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
+        gameMap.removeTile(x, y);
+    }
+
+    public void handleCTRL(boolean[] keys) {
+        if (keys[KeyEvent.VK_S]) {
+            gameMap.saveMap();
+        }
+    }
+
+    public void handleQ(boolean[] keys) {
+        if (keys[KeyEvent.VK_Q] && gameObjectsList.contains(gui)) {
+            gameObjectsList.remove(gui);
+        } else {
+            gameObjectsList.add(gui);
+        }
+    }
+
+    public int getSelectedTileId() {
+        return selectedTileId;
     }
 
     public KeyboardListener getKeyboardListener() {

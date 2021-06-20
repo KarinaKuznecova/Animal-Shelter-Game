@@ -13,8 +13,7 @@ public class KeyboardListener implements KeyListener, FocusListener {
 
     private Game game;
 
-    public KeyboardListener(Game game)
-    {
+    public KeyboardListener(Game game) {
         this.game = game;
     }
 
@@ -24,8 +23,11 @@ public class KeyboardListener implements KeyListener, FocusListener {
         if (keyCode < keys.length) {
             keys[keyCode] = true;
         }
-        if(keys[KeyEvent.VK_CONTROL]) {
-//            game.handleCTRL(keys);
+        if (keys[KeyEvent.VK_CONTROL]) {
+            game.handleCTRL(keys);
+        }
+        if (keys[KeyEvent.VK_Q]) {
+            game.handleQ(keys);
         }
     }
 
