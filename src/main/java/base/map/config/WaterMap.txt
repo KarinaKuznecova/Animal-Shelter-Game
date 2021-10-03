@@ -1,3 +1,4 @@
+Name:WaterMap
 Size:20:20
 Fill:3
 AlphaFill:4

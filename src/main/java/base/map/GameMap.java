@@ -1,6 +1,7 @@
 package base.map;
 
 import base.Game;
+import base.gameObjects.Animal;
 import base.gameObjects.GameObject;
 import base.graphicsService.Rectangle;
 import base.graphicsService.RenderHandler;
@@ -24,6 +25,8 @@ public class GameMap {
     public int mapWidth = -1;
     public int mapHeight = -1;
     int maxLayer = -1;
+
+    private String mapName;
 
     public GameMap(File mapFile, TileService tileService) {
         this.tileService = tileService;
@@ -61,6 +64,10 @@ public class GameMap {
                 }
                 if (line.startsWith("//")) {        //just a comment
                     continue;
+                }
+                if (line.startsWith("Name:")) {
+                    String[] splitLine = line.split(":");
+                    mapName = String.valueOf(splitLine[1]);
                 }
                 String[] splitLine = line.split(",");
                 if (splitLine.length >= 4) {
@@ -143,6 +150,12 @@ public class GameMap {
                 }
             }
             for (GameObject gameObject : gameObjects) {
+                if (gameObject instanceof Animal) {
+                    Animal animal = (Animal) gameObject;
+                    if (!animal.getHomeMap().equals(mapName)) {
+                        continue;
+                    }
+                }
                 if (gameObject.getLayer() == i) {
                     gameObject.render(renderer, xZoom, yZoom);
                 }
