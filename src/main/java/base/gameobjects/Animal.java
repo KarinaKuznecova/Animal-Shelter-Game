@@ -47,7 +47,7 @@ public class Animal implements GameObject{
     }
 
     private void updateDirection() {
-        if (animatedSprite != null && direction != null) {
+        if (animatedSprite != null && direction != STAY) {
 //            System.out.println("Direction now is " + direction);
 //            System.out.println("range will be : " + (direction.directionNumber * 3) + " and : " + (direction.directionNumber * 3 + 2));
 
@@ -70,23 +70,20 @@ public class Animal implements GameObject{
     //TODO: refactor this
     @Override
     public void update(Game game) {
-
         boolean isMoving = false;
 
         Direction newDirection = direction;
 
         Direction randomDirection = direction;
+
         if (movingTicks < 1) {
             randomDirection = getRandomDirection();
             movingTicks = 64;
         }
 
-//        System.out.println("base.gameObjects.Player x: " + playerRectangle.getX() + " base.gameObjects.Player Y: " + playerRectangle.getY());
         if (LEFT == randomDirection) {
             if (unwalkableInThisDirection(game, LEFT)) {
-                logger.info("Animal can't walk this way");
-                movingTicks = 0;
-                animalRectangle.setX(animalRectangle.getX() + 1);
+                handleUnwalkable(LEFT);
             } else if (animalRectangle.getX() > 0) {
                 animalRectangle.setX(animalRectangle.getX() - speed);
             }
@@ -96,9 +93,7 @@ public class Animal implements GameObject{
 
         if (RIGHT == randomDirection) {
             if (unwalkableInThisDirection(game, RIGHT)) {
-                logger.info("Animal can't walk this way");
-                animalRectangle.setX(animalRectangle.getX() - 1);
-                movingTicks = 0;
+                handleUnwalkable(RIGHT);
             } else if (animalRectangle.getX() < (game.getGameMap().mapWidth * Game.TILE_SIZE - animalRectangle.getWidth()) * Game.ZOOM) {
                 animalRectangle.setX(animalRectangle.getX() + speed);
             }
@@ -108,9 +103,7 @@ public class Animal implements GameObject{
 
         if (UP == randomDirection) {
             if (unwalkableInThisDirection(game, UP)) {
-                logger.info("Animal can't walk this way");
-                animalRectangle.setY(animalRectangle.getY() + 1);
-                movingTicks = 0;
+                handleUnwalkable(UP);
             } else if (animalRectangle.getY() > 0) {
                 animalRectangle.setY(animalRectangle.getY() - speed);
             }
@@ -120,9 +113,7 @@ public class Animal implements GameObject{
 
         if (DOWN == randomDirection) {
             if (unwalkableInThisDirection(game, DOWN)) {
-                logger.info("Animal can't walk this way");
-                animalRectangle.setY(animalRectangle.getY() - 1);
-                movingTicks = 0;
+                handleUnwalkable(DOWN);
             } else if (animalRectangle.getY() < (game.getGameMap().mapHeight * Game.TILE_SIZE - animalRectangle.getHeight()) * Game.ZOOM) {
                 animalRectangle.setY(animalRectangle.getY() + speed);
             }
@@ -130,15 +121,18 @@ public class Animal implements GameObject{
             isMoving = true;
         }
 
+        if (STAY == randomDirection) {
+            newDirection = STAY;
+        }
+
         if (newDirection != direction) {
-//            System.out.println("Animal Direction: " + direction);
-//            System.out.println("Animal New direction: " + newDirection);
             direction = newDirection;
             updateDirection();
         }
 
         if (animatedSprite != null && !isMoving) {
             animatedSprite.reset();
+            movingTicks--;
         }
 
         if (animatedSprite != null && isMoving) {
@@ -146,6 +140,25 @@ public class Animal implements GameObject{
             animatedSprite.update(game);
         }
 
+    }
+
+    private void handleUnwalkable(Direction direction) {
+        logger.info("Animal can't walk this way");
+        movingTicks = 0;
+        switch (direction) {
+            case LEFT:
+                animalRectangle.setX(animalRectangle.getX() + 1);
+                break;
+            case RIGHT:
+                animalRectangle.setX(animalRectangle.getX() - 1);
+                break;
+            case UP:
+                animalRectangle.setY(animalRectangle.getY() + 1);
+                break;
+            case DOWN:
+                animalRectangle.setY(animalRectangle.getY() - 1);
+                break;
+        }
     }
 
     Direction getRandomDirection() {
@@ -157,7 +170,7 @@ public class Animal implements GameObject{
             case 2: return UP;
             case 3: return RIGHT;
             default:
-                return null;
+                return STAY;
         }
     }
 
