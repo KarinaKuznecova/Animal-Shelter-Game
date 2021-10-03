@@ -2,7 +2,10 @@ package base;
 
 import base.gameObjects.GameObject;
 import base.gameObjects.Player;
-import base.gameObjects.Rat;
+import base.gameObjects.animals.Butterfly;
+import base.gameObjects.animals.Chicken;
+import base.gameObjects.animals.Mouse;
+import base.gameObjects.animals.Rat;
 import base.gameObjects.AnimatedSprite;
 import base.graphicsService.RenderHandler;
 import base.graphicsService.SpriteSheet;
@@ -39,6 +42,7 @@ public class Game extends JFrame implements Runnable {
     public static final String RAT_SHEET_PATH = "img/rat.png";
     public static final String MOUSE_SHEET_PATH = "img/mouse.png";
     public static final String CHICKEN_SHEET_PATH = "img/chicken.png";
+    public static final String BUTTERFLY_SHEET_PATH = "img/butterfly.png";
     public static final String SPRITES_PATH = "img/sprites.png";
     public static final String TILE_LIST_PATH = "src/main/java/base/map/config/Tile.txt";
     public static final String GAME_MAP_PATH = "src/main/java/base/map/config/GameMap.txt";
@@ -52,17 +56,20 @@ public class Game extends JFrame implements Runnable {
     private Player player;
     private Rat rat;
     private Rat rat2;
-    private Rat mouse;
-    private Rat chicken;
+    private Mouse mouse;
+    private Chicken chicken;
+    private Butterfly butterfly;
     private SpriteSheet playerSheet;
     private SpriteSheet ratSheet;
     private SpriteSheet mouseSheet;
     private SpriteSheet chickenSheet;
+    private SpriteSheet butterflySheet;
     private AnimatedSprite playerAnimations;
     private AnimatedSprite ratAnimations;
     private AnimatedSprite ratAnimations2;
     private AnimatedSprite mouseAnimations;
     private AnimatedSprite chickenAnimations;
+    private AnimatedSprite butterflyAnimations;
     private TileService tileService;
 
     private GUI gui;
@@ -252,6 +259,11 @@ public class Game extends JFrame implements Runnable {
         chickenSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
         chickenAnimations = new AnimatedSprite(chickenSheet, 9, false);
 
+        BufferedImage butterflySheetImage = loadImage(BUTTERFLY_SHEET_PATH);
+        butterflySheet = new SpriteSheet(butterflySheetImage);
+        butterflySheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
+        butterflyAnimations = new AnimatedSprite(butterflySheet, 9, false);
+
         System.out.println("Player animations loaded");
     }
 
@@ -259,8 +271,9 @@ public class Game extends JFrame implements Runnable {
         player = new Player(playerAnimations, getWidth()/2, getHeight()/2);
         rat = new Rat(ratAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
         rat2 = new Rat(ratAnimations2,getWidth()/2 + 2, getHeight()/2 + 2);
-        mouse = new Rat(mouseAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
-        chicken = new Rat(chickenAnimations, getWidth()/2 + 2, getHeight()/2 + 2);
+        mouse = new Mouse(mouseAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
+        chicken = new Chicken(chickenAnimations, getWidth()/2 + 2, getHeight()/2 + 2);
+        butterfly = new Butterfly(butterflyAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
         gui = new GUI(buttons, 5, 5, true);
 
         gameObjectsList = new ArrayList<>();
@@ -269,6 +282,7 @@ public class Game extends JFrame implements Runnable {
         gameObjectsList.add(mouse);
         gameObjectsList.add(rat2);
         gameObjectsList.add(chicken);
+        gameObjectsList.add(butterfly);
         gameObjectsList.add(gui);
     }
 
