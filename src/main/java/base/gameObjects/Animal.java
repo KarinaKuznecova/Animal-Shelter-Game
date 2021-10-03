@@ -56,6 +56,7 @@ public class Animal implements GameObject{
         }
     }
 
+    //TODO: refactor this
     @Override
     public void update(Game game) {
 
