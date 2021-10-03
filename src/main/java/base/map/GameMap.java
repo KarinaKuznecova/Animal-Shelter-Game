@@ -1,10 +1,12 @@
 package base.map;
 
 import base.Game;
-import base.gameObjects.Animal;
-import base.gameObjects.GameObject;
-import base.graphicsService.Rectangle;
-import base.graphicsService.RenderHandler;
+import base.gameobjects.Animal;
+import base.gameobjects.GameObject;
+import base.graphicsservice.Rectangle;
+import base.graphicsservice.RenderHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,12 +23,14 @@ public class GameMap {
     private List<MapTile> portals = new ArrayList<>();
 
     int backGroundTileId = -1;      //background of walkable part of the map
-    int alphaBackground = -1;       //outside of walkable part
+    int alphaBackground = -1;       //outside the walkable part
     public int mapWidth = -1;
     public int mapHeight = -1;
     int maxLayer = -1;
 
     private String mapName;
+
+    protected static final Logger logger = LoggerFactory.getLogger(GameMap.class);
 
     public GameMap(File mapFile, TileService tileService) {
         this.tileService = tileService;
@@ -34,6 +38,7 @@ public class GameMap {
         loadMapFromFile();
     }
 
+    // TODO: refactoring needed
     private void loadMapFromFile() {
         try {
             Scanner scanner = new Scanner(mapFile);
@@ -59,7 +64,7 @@ public class GameMap {
                     if (mapHeight < 20) {
                         mapHeight = 20;
                     }
-                    System.out.println("Size of the map is " + mapWidth + " by " + mapHeight + " tiles");
+                    logger.info(String.format("Size of the map is %d by %d tiles", mapWidth, mapHeight));
                     continue;
                 }
                 if (line.startsWith("//")) {        //just a comment
@@ -68,6 +73,7 @@ public class GameMap {
                 if (line.startsWith("Name:")) {
                     String[] splitLine = line.split(":");
                     mapName = String.valueOf(splitLine[1]);
+                    continue;
                 }
                 String[] splitLine = line.split(",");
                 if (splitLine.length >= 4) {
@@ -81,14 +87,14 @@ public class GameMap {
                     }
                     if (maxLayer < layer) {
                         maxLayer = layer;
-                        System.out.println("max layer: " + maxLayer);
+                        logger.info(String.format("max layer: %d", maxLayer));
                     }
                     int tileId = Integer.parseInt(splitLine[1]);
                     int xPosition = Integer.parseInt(splitLine[2]);
                     int yPosition = Integer.parseInt(splitLine[3]);
                     MapTile tile = new MapTile(layer, tileId, xPosition, yPosition);
                     if (splitLine.length >= 5) {
-                        System.out.println("Found portal");
+                        logger.info("Found portal");
                         tile.setPortal(true);
                         tile.setPortalDirection(splitLine[4]);
                         portals.add(tile);
@@ -117,6 +123,7 @@ public class GameMap {
         }
     }
 
+    // TODO: refactor needed
     private void renderFixedSizeMap(RenderHandler renderer, List<GameObject> gameObjects, int xZoom, int yZoom, int tileWidth, int tileHeight) {
         if (alphaBackground >= 0) {
             renderInSightOfCamera(renderer, xZoom, yZoom, tileWidth, tileHeight, alphaBackground);
@@ -131,7 +138,7 @@ public class GameMap {
         for (GameObject gameObject : gameObjects) {
             if (maxLayer < gameObject.getLayer()) {
                 maxLayer = gameObject.getLayer();
-                System.out.println("max layer: " + maxLayer);
+                logger.info(String.format("max layer: %d", maxLayer));
             }
         }
         for (int i = 0; i <= maxLayer; i++) {
@@ -203,7 +210,7 @@ public class GameMap {
     }
 
     public void saveMap() {
-        System.out.println("Saving map");
+        logger.info("Saving map");
         try {
             if (mapFile.exists()) {
                 mapFile.delete();

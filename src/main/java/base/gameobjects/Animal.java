@@ -1,16 +1,19 @@
-package base.gameObjects;
+package base.gameobjects;
 
 import base.Game;
-import base.graphicsService.Rectangle;
-import base.graphicsService.RenderHandler;
-import base.graphicsService.Sprite;
+import base.graphicsservice.Rectangle;
+import base.graphicsservice.RenderHandler;
+import base.graphicsservice.Sprite;
 import base.map.MapTile;
-import base.navigationService.Direction;
+import base.navigationservice.Direction;
 
 import java.util.List;
 import java.util.Random;
 
-import static base.navigationService.Direction.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static base.navigationservice.Direction.*;
 
 public class Animal implements GameObject{
 
@@ -22,6 +25,8 @@ public class Animal implements GameObject{
     private int movingTicks = 0;
     private Random random;
     private String homeMap;
+
+    protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
     public Animal(Sprite playerSprite, int startX, int startY) {
         this(playerSprite, startX, startY, "MainMap");
@@ -79,7 +84,7 @@ public class Animal implements GameObject{
 //        System.out.println("base.gameObjects.Player x: " + playerRectangle.getX() + " base.gameObjects.Player Y: " + playerRectangle.getY());
         if (LEFT == randomDirection) {
             if (unwalkableInThisDirection(game, LEFT)) {
-                System.out.println("Animal can't walk this way");
+                logger.info("Animal can't walk this way");
                 movingTicks = 0;
                 animalRectangle.setX(animalRectangle.getX() + 1);
             } else if (animalRectangle.getX() > 0) {
@@ -91,7 +96,7 @@ public class Animal implements GameObject{
 
         if (RIGHT == randomDirection) {
             if (unwalkableInThisDirection(game, RIGHT)) {
-                System.out.println("Animal can't walk this way");
+                logger.info("Animal can't walk this way");
                 animalRectangle.setX(animalRectangle.getX() - 1);
                 movingTicks = 0;
             } else if (animalRectangle.getX() < (game.getGameMap().mapWidth * Game.TILE_SIZE - animalRectangle.getWidth()) * Game.ZOOM) {
@@ -103,7 +108,7 @@ public class Animal implements GameObject{
 
         if (UP == randomDirection) {
             if (unwalkableInThisDirection(game, UP)) {
-                System.out.println("Animal can't walk this way");
+                logger.info("Animal can't walk this way");
                 animalRectangle.setY(animalRectangle.getY() + 1);
                 movingTicks = 0;
             } else if (animalRectangle.getY() > 0) {
@@ -115,7 +120,7 @@ public class Animal implements GameObject{
 
         if (DOWN == randomDirection) {
             if (unwalkableInThisDirection(game, DOWN)) {
-                System.out.println("Animal can't walk this way");
+                logger.info("Animal can't walk this way");
                 animalRectangle.setY(animalRectangle.getY() - 1);
                 movingTicks = 0;
             } else if (animalRectangle.getY() < (game.getGameMap().mapHeight * Game.TILE_SIZE - animalRectangle.getHeight()) * Game.ZOOM) {
@@ -146,7 +151,6 @@ public class Animal implements GameObject{
     Direction getRandomDirection() {
         random = new Random();
         int result = random.nextInt(5);
-//        System.out.println("random : " + result);
         switch (result) {
             case 0: return DOWN;
             case 1: return LEFT;
@@ -196,7 +200,7 @@ public class Animal implements GameObject{
 
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
-        System.out.println("Click on animal " + this);
+        logger.info("Click on Animal: ");
         return false;
     }
 

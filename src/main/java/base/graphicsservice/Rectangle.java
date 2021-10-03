@@ -1,7 +1,9 @@
-package base.graphicsService;
+package base.graphicsservice;
 
 import base.Game;
 import base.map.MapTile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Rectangle {
 
@@ -10,6 +12,8 @@ public class Rectangle {
     private int width;
     private int height;
     private int[] pixels;
+
+    protected static final Logger logger = LoggerFactory.getLogger(Rectangle.class);
 
     public Rectangle(int x, int y, int width, int height) {
         this.x = x;
@@ -58,12 +62,8 @@ public class Rectangle {
         if (pixels != null) {
             return pixels;
         }
-        System.out.println("Attempt of getting pixels without generating graphics first");
-        return null;
-    }
-
-    public void setPixels(int[] pixels) {
-        this.pixels = pixels;
+        logger.error("Attempt of getting pixels without generating graphics first");
+        return new int[0];
     }
 
     public void generateGraphics(int borderWidth, int color) {

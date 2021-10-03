@@ -1,7 +1,7 @@
-package base.gameObjects.animals;
+package base.gameobjects.animals;
 
-import base.gameObjects.Animal;
-import base.graphicsService.Sprite;
+import base.gameobjects.Animal;
+import base.graphicsservice.Sprite;
 
 public class Mouse extends Animal {
 

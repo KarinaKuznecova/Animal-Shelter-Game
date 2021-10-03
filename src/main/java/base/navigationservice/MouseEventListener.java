@@ -1,4 +1,4 @@
-package base.navigationService;
+package base.navigationservice;
 
 import base.Game;
 

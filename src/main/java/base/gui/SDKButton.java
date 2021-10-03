@@ -1,9 +1,9 @@
 package base.gui;
 
 import base.Game;
-import base.graphicsService.Rectangle;
-import base.graphicsService.RenderHandler;
-import base.graphicsService.Sprite;
+import base.graphicsservice.Rectangle;
+import base.graphicsservice.RenderHandler;
+import base.graphicsservice.Sprite;
 
 public class SDKButton extends GUIButton {
 

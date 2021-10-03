@@ -1,12 +1,12 @@
 package base.map;
 
-import base.graphicsService.Sprite;
+import base.graphicsservice.Sprite;
 
 public class Tile {
 
     public String tileName;
-    public Sprite sprite;
-    public int layer;
+    private Sprite sprite;
+    private int layer;
 
     public Tile(String tileName, Sprite sprite, int layer) {
         this.tileName = tileName;

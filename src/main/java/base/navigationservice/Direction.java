@@ -1,4 +1,4 @@
-package base.navigationService;
+package base.navigationservice;
 
 public enum Direction {
     DOWN(0),

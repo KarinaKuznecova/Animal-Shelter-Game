@@ -1,17 +1,19 @@
-package base.gameObjects;
+package base.gameobjects;
 
 import base.Game;
-import base.graphicsService.Rectangle;
-import base.graphicsService.RenderHandler;
-import base.graphicsService.Sprite;
+import base.graphicsservice.Rectangle;
+import base.graphicsservice.RenderHandler;
+import base.graphicsservice.Sprite;
 import base.map.MapService;
 import base.map.MapTile;
-import base.navigationService.Direction;
-import base.navigationService.KeyboardListener;
+import base.navigationservice.Direction;
+import base.navigationservice.KeyboardListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static base.navigationService.Direction.*;
+import static base.navigationservice.Direction.*;
 
 public class Player implements GameObject {
 
@@ -20,6 +22,8 @@ public class Player implements GameObject {
     private Rectangle playerRectangle;
     private int speed = 5;
     private Direction direction;
+
+    protected static final Logger logger = LoggerFactory.getLogger(Player.class);
 
     public Player(Sprite playerSprite, int startX, int startY) {
         this.sprite = playerSprite;
@@ -55,7 +59,7 @@ public class Player implements GameObject {
 //        System.out.println("Player x: " + playerRectangle.getX() + " Player Y: " + playerRectangle.getY());
         if (keyboardListener.left()) {
             if (unwalkableInThisDirection(game, LEFT)) {
-                System.out.println("INTERSECTS left");
+                logger.debug("INTERSECTS left");
                 playerRectangle.setX(playerRectangle.getX() + 1);
             } else if (playerRectangle.getX() < 1 && !game.getGameMap().getPortals().isEmpty()) {
                 List<MapTile> portals = game.getGameMap().getPortals();
@@ -71,7 +75,7 @@ public class Player implements GameObject {
 
         if (keyboardListener.right()) {
             if (unwalkableInThisDirection(game, RIGHT)) {
-                System.out.println("INTERSECTS right");
+                logger.debug("INTERSECTS right");
                 playerRectangle.setX(playerRectangle.getX() - 1);
             } else if (playerRectangle.getX() >= game.getGameMap().mapWidth * Game.TILE_SIZE * Game.ZOOM - playerRectangle.getWidth() * Game.ZOOM
                     && !game.getGameMap().getPortals().isEmpty()) {
@@ -88,7 +92,7 @@ public class Player implements GameObject {
 
         if (keyboardListener.up()) {
             if (unwalkableInThisDirection(game, UP)) {
-                System.out.println("INTERSECTS up");
+                logger.debug("INTERSECTS up");
                 playerRectangle.setY(playerRectangle.getY() + 1);
             } else if (playerRectangle.getY() > 0) {
                 playerRectangle.setY(playerRectangle.getY() - speed);
@@ -99,7 +103,7 @@ public class Player implements GameObject {
 
         if (keyboardListener.down()) {
             if (unwalkableInThisDirection(game, DOWN)) {
-                System.out.println("INTERSECTS down");
+                logger.debug("INTERSECTS down");
                 playerRectangle.setY(playerRectangle.getY() - 1);
             } else if (playerRectangle.getY() < (game.getGameMap().mapHeight * Game.TILE_SIZE - playerRectangle.getHeight()) * Game.ZOOM) {
                 playerRectangle.setY(playerRectangle.getY() + speed);
@@ -109,8 +113,8 @@ public class Player implements GameObject {
         }
 
         if (newDirection != direction) {
-            System.out.println("Direction: " + direction);
-            System.out.println("New direction: " + newDirection);
+            logger.debug(String.format("Direction: %s", direction));
+            logger.debug(String.format("New direction: %s", newDirection));
             direction = newDirection;
             updateDirection();
         }
@@ -123,7 +127,7 @@ public class Player implements GameObject {
         if (game.getGameMap().getPortals() != null) {
             for (MapTile tile : game.getGameMap().getPortals()) {
                 if (playerRectangle.intersects(tile)) {
-                    System.out.println("In portal");
+                    logger.info("In the portal");
                     MapService mapService = new MapService();
                     String mapFileLocation = mapService.getMapConfig(tile.getPortalDirection());
                     game.loadSecondaryMap(mapFileLocation);
@@ -170,11 +174,11 @@ public class Player implements GameObject {
 
     private boolean nearPortal(List<MapTile> portals) {
         for (MapTile portal : portals) {
-            System.out.println("Portal X: " + portal.getX() * (Game.TILE_SIZE * Game.ZOOM) + " player X: " + playerRectangle.getX());
+            logger.info(String.format("Portal X: %d player X: %d", portal.getX() * (Game.TILE_SIZE * Game.ZOOM), playerRectangle.getX()));
             int diffX = portal.getX() * (Game.TILE_SIZE * Game.ZOOM) - playerRectangle.getX();
-            System.out.println("diff x: " + diffX);
+            logger.info(String.format("diff x: %d", diffX));
             int diffY = portal.getY() * (Game.TILE_SIZE * Game.ZOOM) - playerRectangle.getY();
-            System.out.println("diff y: " + diffY);
+            logger.info(String.format("diff y: %d", diffY));
             if (Math.abs(diffX) <= Game.TILE_SIZE * Game.ZOOM && Math.abs(diffY) <= Game.TILE_SIZE * Game.ZOOM) {
                 return true;
             }

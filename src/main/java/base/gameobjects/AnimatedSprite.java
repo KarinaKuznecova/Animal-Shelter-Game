@@ -1,10 +1,10 @@
-package base.gameObjects;
+package base.gameobjects;
 
 import base.Game;
-import base.graphicsService.Rectangle;
-import base.graphicsService.RenderHandler;
-import base.graphicsService.Sprite;
-import base.graphicsService.SpriteSheet;
+import base.graphicsservice.Rectangle;
+import base.graphicsservice.RenderHandler;
+import base.graphicsservice.Sprite;
+import base.graphicsservice.SpriteSheet;
 
 import java.awt.image.BufferedImage;
 
@@ -47,10 +47,10 @@ public class AnimatedSprite extends Sprite implements GameObject {
             sprites[i] = new Sprite(sheet, positions[i].getX(), positions[i].getY(), positions[i].getWidth(), positions[i].getHeight());
     }
 
-    // as often as possible
-    // render is dealt specifically with the Layer class
     @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom) {
+        // as often as possible
+        // render is dealt specifically with the Layer class
     }
 
     // should be 60 fps
@@ -63,14 +63,17 @@ public class AnimatedSprite extends Sprite implements GameObject {
         }
     }
 
+    @Override
     public int getWidth() {
         return sprites[currentSprite].getWidth();
     }
 
+    @Override
     public int getHeight() {
         return sprites[currentSprite].getHeight();
     }
 
+    @Override
     public int[] getPixels() {
         return sprites[currentSprite].getPixels();
     }
