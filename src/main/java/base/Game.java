@@ -1,23 +1,25 @@
 package base;
 
-import base.gameObjects.GameObject;
-import base.gameObjects.Player;
-import base.gameObjects.animals.Butterfly;
-import base.gameObjects.animals.Chicken;
-import base.gameObjects.animals.Mouse;
-import base.gameObjects.animals.Rat;
-import base.gameObjects.AnimatedSprite;
-import base.graphicsService.RenderHandler;
-import base.graphicsService.SpriteSheet;
-import base.graphicsService.Rectangle;
+import base.gameobjects.GameObject;
+import base.gameobjects.Player;
+import base.gameobjects.animals.Butterfly;
+import base.gameobjects.animals.Chicken;
+import base.gameobjects.animals.Mouse;
+import base.gameobjects.animals.Rat;
+import base.gameobjects.AnimatedSprite;
+import base.graphicsservice.RenderHandler;
+import base.graphicsservice.SpriteSheet;
+import base.graphicsservice.Rectangle;
 import base.gui.GUI;
 import base.gui.GUIButton;
 import base.gui.SDKButton;
 import base.map.GameMap;
 import base.map.Tile;
 import base.map.TileService;
-import base.navigationService.KeyboardListener;
-import base.navigationService.MouseEventListener;
+import base.navigationservice.KeyboardListener;
+import base.navigationservice.MouseEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -31,6 +33,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class Game extends JFrame implements Runnable {
 
@@ -49,9 +53,11 @@ public class Game extends JFrame implements Runnable {
 
     private final Canvas canvas = new Canvas();
 
+    protected static final Logger logger = LoggerFactory.getLogger(Game.class);
+
     private RenderHandler renderer;
     private SpriteSheet spriteSheet;
-    private GameMap gameMap;
+    private transient GameMap gameMap;
     private List<GameObject> gameObjectsList;
     private Player player;
     private Rat rat;
@@ -70,10 +76,10 @@ public class Game extends JFrame implements Runnable {
     private AnimatedSprite mouseAnimations;
     private AnimatedSprite chickenAnimations;
     private AnimatedSprite butterflyAnimations;
-    private TileService tileService;
+    private transient TileService tileService;
 
-    private GUI gui;
-    private GUIButton[] buttons;
+    private transient GUI gui;
+    private transient GUIButton[] buttons;
     private int selectedTileId = 2;
 
     private KeyboardListener keyboardListener = new KeyboardListener(this);
@@ -138,7 +144,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void loadUI() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBounds(0, 0, 1300, 900);
         setLocationRelativeTo(null);
         add(canvas);
@@ -149,40 +155,40 @@ public class Game extends JFrame implements Runnable {
 
     // TODO: refactor next two methods into one
     private void loadMap() {
-        System.out.println("Game map loading started");
+        logger.info("Game map loading started");
 
         loadSpriteSheet();
         tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
         gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
 
-        System.out.println("Game map loaded");
+        logger.info("Game map loaded");
     }
 
     public void loadSecondaryMap(String mapPath) {
-        System.out.println("Game map loading started");
+        logger.info("Game map loading started");
 
         loadSpriteSheet();
         tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
         gameMap = new GameMap(new File(mapPath), tileService);
 
-        System.out.println("Game map loaded");
+        logger.info("Game map loaded");
 
         loadGameObjects();
     }
 
     private void loadSpriteSheet() {
-        System.out.println("Sprite sheet loading started");
+        logger.info("Sprite sheet loading started");
 
         BufferedImage bufferedImage = loadImage(SPRITES_PATH);
         spriteSheet = new SpriteSheet(bufferedImage);
         spriteSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
 
-        System.out.println("Sprite sheet loading done");
+        logger.info("Sprite sheet loading done");
     }
 
     private BufferedImage loadImage(String path) {
         try {
-            System.out.println("Will try to load - " + path);
+            logger.info("Will try to load - " + path);
             BufferedImage image = ImageIO.read(Game.class.getResource(path));
             BufferedImage formattedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
             formattedImage.getGraphics().drawImage(image, 0, 0, null);
@@ -236,7 +242,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void loadPlayerAnimatedImages() {
-        System.out.println("Loading player animations");
+        logger.info("Loading player animations");
 
         BufferedImage playerSheetImage = loadImage(PLAYER_SHEET_PATH);
         playerSheet = new SpriteSheet(playerSheetImage);
@@ -264,7 +270,7 @@ public class Game extends JFrame implements Runnable {
         butterflySheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
         butterflyAnimations = new AnimatedSprite(butterflySheet, 9, false);
 
-        System.out.println("Player animations loaded");
+        logger.info("Player animations loaded");
     }
 
     private void loadGameObjects() {
@@ -302,7 +308,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void changeTile(int tileId) {
-        System.out.println("changing tile to new tile : " + tileId);
+        logger.info("changing tile to new tile : " + tileId);
         selectedTileId = tileId;
     }
 

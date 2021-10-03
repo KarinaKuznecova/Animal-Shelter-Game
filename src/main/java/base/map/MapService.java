@@ -1,5 +1,9 @@
 package base.map;
 
+import base.gameobjects.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -11,8 +15,10 @@ public class MapService {
     private File mapListFile = new File("src/main/java/base/map/config/MapList.txt");
     Map<String, String> mapFiles = new HashMap<>();
 
+    protected static final Logger logger = LoggerFactory.getLogger(MapService.class);
+
     public MapService() {
-        System.out.println("Loading maps list");
+        logger.info("Loading maps list");
         loadMapList();
     }
 

@@ -1,8 +1,8 @@
-package base.gameObjects;
+package base.gameobjects;
 
 import base.Game;
-import base.graphicsService.Rectangle;
-import base.graphicsService.RenderHandler;
+import base.graphicsservice.Rectangle;
+import base.graphicsservice.RenderHandler;
 
 public interface GameObject {
 

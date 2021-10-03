@@ -1,7 +1,10 @@
 package base.map;
 
-import base.graphicsService.RenderHandler;
-import base.graphicsService.SpriteSheet;
+import base.gameobjects.Player;
+import base.graphicsservice.RenderHandler;
+import base.graphicsservice.SpriteSheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,6 +15,8 @@ import java.util.Scanner;
 public class TileService {
 
     private List<Tile> tileList = new ArrayList<>();
+
+    protected static final Logger logger = LoggerFactory.getLogger(TileService.class);
 
     public TileService(File tilesFile, SpriteSheet spriteSheet) {
         try {
@@ -37,7 +42,7 @@ public class TileService {
         if (tileIndex >= 0 && tileList.size() > tileIndex) {
             renderer.renderSprite(tileList.get(tileIndex).getSprite(), xPosition, yPosition, xZoom, yZoom, false);
         } else {
-            System.out.println("tileIndex: " + tileIndex + " is out of bounds");
+            logger.info("tileIndex: " + tileIndex + " is out of bounds");
         }
     }
 

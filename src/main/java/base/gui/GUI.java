@@ -1,10 +1,10 @@
 package base.gui;
 
 import base.Game;
-import base.gameObjects.GameObject;
-import base.graphicsService.Rectangle;
-import base.graphicsService.RenderHandler;
-import base.graphicsService.Sprite;
+import base.gameobjects.GameObject;
+import base.graphicsservice.Rectangle;
+import base.graphicsservice.RenderHandler;
+import base.graphicsservice.Sprite;
 
 public class GUI implements GameObject {
 

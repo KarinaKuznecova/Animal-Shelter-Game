@@ -1,10 +1,10 @@
 package base.gui;
 
 import base.Game;
-import base.gameObjects.GameObject;
-import base.graphicsService.Rectangle;
-import base.graphicsService.RenderHandler;
-import base.graphicsService.Sprite;
+import base.gameobjects.GameObject;
+import base.graphicsservice.Rectangle;
+import base.graphicsservice.RenderHandler;
+import base.graphicsservice.Sprite;
 
 public abstract class GUIButton implements GameObject {
 
@@ -12,7 +12,7 @@ public abstract class GUIButton implements GameObject {
     protected Rectangle region;
     protected boolean fixed;
 
-    public GUIButton(Sprite sprite, Rectangle region, boolean fixed) {
+    protected GUIButton(Sprite sprite, Rectangle region, boolean fixed) {
         this.sprite = sprite;
         this.region = region;
         this.fixed = fixed;

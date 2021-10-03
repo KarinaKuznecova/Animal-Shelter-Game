@@ -1,4 +1,4 @@
-package base.graphicsService;
+package base.graphicsservice;
 
 import base.Game;
 
@@ -86,10 +86,8 @@ public class RenderHandler {
         if (!fixed && isInRangeOfCamera(x, y)) {
             pixelIndex = (x - camera.getX()) + (y - camera.getY()) * view.getWidth();
         }
-        if (fixed) {
-            if (x >= 0 && y >=0 && x <= camera.getWidth() && y <= camera.getHeight()) {
-                pixelIndex = x + y * view.getWidth();
-            }
+        if (fixed && x >= 0 && y >= 0 && x <= camera.getWidth() && y <= camera.getHeight()) {
+            pixelIndex = x + y * view.getWidth();
         }
         if (isInGlobalRange(pixelIndex) && !isAlphaColor(pixel)) {
             pixels[pixelIndex] = pixel;

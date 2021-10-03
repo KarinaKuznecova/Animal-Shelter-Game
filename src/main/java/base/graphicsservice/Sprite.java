@@ -1,4 +1,4 @@
-package base.graphicsService;
+package base.graphicsservice;
 
 import java.awt.image.BufferedImage;
 
