@@ -21,9 +21,15 @@ public class Animal implements GameObject{
     private Direction direction;
     private int movingTicks = 0;
     private Random random;
+    private String homeMap;
 
     public Animal(Sprite playerSprite, int startX, int startY) {
+        this(playerSprite, startX, startY, "MainMap");
+    }
+
+    public Animal(Sprite playerSprite, int startX, int startY, String homeMap) {
         this.sprite = playerSprite;
+        this.homeMap = homeMap;
 
         if (playerSprite instanceof AnimatedSprite) {
             animatedSprite = (AnimatedSprite) playerSprite;
@@ -192,5 +198,13 @@ public class Animal implements GameObject{
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
         System.out.println("Click on animal " + this);
         return false;
+    }
+
+    public String getHomeMap() {
+        return homeMap;
+    }
+
+    public void setHomeMap(String homeMap) {
+        this.homeMap = homeMap;
     }
 }

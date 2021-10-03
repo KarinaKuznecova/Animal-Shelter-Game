@@ -1,3 +1,4 @@
+Name:MainMap
 Size:20:20
 Fill:0
 AlphaFill:6
