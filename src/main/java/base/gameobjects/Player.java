@@ -56,7 +56,6 @@ public class Player implements GameObject {
         boolean isMoving = false;
         Direction newDirection = direction;
 
-//        System.out.println("Player x: " + playerRectangle.getX() + " Player Y: " + playerRectangle.getY());
         if (keyboardListener.left()) {
             if (unwalkableInThisDirection(game, LEFT)) {
                 logger.debug("INTERSECTS left");

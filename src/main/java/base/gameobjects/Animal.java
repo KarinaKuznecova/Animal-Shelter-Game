@@ -132,14 +132,12 @@ public class Animal implements GameObject{
 
         if (animatedSprite != null && !isMoving) {
             animatedSprite.reset();
-            movingTicks--;
         }
 
         if (animatedSprite != null && isMoving) {
-            movingTicks--;
             animatedSprite.update(game);
         }
-
+        movingTicks--;
     }
 
     private void handleUnwalkable(Direction direction) {
