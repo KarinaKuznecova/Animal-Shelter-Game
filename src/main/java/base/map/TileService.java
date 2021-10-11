@@ -1,6 +1,5 @@
 package base.map;
 
-import base.gameobjects.Player;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.SpriteSheet;
 import org.slf4j.Logger;
