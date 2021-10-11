@@ -226,6 +226,10 @@ public class Player implements GameObject {
         }
     }
 
+    public Rectangle getPlayerRectangle() {
+        return playerRectangle;
+    }
+
     @Override
     public int getLayer() {
         return 1;
