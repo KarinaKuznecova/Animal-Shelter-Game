@@ -274,12 +274,12 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void loadGameObjects() {
-        player = new Player(playerAnimations, getWidth()/2, getHeight()/2);
-        rat = new Rat(ratAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
-        rat2 = new Rat(ratAnimations2,getWidth()/2 + 2, getHeight()/2 + 2);
-        mouse = new Mouse(mouseAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
-        chicken = new Chicken(chickenAnimations, getWidth()/2 + 2, getHeight()/2 + 2);
-        butterfly = new Butterfly(butterflyAnimations,getWidth()/2 + 2, getHeight()/2 + 2);
+        player = new Player(playerAnimations, getWidth() / 2, getHeight() / 2);
+        rat = new Rat(ratAnimations, getWidth() / 2 + 2, getHeight() / 2 + 2);
+        rat2 = new Rat(ratAnimations2, getWidth() / 2 + 2, getHeight() / 2 + 2);
+        mouse = new Mouse(mouseAnimations, getWidth() / 2 + 2, getHeight() / 2 + 2);
+        chicken = new Chicken(chickenAnimations, getWidth() / 2 + 2, getHeight() / 2 + 2);
+        butterfly = new Butterfly(butterflyAnimations, getWidth() / 2 + 2, getHeight() / 2 + 2);
         gui = new GUI(buttons, 5, 5, true);
 
         gameObjectsList = new ArrayList<>();
@@ -303,6 +303,7 @@ public class Game extends JFrame implements Runnable {
         }
         Rectangle tileRectangle = new Rectangle((tiles.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
         buttons[tiles.size()] = new SDKButton(this, -1, null, tileRectangle);
+        changeTile(-1);
 
         this.buttons = buttons;
     }
