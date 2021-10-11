@@ -1,6 +1,9 @@
 package base.graphicsservice;
 
 import base.Game;
+import base.gameobjects.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -14,6 +17,8 @@ public class RenderHandler {
     private Rectangle camera;
     private int maxScreenWidth;
     private int maxScreenHeight;
+
+    protected static final Logger logger = LoggerFactory.getLogger(RenderHandler.class);
 
     public RenderHandler(int width, int height) {
 
@@ -119,5 +124,37 @@ public class RenderHandler {
 
     public int getMaxHeight() {
         return maxScreenHeight;
+    }
+
+    public void adjustCamera(Game game, Player player) {
+        logger.info("Adjusting camera");
+        Rectangle playerRect = player.getPlayerRectangle();
+
+        logger.info("Adjusting X");
+        int mapEnd = game.getGameMap().mapWidth * (Game.TILE_SIZE * Game.ZOOM);
+        int diffToEnd = mapEnd - playerRect.getX();
+        if (diffToEnd < 96) {
+            logger.info("Adjustment will be on the right side");
+            camera.setX(mapEnd + 64 - game.getWidth());
+        }
+
+        if (playerRect.getX() < 96) {
+            logger.info("Adjustment will be on the left side");
+            camera.setX(-64);
+        }
+
+        logger.info("Adjusting Y");
+        mapEnd = game.getGameMap().mapHeight * (Game.TILE_SIZE * Game.ZOOM);
+        diffToEnd = mapEnd - playerRect.getY();
+
+        if (diffToEnd < 96) {
+            logger.info("Adjustment will be on the bottom side");
+            camera.setY(mapEnd + 64 - game.getWidth());
+        }
+
+        if (playerRect.getY() < 96) {
+            logger.info("Adjustment will be on the top side");
+            camera.setY(-64);
+        }
     }
 }

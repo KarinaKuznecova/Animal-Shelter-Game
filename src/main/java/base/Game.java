@@ -152,7 +152,6 @@ public class Game extends JFrame implements Runnable {
         renderer = new RenderHandler(getWidth(), getHeight());
     }
 
-    // TODO: refactor next two methods into one
     private void loadMap() {
         logger.info("Game map loading started");
 
@@ -183,6 +182,7 @@ public class Game extends JFrame implements Runnable {
         } else {
             loadGameObjects(getWidth() / 2, getHeight() / 2);
         }
+        renderer.adjustCamera(this, player);
     }
 
     private void loadSpriteSheet() {
