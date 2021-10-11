@@ -284,11 +284,11 @@ public class Game extends JFrame implements Runnable {
 
     private void loadGameObjects(int startX, int startY) {
         player = new Player(playerAnimations, startX, startY);
-        rat = new Rat(ratAnimations, startX + 2, startY + 2);
-        rat2 = new Rat(ratAnimations2, startX + 2, startY + 2);
-        mouse = new Mouse(mouseAnimations, startX + 2, startY + 2);
-        chicken = new Chicken(chickenAnimations, startX + 2, startY + 2);
-        butterfly = new Butterfly(butterflyAnimations, startX + 2, startY + 2);
+        rat = new Rat(ratAnimations, startX + 2, startY + 2, 2);
+        rat2 = new Rat(ratAnimations2, startX + 2, startY + 2, 2);
+        mouse = new Mouse(mouseAnimations, startX + 2, startY + 2, 2);
+        chicken = new Chicken(chickenAnimations, startX + 2, startY + 2, 1);
+        butterfly = new Butterfly(butterflyAnimations, startX + 2, startY + 2, 1);
         gui = new GUI(buttons, 5, 5, true);
 
         gameObjectsList = new ArrayList<>();
