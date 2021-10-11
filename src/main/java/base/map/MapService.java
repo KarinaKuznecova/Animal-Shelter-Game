@@ -1,6 +1,5 @@
 package base.map;
 
-import base.gameobjects.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

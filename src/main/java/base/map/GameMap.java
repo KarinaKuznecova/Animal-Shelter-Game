@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
+import static base.Game.TILE_SIZE;
+import static base.Game.ZOOM;
+
 public class GameMap {
 
     TileService tileService;
@@ -108,8 +111,8 @@ public class GameMap {
     }
 
     public void renderMap(RenderHandler renderer, List<GameObject> gameObjects, int xZoom, int yZoom) {
-        int tileWidth = Game.TILE_SIZE * xZoom;
-        int tileHeight = Game.TILE_SIZE * yZoom;
+        int tileWidth = TILE_SIZE * xZoom;
+        int tileHeight = TILE_SIZE * yZoom;
         renderFixedSizeMap(renderer, gameObjects, xZoom, yZoom, tileWidth, tileHeight);
     }
 
@@ -241,5 +244,43 @@ public class GameMap {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public MapTile getPortalTo(String destination) {
+        for (MapTile tile : getPortals()) {
+            if (tile.getPortalDirection().equals(destination)) {
+                return tile;
+            }
+        }
+        return null;
+    }
+
+    public int getSpawnPoint(MapTile portalToPrevious, boolean getX) {
+        int previousMapPortal;
+        if (getX) {
+            previousMapPortal = portalToPrevious.getX() * (TILE_SIZE * ZOOM);
+        } else {
+            previousMapPortal = portalToPrevious.getY() * (TILE_SIZE * ZOOM);
+        }
+
+        int mapSize;
+        if (getX) {
+            mapSize = mapWidth;
+        } else {
+            mapSize = mapHeight;
+        }
+
+        if (previousMapPortal == mapSize * (TILE_SIZE * ZOOM)) {
+            previousMapPortal = previousMapPortal - (TILE_SIZE * ZOOM);
+        }
+
+        if (previousMapPortal < 0) {
+            previousMapPortal = TILE_SIZE * ZOOM;
+        }
+        return previousMapPortal;
     }
 }
