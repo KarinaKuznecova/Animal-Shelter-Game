@@ -5,7 +5,7 @@ import base.graphicsservice.Sprite;
 
 public class Mouse extends Animal {
 
-    public Mouse(Sprite playerSprite, int startX, int startY) {
-        super(playerSprite, startX, startY);
+    public Mouse(Sprite playerSprite, int startX, int startY, int speed) {
+        super(playerSprite, startX, startY, speed);
     }
 }
