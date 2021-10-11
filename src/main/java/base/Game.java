@@ -14,6 +14,7 @@ import base.gui.GUI;
 import base.gui.GUIButton;
 import base.gui.SDKButton;
 import base.map.GameMap;
+import base.map.MapTile;
 import base.map.Tile;
 import base.map.TileService;
 import base.navigationservice.KeyboardListener;
@@ -33,8 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class Game extends JFrame implements Runnable {
 
@@ -91,7 +90,7 @@ public class Game extends JFrame implements Runnable {
         loadPlayerAnimatedImages();
         loadMap();
         loadSDKGUI();
-        loadGameObjects();
+        loadGameObjects(getWidth() / 2, getHeight() / 2);
     }
 
     public static void main(String[] args) {
@@ -167,13 +166,23 @@ public class Game extends JFrame implements Runnable {
     public void loadSecondaryMap(String mapPath) {
         logger.info("Game map loading started");
 
+        String previousMapName = gameMap.getMapName();
+        logger.debug(String.format("Previous map name: %s", previousMapName));
+
         loadSpriteSheet();
         tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
         gameMap = new GameMap(new File(mapPath), tileService);
 
         logger.info("Game map loaded");
 
-        loadGameObjects();
+        MapTile portalToPrevious = gameMap.getPortalTo(previousMapName);
+        if (portalToPrevious != null) {
+            int previousMapPortalX = gameMap.getSpawnPoint(portalToPrevious, true);
+            int previousMapPortalY = gameMap.getSpawnPoint(portalToPrevious, false);
+            loadGameObjects(previousMapPortalX, previousMapPortalY);
+        } else {
+            loadGameObjects(getWidth() / 2, getHeight() / 2);
+        }
     }
 
     private void loadSpriteSheet() {
@@ -188,7 +197,7 @@ public class Game extends JFrame implements Runnable {
 
     private BufferedImage loadImage(String path) {
         try {
-            logger.info("Will try to load - " + path);
+            logger.info(String.format("Will try to load - %s", path));
             BufferedImage image = ImageIO.read(Game.class.getResource(path));
             BufferedImage formattedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
             formattedImage.getGraphics().drawImage(image, 0, 0, null);
@@ -273,13 +282,13 @@ public class Game extends JFrame implements Runnable {
         logger.info("Player animations loaded");
     }
 
-    private void loadGameObjects() {
-        player = new Player(playerAnimations, getWidth() / 2, getHeight() / 2);
-        rat = new Rat(ratAnimations, getWidth() / 2 + 2, getHeight() / 2 + 2);
-        rat2 = new Rat(ratAnimations2, getWidth() / 2 + 2, getHeight() / 2 + 2);
-        mouse = new Mouse(mouseAnimations, getWidth() / 2 + 2, getHeight() / 2 + 2);
-        chicken = new Chicken(chickenAnimations, getWidth() / 2 + 2, getHeight() / 2 + 2);
-        butterfly = new Butterfly(butterflyAnimations, getWidth() / 2 + 2, getHeight() / 2 + 2);
+    private void loadGameObjects(int startX, int startY) {
+        player = new Player(playerAnimations, startX, startY);
+        rat = new Rat(ratAnimations, startX + 2, startY + 2);
+        rat2 = new Rat(ratAnimations2, startX + 2, startY + 2);
+        mouse = new Mouse(mouseAnimations, startX + 2, startY + 2);
+        chicken = new Chicken(chickenAnimations, startX + 2, startY + 2);
+        butterfly = new Butterfly(butterflyAnimations, startX + 2, startY + 2);
         gui = new GUI(buttons, 5, 5, true);
 
         gameObjectsList = new ArrayList<>();
@@ -309,7 +318,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void changeTile(int tileId) {
-        logger.info("changing tile to new tile : " + tileId);
+        logger.info(String.format("changing tile to new tile : %d", tileId));
         selectedTileId = tileId;
     }
 
