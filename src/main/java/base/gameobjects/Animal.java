@@ -100,6 +100,7 @@ public class Animal implements GameObject {
     private void handleMoving(Game game, Direction direction) {
         if (unwalkableInThisDirection(game, direction)) {
             handleUnwalkable(direction);
+            return;
         }
 
         switch (direction) {
