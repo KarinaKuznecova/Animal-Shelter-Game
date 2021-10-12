@@ -8,4 +8,9 @@ public class Butterfly extends Animal {
     public Butterfly(Sprite playerSprite, int startX, int startY, int speed) {
         super(playerSprite, startX, startY, speed);
     }
+
+    @Override
+    public int getLayer() {
+        return 2;
+    }
 }

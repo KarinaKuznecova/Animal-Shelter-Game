@@ -131,22 +131,22 @@ public class Animal implements GameObject {
         movingTicks = 0;
         switch (direction) {
             case LEFT:
-                animalRectangle.setX(animalRectangle.getX() + 1);
+                animalRectangle.setX(animalRectangle.getX() + speed);
                 break;
             case RIGHT:
-                animalRectangle.setX(animalRectangle.getX() - 1);
+                animalRectangle.setX(animalRectangle.getX() - speed);
                 break;
             case UP:
-                animalRectangle.setY(animalRectangle.getY() + 1);
+                animalRectangle.setY(animalRectangle.getY() + speed);
                 break;
             case DOWN:
-                animalRectangle.setY(animalRectangle.getY() - 1);
+                animalRectangle.setY(animalRectangle.getY() - speed);
                 break;
         }
     }
 
     Direction getRandomDirection() {
-        int result = random.nextInt(4);
+        int result = random.nextInt(5);
         switch (result) {
             case 0:
                 return DOWN;

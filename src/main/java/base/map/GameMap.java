@@ -279,7 +279,7 @@ public class GameMap {
         }
 
         if (previousMapPortal < 0) {
-            previousMapPortal = TILE_SIZE * ZOOM;
+            previousMapPortal = 0;
         }
         return previousMapPortal;
     }
