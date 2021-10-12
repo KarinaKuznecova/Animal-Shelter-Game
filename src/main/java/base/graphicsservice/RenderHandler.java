@@ -131,7 +131,7 @@ public class RenderHandler {
         Rectangle playerRect = player.getPlayerRectangle();
 
         logger.info("Adjusting X");
-        int mapEnd = game.getGameMap().mapWidth * (Game.TILE_SIZE * Game.ZOOM);
+        int mapEnd = game.getGameMap().getMapWidth() * (Game.TILE_SIZE * Game.ZOOM);
         int diffToEnd = mapEnd - playerRect.getX();
         if (diffToEnd < 96) {
             logger.info("Adjustment will be on the right side");
@@ -144,7 +144,7 @@ public class RenderHandler {
         }
 
         logger.info("Adjusting Y");
-        mapEnd = game.getGameMap().mapHeight * (Game.TILE_SIZE * Game.ZOOM);
+        mapEnd = game.getGameMap().getMapHeight() * (Game.TILE_SIZE * Game.ZOOM);
         diffToEnd = mapEnd - playerRect.getY();
 
         if (diffToEnd < 96) {

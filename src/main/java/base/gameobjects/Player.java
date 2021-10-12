@@ -111,7 +111,7 @@ public class Player implements GameObject {
                 }
                 break;
             case RIGHT:
-                if (playerRectangle.getX() < (game.getGameMap().mapWidth * Game.TILE_SIZE - playerRectangle.getWidth()) * Game.ZOOM || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getX() < (game.getGameMap().getMapWidth() * Game.TILE_SIZE - playerRectangle.getWidth()) * Game.ZOOM || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setX(playerRectangle.getX() + speed);
                 }
                 break;
@@ -121,7 +121,7 @@ public class Player implements GameObject {
                 }
                 break;
             case DOWN:
-                if (playerRectangle.getY() < (game.getGameMap().mapHeight * Game.TILE_SIZE - playerRectangle.getHeight()) * Game.ZOOM || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getY() < (game.getGameMap().getMapHeight() * Game.TILE_SIZE - playerRectangle.getHeight()) * Game.ZOOM || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setY(playerRectangle.getY() + speed);
                 }
                 break;
@@ -208,7 +208,7 @@ public class Player implements GameObject {
     private boolean shouldUpdateYCamera(Game game) {
         int screenHeight = game.getHeight();
         int halfHeight = screenHeight / 2;
-        int mapEnd = game.getGameMap().mapHeight * (Game.TILE_SIZE * Game.ZOOM);
+        int mapEnd = game.getGameMap().getMapHeight() * (Game.TILE_SIZE * Game.ZOOM);
         int diffToEnd = mapEnd - playerRectangle.getY();
         return diffToEnd + 96 > halfHeight && playerRectangle.getY() + (Game.TILE_SIZE * Game.ZOOM) > halfHeight;
     }
@@ -216,7 +216,7 @@ public class Player implements GameObject {
     private boolean shouldUpdateXCamera(Game game) {
         int screenWidth = game.getWidth();
         int halfWidth = screenWidth / 2;
-        int mapEnd = game.getGameMap().mapWidth * (Game.TILE_SIZE * Game.ZOOM);
+        int mapEnd = game.getGameMap().getMapWidth() * (Game.TILE_SIZE * Game.ZOOM);
         int diffToEnd = mapEnd - playerRectangle.getX();
         return diffToEnd + 64 > halfWidth && playerRectangle.getX() + (Game.TILE_SIZE * Game.ZOOM) > halfWidth;
     }
