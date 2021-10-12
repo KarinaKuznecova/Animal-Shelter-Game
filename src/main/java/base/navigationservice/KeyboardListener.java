@@ -23,11 +23,11 @@ public class KeyboardListener implements KeyListener, FocusListener {
         if (keyCode < keys.length) {
             keys[keyCode] = true;
         }
-        if (keys[KeyEvent.VK_CONTROL]) {
-            game.handleCTRL(keys);
+        if (keys[KeyEvent.VK_CONTROL] && keys[KeyEvent.VK_S]) {
+            game.handleCTRLandS();
         }
         if (keys[KeyEvent.VK_Q]) {
-            game.handleQ(keys);
+            game.handleQ();
         }
     }
 
@@ -48,12 +48,12 @@ public class KeyboardListener implements KeyListener, FocusListener {
 
     @Override
     public void keyTyped(KeyEvent event) {
-        //not gonna use it now
+        //not going to use it now
     }
 
     @Override
     public void focusGained(FocusEvent event) {
-        //not gonna use it now
+        //not going to use it now
     }
 
     public boolean up() {
