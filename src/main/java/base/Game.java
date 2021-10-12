@@ -260,7 +260,7 @@ public class Game extends JFrame implements Runnable {
         Graphics graphics = bufferStrategy.getDrawGraphics();
         super.paint(graphics);
 
-        gameMap.renderMap(renderer, gameObjectsList, ZOOM, ZOOM);
+        gameMap.renderMap(renderer, gameObjectsList);
 
         for (GameObject gameObject : guiList) {
             gameObject.render(renderer, ZOOM, ZOOM);

@@ -110,7 +110,7 @@ public class Animal implements GameObject {
                 }
                 break;
             case RIGHT:
-                if (animalRectangle.getX() < (game.getGameMap().mapWidth * Game.TILE_SIZE - animalRectangle.getWidth()) * Game.ZOOM) {
+                if (animalRectangle.getX() < (game.getGameMap().getMapWidth() * Game.TILE_SIZE - animalRectangle.getWidth()) * Game.ZOOM) {
                     animalRectangle.setX(animalRectangle.getX() + speed);
                 }
                 break;
@@ -120,7 +120,7 @@ public class Animal implements GameObject {
                 }
                 break;
             case DOWN:
-                if (animalRectangle.getY() < (game.getGameMap().mapHeight * Game.TILE_SIZE - animalRectangle.getHeight()) * Game.ZOOM) {
+                if (animalRectangle.getY() < (game.getGameMap().getMapHeight() * Game.TILE_SIZE - animalRectangle.getHeight()) * Game.ZOOM) {
                     animalRectangle.setY(animalRectangle.getY() + speed);
                 }
                 break;

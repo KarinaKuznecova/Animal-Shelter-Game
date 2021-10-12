@@ -1,6 +1,5 @@
 package base.map;
 
-import base.Game;
 import base.gameobjects.Animal;
 import base.gameobjects.GameObject;
 import base.graphicsservice.Rectangle;
@@ -12,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.*;
 
 import static base.Game.TILE_SIZE;
@@ -19,16 +19,16 @@ import static base.Game.ZOOM;
 
 public class GameMap {
 
-    TileService tileService;
+    private final TileService tileService;
 
-    private File mapFile;
-    private Map<Integer, List<MapTile>> layeredTiles = new HashMap<>();
-    private List<MapTile> portals = new ArrayList<>();
+    private final File mapFile;
+    private final Map<Integer, List<MapTile>> layeredTiles = new HashMap<>();
+    private final List<MapTile> portals = new ArrayList<>();
 
     int backGroundTileId = -1;      //background of walkable part of the map
     int alphaBackground = -1;       //outside the walkable part
-    public int mapWidth = -1;
-    public int mapHeight = -1;
+    private int mapWidth = -1;
+    private int mapHeight = -1;
     int maxLayer = -1;
 
     private String mapName;
@@ -41,43 +41,15 @@ public class GameMap {
         loadMapFromFile();
     }
 
-    // TODO: refactoring needed
     private void loadMapFromFile() {
-        try {
-            Scanner scanner = new Scanner(mapFile);
+        try (Scanner scanner = new Scanner(mapFile)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                if (line.startsWith("Fill:")) {
-                    String[] splitLine = line.split(":");
-                    backGroundTileId = Integer.parseInt(splitLine[1]);
+
+                if (handleConfigLines(line)) {
                     continue;
                 }
-                if (line.startsWith("AlphaFill:")) {
-                    String[] splitLine = line.split(":");
-                    alphaBackground = Integer.parseInt(splitLine[1]);
-                    continue;
-                }
-                if (line.startsWith("Size:")) {
-                    String[] splitLine = line.split(":");
-                    mapWidth = Integer.parseInt(splitLine[1]);
-                    if (mapWidth < 20) {
-                        mapWidth = 20;
-                    }
-                    mapHeight = Integer.parseInt(splitLine[2]);
-                    if (mapHeight < 20) {
-                        mapHeight = 20;
-                    }
-                    logger.info(String.format("Size of the map is %d by %d tiles", mapWidth, mapHeight));
-                    continue;
-                }
-                if (line.startsWith("//")) {        //just a comment
-                    continue;
-                }
-                if (line.startsWith("Name:")) {
-                    String[] splitLine = line.split(":");
-                    mapName = String.valueOf(splitLine[1]);
-                    continue;
-                }
+
                 String[] splitLine = line.split(",");
                 if (splitLine.length >= 4) {
                     int layer = Integer.parseInt(splitLine[0]);
@@ -96,12 +68,7 @@ public class GameMap {
                     int xPosition = Integer.parseInt(splitLine[2]);
                     int yPosition = Integer.parseInt(splitLine[3]);
                     MapTile tile = new MapTile(layer, tileId, xPosition, yPosition);
-                    if (splitLine.length >= 5) {
-                        logger.info("Found portal");
-                        tile.setPortal(true);
-                        tile.setPortalDirection(splitLine[4]);
-                        portals.add(tile);
-                    }
+                    checkIfPortal(splitLine, tile);
                     tiles.add(tile);
                 }
             }
@@ -110,40 +77,76 @@ public class GameMap {
         }
     }
 
-    public void renderMap(RenderHandler renderer, List<GameObject> gameObjects, int xZoom, int yZoom) {
-        int tileWidth = TILE_SIZE * xZoom;
-        int tileHeight = TILE_SIZE * yZoom;
-        renderFixedSizeMap(renderer, gameObjects, xZoom, yZoom, tileWidth, tileHeight);
+    private boolean handleConfigLines(String line) {
+        if (line.startsWith("Fill:")) {
+            String[] splitLine = line.split(":");
+            backGroundTileId = Integer.parseInt(splitLine[1]);
+            return true;
+        }
+        if (line.startsWith("AlphaFill:")) {
+            String[] splitLine = line.split(":");
+            alphaBackground = Integer.parseInt(splitLine[1]);
+            return true;
+        }
+        if (line.startsWith("Size:")) {
+            defineMapSize(line);
+            return true;
+        }
+        if (line.startsWith("//")) {        //just a comment
+            return true;
+        }
+        if (line.startsWith("Name:")) {
+            String[] splitLine = line.split(":");
+            mapName = String.valueOf(splitLine[1]);
+            return true;
+        }
+        return false;
     }
 
-    private void renderInSightOfCamera(RenderHandler renderer, int xZoom, int yZoom, int tileWidth, int tileHeight, int tileId) {
-        Rectangle camera = renderer.getCamera();
+    private void defineMapSize(String line) {
+        String[] splitLine = line.split(":");
+        mapWidth = Integer.parseInt(splitLine[1]);
+        if (mapWidth < 20) {
+            mapWidth = 20;
+        }
+        mapHeight = Integer.parseInt(splitLine[2]);
+        if (mapHeight < 20) {
+            mapHeight = 20;
+        }
+        logger.info(String.format("Size of the map is %d by %d tiles", mapWidth, mapHeight));
+    }
 
-        for (int i = camera.getY() - tileHeight - (camera.getY() % tileHeight); i < camera.getY() + camera.getHeight(); i += tileHeight) {
-            for (int j = camera.getX() - tileWidth - (camera.getX() % tileWidth); j < camera.getX() + camera.getWidth(); j += tileWidth) {
-                tileService.renderTile(tileId, renderer, j, i, xZoom, yZoom);
-            }
+    private void checkIfPortal(String[] splitLine, MapTile tile) {
+        if (splitLine.length >= 5) {
+            logger.info("Found portal");
+            tile.setPortal(true);
+            tile.setPortalDirection(splitLine[4]);
+            portals.add(tile);
         }
     }
 
-    // TODO: refactor needed
-    private void renderFixedSizeMap(RenderHandler renderer, List<GameObject> gameObjects, int xZoom, int yZoom, int tileWidth, int tileHeight) {
-        if (alphaBackground >= 0) {
-            renderInSightOfCamera(renderer, xZoom, yZoom, tileWidth, tileHeight, alphaBackground);
-        }
-        if (backGroundTileId >= 0) {
-            for (int i = 0; i < mapHeight * tileHeight; i += tileHeight) {
-                for (int j = 0; j < mapWidth * tileWidth; j += tileWidth) {
-                    tileService.renderTile(backGroundTileId, renderer, j, i, xZoom, yZoom);
-                }
-            }
-        }
+    public void renderMap(RenderHandler renderer, List<GameObject> gameObjects) {
+        int tileWidth = TILE_SIZE * ZOOM;
+        int tileHeight = TILE_SIZE * ZOOM;
+
+        adjustMaxLayer(gameObjects);
+
+        renderFixedSizeMap(renderer, gameObjects, tileWidth, tileHeight);
+    }
+
+    private void adjustMaxLayer(List<GameObject> gameObjects) {
         for (GameObject gameObject : gameObjects) {
             if (maxLayer < gameObject.getLayer()) {
                 maxLayer = gameObject.getLayer();
                 logger.info(String.format("max layer: %d", maxLayer));
             }
         }
+    }
+
+    private void renderFixedSizeMap(RenderHandler renderer, List<GameObject> gameObjects, int tileWidth, int tileHeight) {
+
+        renderBackground(renderer, tileWidth, tileHeight);
+
         for (int i = 0; i <= maxLayer; i++) {
             List<MapTile> tiles = layeredTiles.get(i);
             if (tiles != null) {
@@ -151,25 +154,56 @@ public class GameMap {
                 for (int j = 0; j < tiles.size(); j++) {
                     MapTile mappedTile = tiles.get(j);
                     if (mappedTile.getLayer() == i) {
-                        int xPosition = mappedTile.getX() * tileWidth;
-                        int yPosition = mappedTile.getY() * tileHeight;
-                        if (xPosition <= mapWidth * tileWidth && yPosition <= mapHeight * tileHeight) {
-                            tileService.renderTile(mappedTile.getId(), renderer, xPosition, yPosition, xZoom, yZoom);
-                        }
+                        renderTile(renderer, tileWidth, tileHeight, mappedTile);
                     }
                 }
             }
-            for (GameObject gameObject : gameObjects) {
-                if (gameObject instanceof Animal) {
-                    Animal animal = (Animal) gameObject;
-                    if (!animal.getHomeMap().equals(mapName)) {
-                        continue;
-                    }
-                }
-                if (gameObject.getLayer() == i) {
-                    gameObject.render(renderer, xZoom, yZoom);
+            renderGameObjects(renderer, gameObjects, i);
+        }
+    }
+
+    private void renderBackground(RenderHandler renderer, int tileWidth, int tileHeight) {
+        if (alphaBackground >= 0) {
+            renderInSightOfCamera(renderer, tileWidth, tileHeight, alphaBackground);
+        }
+        if (backGroundTileId >= 0) {
+            for (int i = 0; i < mapHeight * tileHeight; i += tileHeight) {
+                for (int j = 0; j < mapWidth * tileWidth; j += tileWidth) {
+                    tileService.renderTile(backGroundTileId, renderer, j, i, ZOOM, ZOOM);
                 }
             }
+        }
+    }
+
+    private void renderInSightOfCamera(RenderHandler renderer, int tileWidth, int tileHeight, int tileId) {
+        Rectangle camera = renderer.getCamera();
+
+        for (int i = camera.getY() - tileHeight - (camera.getY() % tileHeight); i < camera.getY() + camera.getHeight(); i += tileHeight) {
+            for (int j = camera.getX() - tileWidth - (camera.getX() % tileWidth); j < camera.getX() + camera.getWidth(); j += tileWidth) {
+                tileService.renderTile(tileId, renderer, j, i, ZOOM, ZOOM);
+            }
+        }
+    }
+
+    private void renderGameObjects(RenderHandler renderer, List<GameObject> gameObjects, int layer) {
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject instanceof Animal) {
+                Animal animal = (Animal) gameObject;
+                if (!animal.getHomeMap().equals(mapName)) {
+                    continue;
+                }
+            }
+            if (gameObject.getLayer() == layer) {
+                gameObject.render(renderer, ZOOM, ZOOM);
+            }
+        }
+    }
+
+    private void renderTile(RenderHandler renderer, int tileWidth, int tileHeight, MapTile mappedTile) {
+        int xPosition = mappedTile.getX() * tileWidth;
+        int yPosition = mappedTile.getY() * tileHeight;
+        if (xPosition <= mapWidth * tileWidth && yPosition <= mapHeight * tileHeight) {
+            tileService.renderTile(mappedTile.getId(), renderer, xPosition, yPosition, ZOOM, ZOOM);
         }
     }
 
@@ -216,9 +250,12 @@ public class GameMap {
         logger.info("Saving map");
         try {
             if (mapFile.exists()) {
-                mapFile.delete();
+                Files.deleteIfExists(mapFile.toPath());
             }
-            mapFile.createNewFile();
+            if (!mapFile.createNewFile()) {
+                logger.error(String.format("Unable to create file: %s", mapFile));
+                throw new IllegalArgumentException();
+            }
 
             PrintWriter printWriter = new PrintWriter(mapFile);
 
@@ -244,10 +281,6 @@ public class GameMap {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getMapName() {
-        return mapName;
     }
 
     public MapTile getPortalTo(String destination) {
@@ -282,5 +315,17 @@ public class GameMap {
             previousMapPortal = 0;
         }
         return previousMapPortal;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public int getMapWidth() {
+        return mapWidth;
+    }
+
+    public int getMapHeight() {
+        return mapHeight;
     }
 }
