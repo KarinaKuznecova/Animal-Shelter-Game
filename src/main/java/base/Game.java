@@ -1,15 +1,13 @@
 package base;
 
+import base.gameobjects.AnimalService;
+import base.gameobjects.AnimatedSprite;
 import base.gameobjects.GameObject;
 import base.gameobjects.Player;
-import base.gameobjects.animals.Butterfly;
-import base.gameobjects.animals.Chicken;
-import base.gameobjects.animals.Mouse;
-import base.gameobjects.animals.Rat;
-import base.gameobjects.AnimatedSprite;
+import base.graphicsservice.ImageLoader;
+import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.SpriteSheet;
-import base.graphicsservice.Rectangle;
 import base.gui.GUI;
 import base.gui.GUIButton;
 import base.gui.SDKButton;
@@ -22,16 +20,13 @@ import base.navigationservice.MouseEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +37,6 @@ public class Game extends JFrame implements Runnable {
     public static final int ZOOM = 2;
 
     public static final String PLAYER_SHEET_PATH = "img/betty.png";
-    public static final String RAT_SHEET_PATH = "img/rat.png";
-    public static final String MOUSE_SHEET_PATH = "img/mouse.png";
-    public static final String CHICKEN_SHEET_PATH = "img/chicken.png";
-    public static final String BUTTERFLY_SHEET_PATH = "img/butterfly.png";
     public static final String SPRITES_PATH = "img/sprites.png";
     public static final String TILE_LIST_PATH = "src/main/java/base/map/config/Tile.txt";
     public static final String GAME_MAP_PATH = "src/main/java/base/map/config/GameMap.txt";
@@ -54,40 +45,32 @@ public class Game extends JFrame implements Runnable {
 
     protected static final Logger logger = LoggerFactory.getLogger(Game.class);
 
-    private RenderHandler renderer;
-    private SpriteSheet spriteSheet;
+    private transient RenderHandler renderer;
+    private transient SpriteSheet spriteSheet;
     private transient GameMap gameMap;
-    private List<GameObject> gameObjectsList;
-    private Player player;
-    private Rat rat;
-    private Rat rat2;
-    private Mouse mouse;
-    private Chicken chicken;
-    private Butterfly butterfly;
-    private SpriteSheet playerSheet;
-    private SpriteSheet ratSheet;
-    private SpriteSheet mouseSheet;
-    private SpriteSheet chickenSheet;
-    private SpriteSheet butterflySheet;
-    private AnimatedSprite playerAnimations;
-    private AnimatedSprite ratAnimations;
-    private AnimatedSprite ratAnimations2;
-    private AnimatedSprite mouseAnimations;
-    private AnimatedSprite chickenAnimations;
-    private AnimatedSprite butterflyAnimations;
-    private transient TileService tileService;
+    private transient List<GameObject> gameObjectsList;
+    private transient List<GameObject> guiList;
 
-    private transient GUI gui;
-    private transient GUIButton[] buttons;
+    private transient Player player;
+    private transient AnimatedSprite playerAnimations;
+
+    private transient TileService tileService;
+    private transient AnimalService animalService;
+    private transient ImageLoader imageLoader;
+
+    private transient GUI tileButtons;
+
     private int selectedTileId = 2;
 
-    private KeyboardListener keyboardListener = new KeyboardListener(this);
-    private MouseEventListener mouseEventListener = new MouseEventListener(this);
+    private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
+    private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
 
     public Game() {
+        initializeServices();
         loadUI();
         loadControllers();
         loadPlayerAnimatedImages();
+        loadAnimalAnimatedImages();
         loadMap();
         loadSDKGUI();
         loadGameObjects(getWidth() / 2, getHeight() / 2);
@@ -99,47 +82,12 @@ public class Game extends JFrame implements Runnable {
         gameThread.start();
     }
 
-    public void run() {
-        long lastTime = System.nanoTime(); //long 2^63
-        double nanoSecondConversion = 1000000000.0 / 60; //60 frames per second
-        double changeInSeconds = 0;
+    private void initializeServices() {
+        animalService = new AnimalService();
+        imageLoader = new ImageLoader();
 
-        while (true) {
-            long now = System.nanoTime();
-
-            changeInSeconds += (now - lastTime) / nanoSecondConversion;
-            while (changeInSeconds >= 1) {
-                update();
-                changeInSeconds--;
-            }
-
-            render();
-            lastTime = now;
-        }
-    }
-
-    private void render() {
-        BufferStrategy bufferStrategy = canvas.getBufferStrategy();
-        Graphics graphics = bufferStrategy.getDrawGraphics();
-        super.paint(graphics);
-
-        gameMap.renderMap(renderer, gameObjectsList, ZOOM, ZOOM);
-
-//        for (GameObject gameObject : gameObjects) {
-//            gameObject.render(renderer, ZOOM, ZOOM);
-//        }
-
-        renderer.render(graphics);
-
-        graphics.dispose();
-        bufferStrategy.show();
-        renderer.clear();
-    }
-
-    private void update() {
-        for (GameObject object : gameObjectsList) {
-            object.update(this);
-        }
+        gameObjectsList = new ArrayList<>();
+        guiList = new ArrayList<>();
     }
 
     private void loadUI() {
@@ -150,6 +98,70 @@ public class Game extends JFrame implements Runnable {
         setVisible(true);
         canvas.createBufferStrategy(3);
         renderer = new RenderHandler(getWidth(), getHeight());
+    }
+
+    private void loadControllers() {
+        addListeners();
+
+        canvas.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int newWidth = canvas.getWidth();
+                int newHeight = canvas.getHeight();
+
+                if (newWidth > renderer.getMaxWidth())
+                    newWidth = renderer.getMaxWidth();
+
+                if (newHeight > renderer.getMaxHeight())
+                    newHeight = renderer.getMaxHeight();
+
+                renderer.getCamera().setWidth(newWidth);
+                renderer.getCamera().setHeight(newHeight);
+                canvas.setSize(newWidth, newHeight);
+                pack();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                //not going to use it now
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                //not going to use it now
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                //not going to use it now
+            }
+        });
+    }
+
+    private void addListeners() {
+        canvas.addKeyListener(keyboardListener);
+        canvas.addFocusListener(keyboardListener);
+        canvas.addMouseListener(mouseEventListener);
+        canvas.addMouseMotionListener(mouseEventListener);
+    }
+
+    private void loadPlayerAnimatedImages() {
+        logger.info("Loading player animations");
+
+        BufferedImage playerSheetImage = imageLoader.loadImage(PLAYER_SHEET_PATH);
+        SpriteSheet playerSheet = new SpriteSheet(playerSheetImage);
+        playerSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
+        playerAnimations = new AnimatedSprite(playerSheet, 5, true);
+
+        logger.info("Player animations loaded");
+    }
+
+    private void loadAnimalAnimatedImages() {
+        logger.info("Loading animals animations");
+
+        animalService.loadAnimatedImages(getWidth() / 2, getHeight() / 2);
+
+        logger.info("Animals animations loaded");
     }
 
     private void loadMap() {
@@ -188,117 +200,15 @@ public class Game extends JFrame implements Runnable {
     private void loadSpriteSheet() {
         logger.info("Sprite sheet loading started");
 
-        BufferedImage bufferedImage = loadImage(SPRITES_PATH);
+        BufferedImage bufferedImage = imageLoader.loadImage(SPRITES_PATH);
+        if (bufferedImage == null) {
+            logger.error("Buffered image is null, sprite path: " + SPRITES_PATH);
+            throw new IllegalArgumentException();
+        }
         spriteSheet = new SpriteSheet(bufferedImage);
         spriteSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
 
         logger.info("Sprite sheet loading done");
-    }
-
-    private BufferedImage loadImage(String path) {
-        try {
-            logger.info(String.format("Will try to load - %s", path));
-            BufferedImage image = ImageIO.read(Game.class.getResource(path));
-            BufferedImage formattedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
-            formattedImage.getGraphics().drawImage(image, 0, 0, null);
-            return formattedImage;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private void loadControllers() {
-        addListeners();
-
-        canvas.addComponentListener(new ComponentListener() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int newWidth = canvas.getWidth();
-                int newHeight = canvas.getHeight();
-
-                if (newWidth > renderer.getMaxWidth())
-                    newWidth = renderer.getMaxWidth();
-
-                if (newHeight > renderer.getMaxHeight())
-                    newHeight = renderer.getMaxHeight();
-
-                renderer.getCamera().setWidth(newWidth);
-                renderer.getCamera().setHeight(newHeight);
-                canvas.setSize(newWidth, newHeight);
-                pack();
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-            }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-            }
-        });
-    }
-
-    private void addListeners() {
-        canvas.addKeyListener(keyboardListener);
-        canvas.addFocusListener(keyboardListener);
-        canvas.addMouseListener(mouseEventListener);
-        canvas.addMouseMotionListener(mouseEventListener);
-    }
-
-    private void loadPlayerAnimatedImages() {
-        logger.info("Loading player animations");
-
-        BufferedImage playerSheetImage = loadImage(PLAYER_SHEET_PATH);
-        playerSheet = new SpriteSheet(playerSheetImage);
-        playerSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
-        playerAnimations = new AnimatedSprite(playerSheet, 5, true);
-
-        BufferedImage ratSheetImage = loadImage(RAT_SHEET_PATH);
-        ratSheet = new SpriteSheet(ratSheetImage);
-        ratSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
-        ratAnimations = new AnimatedSprite(ratSheet, 9, false);
-        ratAnimations2 = new AnimatedSprite(ratSheet, 9, false);
-
-        BufferedImage mouseSheetImage = loadImage(MOUSE_SHEET_PATH);
-        mouseSheet = new SpriteSheet(mouseSheetImage);
-        mouseSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
-        mouseAnimations = new AnimatedSprite(mouseSheet, 9, false);
-
-        BufferedImage chickenSheetImage = loadImage(CHICKEN_SHEET_PATH);
-        chickenSheet = new SpriteSheet(chickenSheetImage);
-        chickenSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
-        chickenAnimations = new AnimatedSprite(chickenSheet, 9, false);
-
-        BufferedImage butterflySheetImage = loadImage(BUTTERFLY_SHEET_PATH);
-        butterflySheet = new SpriteSheet(butterflySheetImage);
-        butterflySheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
-        butterflyAnimations = new AnimatedSprite(butterflySheet, 9, false);
-
-        logger.info("Player animations loaded");
-    }
-
-    private void loadGameObjects(int startX, int startY) {
-        player = new Player(playerAnimations, startX, startY);
-        rat = new Rat(ratAnimations, startX + 2, startY + 2, 2);
-        rat2 = new Rat(ratAnimations2, startX + 2, startY + 2, 2);
-        mouse = new Mouse(mouseAnimations, startX + 2, startY + 2, 2);
-        chicken = new Chicken(chickenAnimations, startX + 2, startY + 2, 1);
-        butterfly = new Butterfly(butterflyAnimations, startX + 2, startY + 2, 1);
-        gui = new GUI(buttons, 5, 5, true);
-
-        gameObjectsList = new ArrayList<>();
-        gameObjectsList.add(player);
-        gameObjectsList.add(rat);
-        gameObjectsList.add(mouse);
-        gameObjectsList.add(rat2);
-        gameObjectsList.add(chicken);
-        gameObjectsList.add(butterfly);
-        gameObjectsList.add(gui);
     }
 
     private void loadSDKGUI() {
@@ -310,11 +220,66 @@ public class Game extends JFrame implements Runnable {
             Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
             buttons[i] = new SDKButton(this, i, tiles.get(i).getSprite(), tileRectangle);
         }
-        Rectangle tileRectangle = new Rectangle((tiles.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
+        Rectangle tileRectangle = new Rectangle((tiles.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
         buttons[tiles.size()] = new SDKButton(this, -1, null, tileRectangle);
         changeTile(-1);
 
-        this.buttons = buttons;
+        tileButtons = new GUI(buttons, 5, 5, true);
+        guiList = new ArrayList<>();
+        guiList.add(tileButtons);
+    }
+
+    private void loadGameObjects(int startX, int startY) {
+        player = new Player(playerAnimations, startX, startY);
+        gameObjectsList.add(player);
+
+        gameObjectsList.addAll(animalService.getListOfAnimals());
+    }
+
+    public void run() {
+        long lastTime = System.nanoTime(); //long 2^63
+        double nanoSecondConversion = 1000000000.0 / 60; //60 frames per second
+        double changeInSeconds = 0;
+
+        while (true) {
+            long now = System.nanoTime();
+
+            changeInSeconds += (now - lastTime) / nanoSecondConversion;
+            while (changeInSeconds >= 1) {
+                update();
+                changeInSeconds--;
+            }
+
+            render();
+            lastTime = now;
+        }
+    }
+
+    private void render() {
+        BufferStrategy bufferStrategy = canvas.getBufferStrategy();
+        Graphics graphics = bufferStrategy.getDrawGraphics();
+        super.paint(graphics);
+
+        gameMap.renderMap(renderer, gameObjectsList, ZOOM, ZOOM);
+
+        for (GameObject gameObject : guiList) {
+            gameObject.render(renderer, ZOOM, ZOOM);
+        }
+
+        renderer.render(graphics);
+
+        graphics.dispose();
+        bufferStrategy.show();
+        renderer.clear();
+    }
+
+    private void update() {
+        for (GameObject object : gameObjectsList) {
+            object.update(this);
+        }
+        for (GameObject gui : guiList) {
+            gui.update(this);
+        }
     }
 
     public void changeTile(int tileId) {
@@ -326,7 +291,7 @@ public class Game extends JFrame implements Runnable {
         Rectangle mouseRectangle = new Rectangle(x, y, 1, 1);
         boolean stoppedChecking = false;
 
-        for (GameObject gameObject : gameObjectsList) {
+        for (GameObject gameObject : guiList) {
             if (!stoppedChecking) {
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM);
             }
@@ -345,17 +310,15 @@ public class Game extends JFrame implements Runnable {
         gameMap.removeTile(x, y, tileService.getLayerById(selectedTileId));
     }
 
-    public void handleCTRL(boolean[] keys) {
-        if (keys[KeyEvent.VK_S]) {
-            gameMap.saveMap();
-        }
+    public void handleCTRLandS() {
+        gameMap.saveMap();
     }
 
-    public void handleQ(boolean[] keys) {
-        if (keys[KeyEvent.VK_Q] && gameObjectsList.contains(gui)) {
-            gameObjectsList.remove(gui);
+    public void handleQ() {
+        if (guiList.contains(tileButtons)) {
+            guiList.remove(tileButtons);
         } else {
-            gameObjectsList.add(gui);
+            guiList.add(tileButtons);
         }
     }
 
