@@ -1,3 +1,9 @@
 MainMap:src/main/java/base/map/config/GameMap.txt
 SecondMap:src/main/java/base/map/config/GameMap2.txt
 WaterMap:src/main/java/base/map/config/WaterMap.txt
+TopLeftMap:src/main/java/base/map/config/TopLeftMap.txt
+TopCenterMap:src/main/java/base/map/config/TopCenterMap.txt
+TopRightMap:src/main/java/base/map/config/TopRightMap.txt
+BottomLeftMap:src/main/java/base/map/config/BottomLeftMap.txt
+BottomCenterMap:src/main/java/base/map/config/BottomCenterMap.txt
+BottomRightMap:src/main/java/base/map/config/BottomRightMap.txt

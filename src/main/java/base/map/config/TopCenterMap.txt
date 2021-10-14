@@ -1,0 +1,8 @@
+Name:TopCenterMap
+Size:20:20
+Fill:0
+AlphaFill:6
+//layer,tileId,xPos,yPos,portalDirection
+0,0,10,20,MainMap
+0,0,-1,10,TopLeftMap
+0,0,20,10,TopRightMap
