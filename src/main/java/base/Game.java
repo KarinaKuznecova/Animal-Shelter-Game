@@ -85,9 +85,6 @@ public class Game extends JFrame implements Runnable {
     private void initializeServices() {
         animalService = new AnimalService();
         imageLoader = new ImageLoader();
-
-        gameObjectsList = new ArrayList<>();
-        guiList = new ArrayList<>();
     }
 
     private void loadUI() {
@@ -230,6 +227,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void loadGameObjects(int startX, int startY) {
+        gameObjectsList = new ArrayList<>();
         player = new Player(playerAnimations, startX, startY);
         gameObjectsList.add(player);
 
