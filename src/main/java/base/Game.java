@@ -181,7 +181,7 @@ public class Game extends JFrame implements Runnable {
         tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
         gameMap = new GameMap(new File(mapPath), tileService);
 
-        logger.info("Game map loaded");
+        logger.info(String.format("Game map %s loaded", gameMap.getMapName()));
 
         MapTile portalToPrevious = gameMap.getPortalTo(previousMapName);
         if (portalToPrevious != null) {

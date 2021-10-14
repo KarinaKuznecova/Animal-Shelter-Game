@@ -259,6 +259,7 @@ public class GameMap {
 
             PrintWriter printWriter = new PrintWriter(mapFile);
 
+            printWriter.println("Name:" + mapName);
             printWriter.println("Size:" + mapWidth + ":" + mapHeight);
             if (backGroundTileId >= 0) {
                 printWriter.println("Fill:" + backGroundTileId);

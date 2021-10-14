@@ -149,7 +149,7 @@ public class RenderHandler {
 
         if (diffToEnd < 96) {
             logger.info("Adjustment will be on the bottom side");
-            camera.setY(mapEnd + 64 - game.getWidth());
+            camera.setY(mapEnd + 96 - game.getHeight());
         }
 
         if (playerRect.getY() < 96) {
