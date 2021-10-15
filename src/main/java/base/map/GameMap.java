@@ -243,7 +243,8 @@ public class GameMap {
         }
         int layer = tileService.getLayerById(tileId);
 
-        if (layer != 1 && (tileX < 0 || tileX >= mapWidth || tileY < 0 || tileY >= mapHeight)) {
+        if ((layer != 0 && isThereAPortal(tileX, tileY))
+                || (!isThereAPortal(tileX, tileY) && layer != 1 && (tileX < 0 || tileX >= mapWidth || tileY < 0 || tileY >= mapHeight))) {
             return;
         }
 
@@ -267,9 +268,18 @@ public class GameMap {
     }
 
     public void removeTile(int tileX, int tileY, int layer) {
-        if (layeredTiles.get(layer) != null) {
+        if (layeredTiles.get(layer) != null && !isThereAPortal(tileX, tileY)) {
             layeredTiles.get(layer).removeIf(tile -> tile.getX() == tileX && tile.getY() == tileY);
         }
+    }
+
+    boolean isThereAPortal(int x, int y) {
+        for (MapTile tile : getPortals()) {
+            if (tile.getX() == x && tile.getY() == y) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void saveMap() {
