@@ -110,4 +110,8 @@ public class AnimatedSprite extends Sprite implements GameObject {
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
         return false;
     }
+
+    public Sprite getStartSprite() {
+        return sprites[startSprite];
+    }
 }

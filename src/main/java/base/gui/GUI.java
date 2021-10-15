@@ -6,14 +6,16 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
+import java.util.List;
+
 public class GUI implements GameObject {
 
     private Sprite backgroundSprite;
-    private GUIButton[] buttons;
+    private List<GUIButton> buttons;
     private Rectangle rectangle = new Rectangle();
     private boolean fixedOnScreen;
 
-    public GUI(Sprite backgroundSprite, GUIButton[] buttons, int xPosition, int yPosition, boolean fixedOnScreen) {
+    public GUI(Sprite backgroundSprite, List<GUIButton> buttons, int xPosition, int yPosition, boolean fixedOnScreen) {
         this.backgroundSprite = backgroundSprite;
         this.buttons = buttons;
         this.fixedOnScreen = fixedOnScreen;
@@ -26,7 +28,7 @@ public class GUI implements GameObject {
         }
     }
 
-    public GUI(GUIButton[] buttons, int xPosition, int yPosition, boolean fixedOnScreen) {
+    public GUI(List<GUIButton> buttons, int xPosition, int yPosition, boolean fixedOnScreen) {
         this(null, buttons, xPosition, yPosition, fixedOnScreen);
     }
 

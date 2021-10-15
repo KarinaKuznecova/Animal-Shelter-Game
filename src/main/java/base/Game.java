@@ -1,13 +1,9 @@
 package base;
 
 import base.gameobjects.*;
-import base.graphicsservice.ImageLoader;
+import base.graphicsservice.*;
 import base.graphicsservice.Rectangle;
-import base.graphicsservice.RenderHandler;
-import base.graphicsservice.SpriteSheet;
-import base.gui.GUI;
-import base.gui.GUIButton;
-import base.gui.SDKButton;
+import base.gui.*;
 import base.map.GameMap;
 import base.map.MapTile;
 import base.map.Tile;
@@ -57,7 +53,8 @@ public class Game extends JFrame implements Runnable {
 
     private transient GUI tileButtons;
 
-    private int selectedTileId = 2;
+    private int selectedTileId = -1;
+    private int selectedAnimal = 1;
 
     private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
     private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
@@ -180,6 +177,7 @@ public class Game extends JFrame implements Runnable {
             loadGameObjects(getWidth() / 2, getHeight() / 2);
         }
         renderer.adjustCamera(this, player);
+        loadSDKGUI();
     }
 
     private void loadSpriteSheet() {
@@ -198,16 +196,24 @@ public class Game extends JFrame implements Runnable {
 
     private void loadSDKGUI() {
         List<Tile> tiles = tileService.getTiles();
-        GUIButton[] buttons = new GUIButton[tiles.size() + 1];
+        List<Animal> animals = getGameMap().getAnimals();
+        List<GUIButton> buttons = new ArrayList<>();
 
-        for (int i = 0; i < buttons.length - 1; i++) {
+        for (int i = 0; i < tiles.size(); i++) {
 //            Rectangle tileRectangle = new Rectangle(0, i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);       // vertical on top left side
             Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
-            buttons[i] = new SDKButton(this, i, tiles.get(i).getSprite(), tileRectangle);
+            buttons.add(new SDKButton(this, i, tiles.get(i).getSprite(), tileRectangle));
+        }
+        for (int i = 0; i < animals.size(); i++) {
+            Animal animal = animals.get(i);
+            Sprite animalSprite = animal.getSprite();
+            Rectangle tileRectangle = new Rectangle(this.getWidth() - (TILE_SIZE * ZOOM + TILE_SIZE), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+            buttons.add(new AnimalIcon(this, i, animalSprite, tileRectangle));
         }
         Rectangle tileRectangle = new Rectangle((tiles.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
-        buttons[tiles.size()] = new SDKButton(this, -1, null, tileRectangle);
+        buttons.add(new SDKButton(this, -1, null, tileRectangle));
         changeTile(-1);
+        changeAnimal(1);
 
         tileButtons = new GUI(buttons, 5, 5, true);
         guiList = new ArrayList<>();
@@ -276,6 +282,11 @@ public class Game extends JFrame implements Runnable {
         selectedTileId = tileId;
     }
 
+    public void changeAnimal(int animalId) {
+        logger.info(String.format("changing selected animal to : %d", animalId));
+        selectedAnimal = animalId;
+    }
+
     public void leftClick(int x, int y) {
         Rectangle mouseRectangle = new Rectangle(x, y, 1, 1);
         boolean stoppedChecking = false;
@@ -313,6 +324,10 @@ public class Game extends JFrame implements Runnable {
 
     public int getSelectedTileId() {
         return selectedTileId;
+    }
+
+    public int getSelectedAnimal() {
+        return selectedAnimal;
     }
 
     public KeyboardListener getKeyboardListener() {
