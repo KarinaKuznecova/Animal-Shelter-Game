@@ -268,4 +268,11 @@ public class Animal implements GameObject {
     public void setHomeMap(String homeMap) {
         this.homeMap = homeMap;
     }
+
+    public Sprite getSprite() {
+        if (animatedSprite != null) {
+            return animatedSprite.getStartSprite();
+        }
+        return null;
+    }
 }
