@@ -2,6 +2,7 @@ Name:TopCenterMap
 Size:20:20
 Fill:0
 AlphaFill:6
+Animals:CAT,CAT2
 //layer,tileId,xPos,yPos,portalDirection
 0,2,10,20,MainMap
 0,0,-1,10,TopLeftMap

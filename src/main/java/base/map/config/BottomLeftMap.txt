@@ -2,5 +2,6 @@ Name:BottomLeftMap
 Size:20:20
 Fill:0
 AlphaFill:6
+Animals:cat2
 //layer,tileId,xPos,yPos,portalDirection
 0,0,20,10,BottomCenterMap

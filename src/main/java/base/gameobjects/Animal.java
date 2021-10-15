@@ -4,6 +4,7 @@ import base.Game;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
+import base.map.GameMap;
 import base.map.MapTile;
 import base.navigationservice.Direction;
 
@@ -79,7 +80,7 @@ public class Animal implements GameObject {
             movingTicks = getRandomMovingTicks();
         }
 
-        handleMoving(game, randomDirection);
+        handleMoving(game.getGameMap(), randomDirection);
         if (randomDirection != STAY) {
             isMoving = true;
         }
@@ -99,8 +100,8 @@ public class Animal implements GameObject {
         movingTicks--;
     }
 
-    private void handleMoving(Game game, Direction direction) {
-        if (unwalkableInThisDirection(game, direction)) {
+    private void handleMoving(GameMap gameMap, Direction direction) {
+        if (unwalkableInThisDirection(gameMap, direction)) {
             handleUnwalkable(direction);
             return;
         }
@@ -112,7 +113,7 @@ public class Animal implements GameObject {
                 }
                 break;
             case RIGHT:
-                if (animalRectangle.getX() < (game.getGameMap().getMapWidth() * TILE_SIZE - animalRectangle.getWidth()) * Game.ZOOM) {
+                if (animalRectangle.getX() < (gameMap.getMapWidth() * TILE_SIZE - animalRectangle.getWidth()) * Game.ZOOM) {
                     animalRectangle.setX(animalRectangle.getX() + speed);
                 }
                 break;
@@ -122,7 +123,7 @@ public class Animal implements GameObject {
                 }
                 break;
             case DOWN:
-                if (animalRectangle.getY() < (game.getGameMap().getMapHeight() * TILE_SIZE - animalRectangle.getHeight()) * Game.ZOOM) {
+                if (animalRectangle.getY() < (gameMap.getMapHeight() * TILE_SIZE - animalRectangle.getHeight()) * Game.ZOOM) {
                     animalRectangle.setY(animalRectangle.getY() + speed);
                 }
                 break;
@@ -168,11 +169,11 @@ public class Animal implements GameObject {
         return random.nextInt(20) + 64;
     }
 
-    private boolean unwalkableInThisDirection(Game game, Direction direction) {
+    private boolean unwalkableInThisDirection(GameMap gameMap, Direction direction) {
         int xPosition = animalRectangle.getX();
         int yPosition = animalRectangle.getY();
 
-        List<MapTile> tilesOnLayer = game.getGameMap().getTilesOnLayer(getLayer());
+        List<MapTile> tilesOnLayer = gameMap.getTilesOnLayer(getLayer());
 
         switch (direction) {
             case LEFT:
@@ -199,33 +200,33 @@ public class Animal implements GameObject {
 
     }
 
-    public boolean isAnimalStuck(Game game) {
-        return unwalkableInThisDirection(game, LEFT)
-                && unwalkableInThisDirection(game, RIGHT)
-                && unwalkableInThisDirection(game, UP)
-                && unwalkableInThisDirection(game, DOWN);
+    public boolean isAnimalStuck(GameMap gameMap) {
+        return unwalkableInThisDirection(gameMap, LEFT)
+                && unwalkableInThisDirection(gameMap, RIGHT)
+                && unwalkableInThisDirection(gameMap, UP)
+                && unwalkableInThisDirection(gameMap, DOWN);
     }
 
-    public void tryToMove(Game game) {
+    public void tryToMove(GameMap gameMap) {
         logger.info(String.format("Animal %s is stuck, will try to move to left, 5 attempts", this));
         int attempts = 0;
-        while (isAnimalStuck(game) && attempts <= 5) {
+        while (isAnimalStuck(gameMap) && attempts <= 5) {
             moveAnimalTo(animalRectangle.getX() + (TILE_SIZE * ZOOM), animalRectangle.getY());
             attempts++;
         }
-        if (isAnimalStuck(game)) {
+        if (isAnimalStuck(gameMap)) {
             logger.info("Animal still stuck, will try to move to center");
-            animalRectangle.setX(game.getWidth() / 2);
-            animalRectangle.setY(game.getHeight() / 2);
+            animalRectangle.setX(gameMap.getMapWidth() * TILE_SIZE * ZOOM / 2);
+            animalRectangle.setY(gameMap.getMapHeight() * TILE_SIZE * ZOOM / 2);
         }
-        if (isAnimalStuck(game)) {
+        if (isAnimalStuck(gameMap)) {
             logger.info("Moving to center didn't work, will try move to left again");
             int attempts2 = 0;
-            while (isAnimalStuck(game) && attempts2 <= 5) {
+            while (isAnimalStuck(gameMap) && attempts2 <= 5) {
                 moveAnimalTo(animalRectangle.getX() + (TILE_SIZE * ZOOM), animalRectangle.getY());
                 attempts2++;
             }
-            if (isAnimalStuck(game)) {
+            if (isAnimalStuck(gameMap)) {
                 logger.error("Animal is stuck completely");
 //                throw new IllegalStateException();
             }
@@ -250,5 +251,9 @@ public class Animal implements GameObject {
 
     public String getHomeMap() {
         return homeMap;
+    }
+
+    public void setHomeMap(String homeMap) {
+        this.homeMap = homeMap;
     }
 }

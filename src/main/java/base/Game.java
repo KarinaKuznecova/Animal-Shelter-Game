@@ -25,7 +25,10 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static base.gameobjects.AnimalService.*;
 
 public class Game extends JFrame implements Runnable {
 
@@ -62,12 +65,13 @@ public class Game extends JFrame implements Runnable {
     private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
     private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
 
+    List<String> defaultAnimalsToLoad = Arrays.asList(RAT, CHICKEN, MOUSE, RAT, RAT, BUTTERFLY, MOUSE, CAT, CAT2);
+
     public Game() {
         initializeServices();
         loadUI();
         loadControllers();
         loadPlayerAnimatedImages();
-        loadAnimalAnimatedImages();
         loadMap();
         loadSDKGUI();
         loadGameObjects(getWidth() / 2, getHeight() / 2);
@@ -150,13 +154,13 @@ public class Game extends JFrame implements Runnable {
         logger.info("Player animations loaded");
     }
 
-    private void loadAnimalAnimatedImages() {
-        logger.info("Loading animals animations");
-
-        animalService.loadAnimatedImages(getWidth() / 2, getHeight() / 2);
-
-        logger.info("Animals animations loaded");
-    }
+//    private void loadAnimalAnimatedImages(List<String> animalsToLoad, String mapName) {
+//        logger.info("Loading animals animations");
+//
+//        animalService.loadAnimatedImages(animalsToLoad, getWidth() / 2, getHeight() / 2, mapName);
+//
+//        logger.info("Animals animations loaded");
+//    }
 
     private void loadMap() {
         logger.info("Game map loading started");
@@ -189,18 +193,6 @@ public class Game extends JFrame implements Runnable {
             loadGameObjects(getWidth() / 2, getHeight() / 2);
         }
         renderer.adjustCamera(this, player);
-        fixStuckAnimals();
-    }
-
-    private void fixStuckAnimals() {
-        for (GameObject gameObject : gameObjectsList) {
-            if (gameObject instanceof Animal) {
-                Animal animal = (Animal) gameObject;
-                if (animal.isAnimalStuck(this)) {
-                    animal.tryToMove(this);
-                }
-            }
-        }
     }
 
     private void loadSpriteSheet() {
@@ -286,6 +278,9 @@ public class Game extends JFrame implements Runnable {
         }
         for (GameObject gui : guiList) {
             gui.update(this);
+        }
+        for (Animal animal : getGameMap().getAnimals()) {
+            animal.update(this);
         }
     }
 

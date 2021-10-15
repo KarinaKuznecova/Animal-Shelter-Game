@@ -1,6 +1,7 @@
 package base.map;
 
 import base.gameobjects.Animal;
+import base.gameobjects.AnimalService;
 import base.gameobjects.GameObject;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
@@ -20,10 +21,12 @@ import static base.Game.ZOOM;
 public class GameMap {
 
     private final TileService tileService;
+    private final AnimalService animalService = new AnimalService();
 
     private final File mapFile;
     private final Map<Integer, List<MapTile>> layeredTiles = new HashMap<>();
     private final List<MapTile> portals = new ArrayList<>();
+    private List<Animal> allAnimals = new ArrayList<>();
 
     int backGroundTileId = -1;      //background of walkable part of the map
     int alphaBackground = -1;       //outside the walkable part
@@ -39,6 +42,7 @@ public class GameMap {
         this.tileService = tileService;
         this.mapFile = mapFile;
         loadMapFromFile();
+        logger.info(String.format("There will be %d animals on map %s", allAnimals.size(), getMapName()));
     }
 
     private void loadMapFromFile() {
@@ -100,6 +104,13 @@ public class GameMap {
             mapName = String.valueOf(splitLine[1]);
             return true;
         }
+        if (line.startsWith("Animals:")) {
+            String[] splitLine = line.split(":");
+            List<String> animalNames = Arrays.asList(splitLine[1].split(","));
+            animalService.loadAnimatedImages(animalNames, getMapWidth() / 2 * (TILE_SIZE * ZOOM), getMapHeight() / 2 * (TILE_SIZE * ZOOM), getMapName());
+            allAnimals = animalService.getListOfAnimals();
+            return true;
+        }
         return false;
     }
 
@@ -138,6 +149,12 @@ public class GameMap {
         for (GameObject gameObject : gameObjects) {
             if (maxLayer < gameObject.getLayer()) {
                 maxLayer = gameObject.getLayer();
+                logger.info(String.format("max layer: %d", maxLayer));
+            }
+        }
+        for (Animal animal : allAnimals) {
+            if (maxLayer < animal.getLayer()) {
+                maxLayer = animal.getLayer();
                 logger.info(String.format("max layer: %d", maxLayer));
             }
         }
@@ -187,16 +204,20 @@ public class GameMap {
 
     private void renderGameObjects(RenderHandler renderer, List<GameObject> gameObjects, int layer) {
         for (GameObject gameObject : gameObjects) {
-            if (gameObject instanceof Animal) {
-                Animal animal = (Animal) gameObject;
-                if (!animal.getHomeMap().equals(mapName)) {
-                    continue;
-                }
-            }
             if (gameObject.getLayer() == layer) {
                 gameObject.render(renderer, ZOOM, ZOOM);
             }
         }
+        for (Animal animal : allAnimals) {
+            if (!animal.getHomeMap().equals(mapName)) {
+                logger.error(String.format("Animal %s doesn't belong to map %s", animal, getMapName()));
+                continue;
+            }
+            if (animal.getLayer() == layer) {
+                animal.render(renderer, ZOOM, ZOOM);
+            }
+        }
+        animalService.fixStuckAnimals(this, getAnimals());
     }
 
     private void renderTile(RenderHandler renderer, int tileWidth, int tileHeight, MapTile mappedTile) {
@@ -267,6 +288,9 @@ public class GameMap {
             if (alphaBackground >= 0) {
                 printWriter.println("AlphaFill:" + alphaBackground);
             }
+            if (!allAnimals.isEmpty()) {
+                saveAnimals(printWriter);
+            }
             printWriter.println("//layer,tileId,xPos,yPos,portalDirection");
             for (List<MapTile> layer : layeredTiles.values()) {
                 for (MapTile tile : layer) {
@@ -282,6 +306,19 @@ public class GameMap {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void saveAnimals(PrintWriter printWriter) {
+        StringBuilder animalList = new StringBuilder();
+        for (Animal animal : allAnimals) {
+            animalList.append(animalService.getAnimalType(animal));
+            animalList.append(",");
+        }
+        String animals = animalList.toString();
+        if (animals.endsWith(",")) {
+            animals = animals.substring(0, animalList.length()-1);
+        }
+        printWriter.println("Animals:" + animals);
     }
 
     public MapTile getPortalTo(String destination) {
@@ -328,5 +365,9 @@ public class GameMap {
 
     public int getMapHeight() {
         return mapHeight;
+    }
+
+    public List<Animal> getAnimals() {
+        return allAnimals;
     }
 }

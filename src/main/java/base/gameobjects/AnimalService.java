@@ -1,9 +1,11 @@
 package base.gameobjects;
 
+import base.Game;
 import base.gameobjects.animals.*;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Sprite;
 import base.graphicsservice.SpriteSheet;
+import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,12 +16,12 @@ import static base.Game.TILE_SIZE;
 
 public class AnimalService {
 
-    public static final String RAT = "Rat";
-    public static final String MOUSE = "Mouse";
-    public static final String CHICKEN = "Chicken";
-    public static final String BUTTERFLY = "Butterfly";
-    public static final String CAT = "Cat";
-    public static final String CAT2 = "Cat2";
+    public static final String RAT = "rat";
+    public static final String MOUSE = "mouse";
+    public static final String CHICKEN = "chicken";
+    public static final String BUTTERFLY = "butterfly";
+    public static final String CAT = "cat";
+    public static final String CAT2 = "cat2";
 
     public static final String RAT_SHEET_PATH = "img/rat.png";
     public static final String MOUSE_SHEET_PATH = "img/mouse.png";
@@ -62,34 +64,70 @@ public class AnimalService {
         return animalAnimations.get(animalName);
     }
 
-    public void loadAnimatedImages(int startX, int startY) {
-        List<String> listOfAnimalsToLoad = listOfAnimalsToLoad();
+    public void loadAnimatedImages(List<String> animalsToLoad, int startX, int startY, String mapName) {
 
-        for (String animal : listOfAnimalsToLoad) {
+        for (String animal : animalsToLoad) {
+            animal = animal.toLowerCase();
             BufferedImage sheetImage = imageLoader.loadImage(getAnimalSheetPath(animal));
             SpriteSheet animalSheet = new SpriteSheet(sheetImage);
             animalSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
             AnimatedSprite sprite = new AnimatedSprite(animalSheet, 9, false);
-            allAnimals.add(createAnimal(animal, sprite, startX, startY));
+            allAnimals.add(createAnimal(animal, sprite, startX, startY, mapName));
         }
     }
 
-    public Animal createAnimal(String animalName, Sprite sprite, int startX, int startY) {
-        switch (animalName) {
+    public Animal createAnimal(String animalName, Sprite sprite, int startX, int startY, String mapName) {
+        Animal animal;
+        switch (animalName.toLowerCase()) {
             case RAT:
-                return new Rat(sprite, startX, startY, 3);
+                animal = new Rat(sprite, startX, startY, 3);
+                break;
             case MOUSE:
-                return new Mouse(sprite, startX, startY, 2);
+                animal = new Mouse(sprite, startX, startY, 2);
+                break;
             case CHICKEN:
-                return new Chicken(sprite, startX, startY, 2);
+                animal = new Chicken(sprite, startX, startY, 2);
+                break;
             case BUTTERFLY:
-                return new Butterfly(sprite, startX, startY, 1);
+                animal = new Butterfly(sprite, startX, startY, 1);
+                break;
             case CAT:
             case CAT2:
-                return new Cat(sprite, startX, startY, 2);
+                animal = new Cat(sprite, startX, startY, 2);
+                break;
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalName));
                 throw new IllegalArgumentException();
         }
+        animal.setHomeMap(mapName);
+        return animal;
     }
+
+    public String getAnimalType(Animal animal) {
+        if (animal instanceof Rat) {
+            return RAT;
+        }
+        if (animal instanceof Mouse) {
+            return MOUSE;
+        }
+        if (animal instanceof Chicken) {
+            return CHICKEN;
+        }
+        if (animal instanceof Butterfly) {
+            return BUTTERFLY;
+        }
+        if (animal instanceof Cat) {
+            return CAT;
+        }
+        return null;
+    }
+
+    public void fixStuckAnimals(GameMap gameMap, List<Animal> animals) {
+        for (Animal animal : animals) {
+            if (animal.isAnimalStuck(gameMap)) {
+                animal.tryToMove(gameMap);
+            }
+        }
+    }
+
 }

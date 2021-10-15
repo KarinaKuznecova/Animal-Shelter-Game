@@ -9,8 +9,4 @@ public class Cat extends Animal {
         super(playerSprite, startX, startY, speed);
     }
 
-    @Override
-    public String getHomeMap() {
-        return "TopCenterMap";
-    }
 }

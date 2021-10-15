@@ -2,6 +2,7 @@ Name:MainMap
 Size:20:20
 Fill:0
 AlphaFill:6
+Animals:rat,chicken,mouse,rat,rat,butterfly,mouse
 //layer,tileId,xPos,yPos,portalDirection
 0,1,-1,4,SecondMap
 0,1,20,4,WaterMap
