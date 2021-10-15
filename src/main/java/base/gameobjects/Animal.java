@@ -219,8 +219,16 @@ public class Animal implements GameObject {
             animalRectangle.setY(game.getHeight() / 2);
         }
         if (isAnimalStuck(game)) {
-            logger.error("Animal is stuck completely");
-            throw new IllegalStateException();
+            logger.info("Moving to center didn't work, will try move to left again");
+            int attempts2 = 0;
+            while (isAnimalStuck(game) && attempts2 <= 5) {
+                moveAnimalTo(animalRectangle.getX() + (TILE_SIZE * ZOOM), animalRectangle.getY());
+                attempts2++;
+            }
+            if (isAnimalStuck(game)) {
+                logger.error("Animal is stuck completely");
+//                throw new IllegalStateException();
+            }
         }
     }
 

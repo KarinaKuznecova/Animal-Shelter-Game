@@ -1,9 +1,6 @@
 package base.gameobjects;
 
-import base.gameobjects.animals.Butterfly;
-import base.gameobjects.animals.Chicken;
-import base.gameobjects.animals.Mouse;
-import base.gameobjects.animals.Rat;
+import base.gameobjects.animals.*;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Sprite;
 import base.graphicsservice.SpriteSheet;
@@ -21,11 +18,15 @@ public class AnimalService {
     public static final String MOUSE = "Mouse";
     public static final String CHICKEN = "Chicken";
     public static final String BUTTERFLY = "Butterfly";
+    public static final String CAT = "Cat";
+    public static final String CAT2 = "Cat2";
 
     public static final String RAT_SHEET_PATH = "img/rat.png";
     public static final String MOUSE_SHEET_PATH = "img/mouse.png";
     public static final String CHICKEN_SHEET_PATH = "img/chicken.png";
     public static final String BUTTERFLY_SHEET_PATH = "img/butterfly.png";
+    public static final String CAT_SHEET_PATH = "img/cat1.png";
+    public static final String CAT_SHEET_PATH2 = "img/cat2.png";
 
     Map<String, String> animalAnimations;
     List<Animal> allAnimals;
@@ -45,6 +46,8 @@ public class AnimalService {
         animalAnimations.put(MOUSE, MOUSE_SHEET_PATH);
         animalAnimations.put(CHICKEN, CHICKEN_SHEET_PATH);
         animalAnimations.put(BUTTERFLY, BUTTERFLY_SHEET_PATH);
+        animalAnimations.put(CAT, CAT_SHEET_PATH);
+        animalAnimations.put(CAT2, CAT_SHEET_PATH2);
     }
 
     public List<Animal> getListOfAnimals() {
@@ -52,7 +55,7 @@ public class AnimalService {
     }
 
     public List<String> listOfAnimalsToLoad() {
-        return Arrays.asList(RAT, CHICKEN, MOUSE, RAT, RAT, BUTTERFLY, MOUSE);
+        return Arrays.asList(RAT, CHICKEN, MOUSE, RAT, RAT, BUTTERFLY, MOUSE, CAT, CAT2);
     }
 
     public String getAnimalSheetPath(String animalName) {
@@ -81,6 +84,9 @@ public class AnimalService {
                 return new Chicken(sprite, startX, startY, 2);
             case BUTTERFLY:
                 return new Butterfly(sprite, startX, startY, 1);
+            case CAT:
+            case CAT2:
+                return new Cat(sprite, startX, startY, 2);
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalName));
                 throw new IllegalArgumentException();
