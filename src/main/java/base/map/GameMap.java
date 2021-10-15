@@ -242,6 +242,11 @@ public class GameMap {
             return;
         }
         int layer = tileService.getLayerById(tileId);
+
+        if (layer != 1 && (tileX < 0 || tileX >= mapWidth || tileY < 0 || tileY >= mapHeight)) {
+            return;
+        }
+
         boolean foundTile = false;
         if (layeredTiles.get(layer) != null) {
             for (MapTile tile : layeredTiles.get(layer)) {
