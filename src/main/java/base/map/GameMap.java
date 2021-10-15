@@ -241,10 +241,12 @@ public class GameMap {
         if (tileId == -1) {
             return;
         }
-        if (tileX < 0 || tileX >= mapWidth || tileY < 0 || tileY >= mapHeight) {
+        int layer = tileService.getLayerById(tileId);
+
+        if (layer != 1 && (tileX < 0 || tileX >= mapWidth || tileY < 0 || tileY >= mapHeight)) {
             return;
         }
-        int layer = tileService.getLayerById(tileId);
+
         boolean foundTile = false;
         if (layeredTiles.get(layer) != null) {
             for (MapTile tile : layeredTiles.get(layer)) {
