@@ -13,6 +13,8 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static base.Game.TILE_SIZE;
+import static base.Game.ZOOM;
 import static base.navigationservice.Direction.*;
 
 public class Animal implements GameObject {
@@ -43,7 +45,7 @@ public class Animal implements GameObject {
 
         direction = DOWN;
         updateDirection();
-        animalRectangle = new Rectangle(startX, startY, Game.TILE_SIZE, Game.TILE_SIZE);
+        animalRectangle = new Rectangle(startX, startY, TILE_SIZE, TILE_SIZE);
         animalRectangle.generateGraphics(1, 123);
 
         random = new Random();
@@ -110,7 +112,7 @@ public class Animal implements GameObject {
                 }
                 break;
             case RIGHT:
-                if (animalRectangle.getX() < (game.getGameMap().getMapWidth() * Game.TILE_SIZE - animalRectangle.getWidth()) * Game.ZOOM) {
+                if (animalRectangle.getX() < (game.getGameMap().getMapWidth() * TILE_SIZE - animalRectangle.getWidth()) * Game.ZOOM) {
                     animalRectangle.setX(animalRectangle.getX() + speed);
                 }
                 break;
@@ -120,7 +122,7 @@ public class Animal implements GameObject {
                 }
                 break;
             case DOWN:
-                if (animalRectangle.getY() < (game.getGameMap().getMapHeight() * Game.TILE_SIZE - animalRectangle.getHeight()) * Game.ZOOM) {
+                if (animalRectangle.getY() < (game.getGameMap().getMapHeight() * TILE_SIZE - animalRectangle.getHeight()) * Game.ZOOM) {
                     animalRectangle.setY(animalRectangle.getY() + speed);
                 }
                 break;
@@ -195,6 +197,36 @@ public class Animal implements GameObject {
         }
         return false;
 
+    }
+
+    public boolean isAnimalStuck(Game game) {
+        return unwalkableInThisDirection(game, LEFT)
+                && unwalkableInThisDirection(game, RIGHT)
+                && unwalkableInThisDirection(game, UP)
+                && unwalkableInThisDirection(game, DOWN);
+    }
+
+    public void tryToMove(Game game) {
+        logger.info(String.format("Animal %s is stuck, will try to move to left, 5 attempts", this));
+        int attempts = 0;
+        while (isAnimalStuck(game) && attempts <= 5) {
+            moveAnimalTo(animalRectangle.getX() + (TILE_SIZE * ZOOM), animalRectangle.getY());
+            attempts++;
+        }
+        if (isAnimalStuck(game)) {
+            logger.info("Animal still stuck, will try to move to center");
+            animalRectangle.setX(game.getWidth() / 2);
+            animalRectangle.setY(game.getHeight() / 2);
+        }
+        if (isAnimalStuck(game)) {
+            logger.error("Animal is stuck completely");
+            throw new IllegalStateException();
+        }
+    }
+
+    public void moveAnimalTo(int x, int y) {
+        animalRectangle.setX(x);
+        animalRectangle.setY(y);
     }
 
     @Override

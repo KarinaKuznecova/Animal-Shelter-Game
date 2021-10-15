@@ -1,9 +1,6 @@
 package base;
 
-import base.gameobjects.AnimalService;
-import base.gameobjects.AnimatedSprite;
-import base.gameobjects.GameObject;
-import base.gameobjects.Player;
+import base.gameobjects.*;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
@@ -192,6 +189,18 @@ public class Game extends JFrame implements Runnable {
             loadGameObjects(getWidth() / 2, getHeight() / 2);
         }
         renderer.adjustCamera(this, player);
+        fixStuckAnimals();
+    }
+
+    private void fixStuckAnimals() {
+        for (GameObject gameObject : gameObjectsList) {
+            if (gameObject instanceof Animal) {
+                Animal animal = (Animal) gameObject;
+                if (animal.isAnimalStuck(this)) {
+                    animal.tryToMove(this);
+                }
+            }
+        }
     }
 
     private void loadSpriteSheet() {
