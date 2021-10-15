@@ -208,11 +208,11 @@ public class Animal implements GameObject {
     }
 
     public void tryToMove(GameMap gameMap) {
-        logger.info(String.format("Animal %s is stuck, will try to move to left, 5 attempts", this));
-        int attempts = 0;
-        while (isAnimalStuck(gameMap) && attempts <= 5) {
-            moveAnimalTo(animalRectangle.getX() + (TILE_SIZE * ZOOM), animalRectangle.getY());
-            attempts++;
+        logger.info(String.format("Animal %s is stuck, will try to move to nearest directions", this));
+        for (Direction potentialDirection : Direction.values()) {
+            if (!unwalkableInThisDirection(gameMap, potentialDirection)) {
+                moveAnimalTo(potentialDirection);
+            }
         }
         if (isAnimalStuck(gameMap)) {
             logger.info("Animal still stuck, will try to move to center");
@@ -220,11 +220,11 @@ public class Animal implements GameObject {
             animalRectangle.setY(gameMap.getMapHeight() * TILE_SIZE * ZOOM / 2);
         }
         if (isAnimalStuck(gameMap)) {
-            logger.info("Moving to center didn't work, will try move to left again");
-            int attempts2 = 0;
-            while (isAnimalStuck(gameMap) && attempts2 <= 5) {
-                moveAnimalTo(animalRectangle.getX() + (TILE_SIZE * ZOOM), animalRectangle.getY());
-                attempts2++;
+            logger.info("Moving to center didn't work, will try move to left up to 5 times");
+            int attempts = 0;
+            while (isAnimalStuck(gameMap) && attempts <= 5) {
+                moveAnimalTo(LEFT);
+                attempts++;
             }
             if (isAnimalStuck(gameMap)) {
                 logger.error("Animal is stuck completely");
@@ -233,9 +233,21 @@ public class Animal implements GameObject {
         }
     }
 
-    public void moveAnimalTo(int x, int y) {
-        animalRectangle.setX(x);
-        animalRectangle.setY(y);
+    public void moveAnimalTo(Direction direction) {
+        switch (direction) {
+            case LEFT:
+                animalRectangle.setX(animalRectangle.getX() - (TILE_SIZE * ZOOM));
+                break;
+            case RIGHT:
+                animalRectangle.setX(animalRectangle.getX() + (TILE_SIZE * ZOOM));
+                break;
+            case UP:
+                animalRectangle.setY(animalRectangle.getY() - (TILE_SIZE * ZOOM));
+                break;
+            case DOWN:
+                animalRectangle.setY(animalRectangle.getY() + (TILE_SIZE * ZOOM));
+                break;
+        }
     }
 
     @Override
