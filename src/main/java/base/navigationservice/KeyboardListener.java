@@ -10,7 +10,7 @@ import java.awt.event.KeyListener;
 public class KeyboardListener implements KeyListener, FocusListener {
 
     public boolean[] keys = new boolean[120];
-
+    private boolean saving = false;
     private Game game;
 
     public KeyboardListener(Game game) {
@@ -19,11 +19,13 @@ public class KeyboardListener implements KeyListener, FocusListener {
 
     @Override
     public void keyPressed(KeyEvent event) {
+        saving = false;
         int keyCode = event.getKeyCode();
         if (keyCode < keys.length) {
             keys[keyCode] = true;
         }
         if (keys[KeyEvent.VK_CONTROL] && keys[KeyEvent.VK_S]) {
+            saving = true; //saving start
             game.handleCTRLandS();
         }
         if (keys[KeyEvent.VK_Q]) {
@@ -61,7 +63,12 @@ public class KeyboardListener implements KeyListener, FocusListener {
     }
 
     public boolean down() {
-        return keys[KeyEvent.VK_S] || keys[KeyEvent.VK_DOWN];
+       
+        if(!saving){
+            return keys[KeyEvent.VK_S] || keys[KeyEvent.VK_DOWN];}
+        else{
+            return false; //Don't move down when saving
+        }
     }
 
     public boolean right() {
