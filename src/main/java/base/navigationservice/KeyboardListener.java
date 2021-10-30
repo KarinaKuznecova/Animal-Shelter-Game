@@ -28,6 +28,9 @@ public class KeyboardListener implements KeyListener, FocusListener {
             saving = true; //saving start
             game.handleCTRLandS();
         }
+        if(keys[KeyEvent.VK_H]){ 
+            game.replaceMapWithDefault();    
+        }
         if (keys[KeyEvent.VK_Q]) {
             game.handleQ();
         }
