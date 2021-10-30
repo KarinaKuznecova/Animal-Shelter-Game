@@ -258,4 +258,11 @@ public class Player implements GameObject {
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
         return false;
     }
+
+    public void teleportToCenter(Game game){    
+        int x= game.getWidth() / 2;
+        int y=game.getHeight() / 2;
+        playerRectangle.setX(x);
+        playerRectangle.setY(y);
+    }
 }

@@ -26,8 +26,8 @@ public class KeyboardListener implements KeyListener, FocusListener {
         if (keys[KeyEvent.VK_CONTROL] && keys[KeyEvent.VK_S]) {
             game.handleCTRLandS();
         }
-        if(keys[KeyEvent.VK_M]){ //press M
-            game.defualtMap();    //replace map with default
+        if(keys[KeyEvent.VK_H]){ 
+            game.replaceMapWithDefault();    
         }
         if (keys[KeyEvent.VK_Q]) {
             game.handleQ();
