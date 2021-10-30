@@ -341,4 +341,18 @@ public class Game extends JFrame implements Runnable {
     public GameMap getGameMap() {
         return gameMap;
     }
+
+    //replace map to default map
+    public void defualtMap(){       
+       logger.info("Default game map loading started");
+
+       loadSpriteSheet();
+       tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
+       gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
+
+       logger.info("Default game map loaded");
+       
+       renderer.adjustCamera(this, player);
+       loadSDKGUI();
+   }
 }
