@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Game extends JFrame implements Runnable {
 
@@ -30,8 +31,8 @@ public class Game extends JFrame implements Runnable {
     public static final int ZOOM = 2;
 
     public static final String PLAYER_SHEET_PATH = "img/betty.png";
-    public static final String SPRITES_PATH = "img/sprites.png";
-    public static final String TILE_LIST_PATH = "src/main/java/base/map/config/Tile.txt";
+    public static final String SPRITES_PATH = "img/tiles-new.png";
+    public static final String TILE_LIST_PATH = "src/main/java/base/map/config/Tile-new.txt";
     public static final String GAME_MAP_PATH = "src/main/java/base/map/config/GameMap.txt";
 
     private final Canvas canvas = new Canvas();
@@ -51,7 +52,7 @@ public class Game extends JFrame implements Runnable {
     private transient AnimalService animalService;
     private transient ImageLoader imageLoader;
 
-    private transient GUI tileButtons;
+    private final transient GUI[] tileButtonsArray = new GUI[10];
     private transient GUI yourAnimalButtons;
     private transient GUI possibleAnimalButtons;
 
@@ -202,22 +203,33 @@ public class Game extends JFrame implements Runnable {
 
     private void loadSDKGUI() {
         List<Tile> tiles = tileService.getTiles();
+
         List<GUIButton> buttons = new ArrayList<>();
-
-        for (int i = 0; i < tiles.size(); i++) {
-//            Rectangle tileRectangle = new Rectangle(0, i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);       // vertical on top left side
-            Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
+        for (int i = 0, j = 0; i < tiles.size(); i++, j++) {
+//              Rectangle tileRectangle = new Rectangle(0, i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);       // vertical on top left side
+            Rectangle tileRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
             buttons.add(new SDKButton(this, i, tiles.get(i).getSprite(), tileRectangle));
-        }
-        Rectangle tileRectangle = new Rectangle((tiles.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
-        buttons.add(new SDKButton(this, -1, null, tileRectangle));
+            if (i != 0 && i % 10 == 0) {
+                Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
+                buttons.add(new SDKButton(this, -1, null, oneMoreTileRectangle));
+                tileButtonsArray[i / 10 - 1] = new GUI(buttons, 5, 5, true);
 
-        tileButtons = new GUI(buttons, 5, 5, true);
+                buttons = new ArrayList<>();
+                j = -1;
+            }
+            if (i == tiles.size() - 1) {
+                Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
+                buttons.add(new SDKButton(this, -1, null, oneMoreTileRectangle));
+                int temp = (i - (i % 10)) / 10;
+                tileButtonsArray[temp] = new GUI(buttons, 5, 5, true);
+            }
+        }
+
     }
 
     private void loadYourAnimals() {
         List<Animal> animals = getGameMap().getAnimals();
-        List<GUIButton> buttons = new ArrayList<>();
+        List<GUIButton> buttons = new CopyOnWriteArrayList<>();
 
         for (int i = 0; i < animals.size(); i++) {
             Animal animal = animals.get(i);
@@ -250,8 +262,8 @@ public class Game extends JFrame implements Runnable {
         changeTile(-1);
         changeAnimal(1);
 
-        guiList = new ArrayList<>();
-        guiList.add(tileButtons);
+        guiList = new CopyOnWriteArrayList<>();
+        guiList.add(tileButtonsArray[0]);
         guiList.add(yourAnimalButtons);
     }
 
@@ -339,7 +351,7 @@ public class Game extends JFrame implements Runnable {
         if (!stoppedChecking) {
             x = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
             y = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
-            if (guiList.contains(tileButtons)) {
+            if (!guiList.contains(possibleAnimalButtons)) {
                 gameMap.setTile(x, y, selectedTileId);
             }
             if (guiList.contains(possibleAnimalButtons)) {
@@ -399,27 +411,19 @@ public class Game extends JFrame implements Runnable {
         logger.info(String.format("Switching panels to id: %d", panelId));
 
         selectedPanel = panelId;
-        switch (panelId) {
-            case 1:
-                if (!guiList.contains(tileButtons)) {
-                    guiList.clear();
-                    guiList.add(tileButtons);
-                }
-                break;
-            case 2:
-                break;
-            case 0:
-                if (!guiList.contains(possibleAnimalButtons)) {
-                    guiList.clear();
-                    guiList.add(possibleAnimalButtons);
-                }
-                break;
-            default:
-                switchTopPanel(1);
-                break;
+        if (panelId == 0) {
+            if (!guiList.contains(possibleAnimalButtons)) {
+                guiList.clear();
+                guiList.add(possibleAnimalButtons);
+            }
+        } else if (tileButtonsArray[panelId - 1] != null && !guiList.contains(tileButtonsArray[panelId - 1])) {
+            guiList.clear();
+            guiList.add(tileButtonsArray[panelId - 1]);
         }
-        loadYourAnimals();
-        guiList.add(yourAnimalButtons);
+        if (!guiList.contains(yourAnimalButtons)) {
+            loadYourAnimals();
+            guiList.add(yourAnimalButtons);
+        }
     }
 
     public int getSelectedTileId() {

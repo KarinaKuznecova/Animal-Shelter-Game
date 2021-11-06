@@ -2,6 +2,7 @@ Name:WaterMap
 Size:20:20
 Fill:3
 AlphaFill:4
+Animals:cat,butterfly
 //layer,tileId,xPos,yPos,portalDirection
 0,0,0,0
 0,1,-1,4,MainMap
