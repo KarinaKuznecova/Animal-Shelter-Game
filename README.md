@@ -1,5 +1,7 @@
 2D game just for fun
 
+![game-preview](https://user-images.githubusercontent.com/47346801/140624010-82d2a356-6f48-415b-a3c7-a9b20edbb181.PNG)
+
 Currently there are 9 locations and you can walk accross them. You can build anything on any location and save your progress to a file (ctrl+s). There are no resources limit yet. Each location has animals, there are 5 animal types now.
 
 It is supposed to become a nice game, where you rescue animals(mini-quests), they live with you in your animal shelter and some animals can help you build your base/home, because some builds will requere resources and effort. 
