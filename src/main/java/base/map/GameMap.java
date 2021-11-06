@@ -385,4 +385,13 @@ public class GameMap {
     public List<Animal> getAnimals() {
         return allAnimals;
     }
+
+    public Animal addAnimal(int x, int y, int animalId) {
+        logger.info("Creating new animal");
+        String animalName = animalService.getAnimalNameById(animalId);
+        Animal newAnimal = animalService.createAnimal(animalName, x, y, getMapName());
+
+        allAnimals.add(newAnimal);
+        return newAnimal;
+    }
 }

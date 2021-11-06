@@ -131,7 +131,6 @@ public class Animal implements GameObject {
     }
 
     private void handleUnwalkable(Direction direction) {
-        logger.info("Animal can't walk this way");
         movingTicks = 0;
         switch (direction) {
             case LEFT:
@@ -274,5 +273,10 @@ public class Animal implements GameObject {
             return animatedSprite.getStartSprite();
         }
         return null;
+    }
+
+    public void teleportAnimalTo(int x, int y) {
+        animalRectangle.setX(x);
+        animalRectangle.setY(y);
     }
 }

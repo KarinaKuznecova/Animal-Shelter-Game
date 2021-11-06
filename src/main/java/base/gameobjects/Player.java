@@ -259,9 +259,9 @@ public class Player implements GameObject {
         return false;
     }
 
-    public void teleportToCenter(Game game){    
-        int x= game.getWidth() / 2;
-        int y=game.getHeight() / 2;
+    public void teleportToCenter(Game game) {
+        int x = game.getWidth() / 2;
+        int y = game.getHeight() / 2;
         playerRectangle.setX(x);
         playerRectangle.setY(y);
     }

@@ -52,6 +52,7 @@ public class Game extends JFrame implements Runnable {
     private transient ImageLoader imageLoader;
 
     private transient GUI tileButtons;
+    private transient GUI animalButtons;
 
     private int selectedTileId = -1;
     private int selectedAnimal = 1;
@@ -66,6 +67,7 @@ public class Game extends JFrame implements Runnable {
         loadPlayerAnimatedImages();
         loadMap();
         loadSDKGUI();
+        loadPossibleAnimalsPanel();
         loadGameObjects(getWidth() / 2, getHeight() / 2);
     }
 
@@ -220,6 +222,23 @@ public class Game extends JFrame implements Runnable {
         guiList.add(tileButtons);
     }
 
+    void loadPossibleAnimalsPanel() {
+        List<Animal> animals = animalService.getPossibleAnimals();
+        List<GUIButton> buttons = new ArrayList<>();
+
+        for (int i = 0; i < animals.size(); i++) {
+            Animal animal = animals.get(i);
+            Sprite animalSprite = animal.getSprite();
+            Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
+            buttons.add(new AnimalIcon(this, i, animalSprite, tileRectangle));
+        }
+        Rectangle tileRectangle = new Rectangle((animals.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
+        buttons.add(new AnimalIcon(this, -1, null, tileRectangle));
+        changeAnimal(-1);
+
+        animalButtons = new GUI(buttons, 5, 5, true);
+    }
+
     private void loadGameObjects(int startX, int startY) {
         gameObjectsList = new ArrayList<>();
         player = new Player(playerAnimations, startX, startY);
@@ -299,8 +318,14 @@ public class Game extends JFrame implements Runnable {
         if (!stoppedChecking) {
             x = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
             y = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
-            gameMap.setTile(x, y, selectedTileId);
-
+            if (guiList.contains(tileButtons)) {
+                gameMap.setTile(x, y, selectedTileId);
+            }
+            if (guiList.contains(animalButtons)) {
+                x = x * (TILE_SIZE * ZOOM);
+                y = y * (TILE_SIZE * ZOOM);
+                Animal newAnimal = gameMap.addAnimal(x, y, selectedAnimal);
+            }
         }
     }
 
@@ -322,6 +347,34 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
+    public void replaceMapWithDefault(){
+
+        logger.info("Default game map loading started");
+
+        loadSpriteSheet();
+        tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
+        gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
+        player.teleportToCenter(this);
+        logger.info("Default game map loaded");
+
+        renderer.adjustCamera(this, player);
+        loadSDKGUI();
+    }
+
+    public void switchTopPanel() {
+        logger.info("Switching panels");
+
+        if (guiList.contains(tileButtons)) {
+            guiList.remove(tileButtons);
+            guiList.add(animalButtons);
+        } else {
+            guiList.remove(animalButtons);
+            guiList.add(tileButtons);
+        }
+    }
+
+
+
     public int getSelectedTileId() {
         return selectedTileId;
     }
@@ -342,17 +395,5 @@ public class Game extends JFrame implements Runnable {
         return gameMap;
     }
 
-    public void replaceMapWithDefault(){       
-      
-        logger.info("Default game map loading started");
 
-        loadSpriteSheet();
-        tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
-        gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
-        player.teleportToCenter(this);
-        logger.info("Default game map loaded");
-        
-        renderer.adjustCamera(this, player);
-        loadSDKGUI();
-   }
 }
