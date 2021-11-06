@@ -1,6 +1,5 @@
 package base.gameobjects;
 
-import base.Game;
 import base.gameobjects.animals.*;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Sprite;
@@ -31,6 +30,7 @@ public class AnimalService {
     public static final String CAT_SHEET_PATH2 = "img/cat2.png";
 
     Map<String, String> animalAnimations;
+    Map<Integer, String> animalIdMapping;
     List<Animal> allAnimals;
 
     ImageLoader imageLoader = new ImageLoader();
@@ -44,16 +44,32 @@ public class AnimalService {
 
     void initializeAnimationMapping() {
         animalAnimations = new HashMap<>();
+        animalIdMapping = new HashMap<>();
         animalAnimations.put(RAT, RAT_SHEET_PATH);
+        animalIdMapping.put(0, RAT);
         animalAnimations.put(MOUSE, MOUSE_SHEET_PATH);
+        animalIdMapping.put(1, MOUSE);
         animalAnimations.put(CHICKEN, CHICKEN_SHEET_PATH);
+        animalIdMapping.put(2, CHICKEN);
         animalAnimations.put(BUTTERFLY, BUTTERFLY_SHEET_PATH);
+        animalIdMapping.put(3, BUTTERFLY);
         animalAnimations.put(CAT, CAT_SHEET_PATH);
+        animalIdMapping.put(4, CAT);
         animalAnimations.put(CAT2, CAT_SHEET_PATH2);
+        animalIdMapping.put(5, CAT2);
     }
 
     public List<Animal> getListOfAnimals() {
         return allAnimals;
+    }
+
+    public List<Animal> getPossibleAnimals() {
+        List<Animal> animalList = new ArrayList<>();
+        for (int i = 0; i < animalIdMapping.size() ; i++) {
+            String animalName = animalIdMapping.get(i);
+            animalList.add(createAnimal(animalName, getAnimatedSprite(animalName), 1, 1, ""));
+        }
+        return animalList;
     }
 
     public List<String> listOfAnimalsToLoad() {
@@ -68,12 +84,21 @@ public class AnimalService {
 
         for (String animal : animalsToLoad) {
             animal = animal.toLowerCase();
-            BufferedImage sheetImage = imageLoader.loadImage(getAnimalSheetPath(animal));
-            SpriteSheet animalSheet = new SpriteSheet(sheetImage);
-            animalSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
-            AnimatedSprite sprite = new AnimatedSprite(animalSheet, 9, false);
+            AnimatedSprite sprite = getAnimatedSprite(animal);
             allAnimals.add(createAnimal(animal, sprite, startX, startY, mapName));
         }
+    }
+
+    public AnimatedSprite getAnimatedSprite(String animalName) {
+        BufferedImage sheetImage = imageLoader.loadImage(getAnimalSheetPath(animalName));
+        SpriteSheet animalSheet = new SpriteSheet(sheetImage);
+        animalSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
+        return new AnimatedSprite(animalSheet, 9, false);
+    }
+
+    public Animal createAnimal(String animalName, int startX, int startY, String mapName) {
+        AnimatedSprite sprite = getAnimatedSprite(animalName);
+        return createAnimal(animalName, sprite, startX, startY, mapName);
     }
 
     public Animal createAnimal(String animalName, Sprite sprite, int startX, int startY, String mapName) {
@@ -120,6 +145,10 @@ public class AnimalService {
             return CAT;
         }
         return null;
+    }
+
+    public String getAnimalNameById(int id) {
+        return animalIdMapping.get(id);
     }
 
     public void fixStuckAnimals(GameMap gameMap, List<Animal> animals) {
