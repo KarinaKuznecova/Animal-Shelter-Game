@@ -77,4 +77,12 @@ public class GUI implements GameObject {
         }
         return stopChecking;
     }
+
+    public void addButton(GUIButton button) {
+        buttons.add(button);
+    }
+
+    public int getButtonCount() {
+        return buttons.size();
+    }
 }

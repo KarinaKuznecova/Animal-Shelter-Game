@@ -35,7 +35,10 @@ public class KeyboardListener implements KeyListener, FocusListener {
             game.handleQ();
         }
         if (keys[KeyEvent.VK_1]) {
-            game.switchTopPanel();
+            game.switchTopPanel(1);
+        }
+        if (keys[KeyEvent.VK_0]) {
+            game.switchTopPanel(0);
         }
     }
 

@@ -52,10 +52,12 @@ public class Game extends JFrame implements Runnable {
     private transient ImageLoader imageLoader;
 
     private transient GUI tileButtons;
-    private transient GUI animalButtons;
+    private transient GUI yourAnimalButtons;
+    private transient GUI possibleAnimalButtons;
 
     private int selectedTileId = -1;
     private int selectedAnimal = 1;
+    private int selectedPanel = 1;
 
     private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
     private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
@@ -67,7 +69,9 @@ public class Game extends JFrame implements Runnable {
         loadPlayerAnimatedImages();
         loadMap();
         loadSDKGUI();
+        loadYourAnimals();
         loadPossibleAnimalsPanel();
+        enableDefaultGui();
         loadGameObjects(getWidth() / 2, getHeight() / 2);
     }
 
@@ -179,7 +183,7 @@ public class Game extends JFrame implements Runnable {
             loadGameObjects(getWidth() / 2, getHeight() / 2);
         }
         renderer.adjustCamera(this, player);
-        loadSDKGUI();
+        refreshGuiPanels();
     }
 
     private void loadSpriteSheet() {
@@ -198,7 +202,6 @@ public class Game extends JFrame implements Runnable {
 
     private void loadSDKGUI() {
         List<Tile> tiles = tileService.getTiles();
-        List<Animal> animals = getGameMap().getAnimals();
         List<GUIButton> buttons = new ArrayList<>();
 
         for (int i = 0; i < tiles.size(); i++) {
@@ -206,20 +209,24 @@ public class Game extends JFrame implements Runnable {
             Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
             buttons.add(new SDKButton(this, i, tiles.get(i).getSprite(), tileRectangle));
         }
+        Rectangle tileRectangle = new Rectangle((tiles.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
+        buttons.add(new SDKButton(this, -1, null, tileRectangle));
+
+        tileButtons = new GUI(buttons, 5, 5, true);
+    }
+
+    private void loadYourAnimals() {
+        List<Animal> animals = getGameMap().getAnimals();
+        List<GUIButton> buttons = new ArrayList<>();
+
         for (int i = 0; i < animals.size(); i++) {
             Animal animal = animals.get(i);
             Sprite animalSprite = animal.getSprite();
             Rectangle tileRectangle = new Rectangle(this.getWidth() - (TILE_SIZE * ZOOM + TILE_SIZE), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
             buttons.add(new AnimalIcon(this, i, animalSprite, tileRectangle));
         }
-        Rectangle tileRectangle = new Rectangle((tiles.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
-        buttons.add(new SDKButton(this, -1, null, tileRectangle));
-        changeTile(-1);
-        changeAnimal(1);
 
-        tileButtons = new GUI(buttons, 5, 5, true);
-        guiList = new ArrayList<>();
-        guiList.add(tileButtons);
+        yourAnimalButtons = new GUI(buttons, 5, 5, true);
     }
 
     void loadPossibleAnimalsPanel() {
@@ -236,7 +243,21 @@ public class Game extends JFrame implements Runnable {
         buttons.add(new AnimalIcon(this, -1, null, tileRectangle));
         changeAnimal(-1);
 
-        animalButtons = new GUI(buttons, 5, 5, true);
+        possibleAnimalButtons = new GUI(buttons, 5, 5, true);
+    }
+
+    void enableDefaultGui() {
+        changeTile(-1);
+        changeAnimal(1);
+
+        guiList = new ArrayList<>();
+        guiList.add(tileButtons);
+        guiList.add(yourAnimalButtons);
+    }
+
+    void refreshGuiPanels() {
+        guiList.clear();
+        switchTopPanel(selectedPanel);
     }
 
     private void loadGameObjects(int startX, int startY) {
@@ -321,12 +342,25 @@ public class Game extends JFrame implements Runnable {
             if (guiList.contains(tileButtons)) {
                 gameMap.setTile(x, y, selectedTileId);
             }
-            if (guiList.contains(animalButtons)) {
+            if (guiList.contains(possibleAnimalButtons)) {
+                if (gameMap.getAnimals().size() >= 10) {
+                    logger.warn("Too many animals, can't add new");
+                    return;
+                }
                 x = x * (TILE_SIZE * ZOOM);
                 y = y * (TILE_SIZE * ZOOM);
                 Animal newAnimal = gameMap.addAnimal(x, y, selectedAnimal);
+                addAnimalToPanel(newAnimal);
             }
         }
+    }
+
+    public void addAnimalToPanel(Animal animal) {
+        int i = yourAnimalButtons.getButtonCount();
+        Rectangle tileRectangle = new Rectangle(this.getWidth() - (TILE_SIZE * ZOOM + TILE_SIZE), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+
+        AnimalIcon animalIcon = new AnimalIcon(this, i, animal.getSprite(), tileRectangle);
+        yourAnimalButtons.addButton(animalIcon);
     }
 
     public void rightClick(int x, int y) {
@@ -340,14 +374,14 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void handleQ() {
-        if (guiList.contains(tileButtons)) {
-            guiList.remove(tileButtons);
+        if (guiList.isEmpty()) {
+            switchTopPanel(selectedPanel);
         } else {
-            guiList.add(tileButtons);
+            guiList.clear();
         }
     }
 
-    public void replaceMapWithDefault(){
+    public void replaceMapWithDefault() {
 
         logger.info("Default game map loading started");
 
@@ -361,19 +395,32 @@ public class Game extends JFrame implements Runnable {
         loadSDKGUI();
     }
 
-    public void switchTopPanel() {
-        logger.info("Switching panels");
+    public void switchTopPanel(int panelId) {
+        logger.info(String.format("Switching panels to id: %d", panelId));
 
-        if (guiList.contains(tileButtons)) {
-            guiList.remove(tileButtons);
-            guiList.add(animalButtons);
-        } else {
-            guiList.remove(animalButtons);
-            guiList.add(tileButtons);
+        selectedPanel = panelId;
+        switch (panelId) {
+            case 1:
+                if (!guiList.contains(tileButtons)) {
+                    guiList.clear();
+                    guiList.add(tileButtons);
+                }
+                break;
+            case 2:
+                break;
+            case 0:
+                if (!guiList.contains(possibleAnimalButtons)) {
+                    guiList.clear();
+                    guiList.add(possibleAnimalButtons);
+                }
+                break;
+            default:
+                switchTopPanel(1);
+                break;
         }
+        loadYourAnimals();
+        guiList.add(yourAnimalButtons);
     }
-
-
 
     public int getSelectedTileId() {
         return selectedTileId;
