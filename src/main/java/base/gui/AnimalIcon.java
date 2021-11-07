@@ -8,7 +8,6 @@ import base.graphicsservice.Sprite;
 public class AnimalIcon extends GUIButton {
 
     private Game game;
-    private final Sprite sprite;
     private boolean isGreen = false;
     private int animalId;
 
@@ -20,6 +19,7 @@ public class AnimalIcon extends GUIButton {
         rectangle.generateGraphics(3, 0xFFDB3D);
     }
 
+    @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle rectangle) {
         if (sprite != null) {
             renderer.renderSprite(sprite,
