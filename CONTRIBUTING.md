@@ -8,6 +8,8 @@ You are here for tips, right? So here they are.
 
 I labeled issues, so it is easier to choose your first task. You might want to start with something labeled "good first issue". 
 
+Issues with label "needs analysis" and "idea" are not ready, please don't take them.
+
 If you have questions - feel free to ask. If you don't understand something, but really want to help - ask. I'm friendly, I promise :)
 
 
