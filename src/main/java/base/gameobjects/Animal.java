@@ -7,12 +7,11 @@ import base.graphicsservice.Sprite;
 import base.map.GameMap;
 import base.map.MapTile;
 import base.navigationservice.Direction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Random;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static base.Game.TILE_SIZE;
 import static base.Game.ZOOM;
@@ -278,5 +277,17 @@ public class Animal implements GameObject {
     public void teleportAnimalTo(int x, int y) {
         animalRectangle.setX(x);
         animalRectangle.setY(y);
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public int getCurrentX() {
+        return animalRectangle.getX();
+    }
+
+    public int getCurrentY() {
+        return animalRectangle.getY();
     }
 }
