@@ -35,8 +35,8 @@ public class Game extends JFrame implements Runnable {
 
     public static final String PLAYER_SHEET_PATH = "img/betty.png";
     public static final String SPRITES_PATH = "img/tiles-new.png";
-    public static final String TILE_LIST_PATH = "src/main/java/base/map/config/Tile-new.txt";
-    public static final String GAME_MAP_PATH = "src/main/java/base/map/config/GameMap.txt";
+    public static final String TILE_LIST_PATH = "maps/Tile-new.txt";
+    public static final String GAME_MAP_PATH = "maps/GameMap.txt";
 
     private final Canvas canvas = new Canvas();
 
