@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class MapService {
 
-    private File mapListFile = new File("src/main/java/base/map/config/MapList.txt");
+    private File mapListFile = new File("maps/MapList.txt");
     Map<String, String> mapFiles = new HashMap<>();
 
     protected static final Logger logger = LoggerFactory.getLogger(MapService.class);
