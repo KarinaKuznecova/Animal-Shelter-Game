@@ -30,6 +30,9 @@ public class Game extends JFrame implements Runnable {
     public static final int TILE_SIZE = 32;
     public static final int ZOOM = 2;
 
+    private int maxScreenWidth = 21 * (TILE_SIZE * ZOOM);
+    private int maxScreenHeight = 30 * (TILE_SIZE * ZOOM);
+
     public static final String PLAYER_SHEET_PATH = "img/betty.png";
     public static final String SPRITES_PATH = "img/tiles-new.png";
     public static final String TILE_LIST_PATH = "src/main/java/base/map/config/Tile-new.txt";
@@ -88,13 +91,27 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void loadUI() {
+        setSizeBasedOnScreenSize();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setBounds(0, 0, 1300, 900);
+        setBounds(0, 0, maxScreenWidth, maxScreenHeight);
         setLocationRelativeTo(null);
         add(canvas);
         setVisible(true);
         canvas.createBufferStrategy(3);
         renderer = new RenderHandler(getWidth(), getHeight());
+    }
+
+    private void setSizeBasedOnScreenSize() {
+        GraphicsDevice[] graphicsDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        for (GraphicsDevice device : graphicsDevices) {
+            if (maxScreenWidth > device.getDisplayMode().getWidth()) {
+                maxScreenWidth = device.getDisplayMode().getWidth();
+            }
+            if (maxScreenHeight > device.getDisplayMode().getHeight()) {
+                maxScreenHeight = device.getDisplayMode().getHeight();
+            }
+        }
+        logger.info(String.format("Screen size will be %d by %d", maxScreenWidth, maxScreenHeight));
     }
 
     private void loadControllers() {
