@@ -26,7 +26,7 @@ public class GameMap {
     private final File mapFile;
     private final Map<Integer, List<MapTile>> layeredTiles = new HashMap<>();
     private final List<MapTile> portals = new ArrayList<>();
-    private List<Animal> allAnimals = new ArrayList<>();
+    private List<Animal> allAnimals;
 
     int backGroundTileId = -1;      //background of walkable part of the map
     int alphaBackground = -1;       //outside the walkable part
@@ -42,6 +42,7 @@ public class GameMap {
         this.tileService = tileService;
         this.mapFile = mapFile;
         loadMapFromFile();
+        allAnimals = animalService.loadAnimalsFromFile(getMapName());
         logger.info(String.format("There will be %d animals on map %s", allAnimals.size(), getMapName()));
     }
 
@@ -105,10 +106,7 @@ public class GameMap {
             return true;
         }
         if (line.startsWith("Animals:")) {
-            String[] splitLine = line.split(":");
-            List<String> animalNames = Arrays.asList(splitLine[1].split(","));
-            animalService.loadAnimatedImages(animalNames, getMapWidth() / 2 * (TILE_SIZE * ZOOM), getMapHeight() / 2 * (TILE_SIZE * ZOOM), getMapName());
-            allAnimals = animalService.getListOfAnimals();
+            // ignore, now animals are saved differently
             return true;
         }
         return false;
@@ -303,9 +301,7 @@ public class GameMap {
             if (alphaBackground >= 0) {
                 printWriter.println("AlphaFill:" + alphaBackground);
             }
-            if (!allAnimals.isEmpty()) {
-                saveAnimals(printWriter);
-            }
+            saveAnimals();
             printWriter.println("//layer,tileId,xPos,yPos,portalDirection");
             for (List<MapTile> layer : layeredTiles.values()) {
                 for (MapTile tile : layer) {
@@ -323,17 +319,25 @@ public class GameMap {
         }
     }
 
-    private void saveAnimals(PrintWriter printWriter) {
-        StringBuilder animalList = new StringBuilder();
-        for (Animal animal : allAnimals) {
-            animalList.append(animalService.getAnimalType(animal));
-            animalList.append(",");
+    public void saveAnimals() {
+        if (!allAnimals.isEmpty()) {
+            deleteAnimalFilesForCurrentMap();
+            for (Animal animal : allAnimals) {
+                animalService.saveAnimalToFile(animal);
+            }
         }
-        String animals = animalList.toString();
-        if (animals.endsWith(",")) {
-            animals = animals.substring(0, animalList.length()-1);
+    }
+
+    private void deleteAnimalFilesForCurrentMap() {
+        logger.info("Deleting all animal files related to current map");
+        File animalsDirectory = new File("animals/");
+        if (animalsDirectory.listFiles() != null || animalsDirectory.listFiles().length > 0) {
+            for (File file : Objects.requireNonNull(animalsDirectory.listFiles())) {
+                if (file.getName().startsWith(getMapName())) {
+                    file.delete();
+                }
+            }
         }
-        printWriter.println("Animals:" + animals);
     }
 
     public MapTile getPortalTo(String destination) {

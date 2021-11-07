@@ -9,6 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 import static base.Game.TILE_SIZE;
@@ -72,21 +76,8 @@ public class AnimalService {
         return animalList;
     }
 
-    public List<String> listOfAnimalsToLoad() {
-        return Arrays.asList(RAT, CHICKEN, MOUSE, RAT, RAT, BUTTERFLY, MOUSE, CAT, CAT2);
-    }
-
     public String getAnimalSheetPath(String animalName) {
         return animalAnimations.get(animalName);
-    }
-
-    public void loadAnimatedImages(List<String> animalsToLoad, int startX, int startY, String mapName) {
-
-        for (String animal : animalsToLoad) {
-            animal = animal.toLowerCase();
-            AnimatedSprite sprite = getAnimatedSprite(animal);
-            allAnimals.add(createAnimal(animal, sprite, startX, startY, mapName));
-        }
     }
 
     public AnimatedSprite getAnimatedSprite(String animalName) {
@@ -157,6 +148,93 @@ public class AnimalService {
                 animal.tryToMove(gameMap);
             }
         }
+    }
+
+    private String getFilePath(Animal animal, int id) {
+        String path = "animals/" + animal.getHomeMap() + "-" + getAnimalType(animal) + "-" + id;
+
+        File animalFile = new File(path);
+        if (animalFile.exists()) {
+            path = getFilePath(animal, ++id);
+        }
+        return path;
+    }
+
+    public void saveAnimalToFile(Animal animal) {
+        logger.info("Saving animal to file");
+
+        String path = getFilePath(animal, 0);
+
+        File animalFile = new File(path);
+        try {
+            if (!animalFile.createNewFile()) {
+                logger.error(String.format("Unable to create file: %s", animalFile));
+                throw new IllegalArgumentException();
+            }
+
+            PrintWriter printWriter = new PrintWriter(animalFile);
+
+            printWriter.println("Type:" + getAnimalType(animal));
+            printWriter.println("HomeMap:" + animal.getHomeMap());
+            printWriter.println("Speed:" + animal.getSpeed());
+            printWriter.println("CanTravel:"); //should be filled in scope of #issue24
+            printWriter.println("X:" + animal.getCurrentX());
+            printWriter.println("Y:" + animal.getCurrentY());
+
+            printWriter.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Animal> loadAnimalsFromFile(String mapName) {
+        logger.info("Loading animals from files");
+        List<Animal> animalsOnMap = new ArrayList<>();
+        File directory = new File("animals/");
+        if (directory.listFiles() == null || directory.listFiles().length == 0) {
+            logger.info("No animals on this map");
+            return animalsOnMap;
+        }
+        for (File file : Objects.requireNonNull(directory.listFiles())) {
+            if (file.getName().startsWith(mapName)) {
+                String animalType = null;
+                int speed;
+                int x = 0;
+                int y = 0;
+                try (Scanner scanner = new Scanner(file)) {
+                    while (scanner.hasNextLine()) {
+                        String line = scanner.nextLine();
+                        if (line.startsWith("Type:")) {
+                            String[] splitLine = line.split(":");
+                            animalType = splitLine[1];
+                            continue;
+                        }
+                        if (line.startsWith("Speed:")) {
+                            String[] splitLine = line.split(":");
+                            speed = Integer.parseInt(splitLine[1]);
+                            continue;
+                        }
+                        if (line.startsWith("X:")) {
+                            String[] splitLine = line.split(":");
+                            x = Integer.parseInt(splitLine[1]);
+                            continue;
+                        }
+                        if (line.startsWith("Y:")) {
+                            String[] splitLine = line.split(":");
+                            y = Integer.parseInt(splitLine[1]);
+                        }
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                if (animalType != null) {
+                    Animal animal = createAnimal(animalType, x, y, mapName);
+                    animalsOnMap.add(animal);
+                }
+            }
+        }
+        return animalsOnMap;
     }
 
 }
