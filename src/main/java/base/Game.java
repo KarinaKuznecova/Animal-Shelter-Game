@@ -34,8 +34,6 @@ public class Game extends JFrame implements Runnable {
     private int maxScreenHeight = 30 * (TILE_SIZE * ZOOM);
 
     public static final String PLAYER_SHEET_PATH = "img/betty.png";
-    public static final String SPRITES_PATH = "img/tiles-new.png";
-    public static final String TILE_LIST_PATH = "maps/Tile-new.txt";
     public static final String GAME_MAP_PATH = "maps/GameMap.txt";
 
     private final Canvas canvas = new Canvas();
@@ -43,7 +41,6 @@ public class Game extends JFrame implements Runnable {
     protected static final Logger logger = LoggerFactory.getLogger(Game.class);
 
     private transient RenderHandler renderer;
-    private transient SpriteSheet spriteSheet;
     private transient GameMap gameMap;
     private transient List<GameObject> gameObjectsList;
     private transient List<GameObject> guiList;
@@ -56,8 +53,11 @@ public class Game extends JFrame implements Runnable {
     private transient ImageLoader imageLoader;
 
     private final transient GUI[] tileButtonsArray = new GUI[10];
+    private final transient GUI[] terrainButtonsArray = new GUI[11];
     private transient GUI yourAnimalButtons;
     private transient GUI possibleAnimalButtons;
+
+    public static boolean regularTiles = true;
 
     private int selectedTileId = -1;
     private int selectedAnimal = 1;
@@ -73,6 +73,7 @@ public class Game extends JFrame implements Runnable {
         loadPlayerAnimatedImages();
         loadMap();
         loadSDKGUI();
+        loadTerrainGui();
         loadYourAnimals();
         loadPossibleAnimalsPanel();
         enableDefaultGui();
@@ -173,8 +174,7 @@ public class Game extends JFrame implements Runnable {
     private void loadMap() {
         logger.info("Game map loading started");
 
-        loadSpriteSheet();
-        tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
+        tileService = new TileService();
         gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
 
         logger.info("Game map loaded");
@@ -189,7 +189,6 @@ public class Game extends JFrame implements Runnable {
         String previousMapName = gameMap.getMapName();
         logger.debug(String.format("Previous map name: %s", previousMapName));
 
-        tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
         gameMap = new GameMap(new File(mapPath), tileService);
 
         logger.info(String.format("Game map %s loaded", gameMap.getMapName()));
@@ -204,20 +203,6 @@ public class Game extends JFrame implements Runnable {
         }
         renderer.adjustCamera(this, player);
         refreshGuiPanels();
-    }
-
-    private void loadSpriteSheet() {
-        logger.info("Sprite sheet loading started");
-
-        BufferedImage bufferedImage = imageLoader.loadImage(SPRITES_PATH);
-        if (bufferedImage == null) {
-            logger.error("Buffered image is null, sprite path: " + SPRITES_PATH);
-            throw new IllegalArgumentException();
-        }
-        spriteSheet = new SpriteSheet(bufferedImage);
-        spriteSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
-
-        logger.info("Sprite sheet loading done");
     }
 
     private void loadSDKGUI() {
@@ -275,6 +260,30 @@ public class Game extends JFrame implements Runnable {
         changeAnimal(-1);
 
         possibleAnimalButtons = new GUI(buttons, 5, 5, true);
+    }
+
+    void loadTerrainGui() {
+        List<Tile> tiles = tileService.getTerrainTiles();
+
+        List<GUIButton> buttons = new ArrayList<>();
+        for (int i = 0, j = 0; i < tiles.size(); i++, j++) {
+            Rectangle tileRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+            buttons.add(new SDKButton(this, i, tiles.get(i).getSprite(), tileRectangle));
+            if (i != 0 && i % 18 == 0) {
+                Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+                buttons.add(new SDKButton(this, -1, null, oneMoreTileRectangle));
+                terrainButtonsArray[i / 18 - 1] = new GUI(buttons, 5, 5, true);
+
+                buttons = new ArrayList<>();
+                j = -1;
+            }
+            if (i == tiles.size() - 1) {
+                Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+                buttons.add(new SDKButton(this, -1, null, oneMoreTileRectangle));
+                int temp = (i - (i % 18)) / 18;
+                terrainButtonsArray[temp] = new GUI(buttons, 5, 5, true);
+            }
+        }
     }
 
     void enableDefaultGui() {
@@ -371,7 +380,7 @@ public class Game extends JFrame implements Runnable {
             x = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
             y = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
             if (!guiList.contains(possibleAnimalButtons)) {
-                gameMap.setTile(x, y, selectedTileId);
+                gameMap.setTile(x, y, selectedTileId, regularTiles);
             }
             if (guiList.contains(possibleAnimalButtons)) {
                 if (gameMap.getAnimals().size() >= 10) {
@@ -397,7 +406,7 @@ public class Game extends JFrame implements Runnable {
     public void rightClick(int x, int y) {
         x = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
         y = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
-        gameMap.removeTile(x, y, tileService.getLayerById(selectedTileId));
+        gameMap.removeTile(x, y, tileService.getLayerById(selectedTileId, regularTiles), regularTiles);
     }
 
     public void handleCTRLandS() {
@@ -416,8 +425,6 @@ public class Game extends JFrame implements Runnable {
 
         logger.info("Default game map loading started");
 
-        loadSpriteSheet();
-        tileService = new TileService(new File(TILE_LIST_PATH), spriteSheet);
         gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
         player.teleportToCenter(this);
         logger.info("Default game map loaded");
@@ -434,15 +441,44 @@ public class Game extends JFrame implements Runnable {
             if (!guiList.contains(possibleAnimalButtons)) {
                 guiList.clear();
                 guiList.add(possibleAnimalButtons);
+                regularTiles = true;
             }
-        } else if (tileButtonsArray[panelId - 1] != null && !guiList.contains(tileButtonsArray[panelId - 1])) {
-            guiList.clear();
-            guiList.add(tileButtonsArray[panelId - 1]);
+        } else if (regularTiles) {
+            if (tileButtonsArray[panelId - 1] != null && !guiList.contains(tileButtonsArray[panelId - 1])) {
+                guiList.clear();
+                guiList.add(tileButtonsArray[panelId - 1]);
+            }
+        } else {
+            if (terrainButtonsArray[panelId -1] != null && !guiList.contains(terrainButtonsArray[panelId -1])) {
+                guiList.clear();
+                guiList.add(terrainButtonsArray[panelId - 1]);
+            }
         }
         if (!guiList.contains(yourAnimalButtons)) {
             loadYourAnimals();
             guiList.add(yourAnimalButtons);
         }
+    }
+
+    public void openTerrainMenu() {
+        guiList.clear();
+
+        if (regularTiles) {
+            regularTiles = false;
+            logger.info("Opening terrain menu");
+            selectedPanel = 1;
+            guiList.add(terrainButtonsArray[0]);
+        } else {
+            regularTiles = true;
+            logger.info("Switching terrain menu to regular menu");
+            selectedPanel = 1;
+            guiList.add(tileButtonsArray[0]);
+        }
+        selectedTileId = -1;
+
+        loadYourAnimals();
+        guiList.add(yourAnimalButtons);
+
     }
 
     public int getSelectedTileId() {

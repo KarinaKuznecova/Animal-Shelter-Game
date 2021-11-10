@@ -250,7 +250,7 @@ public class Animal implements GameObject {
 
     @Override
     public int getLayer() {
-        return 1;
+        return 2;
     }
 
     @Override

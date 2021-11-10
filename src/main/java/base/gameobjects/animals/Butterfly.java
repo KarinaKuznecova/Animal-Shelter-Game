@@ -11,6 +11,6 @@ public class Butterfly extends Animal {
 
     @Override
     public int getLayer() {
-        return 2;
+        return 4;
     }
 }

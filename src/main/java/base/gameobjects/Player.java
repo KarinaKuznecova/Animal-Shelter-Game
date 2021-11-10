@@ -251,7 +251,7 @@ public class Player implements GameObject {
 
     @Override
     public int getLayer() {
-        return 1;
+        return 2;
     }
 
     @Override

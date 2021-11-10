@@ -28,8 +28,11 @@ public class KeyboardListener implements KeyListener, FocusListener {
             saving = true; //saving start
             game.handleCTRLandS();
         }
-        if(keys[KeyEvent.VK_H]){ 
-            game.replaceMapWithDefault();    
+        if (keys[KeyEvent.VK_H]) {
+            game.replaceMapWithDefault();
+        }
+        if (keys[KeyEvent.VK_T]) {
+            game.openTerrainMenu();
         }
         if (keys[KeyEvent.VK_Q]) {
             game.handleQ();
@@ -45,6 +48,21 @@ public class KeyboardListener implements KeyListener, FocusListener {
         }
         if (keys[KeyEvent.VK_4]) {
             game.switchTopPanel(4);
+        }
+        if (keys[KeyEvent.VK_5]) {
+            game.switchTopPanel(5);
+        }
+        if (keys[KeyEvent.VK_6]) {
+            game.switchTopPanel(6);
+        }
+        if (keys[KeyEvent.VK_7]) {
+            game.switchTopPanel(7);
+        }
+        if (keys[KeyEvent.VK_8]) {
+            game.switchTopPanel(8);
+        }
+        if (keys[KeyEvent.VK_9]) {
+            game.switchTopPanel(9);
         }
         if (keys[KeyEvent.VK_0]) {
             game.switchTopPanel(0);
@@ -81,10 +99,10 @@ public class KeyboardListener implements KeyListener, FocusListener {
     }
 
     public boolean down() {
-       
-        if(!saving){
-            return keys[KeyEvent.VK_S] || keys[KeyEvent.VK_DOWN];}
-        else{
+
+        if (!saving) {
+            return keys[KeyEvent.VK_S] || keys[KeyEvent.VK_DOWN];
+        } else {
             return false; //Don't move down when saving
         }
     }
