@@ -6,6 +6,7 @@ Currently there are 9 locations and you can walk accross them. You can build on 
 
 It is supposed to become a nice game, where you rescue animals(mini-quests), they live with you in your animal shelter and some animals can help you build your base/home, because some builds will requere resources and effort. 
 Sometimes you will have visitors, who would make donations(resources) or/and adopt animals from you. You will be able to choose which animal is available for adoption and which animal you will leave for yourself. 
+Used art from opengameart.org
 
 More screenshots:
 
