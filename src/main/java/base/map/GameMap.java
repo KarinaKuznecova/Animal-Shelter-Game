@@ -72,7 +72,14 @@ public class GameMap {
                     int tileId = Integer.parseInt(splitLine[1]);
                     int xPosition = Integer.parseInt(splitLine[2]);
                     int yPosition = Integer.parseInt(splitLine[3]);
-                    MapTile tile = new MapTile(layer, tileId, xPosition, yPosition);
+                    boolean isRegular = true;
+                    if (splitLine.length >= 5) {
+                        String terrain = splitLine[4];
+                        if (terrain.length() == 1) {
+                            isRegular = "y".equals(terrain);
+                        }
+                    }
+                    MapTile tile = new MapTile(layer, tileId, xPosition, yPosition, isRegular);
                     checkIfPortal(splitLine, tile);
                     tiles.add(tile);
                 }
@@ -126,10 +133,19 @@ public class GameMap {
     }
 
     private void checkIfPortal(String[] splitLine, MapTile tile) {
-        if (splitLine.length >= 5) {
+        if (splitLine.length == 5) {
+            String lastPiece = splitLine[4];
+            if (lastPiece.length() > 1) {
+                logger.info("Found portal as in old map config");
+                tile.setPortal(true);
+                tile.setPortalDirection(splitLine[4]);
+                portals.add(tile);
+            }
+        }
+        else if (splitLine.length >= 6) {
             logger.info("Found portal");
             tile.setPortal(true);
-            tile.setPortalDirection(splitLine[4]);
+            tile.setPortalDirection(splitLine[5]);
             portals.add(tile);
         }
     }
@@ -184,7 +200,7 @@ public class GameMap {
         if (backGroundTileId >= 0) {
             for (int i = 0; i < mapHeight * tileHeight; i += tileHeight) {
                 for (int j = 0; j < mapWidth * tileWidth; j += tileWidth) {
-                    tileService.renderTile(backGroundTileId, renderer, j, i, ZOOM, ZOOM);
+                    tileService.renderTerrainTile(backGroundTileId, renderer, j, i, ZOOM, ZOOM);
                 }
             }
         }
@@ -195,7 +211,7 @@ public class GameMap {
 
         for (int i = camera.getY() - tileHeight - (camera.getY() % tileHeight); i < camera.getY() + camera.getHeight(); i += tileHeight) {
             for (int j = camera.getX() - tileWidth - (camera.getX() % tileWidth); j < camera.getX() + camera.getWidth(); j += tileWidth) {
-                tileService.renderTile(tileId, renderer, j, i, ZOOM, ZOOM);
+                tileService.renderTerrainTile(tileId, renderer, j, i, ZOOM, ZOOM);
             }
         }
     }
@@ -222,7 +238,11 @@ public class GameMap {
         int xPosition = mappedTile.getX() * tileWidth;
         int yPosition = mappedTile.getY() * tileHeight;
         if (xPosition <= mapWidth * tileWidth && yPosition <= mapHeight * tileHeight) {
-            tileService.renderTile(mappedTile.getId(), renderer, xPosition, yPosition, ZOOM, ZOOM);
+            if (mappedTile.isRegularTile()) {
+                tileService.renderTile(mappedTile.getId(), renderer, xPosition, yPosition, ZOOM, ZOOM);
+            } else {
+                tileService.renderTerrainTile(mappedTile.getId(), renderer, xPosition, yPosition, ZOOM, ZOOM);
+            }
         }
     }
 
@@ -235,21 +255,28 @@ public class GameMap {
         return layeredTiles.get(layer);
     }
 
-    public void setTile(int tileX, int tileY, int tileId) {
+    public void setTile(int tileX, int tileY, int tileId, boolean regularTiles) {
         if (tileId == -1) {
             return;
         }
-        int layer = tileService.getLayerById(tileId);
+        int layer = tileService.getLayerById(tileId, regularTiles);
 
-        if ((layer != 0 && isThereAPortal(tileX, tileY))
-                || (!isThereAPortal(tileX, tileY) && layer != 1 && (tileX < 0 || tileX >= mapWidth || tileY < 0 || tileY >= mapHeight))) {
-            return;
-        }
+//        if ((layer != 0 && isThereAPortal(tileX, tileY))
+//                || (!isThereAPortal(tileX, tileY) && layer != 1 && (tileX < 0 || tileX >= mapWidth || tileY < 0 || tileY >= mapHeight))) {
+//            return;
+//        }
 
         boolean foundTile = false;
         if (layeredTiles.get(layer) != null) {
             for (MapTile tile : layeredTiles.get(layer)) {
                 if (tile.getX() == tileX && tile.getY() == tileY) {
+                    if (!tile.isRegularTile() && regularTiles) {
+                        logger.debug("Attempt to modify terrain tile when regular tile is selected");
+                        if (tile.getLayer() == layer) {
+                            foundTile = true;
+                        }
+                        break;
+                    }
                     tile.setId(tileId);
                     foundTile = true;
                     break;
@@ -257,17 +284,20 @@ public class GameMap {
             }
         } else {
             List<MapTile> tiles = new ArrayList<>();
-            tiles.add(new MapTile(layer, tileId, tileX, tileY));
+            tiles.add(new MapTile(layer, tileId, tileX, tileY, regularTiles));
             layeredTiles.put(layer, tiles);
         }
         if (!foundTile) {
-            layeredTiles.get(layer).add(new MapTile(layer, tileId, tileX, tileY));
+            layeredTiles.get(layer).add(new MapTile(layer, tileId, tileX, tileY, regularTiles));
+        }
+        if (maxLayer < layer) {
+            maxLayer = layer;
         }
     }
 
-    public void removeTile(int tileX, int tileY, int layer) {
+    public void removeTile(int tileX, int tileY, int layer, boolean regularTiles) {
         if (layeredTiles.get(layer) != null && !isThereAPortal(tileX, tileY)) {
-            layeredTiles.get(layer).removeIf(tile -> tile.getX() == tileX && tile.getY() == tileY);
+            layeredTiles.get(layer).removeIf(tile -> tile.getX() == tileX && tile.getY() == tileY && tile.isRegularTile() == regularTiles);
         }
     }
 
@@ -302,13 +332,14 @@ public class GameMap {
                 printWriter.println("AlphaFill:" + alphaBackground);
             }
             saveAnimals();
-            printWriter.println("//layer,tileId,xPos,yPos,portalDirection");
+            printWriter.println("//layer,tileId,xPos,yPos,regularTile,portalDirection");
             for (List<MapTile> layer : layeredTiles.values()) {
                 for (MapTile tile : layer) {
+                    String isRegular = tile.isRegularTile() ? "y" : "n";
                     if (tile.getPortalDirection() != null) {
-                        printWriter.println(tile.getLayer() + "," + tile.getId() + "," + tile.getX() + "," + tile.getY() + "," + tile.getPortalDirection());
+                        printWriter.println(tile.getLayer() + "," + tile.getId() + "," + tile.getX() + "," + tile.getY() + "," + isRegular + "," + tile.getPortalDirection());
                     } else {
-                        printWriter.println(tile.getLayer() + "," + tile.getId() + "," + tile.getX() + "," + tile.getY());
+                        printWriter.println(tile.getLayer() + "," + tile.getId() + "," + tile.getX() + "," + tile.getY() + "," + isRegular);
                     }
                 }
             }
