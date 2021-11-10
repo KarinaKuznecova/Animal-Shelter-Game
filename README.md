@@ -1,6 +1,6 @@
 2D game just for fun
 
-![game-preview](https://user-images.githubusercontent.com/47346801/140624010-82d2a356-6f48-415b-a3c7-a9b20edbb181.PNG)
+![05-prettier](https://user-images.githubusercontent.com/47346801/141174925-959605b8-5167-460a-aad3-1f32648a1d45.PNG)
 
 Currently there are 9 locations and you can walk accross them. You can build anything on any location and save your progress to a file (ctrl+s). There are no resources limit yet. Each location has animals, there are 5 animal types now.
 
