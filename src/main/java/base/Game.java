@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Game extends JFrame implements Runnable {
@@ -50,18 +51,21 @@ public class Game extends JFrame implements Runnable {
 
     private transient TileService tileService;
     private transient AnimalService animalService;
+    private transient PlantService plantService;
     private transient ImageLoader imageLoader;
 
     private final transient GUI[] tileButtonsArray = new GUI[10];
     private final transient GUI[] terrainButtonsArray = new GUI[11];
     private transient GUI yourAnimalButtons;
     private transient GUI possibleAnimalButtons;
+    private transient GUI plantsGui;
 
     private boolean regularTiles = true;
 
     private int selectedTileId = -1;
     private int selectedAnimal = -1;
     private int selectedYourAnimal = -1;
+    private int selectedPlant = -1;
     private int selectedPanel = 1;
 
     private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
@@ -77,6 +81,7 @@ public class Game extends JFrame implements Runnable {
         loadTerrainGui();
         loadYourAnimals();
         loadPossibleAnimalsPanel();
+        loadPlantsPanel();
         enableDefaultGui();
         loadGameObjects(getWidth() / 2, getHeight() / 2);
     }
@@ -89,6 +94,7 @@ public class Game extends JFrame implements Runnable {
 
     private void initializeServices() {
         animalService = new AnimalService();
+        plantService = new PlantService();
         imageLoader = new ImageLoader();
     }
 
@@ -263,6 +269,21 @@ public class Game extends JFrame implements Runnable {
         possibleAnimalButtons = new GUI(buttons, 5, 5, true);
     }
 
+    void loadPlantsPanel() {
+        List<GUIButton> buttons = new ArrayList<>();
+        List<Sprite> plants = plantService.getPreviews();
+
+        for (int i = 0; i < plants.size(); i++) {
+            Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+            buttons.add(new PlantButton(this, i, plants.get(i), tileRectangle));
+        }
+        Rectangle oneMoreTileRectangle = new Rectangle((plants.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+        buttons.add(new PlantButton(this, -1, null, oneMoreTileRectangle));
+        changeSelectedPlant(-1);
+
+        plantsGui = new GUI(buttons, 5, 5, true);
+    }
+
     void loadTerrainGui() {
         List<Tile> tiles = tileService.getTerrainTiles();
 
@@ -290,6 +311,7 @@ public class Game extends JFrame implements Runnable {
     void enableDefaultGui() {
         changeTile(-1);
         changeYourAnimal(-1);
+        changeSelectedPlant(-1);
 
         guiList = new CopyOnWriteArrayList<>();
         guiList.add(tileButtonsArray[0]);
@@ -356,6 +378,9 @@ public class Game extends JFrame implements Runnable {
         for (Animal animal : getGameMap().getAnimals()) {
             animal.update(this);
         }
+        for (Plant plant :getGameMap().getPlants()) {
+            plant.update(this);
+        }
     }
 
     public void changeTile(int tileId) {
@@ -371,6 +396,11 @@ public class Game extends JFrame implements Runnable {
     public void changeYourAnimal(int animalId) {
         logger.info(String.format("changing your selected animal to : %d", animalId));
         selectedYourAnimal = animalId;
+    }
+
+    public void changeSelectedPlant(int plantId) {
+        logger.info(String.format("changing your selected plant to : %d", plantId));
+        selectedPlant = plantId;
     }
 
     public void leftClick(int x, int y) {
@@ -401,6 +431,17 @@ public class Game extends JFrame implements Runnable {
                 y = y * (TILE_SIZE * ZOOM);
                 Animal newAnimal = gameMap.addAnimal(x, y, selectedAnimal);
                 addAnimalToPanel(newAnimal);
+            }
+            if (guiList.contains(plantsGui)) {
+                if (selectedPlant == -1) {
+                    return;
+                }
+                int tileX = x * (TILE_SIZE * ZOOM);
+                int tileY = y * (TILE_SIZE * ZOOM);
+                if (gameMap.isThereGrassOrDirt(tileX, tileY) && gameMap.isPlaceEmpty(1, tileX, tileY) && gameMap.isInsideOfMap(x, y)) {
+                    Plant plant = plantService.createPlant(selectedPlant, tileX, tileY);
+                    gameMap.addPlant(plant);
+                }
             }
         }
     }
@@ -453,13 +494,19 @@ public class Game extends JFrame implements Runnable {
                 guiList.add(possibleAnimalButtons);
                 regularTiles = true;
             }
+        } else if (panelId == 10) {
+            if (!guiList.contains(plantsGui)) {
+                selectedTileId = -1;
+                guiList.clear();
+                guiList.add(plantsGui);
+            }
         } else if (regularTiles) {
             if (tileButtonsArray[panelId - 1] != null && !guiList.contains(tileButtonsArray[panelId - 1])) {
                 guiList.clear();
                 guiList.add(tileButtonsArray[panelId - 1]);
             }
         } else {
-            if (terrainButtonsArray[panelId -1] != null && !guiList.contains(terrainButtonsArray[panelId -1])) {
+            if (terrainButtonsArray[panelId - 1] != null && !guiList.contains(terrainButtonsArray[panelId - 1])) {
                 guiList.clear();
                 guiList.add(terrainButtonsArray[panelId - 1]);
             }
@@ -521,6 +568,10 @@ public class Game extends JFrame implements Runnable {
         return selectedYourAnimal;
     }
 
+    public int getSelectedPlant() {
+        return selectedPlant;
+    }
+
     public KeyboardListener getKeyboardListener() {
         return keyboardListener;
     }
@@ -531,6 +582,10 @@ public class Game extends JFrame implements Runnable {
 
     public GameMap getGameMap() {
         return gameMap;
+    }
+
+    public void addGameObject(GameObject gameObject) {
+        gameObjectsList.add(gameObject);
     }
 
 }

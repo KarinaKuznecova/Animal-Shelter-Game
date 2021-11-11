@@ -7,9 +7,9 @@ import base.graphicsservice.Sprite;
 
 public class SDKButton extends GUIButton {
 
-    private Game game;
-    private int tileID;
-    private boolean isGreen = false;
+    Game game;
+    int tileID;
+    boolean isGreen = false;
 
     public SDKButton(Game game, int tileID, Sprite tileSprite, Rectangle rectangle) {
         super(tileSprite, rectangle, true);

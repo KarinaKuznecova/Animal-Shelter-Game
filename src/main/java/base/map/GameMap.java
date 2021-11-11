@@ -1,8 +1,6 @@
 package base.map;
 
-import base.gameobjects.Animal;
-import base.gameobjects.AnimalService;
-import base.gameobjects.GameObject;
+import base.gameobjects.*;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import org.slf4j.Logger;
@@ -14,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.Game.TILE_SIZE;
 import static base.Game.ZOOM;
@@ -22,11 +21,13 @@ public class GameMap {
 
     private final TileService tileService;
     private final AnimalService animalService = new AnimalService();
+    private final PlantService plantService = new PlantService();
 
     private final File mapFile;
     private final Map<Integer, List<MapTile>> layeredTiles = new HashMap<>();
     private final List<MapTile> portals = new ArrayList<>();
     private final List<Animal> allAnimals;
+    private final List<Plant> plants = new CopyOnWriteArrayList<>();
 
     int backGroundTileId = -1;      //background of walkable part of the map
     int alphaBackground = -1;       //outside the walkable part
@@ -52,6 +53,10 @@ public class GameMap {
                 String line = scanner.nextLine();
 
                 if (handleConfigLines(line)) {
+                    continue;
+                }
+
+                if (loadPlantLines(line)) {
                     continue;
                 }
 
@@ -112,8 +117,22 @@ public class GameMap {
             mapName = String.valueOf(splitLine[1]);
             return true;
         }
-        if (line.startsWith("Animals:")) {
-            // ignore, now animals are saved differently
+        return false;
+    }
+
+    private boolean loadPlantLines(String line) {
+        if (line.startsWith("plant")) {
+            String[] splitLine = line.split(",");
+            String plantId = splitLine[0];
+            int id = Integer.parseInt(plantId.substring(5));
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            int growingStage = Integer.parseInt(splitLine[3]);
+
+            Plant plant = plantService.createPlant(id, x, y);
+            plant.setGrowingStage(growingStage);
+            plants.add(plant);
+
             return true;
         }
         return false;
@@ -141,8 +160,7 @@ public class GameMap {
                 tile.setPortalDirection(splitLine[4]);
                 portals.add(tile);
             }
-        }
-        else if (splitLine.length >= 6) {
+        } else if (splitLine.length >= 6) {
             logger.info("Found portal");
             tile.setPortal(true);
             tile.setPortalDirection(splitLine[5]);
@@ -232,6 +250,12 @@ public class GameMap {
             }
         }
         animalService.fixStuckAnimals(this, getAnimals());
+
+        for (Plant plant : plants) {
+            if (plant.getLayer() == layer) {
+                plant.render(renderer, ZOOM, ZOOM);
+            }
+        }
     }
 
     private void renderTile(RenderHandler renderer, int tileWidth, int tileHeight, MapTile mappedTile) {
@@ -331,7 +355,7 @@ public class GameMap {
             if (alphaBackground >= 0) {
                 printWriter.println("AlphaFill:" + alphaBackground);
             }
-            saveAnimals();
+            savePlants(printWriter);
             printWriter.println("//layer,tileId,xPos,yPos,regularTile,portalDirection");
             for (List<MapTile> layer : layeredTiles.values()) {
                 for (MapTile tile : layer) {
@@ -348,6 +372,7 @@ public class GameMap {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        saveAnimals();
     }
 
     public void saveAnimals() {
@@ -356,6 +381,14 @@ public class GameMap {
             for (Animal animal : allAnimals) {
                 animalService.saveAnimalToFile(animal);
             }
+        }
+    }
+
+    public void savePlants(PrintWriter printWriter) {
+        printWriter.println("//Plants");
+        printWriter.println("//id, xPosition, yPosition, growingStage");
+        for (Plant plant : plants) {
+            printWriter.println("plant" + plant.getPlantId() + "," + plant.getRectangle().getX() + "," + plant.getRectangle().getY() + "," + plant.getGrowingStage());
         }
     }
 
@@ -432,5 +465,66 @@ public class GameMap {
 
     public void removeAnimal(int existingAnimalId) {
         allAnimals.remove(existingAnimalId);
+    }
+
+    public void addPlant(Plant plant) {
+        plants.add(plant);
+    }
+
+    public List<Plant> getPlants() {
+        return plants;
+    }
+
+    public boolean isThereGrassOrDirt(int x, int y) {
+        x = x / (TILE_SIZE * ZOOM);
+        y = y / (TILE_SIZE * ZOOM);
+        for (MapTile tile : layeredTiles.get(0)) {
+            if (tile.getX() == x && tile.getY() == y) {
+                return getGrassTileIds().contains(tile.getId());
+            }
+        }
+        if (getGrassTileIds().contains(backGroundTileId) && isPlaceEmpty(1, x, y) && isPlaceEmpty(2, x, y)) {
+            return true;
+        }
+        logger.info("There is no grass");
+        return false;
+    }
+
+    private List<Integer> getGrassTileIds() {
+        return Arrays.asList(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24);
+    }
+
+    public boolean isPlaceEmpty(int layer, int x, int y) {
+        if (isTherePlant(x, y)) {
+            return false;
+        }
+        if (layeredTiles.get(layer) == null) {
+            return true;
+        }
+        for (MapTile tile : layeredTiles.get(layer)) {
+            if (tile.getX() == x && tile.getY() == y) {
+                logger.info("Place is taken");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isInsideOfMap(int x, int y) {
+        if (x < 0 || x > mapWidth || y < 0 || y > mapHeight) {
+            logger.info("Outside of modifiable map");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isTherePlant(int x, int y) {
+        for (Plant plant : plants) {
+            if (plant.getRectangle().getX() == x && plant.getRectangle().getY() == y) {
+                logger.info("There is already a plant");
+                return true;
+            }
+        }
+        return false;
     }
 }

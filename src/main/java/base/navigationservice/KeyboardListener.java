@@ -34,6 +34,9 @@ public class KeyboardListener implements KeyListener, FocusListener {
         if (keys[KeyEvent.VK_H]) {
             game.replaceMapWithDefault();
         }
+        if (keys[KeyEvent.VK_P]) {
+            game.switchTopPanel(10);
+        }
         if (keys[KeyEvent.VK_T]) {
             game.openTerrainMenu();
         }
