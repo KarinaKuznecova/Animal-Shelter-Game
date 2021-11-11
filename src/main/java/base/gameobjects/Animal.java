@@ -21,8 +21,8 @@ public class Animal implements GameObject {
 
     private final Sprite sprite;
     private AnimatedSprite animatedSprite = null;
-    private final Rectangle animalRectangle;
-    private int speed;
+    protected final Rectangle animalRectangle;
+    protected int speed;
     private Direction direction;
     private int movingTicks = 0;
     private Random random;
@@ -99,7 +99,7 @@ public class Animal implements GameObject {
         movingTicks--;
     }
 
-    private void handleMoving(GameMap gameMap, Direction direction) {
+    protected void handleMoving(GameMap gameMap, Direction direction) {
         if (unwalkableInThisDirection(gameMap, direction)) {
             handleUnwalkable(direction);
             return;
@@ -129,7 +129,7 @@ public class Animal implements GameObject {
         }
     }
 
-    private void handleUnwalkable(Direction direction) {
+    protected void handleUnwalkable(Direction direction) {
         movingTicks = 0;
         switch (direction) {
             case LEFT:
@@ -167,7 +167,7 @@ public class Animal implements GameObject {
         return random.nextInt(20) + 64;
     }
 
-    private boolean unwalkableInThisDirection(GameMap gameMap, Direction direction) {
+    protected boolean unwalkableInThisDirection(GameMap gameMap, Direction direction) {
         int xPosition = animalRectangle.getX();
         int yPosition = animalRectangle.getY();
 

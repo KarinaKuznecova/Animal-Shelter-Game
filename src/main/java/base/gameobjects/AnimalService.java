@@ -25,6 +25,7 @@ public class AnimalService {
     public static final String BUTTERFLY = "butterfly";
     public static final String CAT = "cat";
     public static final String CAT2 = "cat2";
+    public static final String PIG = "pig";
 
     public static final String RAT_SHEET_PATH = "img/rat.png";
     public static final String MOUSE_SHEET_PATH = "img/mouse.png";
@@ -32,6 +33,7 @@ public class AnimalService {
     public static final String BUTTERFLY_SHEET_PATH = "img/butterfly.png";
     public static final String CAT_SHEET_PATH = "img/cat1.png";
     public static final String CAT_SHEET_PATH2 = "img/cat2.png";
+    public static final String PIG_SHEET_PATH = "img/pig.png";
 
     Map<String, String> animalAnimations;
     Map<Integer, String> animalIdMapping;
@@ -61,6 +63,8 @@ public class AnimalService {
         animalIdMapping.put(4, CAT);
         animalAnimations.put(CAT2, CAT_SHEET_PATH2);
         animalIdMapping.put(5, CAT2);
+        animalAnimations.put(PIG, PIG_SHEET_PATH);
+        animalIdMapping.put(6, PIG);
     }
 
     public List<Animal> getListOfAnimals() {
@@ -111,6 +115,9 @@ public class AnimalService {
             case CAT2:
                 animal = new Cat(sprite, startX, startY, 2);
                 break;
+            case PIG:
+                animal = new Pig(sprite, startX, startY, 3);
+                break;
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalName));
                 throw new IllegalArgumentException();
@@ -134,6 +141,9 @@ public class AnimalService {
         }
         if (animal instanceof Cat) {
             return CAT;
+        }
+        if (animal instanceof Pig) {
+            return PIG;
         }
         return null;
     }
