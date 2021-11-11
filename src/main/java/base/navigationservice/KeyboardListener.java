@@ -9,7 +9,7 @@ import java.awt.event.KeyListener;
 
 public class KeyboardListener implements KeyListener, FocusListener {
 
-    public boolean[] keys = new boolean[120];
+    public boolean[] keys = new boolean[128];
     private boolean saving = false;
     private Game game;
 
@@ -25,8 +25,11 @@ public class KeyboardListener implements KeyListener, FocusListener {
             keys[keyCode] = true;
         }
         if (keys[KeyEvent.VK_CONTROL] && keys[KeyEvent.VK_S]) {
-            saving = true; //saving start
+            saving = true;
             game.handleCTRLandS();
+        }
+        if (keys[KeyEvent.VK_DELETE]) {
+            game.deleteAnimal();
         }
         if (keys[KeyEvent.VK_H]) {
             game.replaceMapWithDefault();

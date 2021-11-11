@@ -5,13 +5,14 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
-public class AnimalIcon extends GUIButton {
+public class NewAnimalButton extends GUIButton{
+
 
     private Game game;
     private boolean isGreen = false;
     private int animalId;
 
-    public AnimalIcon(Game game, int animalId, Sprite sprite, Rectangle rectangle) {
+    public NewAnimalButton(Game game, int animalId, Sprite sprite, Rectangle rectangle) {
         super(sprite, rectangle, true);
         this.sprite = sprite;
         this.animalId = animalId;
@@ -34,7 +35,7 @@ public class AnimalIcon extends GUIButton {
 
     @Override
     public void update(Game game) {
-        if (animalId == game.getYourSelectedAnimal()) {
+        if (animalId == game.getSelectedAnimal()) {
             if (!isGreen) {
                 region.generateGraphics(3, 0x67FF3D);
                 isGreen = true;
@@ -54,6 +55,6 @@ public class AnimalIcon extends GUIButton {
 
     @Override
     public void activate() {
-        game.changeYourAnimal(animalId);
+        game.changeAnimal(animalId);
     }
 }

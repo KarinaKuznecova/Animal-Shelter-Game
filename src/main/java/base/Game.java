@@ -57,10 +57,11 @@ public class Game extends JFrame implements Runnable {
     private transient GUI yourAnimalButtons;
     private transient GUI possibleAnimalButtons;
 
-    public static boolean regularTiles = true;
+    private boolean regularTiles = true;
 
     private int selectedTileId = -1;
-    private int selectedAnimal = 1;
+    private int selectedAnimal = -1;
+    private int selectedYourAnimal = -1;
     private int selectedPanel = 1;
 
     private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
@@ -253,10 +254,10 @@ public class Game extends JFrame implements Runnable {
             Animal animal = animals.get(i);
             Sprite animalSprite = animal.getSprite();
             Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
-            buttons.add(new AnimalIcon(this, i, animalSprite, tileRectangle));
+            buttons.add(new NewAnimalButton(this, i, animalSprite, tileRectangle));
         }
         Rectangle tileRectangle = new Rectangle((animals.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
-        buttons.add(new AnimalIcon(this, -1, null, tileRectangle));
+        buttons.add(new NewAnimalButton(this, -1, null, tileRectangle));
         changeAnimal(-1);
 
         possibleAnimalButtons = new GUI(buttons, 5, 5, true);
@@ -288,7 +289,7 @@ public class Game extends JFrame implements Runnable {
 
     void enableDefaultGui() {
         changeTile(-1);
-        changeAnimal(1);
+        changeYourAnimal(-1);
 
         guiList = new CopyOnWriteArrayList<>();
         guiList.add(tileButtonsArray[0]);
@@ -367,12 +368,18 @@ public class Game extends JFrame implements Runnable {
         selectedAnimal = animalId;
     }
 
+    public void changeYourAnimal(int animalId) {
+        logger.info(String.format("changing your selected animal to : %d", animalId));
+        selectedYourAnimal = animalId;
+    }
+
     public void leftClick(int x, int y) {
         Rectangle mouseRectangle = new Rectangle(x, y, 1, 1);
         boolean stoppedChecking = false;
 
         for (GameObject gameObject : guiList) {
             if (!stoppedChecking) {
+                deselectAnimal();
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM);
             }
         }
@@ -383,6 +390,9 @@ public class Game extends JFrame implements Runnable {
                 gameMap.setTile(x, y, selectedTileId, regularTiles);
             }
             if (guiList.contains(possibleAnimalButtons)) {
+                if (selectedAnimal == -1) {
+                    return;
+                }
                 if (gameMap.getAnimals().size() >= 10) {
                     logger.warn("Too many animals, can't add new");
                     return;
@@ -481,12 +491,34 @@ public class Game extends JFrame implements Runnable {
 
     }
 
+    public void deselectAnimal() {
+        selectedYourAnimal = -1;
+    }
+
+    public void deleteAnimal() {
+        if (selectedYourAnimal == -1) {
+            logger.debug("Nothing to delete - no animal is selected");
+            return;
+        }
+        logger.info("Will remove selected animal");
+        gameMap.removeAnimal(selectedYourAnimal);
+        gameMap.saveAnimals();
+        refreshGuiPanels();
+        deselectAnimal();
+
+        logger.info("Animal removed");
+    }
+
     public int getSelectedTileId() {
         return selectedTileId;
     }
 
     public int getSelectedAnimal() {
         return selectedAnimal;
+    }
+
+    public int getYourSelectedAnimal() {
+        return selectedYourAnimal;
     }
 
     public KeyboardListener getKeyboardListener() {
@@ -500,6 +532,5 @@ public class Game extends JFrame implements Runnable {
     public GameMap getGameMap() {
         return gameMap;
     }
-
 
 }
