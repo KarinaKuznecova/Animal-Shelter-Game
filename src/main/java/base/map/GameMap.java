@@ -26,7 +26,7 @@ public class GameMap {
     private final File mapFile;
     private final Map<Integer, List<MapTile>> layeredTiles = new HashMap<>();
     private final List<MapTile> portals = new ArrayList<>();
-    private List<Animal> allAnimals;
+    private final List<Animal> allAnimals;
 
     int backGroundTileId = -1;      //background of walkable part of the map
     int alphaBackground = -1;       //outside the walkable part
@@ -261,10 +261,10 @@ public class GameMap {
         }
         int layer = tileService.getLayerById(tileId, regularTiles);
 
-//        if ((layer != 0 && isThereAPortal(tileX, tileY))
-//                || (!isThereAPortal(tileX, tileY) && layer != 1 && (tileX < 0 || tileX >= mapWidth || tileY < 0 || tileY >= mapHeight))) {
-//            return;
-//        }
+        if (isThereAPortal(tileX, tileY) && regularTiles) {
+            logger.debug("Can't place regular tile on portal");
+            return;
+        }
 
         boolean foundTile = false;
         if (layeredTiles.get(layer) != null) {
@@ -362,7 +362,7 @@ public class GameMap {
     private void deleteAnimalFilesForCurrentMap() {
         logger.info("Deleting all animal files related to current map");
         File animalsDirectory = new File("animals/");
-        if (animalsDirectory.listFiles() != null || animalsDirectory.listFiles().length > 0) {
+        if (animalsDirectory.listFiles() != null && animalsDirectory.listFiles().length > 0) {
             for (File file : Objects.requireNonNull(animalsDirectory.listFiles())) {
                 if (file.getName().startsWith(getMapName())) {
                     file.delete();
@@ -428,5 +428,9 @@ public class GameMap {
 
         allAnimals.add(newAnimal);
         return newAnimal;
+    }
+
+    public void removeAnimal(int existingAnimalId) {
+        allAnimals.remove(existingAnimalId);
     }
 }

@@ -69,7 +69,7 @@ public class AnimalService {
 
     public List<Animal> getPossibleAnimals() {
         List<Animal> animalList = new ArrayList<>();
-        for (int i = 0; i < animalIdMapping.size() ; i++) {
+        for (int i = 0; i < animalIdMapping.size(); i++) {
             String animalName = animalIdMapping.get(i);
             animalList.add(createAnimal(animalName, getAnimatedSprite(animalName), 1, 1, ""));
         }
