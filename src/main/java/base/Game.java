@@ -48,6 +48,8 @@ public class Game extends JFrame implements Runnable {
     private transient Player player;
     private transient AnimatedSprite playerAnimations;
 
+    private transient GameTips gameTips;
+
     private transient TileService tileService;
     private transient AnimalService animalService;
     private transient PlantService plantService;
@@ -345,6 +347,8 @@ public class Game extends JFrame implements Runnable {
         gameObjectsList.add(player);
 
         gameObjectsList.addAll(animalService.getListOfAnimals());
+
+        gameTips = new GameTips();
     }
 
     public void run() {
@@ -612,4 +616,13 @@ public class Game extends JFrame implements Runnable {
         gameObjectsList.add(gameObject);
     }
 
+    public void showTips() {
+        if (renderer.getTextToDraw().isEmpty()) {
+            logger.info("will start drawing text");
+            renderer.setTextToDraw(gameTips.getLines());
+        } else {
+            logger.debug("removing text");
+            renderer.removeText();
+        }
+    }
 }

@@ -1,0 +1,8 @@
+Ctrl + S - save current map
+
+1 - 9 switching between tiles panels
+0 - panel to add animals
+P - panel with growable plants
+Q - show/hide panel with tiles
+H - teleport to the center of Home map
+B - open backpack

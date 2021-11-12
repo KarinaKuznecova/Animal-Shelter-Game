@@ -8,15 +8,18 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class RenderHandler {
 
-    private BufferedImage view;
-    private int[] pixels;
-    private Rectangle camera;
+    private final BufferedImage view;
+    private final int[] pixels;
+    private final Rectangle camera;
     private int maxScreenWidth;
     private int maxScreenHeight;
+    private final List<String> textToDraw;
 
     protected static final Logger logger = LoggerFactory.getLogger(RenderHandler.class);
 
@@ -31,6 +34,8 @@ public class RenderHandler {
 
         //Create an array for pixels
         pixels = ((DataBufferInt) view.getRaster().getDataBuffer()).getData();
+
+        textToDraw = new ArrayList<>();
     }
 
     private void setSizeBasedOnScreenSize() {
@@ -47,6 +52,18 @@ public class RenderHandler {
 
     public void render(Graphics graphics) {
         graphics.drawImage(view.getSubimage( 0, 0, camera.getWidth(), camera.getHeight()), 0,0, camera.getWidth(), camera.getHeight(), null);
+
+        if (!textToDraw.isEmpty()) {
+            renderText(graphics);
+        }
+    }
+
+    private void renderText(Graphics graphics) {
+        int xOffset = maxScreenWidth / 4;
+        int yOffset = 20;
+        for (int i = 0; i < textToDraw.size(); i++) {
+            renderText(graphics, textToDraw.get(i), xOffset, 200 + (yOffset * i));
+        }
     }
 
     public void renderRectangle(Rectangle rectangle, int xZoom, int yZoom, boolean fixed) {
@@ -156,5 +173,24 @@ public class RenderHandler {
             logger.info("Adjustment will be on the top side");
             camera.setY(-64);
         }
+    }
+
+    private void renderText(Graphics graphics, String line, int x, int y) {
+        graphics.setColor(Color.black);
+        graphics.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        graphics.drawString(line, x, y);
+    }
+
+    public void setTextToDraw(List<String> textToDraw) {
+        logger.debug(String.format("adding %d lines", textToDraw.size()));
+        this.textToDraw.addAll(textToDraw);
+    }
+
+    public void removeText() {
+        textToDraw.clear();
+    }
+
+    public List<String> getTextToDraw() {
+        return textToDraw;
     }
 }
