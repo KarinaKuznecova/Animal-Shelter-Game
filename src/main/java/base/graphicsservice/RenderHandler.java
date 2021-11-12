@@ -22,7 +22,6 @@ public class RenderHandler {
 
     private final List<String> textToDraw;
     private int textCountdown;
-    private int period;
 
     protected static final Logger logger = LoggerFactory.getLogger(RenderHandler.class);
 
@@ -56,14 +55,14 @@ public class RenderHandler {
     public void render(Graphics graphics) {
         graphics.drawImage(view.getSubimage(0, 0, camera.getWidth(), camera.getHeight()), 0, 0, camera.getWidth(), camera.getHeight(), null);
 
-        if (!textToDraw.isEmpty() && period != 1) {
+        if (!textToDraw.isEmpty() && textCountdown != 1) {
             renderText(graphics);
-            if (period > 1) {
-                period--;
+            if (textCountdown > 1) {
+                textCountdown--;
             }
         }
-        if (!textToDraw.isEmpty() && period == 1) {
-            period = 0;
+        if (!textToDraw.isEmpty() && textCountdown == 1) {
+            textCountdown = 0;
             removeText();
         }
     }
@@ -198,7 +197,7 @@ public class RenderHandler {
     }
 
     public void setTextToDraw(String line, int timer) {
-        period = timer;
+        textCountdown = timer;
         setTextToDraw(line);
     }
 
