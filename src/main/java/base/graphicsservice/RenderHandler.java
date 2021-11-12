@@ -59,7 +59,7 @@ public class RenderHandler {
     }
 
     private void renderText(Graphics graphics) {
-        int xOffset = 500;
+        int xOffset = maxScreenWidth / 4;
         int yOffset = 20;
         for (int i = 0; i < textToDraw.size(); i++) {
             renderText(graphics, textToDraw.get(i), xOffset, 200 + (yOffset * i));
