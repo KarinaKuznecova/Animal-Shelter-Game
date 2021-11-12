@@ -480,11 +480,12 @@ public class Game extends JFrame implements Runnable {
         gameMap.removeTile(x, y, tileService.getLayerById(selectedTileId, regularTiles), regularTiles);
     }
 
-    public void handleCTRLandS() {
+    public void saveMap() {
+        renderer.setTextToDraw("...saving game...", 40);
         gameMap.saveMap();
     }
 
-    public void handleQ() {
+    public void hideGuiPanels() {
         if (guiList.isEmpty()) {
             switchTopPanel(selectedPanel);
         } else {

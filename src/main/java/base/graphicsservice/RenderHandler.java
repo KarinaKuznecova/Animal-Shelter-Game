@@ -19,7 +19,10 @@ public class RenderHandler {
     private final Rectangle camera;
     private int maxScreenWidth;
     private int maxScreenHeight;
+
     private final List<String> textToDraw;
+    private int textCountdown;
+    private int period;
 
     protected static final Logger logger = LoggerFactory.getLogger(RenderHandler.class);
 
@@ -51,10 +54,17 @@ public class RenderHandler {
     }
 
     public void render(Graphics graphics) {
-        graphics.drawImage(view.getSubimage( 0, 0, camera.getWidth(), camera.getHeight()), 0,0, camera.getWidth(), camera.getHeight(), null);
+        graphics.drawImage(view.getSubimage(0, 0, camera.getWidth(), camera.getHeight()), 0, 0, camera.getWidth(), camera.getHeight(), null);
 
-        if (!textToDraw.isEmpty()) {
+        if (!textToDraw.isEmpty() && period != 1) {
             renderText(graphics);
+            if (period > 1) {
+                period--;
+            }
+        }
+        if (!textToDraw.isEmpty() && period == 1) {
+            period = 0;
+            removeText();
         }
     }
 
@@ -183,7 +193,19 @@ public class RenderHandler {
 
     public void setTextToDraw(List<String> textToDraw) {
         logger.debug(String.format("adding %d lines", textToDraw.size()));
+        removeText();
         this.textToDraw.addAll(textToDraw);
+    }
+
+    public void setTextToDraw(String line, int timer) {
+        period = timer;
+        setTextToDraw(line);
+    }
+
+    public void setTextToDraw(String line) {
+        logger.debug(String.format("adding <%s> line", line));
+        removeText();
+        textToDraw.add(line);
     }
 
     public void removeText() {

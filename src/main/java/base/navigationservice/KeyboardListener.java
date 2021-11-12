@@ -26,7 +26,7 @@ public class KeyboardListener implements KeyListener, FocusListener {
         }
         if (keys[KeyEvent.VK_CONTROL] && keys[KeyEvent.VK_S]) {
             saving = true;
-            game.handleCTRLandS();
+            game.saveMap();
         }
         if (keys[KeyEvent.VK_DELETE]) {
             game.deleteAnimal();
@@ -47,7 +47,7 @@ public class KeyboardListener implements KeyListener, FocusListener {
             game.openTerrainMenu();
         }
         if (keys[KeyEvent.VK_Q]) {
-            game.handleQ();
+            game.hideGuiPanels();
         }
         if (keys[KeyEvent.VK_1]) {
             game.switchTopPanel(1);
