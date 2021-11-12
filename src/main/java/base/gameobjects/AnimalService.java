@@ -1,21 +1,16 @@
 package base.gameobjects;
 
 import base.gameobjects.animals.*;
-import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Sprite;
-import base.graphicsservice.SpriteSheet;
 import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
-
-import static base.Game.TILE_SIZE;
 
 public class AnimalService {
 
@@ -24,92 +19,55 @@ public class AnimalService {
     public static final String CHICKEN = "chicken";
     public static final String BUTTERFLY = "butterfly";
     public static final String CAT = "cat";
-    public static final String CAT2 = "cat2";
+    public static final String PIG = "pig";
 
-    public static final String RAT_SHEET_PATH = "img/rat.png";
-    public static final String MOUSE_SHEET_PATH = "img/mouse.png";
-    public static final String CHICKEN_SHEET_PATH = "img/chicken.png";
-    public static final String BUTTERFLY_SHEET_PATH = "img/butterfly.png";
-    public static final String CAT_SHEET_PATH = "img/cat1.png";
-    public static final String CAT_SHEET_PATH2 = "img/cat2.png";
-
-    Map<String, String> animalAnimations;
     Map<Integer, String> animalIdMapping;
-    List<Animal> allAnimals;
-
-    ImageLoader imageLoader = new ImageLoader();
 
     protected static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
 
     public AnimalService() {
         initializeAnimationMapping();
-        allAnimals = new ArrayList<>();
     }
 
     void initializeAnimationMapping() {
-        animalAnimations = new HashMap<>();
         animalIdMapping = new HashMap<>();
-        animalAnimations.put(RAT, RAT_SHEET_PATH);
-        animalIdMapping.put(0, RAT);
-        animalAnimations.put(MOUSE, MOUSE_SHEET_PATH);
-        animalIdMapping.put(1, MOUSE);
-        animalAnimations.put(CHICKEN, CHICKEN_SHEET_PATH);
-        animalIdMapping.put(2, CHICKEN);
-        animalAnimations.put(BUTTERFLY, BUTTERFLY_SHEET_PATH);
-        animalIdMapping.put(3, BUTTERFLY);
-        animalAnimations.put(CAT, CAT_SHEET_PATH);
-        animalIdMapping.put(4, CAT);
-        animalAnimations.put(CAT2, CAT_SHEET_PATH2);
-        animalIdMapping.put(5, CAT2);
+        animalIdMapping.put(0, Rat.NAME);
+        animalIdMapping.put(1, Mouse.NAME);
+        animalIdMapping.put(2, Chicken.NAME);
+        animalIdMapping.put(3, Butterfly.NAME);
+        animalIdMapping.put(4, Cat.NAME);
+        animalIdMapping.put(5, Pig.NAME);
     }
 
-    public List<Animal> getListOfAnimals() {
-        return allAnimals;
-    }
-
-    public List<Animal> getPossibleAnimals() {
-        List<Animal> animalList = new ArrayList<>();
+    public List<Sprite> getAnimalPreviewSprites() {
+        List<Sprite> previews = new ArrayList<>();
         for (int i = 0; i < animalIdMapping.size(); i++) {
             String animalName = animalIdMapping.get(i);
-            animalList.add(createAnimal(animalName, getAnimatedSprite(animalName), 1, 1, ""));
+            previews.add(createAnimal(animalName, 1, 1, "").getPreviewSprite());
         }
-        return animalList;
-    }
-
-    public String getAnimalSheetPath(String animalName) {
-        return animalAnimations.get(animalName);
-    }
-
-    public AnimatedSprite getAnimatedSprite(String animalName) {
-        BufferedImage sheetImage = imageLoader.loadImage(getAnimalSheetPath(animalName));
-        SpriteSheet animalSheet = new SpriteSheet(sheetImage);
-        animalSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
-        return new AnimatedSprite(animalSheet, 9, false);
+        return previews;
     }
 
     public Animal createAnimal(String animalName, int startX, int startY, String mapName) {
-        AnimatedSprite sprite = getAnimatedSprite(animalName);
-        return createAnimal(animalName, sprite, startX, startY, mapName);
-    }
-
-    public Animal createAnimal(String animalName, Sprite sprite, int startX, int startY, String mapName) {
         Animal animal;
         switch (animalName.toLowerCase()) {
             case RAT:
-                animal = new Rat(sprite, startX, startY, 3);
+                animal = new Rat(startX, startY, 3);
                 break;
             case MOUSE:
-                animal = new Mouse(sprite, startX, startY, 2);
+                animal = new Mouse(startX, startY, 2);
                 break;
             case CHICKEN:
-                animal = new Chicken(sprite, startX, startY, 2);
+                animal = new Chicken(startX, startY, 2);
                 break;
             case BUTTERFLY:
-                animal = new Butterfly(sprite, startX, startY, 1);
+                animal = new Butterfly(startX, startY, 1);
                 break;
             case CAT:
-            case CAT2:
-                animal = new Cat(sprite, startX, startY, 2);
+                animal = new Cat(startX, startY, 2);
+                break;
+            case PIG:
+                animal = new Pig(startX, startY, 3);
                 break;
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalName));
@@ -135,6 +93,9 @@ public class AnimalService {
         if (animal instanceof Cat) {
             return CAT;
         }
+        if (animal instanceof Pig) {
+            return PIG;
+        }
         return null;
     }
 
@@ -148,16 +109,6 @@ public class AnimalService {
                 animal.tryToMove(gameMap);
             }
         }
-    }
-
-    private String getFilePath(Animal animal, int id) {
-        String path = "animals/" + animal.getHomeMap() + "-" + getAnimalType(animal) + "-" + id;
-
-        File animalFile = new File(path);
-        if (animalFile.exists()) {
-            path = getFilePath(animal, ++id);
-        }
-        return path;
     }
 
     public void saveAnimalToFile(Animal animal) {
@@ -186,6 +137,16 @@ public class AnimalService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getFilePath(Animal animal, int id) {
+        String path = "animals/" + animal.getHomeMap() + "-" + getAnimalType(animal) + "-" + id;
+
+        File animalFile = new File(path);
+        if (animalFile.exists()) {
+            path = getFilePath(animal, ++id);
+        }
+        return path;
     }
 
     public List<Animal> loadAnimalsFromFile(String mapName) {
@@ -236,5 +197,4 @@ public class AnimalService {
         }
         return animalsOnMap;
     }
-
 }

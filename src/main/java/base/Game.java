@@ -251,7 +251,7 @@ public class Game extends JFrame implements Runnable {
 
         for (int i = 0; i < animals.size(); i++) {
             Animal animal = animals.get(i);
-            Sprite animalSprite = animal.getSprite();
+            Sprite animalSprite = animal.getPreviewSprite();
             Rectangle tileRectangle = new Rectangle(this.getWidth() - (TILE_SIZE * ZOOM + TILE_SIZE), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
             buttons.add(new AnimalIcon(this, i, animalSprite, tileRectangle));
         }
@@ -260,16 +260,15 @@ public class Game extends JFrame implements Runnable {
     }
 
     void loadPossibleAnimalsPanel() {
-        List<Animal> animals = animalService.getPossibleAnimals();
+        List<Sprite> previews = animalService.getAnimalPreviewSprites();
         List<GUIButton> buttons = new ArrayList<>();
 
-        for (int i = 0; i < animals.size(); i++) {
-            Animal animal = animals.get(i);
-            Sprite animalSprite = animal.getSprite();
+        for (int i = 0; i < previews.size(); i++) {
+            Sprite animalSprite = previews.get(i);
             Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
             buttons.add(new NewAnimalButton(this, i, animalSprite, tileRectangle));
         }
-        Rectangle tileRectangle = new Rectangle((animals.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
+        Rectangle tileRectangle = new Rectangle((previews.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
         buttons.add(new NewAnimalButton(this, -1, null, tileRectangle));
         changeAnimal(-1);
 
@@ -345,8 +344,6 @@ public class Game extends JFrame implements Runnable {
         gameObjectsList = new ArrayList<>();
         player = new Player(playerAnimations, startX, startY);
         gameObjectsList.add(player);
-
-        gameObjectsList.addAll(animalService.getListOfAnimals());
 
         gameTips = new GameTips();
     }
@@ -470,7 +467,7 @@ public class Game extends JFrame implements Runnable {
         int i = yourAnimalButtons.getButtonCount();
         Rectangle tileRectangle = new Rectangle(this.getWidth() - (TILE_SIZE * ZOOM + TILE_SIZE), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
 
-        AnimalIcon animalIcon = new AnimalIcon(this, i, animal.getSprite(), tileRectangle);
+        AnimalIcon animalIcon = new AnimalIcon(this, i, animal.getPreviewSprite(), tileRectangle);
         yourAnimalButtons.addButton(animalIcon);
     }
 

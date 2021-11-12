@@ -17,8 +17,9 @@ import static base.Game.TILE_SIZE;
 import static base.Game.ZOOM;
 import static base.navigationservice.Direction.*;
 
-public class Animal implements GameObject {
+public abstract class Animal implements GameObject {
 
+    private final Sprite previewSprite;
     private final Sprite sprite;
     private AnimatedSprite animatedSprite = null;
     private final Rectangle animalRectangle;
@@ -27,15 +28,17 @@ public class Animal implements GameObject {
     private int movingTicks = 0;
     private Random random;
     private String homeMap;
+    private String color;
 
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
-    public Animal(Sprite playerSprite, int startX, int startY, int speed) {
-        this(playerSprite, startX, startY, speed, "MainMap");
+    protected Animal(Sprite playerSprite, Sprite previewSprite, int startX, int startY, int speed, int tileSize) {
+        this(playerSprite, previewSprite, startX, startY, speed, "MainMap", tileSize);
     }
 
-    public Animal(Sprite playerSprite, int startX, int startY, int speed, String homeMap) {
+    protected Animal(Sprite playerSprite, Sprite previewSprite, int startX, int startY, int speed, String homeMap, int tileSize) {
         this.sprite = playerSprite;
+        this.previewSprite = previewSprite;
         this.homeMap = homeMap;
         this.speed = speed;
 
@@ -45,7 +48,7 @@ public class Animal implements GameObject {
 
         direction = DOWN;
         updateDirection();
-        animalRectangle = new Rectangle(startX, startY, TILE_SIZE, TILE_SIZE);
+        animalRectangle = new Rectangle(startX, startY, tileSize, tileSize);
         animalRectangle.generateGraphics(1, 123);
 
         random = new Random();
@@ -267,11 +270,11 @@ public class Animal implements GameObject {
         this.homeMap = homeMap;
     }
 
-    public Sprite getSprite() {
-        if (animatedSprite != null) {
-            return animatedSprite.getStartSprite();
+    public Sprite getPreviewSprite() {
+        if (previewSprite != null) {
+            return previewSprite;
         }
-        return null;
+        return animatedSprite.getStartSprite();
     }
 
     public void teleportAnimalTo(int x, int y) {
@@ -289,5 +292,13 @@ public class Animal implements GameObject {
 
     public int getCurrentY() {
         return animalRectangle.getY();
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
