@@ -12,6 +12,8 @@ Press 0 to open menu for adding new animals. On the right side you will see all 
 
 Press Q to hide/show all buttons. 
 
+Press ESC to show/hide all these tips
+
 ## Plans for future
 
 It is supposed to become a nice game, where you rescue animals(mini-quests), they live with you in your animal shelter and some animals can help you build your base/home, because some builds will requere resources and effort. 
