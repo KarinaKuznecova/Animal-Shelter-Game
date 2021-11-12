@@ -2,19 +2,13 @@ package base.gameobjects;
 
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Sprite;
-import base.graphicsservice.SpriteSheet;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static base.Game.TILE_SIZE;
-
 public class PlantService {
-
-    ImageLoader imageLoader = new ImageLoader();
 
     String carrot = "img/carrot.png";
     String carrotPreview = "img/carrot-preview.png";
@@ -55,29 +49,15 @@ public class PlantService {
 
     public Plant createPlant(int id, int x, int y) {
         String previewPath = plantMapping.get(id);
-        Sprite previewSprite = getPreviewSprite(previewPath);
-        AnimatedSprite animatedSprite = getAnimatedSprite(plantAnimations.get(previewPath));
+        Sprite previewSprite = ImageLoader.getPreviewSprite(previewPath);
+        AnimatedSprite animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(previewPath), 32);
         return new Plant(previewSprite, animatedSprite, x, y, id);
-    }
-
-    public AnimatedSprite getAnimatedSprite(String cropsPath) {
-        BufferedImage sheetImage = imageLoader.loadImage(cropsPath);
-        SpriteSheet spriteSheet = new SpriteSheet(sheetImage);
-        spriteSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
-        AnimatedSprite animatedSprite = new AnimatedSprite(spriteSheet, 0, false);
-        animatedSprite.setAnimationRange(0, 4);
-        return animatedSprite;
-    }
-
-    public Sprite getPreviewSprite(String previewPath) {
-        BufferedImage sheetImage = imageLoader.loadImage(previewPath);
-        return new Sprite(sheetImage);
     }
 
     public List<Sprite> getPreviews() {
         List<Sprite> previews = new ArrayList<>();
         for (int i = 0; i < plantMapping.size(); i++) {
-            previews.add(getPreviewSprite(plantMapping.get(i)));
+            previews.add(ImageLoader.getPreviewSprite(plantMapping.get(i)));
         }
         return previews;
     }
