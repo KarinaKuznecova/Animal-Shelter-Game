@@ -31,6 +31,9 @@ public class KeyboardListener implements KeyListener, FocusListener {
         if (keys[KeyEvent.VK_DELETE]) {
             game.deleteAnimal();
         }
+        if (keys[KeyEvent.VK_B]) {
+            game.showBackpack();
+        }
         if (keys[KeyEvent.VK_H]) {
             game.replaceMapWithDefault();
         }
