@@ -385,6 +385,9 @@ public class GameMap {
     }
 
     public void savePlants(PrintWriter printWriter) {
+        if (plants.isEmpty()) {
+            return;
+        }
         printWriter.println("//Plants");
         printWriter.println("//id, xPosition, yPosition, growingStage");
         for (Plant plant : plants) {
