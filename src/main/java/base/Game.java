@@ -1,8 +1,8 @@
 package base;
 
 import base.gameobjects.*;
-import base.graphicsservice.*;
 import base.graphicsservice.Rectangle;
+import base.graphicsservice.*;
 import base.gui.*;
 import base.map.GameMap;
 import base.map.MapTile;
@@ -22,7 +22,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Game extends JFrame implements Runnable {
@@ -32,7 +31,7 @@ public class Game extends JFrame implements Runnable {
     public static final int ZOOM = 2;
 
     private int maxScreenWidth = 21 * (TILE_SIZE * ZOOM);
-    private int maxScreenHeight = 30 * (TILE_SIZE * ZOOM);
+    private int maxScreenHeight = 21 * (TILE_SIZE * ZOOM);
 
     public static final String PLAYER_SHEET_PATH = "img/betty.png";
     public static final String GAME_MAP_PATH = "maps/GameMap.txt";
@@ -59,6 +58,7 @@ public class Game extends JFrame implements Runnable {
     private transient GUI yourAnimalButtons;
     private transient GUI possibleAnimalButtons;
     private transient GUI plantsGui;
+    private transient GUI backpackGui;
 
     private boolean regularTiles = true;
 
@@ -77,11 +77,7 @@ public class Game extends JFrame implements Runnable {
         loadControllers();
         loadPlayerAnimatedImages();
         loadMap();
-        loadSDKGUI();
-        loadTerrainGui();
-        loadYourAnimals();
-        loadPossibleAnimalsPanel();
-        loadPlantsPanel();
+        loadGuiElements();
         enableDefaultGui();
         loadGameObjects(getWidth() / 2, getHeight() / 2);
     }
@@ -101,7 +97,7 @@ public class Game extends JFrame implements Runnable {
     private void loadUI() {
         setSizeBasedOnScreenSize();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setBounds(0, 0, maxScreenWidth, maxScreenHeight);
+        setBounds(0, 0, maxScreenWidth - 5, maxScreenHeight - 5);
         setLocationRelativeTo(null);
         add(canvas);
         setVisible(true);
@@ -212,6 +208,15 @@ public class Game extends JFrame implements Runnable {
         refreshGuiPanels();
     }
 
+    private void loadGuiElements() {
+        loadSDKGUI();
+        loadTerrainGui();
+        loadYourAnimals();
+        loadPossibleAnimalsPanel();
+        loadPlantsPanel();
+        loadBackpack();
+    }
+
     private void loadSDKGUI() {
         List<Tile> tiles = tileService.getTiles();
 
@@ -306,6 +311,17 @@ public class Game extends JFrame implements Runnable {
                 terrainButtonsArray[temp] = new GUI(buttons, 5, 5, true);
             }
         }
+    }
+
+    void loadBackpack() {
+        List<GUIButton> buttons = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                Rectangle buttonRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), i * (TILE_SIZE * ZOOM), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+                buttons.add(new BackpackButton(this, -1, null, buttonRectangle));
+            }
+        }
+        backpackGui = new GUI(buttons, 5, this.getHeight() - (4 * (TILE_SIZE * ZOOM + 2)), true);
     }
 
     void enableDefaultGui() {
@@ -536,6 +552,14 @@ public class Game extends JFrame implements Runnable {
         loadYourAnimals();
         guiList.add(yourAnimalButtons);
 
+    }
+
+    public void showBackpack() {
+        if (guiList.contains(backpackGui)) {
+            guiList.remove(backpackGui);
+        } else {
+            guiList.add(backpackGui);
+        }
     }
 
     public void deselectAnimal() {
