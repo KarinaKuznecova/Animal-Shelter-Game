@@ -21,34 +21,29 @@ public class AnimalService {
     public static final String CAT = "cat";
     public static final String PIG = "pig";
 
-    Map<Integer, String> animalIdMapping;
+    List<String> animalNames = Arrays.asList(Rat.NAME, Mouse.NAME, Chicken.NAME, Butterfly.NAME, Cat.NAME, Pig.NAME);
 
     protected static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
 
-    public AnimalService() {
-        initializeAnimationMapping();
-    }
-
-    void initializeAnimationMapping() {
-        animalIdMapping = new HashMap<>();
-        animalIdMapping.put(0, Rat.NAME);
-        animalIdMapping.put(1, Mouse.NAME);
-        animalIdMapping.put(2, Chicken.NAME);
-        animalIdMapping.put(3, Butterfly.NAME);
-        animalIdMapping.put(4, Cat.NAME);
-        animalIdMapping.put(5, Pig.NAME);
-    }
-
-    public List<Sprite> getAnimalPreviewSprites() {
-        List<Sprite> previews = new ArrayList<>();
-        for (int i = 0; i < animalIdMapping.size(); i++) {
-            String animalName = animalIdMapping.get(i);
-            previews.add(createAnimal(animalName, 1, 1, "").getPreviewSprite());
+    public Map<String, Sprite> getAnimalPreviewSprites() {
+        Map<String, Sprite> previews = new HashMap<>();
+        for (String animalName : animalNames) {
+            previews.put(animalName, createAnimal(animalName, 1, 1, "", null).getPreviewSprite());
         }
         return previews;
     }
 
-    public Animal createAnimal(String animalName, int startX, int startY, String mapName) {
+    public Animal createAnimal(int x, int y, String animalType, String mapName) {
+        if (animalType.contains("-")) {
+            String[] split = animalType.split("-");
+            String name = split[0];
+            String color = split[1];
+            return createAnimal(name, x, y, mapName, color);
+        }
+        return createAnimal(animalType, x, y, mapName, null);
+    }
+
+    public Animal createAnimal(String animalName, int startX, int startY, String mapName, String color) {
         Animal animal;
         switch (animalName.toLowerCase()) {
             case RAT:
@@ -64,7 +59,7 @@ public class AnimalService {
                 animal = new Butterfly(startX, startY, 1);
                 break;
             case CAT:
-                animal = new Cat(startX, startY, 2);
+                animal = new Cat(startX, startY, 2, color);
                 break;
             case PIG:
                 animal = new Pig(startX, startY, 3);
@@ -99,10 +94,6 @@ public class AnimalService {
         return null;
     }
 
-    public String getAnimalNameById(int id) {
-        return animalIdMapping.get(id);
-    }
-
     public void fixStuckAnimals(GameMap gameMap, List<Animal> animals) {
         for (Animal animal : animals) {
             if (animal.isAnimalStuck(gameMap)) {
@@ -128,7 +119,9 @@ public class AnimalService {
             printWriter.println("Type:" + getAnimalType(animal));
             printWriter.println("HomeMap:" + animal.getHomeMap());
             printWriter.println("Speed:" + animal.getSpeed());
-            printWriter.println("CanTravel:"); //should be filled in scope of #issue24
+            if (animal.getColor() != null) {
+                printWriter.println("Color:" + animal.getColor());
+            }
             printWriter.println("X:" + animal.getCurrentX());
             printWriter.println("Y:" + animal.getCurrentY());
 
@@ -160,6 +153,7 @@ public class AnimalService {
         for (File file : Objects.requireNonNull(directory.listFiles())) {
             if (file.getName().startsWith(mapName)) {
                 String animalType = null;
+                String color = null;
                 int speed;
                 int x = 0;
                 int y = 0;
@@ -176,6 +170,11 @@ public class AnimalService {
                             speed = Integer.parseInt(splitLine[1]);
                             continue;
                         }
+                        if (line.startsWith("Color:")) {
+                            String[] splitLine = line.split(":");
+                            color = splitLine[1];
+                            continue;
+                        }
                         if (line.startsWith("X:")) {
                             String[] splitLine = line.split(":");
                             x = Integer.parseInt(splitLine[1]);
@@ -190,11 +189,33 @@ public class AnimalService {
                     e.printStackTrace();
                 }
                 if (animalType != null) {
-                    Animal animal = createAnimal(animalType, x, y, mapName);
+                    Animal animal = createAnimal(animalType, x, y, mapName, color);
                     animalsOnMap.add(animal);
                 }
             }
         }
         return animalsOnMap;
+    }
+
+    public String getNextColor(String animalType) {
+        if (animalType.startsWith(Cat.NAME)) {
+            if (Cat.colors.size() == Cat.colors.indexOf(animalType) + 1) {
+                return Cat.colors.get(0);
+            }
+            return Cat.colors.get(Cat.colors.indexOf(animalType) + 1);
+        }
+        return animalType;
+    }
+
+    public Sprite getNewColorSprite(String animalType) {
+        String color = null;
+        if (animalType.contains("-")) {
+            String[] split = animalType.split("-");
+            color = split[1];
+        }
+        if (animalType.startsWith(Cat.NAME)) {
+            return new Cat(0, 0, 0, color).getPreviewSprite();
+        }
+        return null;
     }
 }
