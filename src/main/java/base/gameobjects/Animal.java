@@ -186,8 +186,8 @@ public abstract class Animal implements GameObject {
     }
 
     private boolean unwalkableInThisDirection(GameMap gameMap, Direction direction) {
-        int xPosition = animalRectangle.getX();
-        int yPosition = animalRectangle.getY();
+        int xPosition = animalRectangle.getX() + (animalRectangle.getWidth() / 2);
+        int yPosition = animalRectangle.getY() + animalRectangle.getHeight();
 
         List<MapTile> tilesOnLayer = gameMap.getTilesOnLayer(getLayer());
 
