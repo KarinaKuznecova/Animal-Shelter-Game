@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Game extends JFrame implements Runnable {
@@ -53,7 +54,6 @@ public class Game extends JFrame implements Runnable {
     private transient TileService tileService;
     private transient AnimalService animalService;
     private transient PlantService plantService;
-    private transient ImageLoader imageLoader;
 
     private final transient GUI[] tileButtonsArray = new GUI[10];
     private final transient GUI[] terrainButtonsArray = new GUI[11];
@@ -65,7 +65,7 @@ public class Game extends JFrame implements Runnable {
     private boolean regularTiles = true;
 
     private int selectedTileId = -1;
-    private int selectedAnimal = -1;
+    private String selectedAnimal = "";
     private int selectedYourAnimal = -1;
     private int selectedPlant = -1;
     private int selectedPanel = 1;
@@ -93,7 +93,6 @@ public class Game extends JFrame implements Runnable {
     private void initializeServices() {
         animalService = new AnimalService();
         plantService = new PlantService();
-        imageLoader = new ImageLoader();
     }
 
     private void loadUI() {
@@ -168,7 +167,7 @@ public class Game extends JFrame implements Runnable {
     private void loadPlayerAnimatedImages() {
         logger.info("Loading player animations");
 
-        BufferedImage playerSheetImage = imageLoader.loadImage(PLAYER_SHEET_PATH);
+        BufferedImage playerSheetImage = ImageLoader.loadImage(PLAYER_SHEET_PATH);
         SpriteSheet playerSheet = new SpriteSheet(playerSheetImage);
         playerSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
         playerAnimations = new AnimatedSprite(playerSheet, 5, true);
@@ -260,17 +259,19 @@ public class Game extends JFrame implements Runnable {
     }
 
     void loadPossibleAnimalsPanel() {
-        List<Sprite> previews = animalService.getAnimalPreviewSprites();
+        Map<String, Sprite> previews = animalService.getAnimalPreviewSprites();
         List<GUIButton> buttons = new ArrayList<>();
 
-        for (int i = 0; i < previews.size(); i++) {
-            Sprite animalSprite = previews.get(i);
+        int i = 0;
+        for (Map.Entry<String, Sprite> entry : previews.entrySet()) {
+            Sprite animalSprite = entry.getValue();
             Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
-            buttons.add(new NewAnimalButton(this, i, animalSprite, tileRectangle));
+            buttons.add(new NewAnimalButton(this, entry.getKey(), animalSprite, tileRectangle));
+            i++;
         }
         Rectangle tileRectangle = new Rectangle((previews.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
-        buttons.add(new NewAnimalButton(this, -1, null, tileRectangle));
-        changeAnimal(-1);
+        buttons.add(new NewAnimalButton(this, "", null, tileRectangle));
+        changeAnimal("");
 
         possibleAnimalButtons = new GUI(buttons, 5, 5, true);
     }
@@ -395,7 +396,7 @@ public class Game extends JFrame implements Runnable {
         for (Animal animal : getGameMap().getAnimals()) {
             animal.update(this);
         }
-        for (Plant plant :getGameMap().getPlants()) {
+        for (Plant plant : getGameMap().getPlants()) {
             plant.update(this);
         }
     }
@@ -405,9 +406,9 @@ public class Game extends JFrame implements Runnable {
         selectedTileId = tileId;
     }
 
-    public void changeAnimal(int animalId) {
-        logger.info(String.format("changing selected animal to : %d", animalId));
-        selectedAnimal = animalId;
+    public void changeAnimal(String animalType) {
+        logger.info(String.format("changing selected animal to : %s", animalType));
+        selectedAnimal = animalType;
     }
 
     public void changeYourAnimal(int animalId) {
@@ -437,30 +438,27 @@ public class Game extends JFrame implements Runnable {
                 gameMap.setTile(x, y, selectedTileId, regularTiles);
             }
             if (guiList.contains(possibleAnimalButtons)) {
-                if (selectedAnimal == -1) {
-                    return;
-                }
-                if (gameMap.getAnimals().size() >= 10) {
-                    logger.warn("Too many animals, can't add new");
-                    return;
-                }
-                x = x * (TILE_SIZE * ZOOM);
-                y = y * (TILE_SIZE * ZOOM);
-                Animal newAnimal = gameMap.addAnimal(x, y, selectedAnimal);
-                addAnimalToPanel(newAnimal);
+                createNewAnimal(x, y);
             }
             if (guiList.contains(plantsGui)) {
-                if (selectedPlant == -1) {
-                    return;
-                }
-                int tileX = x * (TILE_SIZE * ZOOM);
-                int tileY = y * (TILE_SIZE * ZOOM);
-                if (gameMap.isThereGrassOrDirt(tileX, tileY) && gameMap.isPlaceEmpty(1, tileX, tileY) && gameMap.isInsideOfMap(x, y)) {
-                    Plant plant = plantService.createPlant(selectedPlant, tileX, tileY);
-                    gameMap.addPlant(plant);
-                }
+                createNewPlant(x, y);
             }
         }
+    }
+
+    private void createNewAnimal(int x, int y) {
+        if (selectedAnimal.isEmpty()) {
+            return;
+        }
+        if (gameMap.getAnimals().size() >= 10) {
+            logger.warn("Too many animals, can't add new");
+            return;
+        }
+        int tileX = x * (TILE_SIZE * ZOOM);
+        int tileY = y * (TILE_SIZE * ZOOM);
+        Animal newAnimal = animalService.createAnimal(tileX, tileY, selectedAnimal, gameMap.getMapName());
+        gameMap.addAnimal(newAnimal);
+        addAnimalToPanel(newAnimal);
     }
 
     public void addAnimalToPanel(Animal animal) {
@@ -469,6 +467,18 @@ public class Game extends JFrame implements Runnable {
 
         AnimalIcon animalIcon = new AnimalIcon(this, i, animal.getPreviewSprite(), tileRectangle);
         yourAnimalButtons.addButton(animalIcon);
+    }
+
+    private void createNewPlant(int x, int y) {
+        if (selectedPlant == -1) {
+            return;
+        }
+        int tileX = x * (TILE_SIZE * ZOOM);
+        int tileY = y * (TILE_SIZE * ZOOM);
+        if (gameMap.isThereGrassOrDirt(tileX, tileY) && gameMap.isPlaceEmpty(1, tileX, tileY) && gameMap.isInsideOfMap(x, y)) {
+            Plant plant = plantService.createPlant(selectedPlant, tileX, tileY);
+            gameMap.addPlant(plant);
+        }
     }
 
     public void rightClick(int x, int y) {
@@ -586,7 +596,7 @@ public class Game extends JFrame implements Runnable {
         return selectedTileId;
     }
 
-    public int getSelectedAnimal() {
+    public String getSelectedAnimal() {
         return selectedAnimal;
     }
 
@@ -608,10 +618,6 @@ public class Game extends JFrame implements Runnable {
 
     public GameMap getGameMap() {
         return gameMap;
-    }
-
-    public void addGameObject(GameObject gameObject) {
-        gameObjectsList.add(gameObject);
     }
 
     public void showTips() {
