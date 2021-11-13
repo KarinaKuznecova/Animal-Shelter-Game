@@ -1,6 +1,7 @@
 package base.gameobjects;
 
 import base.Game;
+import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
@@ -19,8 +20,8 @@ import static base.navigationservice.Direction.*;
 
 public abstract class Animal implements GameObject {
 
-    private final Sprite previewSprite;
-    private final Sprite sprite;
+    private Sprite previewSprite;
+    private Sprite sprite;
     private AnimatedSprite animatedSprite = null;
     private final Rectangle animalRectangle;
     private int speed;
@@ -29,22 +30,25 @@ public abstract class Animal implements GameObject {
     private Random random;
     private String homeMap;
     private String color;
+    private int tileSize;
+
+    private String animalName;
+    protected final String imagesPath = "img/";
 
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
-    protected Animal(Sprite playerSprite, Sprite previewSprite, int startX, int startY, int speed, int tileSize) {
-        this(playerSprite, previewSprite, startX, startY, speed, "MainMap", tileSize);
+    protected Animal(String animalName, int startX, int startY, int speed, int tileSize) {
+        this(animalName, startX, startY, speed, "MainMap", tileSize);
     }
 
-    protected Animal(Sprite playerSprite, Sprite previewSprite, int startX, int startY, int speed, String homeMap, int tileSize) {
-        this.sprite = playerSprite;
-        this.previewSprite = previewSprite;
+    protected Animal(String animalName, int startX, int startY, int speed, String homeMap, int tileSize) {
+        this.animalName = animalName;
+        this.tileSize = tileSize;
         this.homeMap = homeMap;
         this.speed = speed;
 
-        if (playerSprite instanceof AnimatedSprite) {
-            animatedSprite = (AnimatedSprite) playerSprite;
-        }
+        setSprite();
+        setPreviewSprite();
 
         direction = DOWN;
         updateDirection();
@@ -52,6 +56,17 @@ public abstract class Animal implements GameObject {
         animalRectangle.generateGraphics(1, 123);
 
         random = new Random();
+    }
+
+    private void setSprite() {
+        sprite = ImageLoader.getAnimatedSprite(imagesPath + animalName + ".png", tileSize);
+        if (sprite != null) {
+            animatedSprite = (AnimatedSprite) sprite;
+        }
+    }
+
+    private void setPreviewSprite() {
+        previewSprite = ImageLoader.getPreviewSprite(imagesPath + animalName + "-preview.png");
     }
 
     private void updateDirection() {
@@ -300,5 +315,13 @@ public abstract class Animal implements GameObject {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public String getAnimalName() {
+        return animalName;
+    }
+
+    public void setAnimalName(String animalName) {
+        this.animalName = animalName;
     }
 }
