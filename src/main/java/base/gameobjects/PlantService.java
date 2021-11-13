@@ -51,6 +51,8 @@ public class PlantService {
         String previewPath = plantMapping.get(id);
         Sprite previewSprite = ImageLoader.getPreviewSprite(previewPath);
         AnimatedSprite animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(previewPath), 32);
+        animatedSprite.setSpeed(0);
+        animatedSprite.setAnimationRange(0, 4);
         return new Plant(previewSprite, animatedSprite, x, y, id);
     }
 

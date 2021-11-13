@@ -114,4 +114,8 @@ public class AnimatedSprite extends Sprite implements GameObject {
     public Sprite getStartSprite() {
         return sprites[startSprite];
     }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
 }
