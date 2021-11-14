@@ -61,9 +61,9 @@ MoreDirt1-3-8-1
 MoreDirt2-4-8-1
 MoreDirt3-3-9-1
 MoreDirt4-4-9-1
-BigBush1-0-7-2
-BigBush4-1-7-2
-BigBush7-2-7-2
+BigBush1-0-7-3
+BigBush4-1-7-3
+BigBush7-2-7-3
 BigBush2-0-8-2
 BigBush5-1-8-2
 BigBush8-2-8-2

@@ -61,7 +61,7 @@ Food-6-5-2
 Food-7-5-2
 Food-8-5-2
 Food-9-5-2
-Tiles-1-6-1
+Tiles-1-6-0
 Grass-9-0-1
 Grass-9-1-1
 Pumpkin-1-1-2
