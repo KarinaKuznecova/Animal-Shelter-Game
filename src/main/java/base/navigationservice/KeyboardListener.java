@@ -24,7 +24,7 @@ public class KeyboardListener implements KeyListener, FocusListener {
         if (keyCode < keys.length) {
             keys[keyCode] = true;
         }
-        if (keys[KeyEvent.VK_CONTROL] && keys[KeyEvent.VK_S]) {
+        if (keys[KeyEvent.VK_F5]) {
             saving = true;
             game.saveMap();
         }
