@@ -431,6 +431,11 @@ public class Game extends JFrame implements Runnable {
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM);
             }
         }
+        for (GameObject gameObject : gameMap.getPlants()) {
+            if (!stoppedChecking) {
+                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM);
+            }
+        }
         if (!stoppedChecking) {
             x = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
             y = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
