@@ -608,10 +608,16 @@ public class Game extends JFrame implements Runnable {
             return;
         }
         logger.info("Will remove selected animal");
+        int temp = selectedYourAnimal;
         gameMap.removeAnimal(selectedYourAnimal);
         gameMap.saveAnimals();
         refreshGuiPanels();
-        deselectAnimal();
+
+        if (gameMap.getAnimals().size() <= selectedYourAnimal) {
+            selectedYourAnimal = gameMap.getAnimals().size() - 1;
+        } else {
+            selectedYourAnimal = temp;
+        }
 
         logger.info("Animal removed");
     }
