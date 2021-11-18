@@ -14,7 +14,7 @@ import static base.Game.TILE_SIZE;
 public class Plant implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Plant.class);
-    public static final int GROWING_TIME = 300;
+    public static final int DEFAULT_GROWING_TIME = 400;
 
     Sprite previewSprite;
     AnimatedSprite animatedSprite;
@@ -23,16 +23,17 @@ public class Plant implements GameObject {
 
     int growingTicks;
     int growingStage;
+    int growingTime;
 
-    int plantId;
+    String plantType;
 
-    public Plant(Sprite previewSprite, AnimatedSprite animatedSprite, int x, int y, int plantId) {
+    public Plant(Sprite previewSprite, AnimatedSprite animatedSprite, int x, int y, String plantType) {
         this.previewSprite = previewSprite;
         this.animatedSprite = animatedSprite;
+        this.plantType = plantType;
 
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
         rectangle.generateGraphics(1, 123);
-        this.plantId = plantId;
     }
 
 
@@ -47,7 +48,7 @@ public class Plant implements GameObject {
     public void update(Game game) {
         if (growingStage < 3) {
             growingTicks++;
-            if (growingTicks > GROWING_TIME) {
+            if (growingTicks > getGrowingTime()) {
                 animatedSprite.incrementSprite();
                 growingStage++;
                 growingTicks = 0;
@@ -76,10 +77,6 @@ public class Plant implements GameObject {
         return rectangle;
     }
 
-    public int getPlantId() {
-        return plantId;
-    }
-
     public int getGrowingStage() {
         return growingStage;
     }
@@ -96,17 +93,29 @@ public class Plant implements GameObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Plant plant = (Plant) o;
-        return growingTicks == plant.growingTicks && growingStage == plant.growingStage && plantId == plant.plantId
-                && Objects.equals(previewSprite, plant.previewSprite) && animatedSprite.equals(plant.animatedSprite)
-                && rectangle.equals(plant.rectangle);
+        return growingTicks == plant.growingTicks && growingStage == plant.growingStage && growingTime == plant.growingTime
+                && previewSprite.equals(plant.previewSprite) && animatedSprite.equals(plant.animatedSprite)
+                && rectangle.equals(plant.rectangle) && plantType.equals(plant.plantType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(previewSprite, animatedSprite, rectangle, growingTicks, growingStage, plantId);
+        return Objects.hash(previewSprite, animatedSprite, rectangle, growingTicks, growingStage, growingTime, plantType);
     }
 
     public Sprite getPreviewSprite() {
         return previewSprite;
+    }
+
+    public int getGrowingTime() {
+        return growingTime > 0 ? growingTime : DEFAULT_GROWING_TIME;
+    }
+
+    public void setGrowingTime(int growingTime) {
+        this.growingTime = growingTime;
+    }
+
+    public String getPlantType() {
+        return plantType;
     }
 }

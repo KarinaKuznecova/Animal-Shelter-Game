@@ -1,14 +1,19 @@
 package base.gameobjects;
 
+import base.gameobjects.plants.*;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Sprite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PlantService {
+
+    protected static final Logger logger = LoggerFactory.getLogger(PlantService.class);
 
     String carrot = "img/carrot.png";
     String carrotPreview = "img/carrot-preview.png";
@@ -26,40 +31,58 @@ public class PlantService {
     String bellpepperPreview = "img/bellpepper-preview.png";
 
     Map<String, String> plantAnimations;
-    Map<Integer, String> plantMapping;
+    Map<String, String> plantMapping;
+
+    List<String> plantTypes = Arrays.asList("carrot", "beet", "tomato", "strawberry", "bellpepper");
 
     public PlantService() {
         plantAnimations = new HashMap<>();
         plantMapping = new HashMap<>();
         plantAnimations.put(carrotPreview, carrot);
-        plantMapping.put(0, carrotPreview);
+        plantMapping.put(Carrot.NAME, carrotPreview);
 
         plantAnimations.put(beetPreview, beet);
-        plantMapping.put(1, beetPreview);
+        plantMapping.put(Beet.NAME, beetPreview);
 
         plantAnimations.put(tomatoPreview, tomato);
-        plantMapping.put(2, tomatoPreview);
+        plantMapping.put(Tomato.NAME, tomatoPreview);
 
         plantAnimations.put(strawberryPreview, strawberry);
-        plantMapping.put(3, strawberryPreview);
+        plantMapping.put(Strawberry.NAME, strawberryPreview);
 
         plantAnimations.put(bellpepperPreview, bellpepper);
-        plantMapping.put(4, bellpepperPreview);
+        plantMapping.put(Bellpepper.NAME, bellpepperPreview);
     }
 
-    public Plant createPlant(int id, int x, int y) {
-        String previewPath = plantMapping.get(id);
+    public Plant createPlant(String plantName, int x, int y, String mapName) {
+        String previewPath = plantMapping.get(plantName);
         Sprite previewSprite = ImageLoader.getPreviewSprite(previewPath);
         AnimatedSprite animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(previewPath), 32);
         animatedSprite.setSpeed(0);
         animatedSprite.setAnimationRange(0, 4);
-        return new Plant(previewSprite, animatedSprite, x, y, id);
+
+        switch (plantName) {
+            case Beet.NAME:
+                return new Beet(previewSprite, animatedSprite, x, y, plantName);
+            case Bellpepper.NAME:
+                return new Bellpepper(previewSprite, animatedSprite, x, y, plantName);
+            case Carrot.NAME:
+                return new Carrot(previewSprite, animatedSprite, x, y, plantName);
+            case Strawberry.NAME:
+                return new Strawberry(previewSprite, animatedSprite, x, y, plantName);
+            case Tomato.NAME:
+                return new Tomato(previewSprite, animatedSprite, x, y, plantName);
+            default:
+                logger.error(String.format("Unknown plant requested or plant not defined : %s", plantName));
+                throw new IllegalArgumentException();
+        }
+
     }
 
-    public List<Sprite> getPreviews() {
-        List<Sprite> previews = new ArrayList<>();
-        for (int i = 0; i < plantMapping.size(); i++) {
-            previews.add(ImageLoader.getPreviewSprite(plantMapping.get(i)));
+    public Map<String, Sprite> getPreviews() {
+        Map<String, Sprite> previews = new HashMap<>();
+        for (String plantType : plantTypes) {
+            previews.put(plantType, ImageLoader.getPreviewSprite(plantMapping.get(plantType)));
         }
         return previews;
     }
