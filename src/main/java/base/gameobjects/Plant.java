@@ -60,7 +60,8 @@ public class Plant implements GameObject {
 
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
-        return false;
+        logger.info("Plant is clicked");
+        return true;
     }
 
     public Rectangle getRectangle() {
