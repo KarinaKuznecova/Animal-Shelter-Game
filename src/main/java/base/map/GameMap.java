@@ -469,6 +469,10 @@ public class GameMap {
         plants.add(plant);
     }
 
+    public void removePlant(Plant plant) {
+        plants.remove(plant);
+    }
+
     public List<Plant> getPlants() {
         return plants;
     }

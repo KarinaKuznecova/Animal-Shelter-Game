@@ -14,5 +14,5 @@ public interface GameObject {
 
     int getLayer();
 
-    boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom);
+    boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game);
 }

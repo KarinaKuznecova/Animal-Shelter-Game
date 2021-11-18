@@ -31,7 +31,7 @@ public abstract class GUIButton implements GameObject {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
         if (mouseRectangle.intersects(region)) {
             activate();
             return true;
@@ -40,4 +40,12 @@ public abstract class GUIButton implements GameObject {
     }
 
     public abstract void activate();
+
+    public Sprite getSprite() {
+        return sprite;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
+    }
 }
