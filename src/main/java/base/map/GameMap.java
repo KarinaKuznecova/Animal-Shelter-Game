@@ -124,12 +124,12 @@ public class GameMap {
         if (line.startsWith("plant")) {
             String[] splitLine = line.split(",");
             String plantId = splitLine[0];
-            int id = Integer.parseInt(plantId.substring(5));
+            String plantType = plantId.split("-")[1];
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             int growingStage = Integer.parseInt(splitLine[3]);
 
-            Plant plant = plantService.createPlant(id, x, y);
+            Plant plant = plantService.createPlant(plantType, x, y, getMapName());
             plant.setGrowingStage(growingStage);
             plants.add(plant);
 
@@ -389,9 +389,9 @@ public class GameMap {
             return;
         }
         printWriter.println("//Plants");
-        printWriter.println("//id, xPosition, yPosition, growingStage");
+        printWriter.println("//type, xPosition, yPosition, growingStage");
         for (Plant plant : plants) {
-            printWriter.println("plant" + plant.getPlantId() + "," + plant.getRectangle().getX() + "," + plant.getRectangle().getY() + "," + plant.getGrowingStage());
+            printWriter.println("plant-" + plant.getPlantType() + "," + plant.getRectangle().getX() + "," + plant.getRectangle().getY() + "," + plant.getGrowingStage());
         }
     }
 

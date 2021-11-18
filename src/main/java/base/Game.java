@@ -67,7 +67,7 @@ public class Game extends JFrame implements Runnable {
     private int selectedTileId = -1;
     private String selectedAnimal = "";
     private int selectedYourAnimal = -1;
-    private int selectedPlant = -1;
+    private String selectedPlant = "";
     private int selectedPanel = 1;
 
     private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
@@ -278,15 +278,18 @@ public class Game extends JFrame implements Runnable {
 
     void loadPlantsPanel() {
         List<GUIButton> buttons = new ArrayList<>();
-        List<Sprite> plants = plantService.getPreviews();
+        Map<String, Sprite> previews = plantService.getPreviews();
 
-        for (int i = 0; i < plants.size(); i++) {
+        int i = 0;
+        for (Map.Entry<String, Sprite> entry : previews.entrySet()) {
+            Sprite previewSprite = entry.getValue();
             Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-            buttons.add(new PlantButton(this, i, plants.get(i), tileRectangle));
+            buttons.add(new PlantButton(this, entry.getKey(), previewSprite, tileRectangle));
+            i++;
         }
-        Rectangle oneMoreTileRectangle = new Rectangle((plants.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-        buttons.add(new PlantButton(this, -1, null, oneMoreTileRectangle));
-        changeSelectedPlant(-1);
+        Rectangle oneMoreTileRectangle = new Rectangle((previews.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+        buttons.add(new PlantButton(this, "", null, oneMoreTileRectangle));
+        changeSelectedPlant("");
 
         plantsGui = new GUI(buttons, 5, 5, true);
     }
@@ -329,7 +332,7 @@ public class Game extends JFrame implements Runnable {
     void enableDefaultGui() {
         changeTile(-1);
         changeYourAnimal(-1);
-        changeSelectedPlant(-1);
+        changeSelectedPlant("");
 
         guiList = new CopyOnWriteArrayList<>();
         guiList.add(tileButtonsArray[0]);
@@ -416,9 +419,9 @@ public class Game extends JFrame implements Runnable {
         selectedYourAnimal = animalId;
     }
 
-    public void changeSelectedPlant(int plantId) {
-        logger.info(String.format("changing your selected plant to : %d", plantId));
-        selectedPlant = plantId;
+    public void changeSelectedPlant(String plantType) {
+        logger.info(String.format("changing your selected plant to : %s", plantType));
+        selectedPlant = plantType;
     }
 
     public void leftClick(int x, int y) {
@@ -475,13 +478,13 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void createNewPlant(int x, int y) {
-        if (selectedPlant == -1) {
+        if (selectedPlant.isEmpty()) {
             return;
         }
         int tileX = x * (TILE_SIZE * ZOOM);
         int tileY = y * (TILE_SIZE * ZOOM);
         if (gameMap.isThereGrassOrDirt(tileX, tileY) && gameMap.isPlaceEmpty(1, tileX, tileY) && gameMap.isInsideOfMap(x, y)) {
-            Plant plant = plantService.createPlant(selectedPlant, tileX, tileY);
+            Plant plant = plantService.createPlant(selectedPlant, tileX, tileY, gameMap.getMapName());
             gameMap.addPlant(plant);
         }
     }
@@ -625,7 +628,7 @@ public class Game extends JFrame implements Runnable {
         return selectedYourAnimal;
     }
 
-    public int getSelectedPlant() {
+    public String getSelectedPlant() {
         return selectedPlant;
     }
 
