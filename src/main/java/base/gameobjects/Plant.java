@@ -7,12 +7,14 @@ import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 import static base.Game.TILE_SIZE;
 
 public class Plant implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Plant.class);
-    public static final int GROWING_TIME = 400;
+    public static final int GROWING_TIME = 300;
 
     Sprite previewSprite;
     AnimatedSprite animatedSprite;
@@ -59,9 +61,15 @@ public class Plant implements GameObject {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
-        logger.info("Plant is clicked");
-        return true;
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+        if (mouseRectangle.intersects(rectangle)) {
+            logger.info("Plant is clicked");
+            if (growingStage == 3) {
+                game.pickUpPlant(this);
+            }
+            return true;
+        }
+        return false;
     }
 
     public Rectangle getRectangle() {
@@ -81,5 +89,24 @@ public class Plant implements GameObject {
             animatedSprite.incrementSprite();
         }
         this.growingStage = growingStage;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Plant plant = (Plant) o;
+        return growingTicks == plant.growingTicks && growingStage == plant.growingStage && plantId == plant.plantId
+                && Objects.equals(previewSprite, plant.previewSprite) && animatedSprite.equals(plant.animatedSprite)
+                && rectangle.equals(plant.rectangle);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(previewSprite, animatedSprite, rectangle, growingTicks, growingStage, plantId);
+    }
+
+    public Sprite getPreviewSprite() {
+        return previewSprite;
     }
 }

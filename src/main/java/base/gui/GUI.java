@@ -56,7 +56,7 @@ public class GUI implements GameObject {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
         boolean stopChecking = false;
 
         if (!fixedOnScreen) {
@@ -69,7 +69,7 @@ public class GUI implements GameObject {
             mouseRectangle.setX(mouseRectangle.getX() - rectangle.getX());
             mouseRectangle.setY(mouseRectangle.getY() - rectangle.getY());
             for (GUIButton button : buttons) {
-                boolean result = button.handleMouseClick(mouseRectangle, camera, xZoom, yZoom);
+                boolean result = button.handleMouseClick(mouseRectangle, camera, xZoom, yZoom, game);
                 if (!stopChecking) {
                     stopChecking = result;
                 }
@@ -84,5 +84,23 @@ public class GUI implements GameObject {
 
     public int getButtonCount() {
         return buttons.size();
+    }
+
+    public GUIButton getButton(Sprite sprite) {
+        for (GUIButton button : buttons) {
+            if (sprite.equals(button.getSprite())) {
+                return button;
+            }
+        }
+        return getEmptyButton();
+    }
+
+    public GUIButton getEmptyButton() {
+        for (GUIButton button : buttons) {
+            if (button.sprite == null) {
+                return button;
+            }
+        }
+        return null;
     }
 }

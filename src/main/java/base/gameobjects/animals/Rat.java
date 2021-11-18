@@ -1,5 +1,6 @@
 package base.gameobjects.animals;
 
+import base.Game;
 import base.gameobjects.Animal;
 import base.graphicsservice.Rectangle;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ public class Rat extends Animal {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
         logger.info("Click on Animal: rat");
         return false;
     }

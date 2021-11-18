@@ -272,8 +272,11 @@ public abstract class Animal implements GameObject {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom) {
-        logger.info("Click on Animal: ");
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+        if (mouseRectangle.intersects(animalRectangle)) {
+            logger.info("Click on Animal: ");
+            return true;
+        }
         return false;
     }
 

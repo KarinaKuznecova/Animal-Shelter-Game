@@ -428,12 +428,12 @@ public class Game extends JFrame implements Runnable {
         for (GameObject gameObject : guiList) {
             if (!stoppedChecking) {
                 deselectAnimal();
-                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM);
+                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
         for (GameObject gameObject : gameMap.getPlants()) {
             if (!stoppedChecking) {
-                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM);
+                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
         if (!stoppedChecking) {
@@ -484,6 +484,22 @@ public class Game extends JFrame implements Runnable {
             Plant plant = plantService.createPlant(selectedPlant, tileX, tileY);
             gameMap.addPlant(plant);
         }
+    }
+
+    public void pickUpPlant(Plant plant) {
+        GUIButton button = backpackGui.getButton(plant.getPreviewSprite());
+        if (button != null) {
+            logger.info("found a slot in backpack");
+            if (button.getSprite() == null) {
+                logger.info("slot was empty, will put plant");
+                button.setSprite(plant.getPreviewSprite());
+            } else {
+                logger.info("plant is already in backpack");
+            }
+        } else {
+            logger.info("No empty slots in backpack");
+        }
+        gameMap.removePlant(plant);
     }
 
     public void rightClick(int x, int y) {

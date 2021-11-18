@@ -1,6 +1,8 @@
 package base.graphicsservice;
 
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class Sprite {
 
@@ -37,5 +39,20 @@ public class Sprite {
 
     public int[] getPixels() {
         return pixels;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sprite sprite = (Sprite) o;
+        return width == sprite.width && height == sprite.height && Arrays.equals(pixels, sprite.pixels);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(width, height);
+        result = 31 * result + Arrays.hashCode(pixels);
+        return result;
     }
 }
