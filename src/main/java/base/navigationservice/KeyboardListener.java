@@ -107,7 +107,10 @@ public class KeyboardListener implements KeyListener, FocusListener {
     public boolean up() {
         return keys[KeyEvent.VK_W] || keys[KeyEvent.VK_UP];
     }
-
+    
+public boolean down() {
+        return keys[KeyEvent.VK_S] || keys[KeyEvent.VK_DOWN];
+    }
  
     public boolean right() {
         return keys[KeyEvent.VK_D] || keys[KeyEvent.VK_RIGHT];
