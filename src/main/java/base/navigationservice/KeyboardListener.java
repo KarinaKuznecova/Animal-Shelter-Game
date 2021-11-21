@@ -18,7 +18,7 @@ public class KeyboardListener implements KeyListener, FocusListener {
 
     @Override
     public void keyPressed(KeyEvent event) {
-        saving = false;
+
         int keyCode = event.getKeyCode();
         if (keyCode < keys.length) {
             keys[keyCode] = true;
