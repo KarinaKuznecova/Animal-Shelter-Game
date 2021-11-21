@@ -1,4 +1,4 @@
-Ctrl + S - save current map
+F5 - save current map
 
 1 - 9 switching between tiles panels
 0 - panel to add animals
