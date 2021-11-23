@@ -2,7 +2,7 @@
 
 ![05-prettier](https://user-images.githubusercontent.com/47346801/141174925-959605b8-5167-460a-aad3-1f32648a1d45.PNG)
 
-Currently there are 9 locations and you can walk accross them. You can build on all locations and save your progress to a file (ctrl+s). There are no resources limit yet. Each location can have animals, there are 6 animal types now. 
+Currently there are 9 locations and you can walk accross them. You can build on all locations and save your progress to a file (F5). There are no resources limit yet. Each location can have animals, there are 6 animal types now. 
 
 You can grow food, but can't pick up yet :) To plant something - press P.
 
