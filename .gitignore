@@ -1,2 +1,11 @@
 # Project exclude paths
 /target/
+/out/
+/.github/
+/.idea/
+/.classpath
+/.project
+/.settings/
+# Everyone will have their own animals and maps, no need to push it to master branch
+/animals/
+/maps/
