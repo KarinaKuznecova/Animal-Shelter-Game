@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -20,20 +18,18 @@ public class GameTips {
     List<String> lines;
 
     public GameTips() {
-        try {
-            lines = readFromFile();
-        } catch (URISyntaxException e) {
-            logger.error("Error while reading file from resources ", e);
-        }
+        lines = readFromFile();
     }
 
-    private List<String> readFromFile() throws URISyntaxException {
+    private List<String> readFromFile() {
         logger.debug("Reading tips from file");
         List<String> linesFromFile = new ArrayList<>();
 
-        URL resource = Game.class.getResource(tipsFilePath);
-        assert resource != null;
-        File tipsFile = new File(resource.toURI());
+        File tipsFile = new File(tipsFilePath);
+        if (!tipsFile.exists()) {
+            logger.error("File with tips doesn't exist");
+            return new ArrayList<>();
+        }
         try (Scanner scanner = new Scanner(tipsFile)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
