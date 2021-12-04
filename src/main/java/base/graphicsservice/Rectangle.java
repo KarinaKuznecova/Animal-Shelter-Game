@@ -5,6 +5,8 @@ import base.map.MapTile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static base.Game.ZOOM;
+
 public class Rectangle {
 
     private int x;
@@ -83,6 +85,12 @@ public class Rectangle {
         return (intersectsByX(otherRectangle) && intersectsByY(otherRectangle));
     }
 
+    public boolean intersects(int otherX, int otherY, int otherWidth, int otherHeight) {
+        boolean intersectsByX = !(x > otherX + otherWidth || otherX > x + (width * ZOOM));
+        boolean intersectsByY = !(y > otherY + otherHeight || otherY > y + (height * ZOOM));
+        return intersectsByX && intersectsByY;
+    }
+
     private boolean intersectsByY(Rectangle otherRectangle) {
         return !(y > otherRectangle.getY() + otherRectangle.getHeight() || otherRectangle.getY() > y + height);
     }
@@ -108,10 +116,10 @@ public class Rectangle {
     }
 
     private boolean intersectsByY(MapTile tile, int yPos) {
-        return !(yPos > tile.getY() * (Game.TILE_SIZE * Game.ZOOM) + Game.TILE_SIZE || tile.getY() * (Game.TILE_SIZE * Game.ZOOM) > yPos + ((Game.TILE_SIZE * Game.ZOOM) - (Game.TILE_SIZE / 2)));     //48 = 32 + 32/2
+        return !(yPos > tile.getY() * (Game.TILE_SIZE * ZOOM) + Game.TILE_SIZE || tile.getY() * (Game.TILE_SIZE * ZOOM) > yPos + ((Game.TILE_SIZE * ZOOM) - (Game.TILE_SIZE / 2)));     //48 = 32 + 32/2
     }
 
     private boolean intersectsByX(MapTile tile, int xPos) {
-        return !(xPos > tile.getX() * (Game.TILE_SIZE * Game.ZOOM) + Game.TILE_SIZE || tile.getX() * (Game.TILE_SIZE * Game.ZOOM) > xPos + width);
+        return !(xPos > tile.getX() * (Game.TILE_SIZE * ZOOM) + Game.TILE_SIZE || tile.getX() * (Game.TILE_SIZE * ZOOM) > xPos + width);
     }
 }

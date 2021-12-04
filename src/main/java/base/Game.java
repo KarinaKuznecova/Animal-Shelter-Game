@@ -425,6 +425,10 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void leftClick(int x, int y) {
+        int xAdjusted = x + renderer.getCamera().getX();
+        int yAdjusted = y + renderer.getCamera().getY();
+        logger.debug(String.format("Click on x: %d", xAdjusted));
+        logger.debug(String.format("Click on y: %d", yAdjusted));
         Rectangle mouseRectangle = new Rectangle(x, y, 1, 1);
         boolean stoppedChecking = false;
 
@@ -436,20 +440,25 @@ public class Game extends JFrame implements Runnable {
         }
         for (GameObject gameObject : gameMap.getPlants()) {
             if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xAdjusted - TILE_SIZE, yAdjusted - TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
         if (!stoppedChecking) {
-            x = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
-            y = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
+            int smallerX = (int) Math.floor(xAdjusted / (32.0 * ZOOM));
+            int smallerY = (int) Math.floor(yAdjusted / (32.0 * ZOOM));
             if (!guiList.contains(possibleAnimalButtons)) {
-                gameMap.setTile(x, y, selectedTileId, regularTiles);
+                if (player.getPlayerRectangle().intersects(xAdjusted, yAdjusted, TILE_SIZE, TILE_SIZE)) {
+                    logger.warn("Can't place tile under player");
+                    return;
+                }
+                gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
             }
             if (guiList.contains(possibleAnimalButtons)) {
-                createNewAnimal(x, y);
+                createNewAnimal(smallerX, smallerY);
             }
             if (guiList.contains(plantsGui)) {
-                createNewPlant(x, y);
+                createNewPlant(smallerX, smallerY);
             }
         }
     }
