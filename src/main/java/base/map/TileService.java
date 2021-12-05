@@ -21,8 +21,6 @@ public class TileService {
     public static final String TILE_LIST_PATH = "maps/Tile-new.txt";
     public static final String TERRAIN_TILE_LIST_PATH = "maps/Tile-terrain.txt";
 
-    private ImageLoader imageLoader;
-
     private List<Tile> tileList = new ArrayList<>();
     private List<Tile> terrainTiles = new ArrayList<>();
 
@@ -49,8 +47,6 @@ public class TileService {
     }
 
     public TileService() {
-        imageLoader = new ImageLoader();
-
         logger.info("Loading regular tiles");
         SpriteSheet spriteSheet = loadSpriteSheets(SPRITES_PATH);
         tileList = getTilesFromFile(TILE_LIST_PATH, spriteSheet);
@@ -63,7 +59,7 @@ public class TileService {
     private SpriteSheet loadSpriteSheets(String path) {
         logger.info("Sprite sheet loading started");
 
-        BufferedImage bufferedImage = imageLoader.loadImage(path);
+        BufferedImage bufferedImage = ImageLoader.loadImage(path);
         if (bufferedImage == null) {
             logger.error(String.format("Buffered image is null, sprite path: %s", path));
             throw new IllegalArgumentException();
