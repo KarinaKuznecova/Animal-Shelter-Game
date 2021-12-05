@@ -2,17 +2,19 @@
 
 ![05-prettier](https://user-images.githubusercontent.com/47346801/141174925-959605b8-5167-460a-aad3-1f32648a1d45.PNG)
 
-Currently there are 9 locations and you can walk accross them. You can build on all locations and save your progress to a file (F5). There are no resources limit yet. Each location can have animals, there are 6 animal types now. 
+Currently there are 9 locations and you can walk accross them. You can build on all locations and save your progress to a file (**press F5**). There are no resources limit yet. Each location can have animals, there are 6 animal types now. 
 
-You can grow food, but can't pick up yet :) To plant something - press P.
+You can grow food :) To plant something - **press P**. When it is fully grown - you can pick it up and item will go to your inventory. 
 
-Press H to teleport to first location.
+**Press B** to open your Bag. Collected item will appear in your bag. You can select item and place it somewhere in the worlds. You can also pick it back.
 
-Press 0 to open menu for adding new animals. On the right side you will see all your animals on current map. Limit is 10. To remove animal - pick its portrait from right menu and press DELETE. 
+**Press H** to teleport to first location.
 
-Press Q to hide/show all buttons. 
+**Press 0** to open menu for adding new animals. On the right side you will see all your animals on current map. Limit is 10. To remove animal - pick its portrait from right menu and **press DELETE**. 
 
-Press ESC to show/hide all these tips
+**Press Q** to hide/show all buttons. 
+
+**Press ESC** to show/hide all these tips
 
 ## Plans for future
 
