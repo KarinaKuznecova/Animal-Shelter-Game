@@ -12,8 +12,8 @@ public class Rat extends Animal {
 
     private static final Logger logger = LoggerFactory.getLogger(Rat.class);
 
-    public Rat(int startX, int startY, int speed) {
-        super(NAME, startX, startY, speed, 32);
+    public Rat(int startX, int startY, int speed, int hungerLevel) {
+        super(NAME, startX, startY, speed, 32, hungerLevel);
     }
 
     @Override

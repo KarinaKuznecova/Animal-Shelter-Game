@@ -429,23 +429,24 @@ public class Game extends JFrame implements Runnable {
         int yMapRelated = yScreenRelated + renderer.getCamera().getY();
         logger.debug(String.format("Click on x: %d", xMapRelated));
         logger.debug(String.format("Click on y: %d", yMapRelated));
-        Rectangle mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        Rectangle mouseRectangle = new Rectangle(xScreenRelated, yScreenRelated, 1, 1);
         boolean stoppedChecking = false;
 
         for (GameObject gameObject : guiList) {
             if (!stoppedChecking) {
                 deselectAnimal();
-                mouseRectangle = new Rectangle(xScreenRelated, yScreenRelated, 1, 1);
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
         for (GameObject gameObject : gameMap.getPlants()) {
             if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
         for (Item item : gameMap.getItems()) {
             if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 stoppedChecking = item.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }

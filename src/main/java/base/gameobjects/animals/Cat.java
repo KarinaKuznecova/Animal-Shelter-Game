@@ -12,7 +12,12 @@ public class Cat extends Animal {
     public static final List<String> colors = Arrays.asList("cat-white", "cat-brown", "cat-caramel", "cat-black");
 
     public Cat(int startX, int startY, int speed, String color) {
-        super(color != null ? NAME + "-" + color : "cat-black", startX, startY, speed, 32);
+        super(color != null ? NAME + "-" + color : "cat-black", startX, startY, speed, 32, MAX_HUNGER);
+        setColor(color);
+    }
+
+    public Cat(int startX, int startY, int speed, String color, int hungerLevel) {
+        super(color != null ? NAME + "-" + color : "cat-black", startX, startY, speed, 32, hungerLevel);
         setColor(color);
     }
 }
