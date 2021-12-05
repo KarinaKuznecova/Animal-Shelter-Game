@@ -71,6 +71,7 @@ public class Game extends JFrame implements Runnable {
     private int selectedYourAnimal = -1;
     private String selectedPlant = "";
     private int selectedPanel = 1;
+    private String selectedItem = "";
 
     private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
     private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
@@ -323,7 +324,7 @@ public class Game extends JFrame implements Runnable {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 Rectangle buttonRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), i * (TILE_SIZE * ZOOM), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-                buttons.add(new BackpackButton(this, -1, null, buttonRectangle));
+                buttons.add(new BackpackButton(this, String.valueOf(i) + j, null, buttonRectangle));
             }
         }
         backpackGui = new GUI(buttons, 5, this.getHeight() - (4 * (TILE_SIZE * ZOOM + 2)), true);
@@ -424,6 +425,11 @@ public class Game extends JFrame implements Runnable {
         selectedPlant = plantType;
     }
 
+    public void changeSelectedItem(String item) {
+        logger.info(String.format("changing your selected item to : %s", item));
+        selectedItem = item;
+    }
+
     public void leftClick(int x, int y) {
         int xAdjusted = x + renderer.getCamera().getX();
         int yAdjusted = y + renderer.getCamera().getY();
@@ -500,12 +506,13 @@ public class Game extends JFrame implements Runnable {
 
     public void pickUpPlant(Plant plant) {
         GUIButton button = backpackGui.getButton(plant.getPreviewSprite());
-        if (button != null) {
+        if (button instanceof BackpackButton) {
             logger.info("found a slot in backpack");
             if (button.getSprite() == null) {
                 logger.info("slot was empty, will put plant");
                 button.setSprite(plant.getPreviewSprite());
                 button.setObjectCount(1);
+                ((BackpackButton) button).setItem(plant.getPlantType());
             } else {
                 logger.info("plant is already in backpack, will increment");
                 button.setObjectCount(button.getObjectCount() + 1);
@@ -550,6 +557,7 @@ public class Game extends JFrame implements Runnable {
     public void switchTopPanel(int panelId) {
         logger.info(String.format("Switching panels to id: %d", panelId));
 
+        boolean backpackOpen = guiList.contains(backpackGui);
         selectedPanel = panelId;
         if (panelId == 0) {
             if (!guiList.contains(possibleAnimalButtons)) {
@@ -578,6 +586,9 @@ public class Game extends JFrame implements Runnable {
             loadYourAnimals();
             guiList.add(yourAnimalButtons);
         }
+        if (backpackOpen) {
+            guiList.add(backpackGui);
+        }
     }
 
     public void openTerrainMenu() {
@@ -604,6 +615,7 @@ public class Game extends JFrame implements Runnable {
     public void showBackpack() {
         if (guiList.contains(backpackGui)) {
             guiList.remove(backpackGui);
+            changeSelectedItem("");
             renderer.clearNumbers();
         } else {
             guiList.add(backpackGui);
@@ -648,6 +660,10 @@ public class Game extends JFrame implements Runnable {
 
     public String getSelectedPlant() {
         return selectedPlant;
+    }
+
+    public String getSelectedItem() {
+        return selectedItem;
     }
 
     public KeyboardListener getKeyboardListener() {
