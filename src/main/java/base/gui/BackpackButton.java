@@ -12,14 +12,16 @@ public class BackpackButton extends GUIButton {
     private String item;
     private final Game game;
     private boolean isGreen = false;
+    private final String defaultId;
 
     protected static final Logger logger = LoggerFactory.getLogger(BackpackButton.class);
 
-    public BackpackButton(Game game, String item, Sprite tileSprite, Rectangle rectangle) {
+    public BackpackButton(Game game, String item, Sprite tileSprite, Rectangle rectangle, String defaultId) {
         super(tileSprite, rectangle, true);
         this.item = item;
         this.sprite = tileSprite;
         this.game = game;
+        this.defaultId = defaultId;
         rectangle.generateGraphics(3, 0xFFDB3D);
     }
 
@@ -35,7 +37,7 @@ public class BackpackButton extends GUIButton {
                 renderer.renderSprite(sprite,
                         region.getX() + rectangle.getX(),
                         region.getY() + rectangle.getY(),
-                        xZoom, yZoom, fixed);
+                        xZoom, yZoom, fixed, null);
             }
         }
         renderer.renderRectangle(region, rectangle, 1, 1, fixed);
@@ -69,5 +71,15 @@ public class BackpackButton extends GUIButton {
 
     public void setItem(String item) {
         this.item = item;
+    }
+
+    public void makeEmpty() {
+        setItem(defaultId);
+        sprite = null;
+        objectCount = 0;
+    }
+
+    public String getDefaultId() {
+        return defaultId;
     }
 }

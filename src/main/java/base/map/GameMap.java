@@ -28,6 +28,7 @@ public class GameMap {
     private final List<MapTile> portals = new ArrayList<>();
     private final List<Animal> allAnimals;
     private final List<Plant> plants = new CopyOnWriteArrayList<>();
+    private final List<Item> items = new CopyOnWriteArrayList<>();
 
     int backGroundTileId = -1;      //background of walkable part of the map
     int alphaBackground = -1;       //outside the walkable part
@@ -236,6 +237,11 @@ public class GameMap {
 
     private void renderGameObjects(RenderHandler renderer, List<GameObject> gameObjects, int layer) {
         for (GameObject gameObject : gameObjects) {
+            if (gameObject.getLayer() == layer) {
+                gameObject.render(renderer, ZOOM, ZOOM);
+            }
+        }
+        for (GameObject gameObject : items) {
             if (gameObject.getLayer() == layer) {
                 gameObject.render(renderer, ZOOM, ZOOM);
             }
@@ -510,6 +516,19 @@ public class GameMap {
             }
         }
         return true;
+    }
+
+    public void addItem(Item item) {
+        logger.debug("Adding item to the list");
+        items.add(item);
+    }
+
+    public void removeItem(String itemName, Rectangle rectangle) {
+        items.removeIf(item -> itemName.equals(item.getItemName()) && rectangle.intersects(item.getRectangle()));
+    }
+
+    public List<Item> getItems () {
+        return items;
     }
 
     public boolean isInsideOfMap(int x, int y) {

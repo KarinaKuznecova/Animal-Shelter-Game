@@ -324,7 +324,7 @@ public class Game extends JFrame implements Runnable {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 Rectangle buttonRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), i * (TILE_SIZE * ZOOM), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-                buttons.add(new BackpackButton(this, String.valueOf(i) + j, null, buttonRectangle));
+                buttons.add(new BackpackButton(this, String.valueOf(i) + j, null, buttonRectangle, String.valueOf(i) + j));
             }
         }
         backpackGui = new GUI(buttons, 5, this.getHeight() - (4 * (TILE_SIZE * ZOOM + 2)), true);
@@ -406,26 +406,33 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void changeTile(int tileId) {
+        selectedItem = "";
         logger.info(String.format("changing tile to new tile : %d", tileId));
         selectedTileId = tileId;
     }
 
     public void changeAnimal(String animalType) {
+        selectedItem = "";
         logger.info(String.format("changing selected animal to : %s", animalType));
         selectedAnimal = animalType;
     }
 
     public void changeYourAnimal(int animalId) {
+        selectedItem = "";
         logger.info(String.format("changing your selected animal to : %d", animalId));
         selectedYourAnimal = animalId;
     }
 
     public void changeSelectedPlant(String plantType) {
+        selectedItem = "";
         logger.info(String.format("changing your selected plant to : %s", plantType));
         selectedPlant = plantType;
     }
 
     public void changeSelectedItem(String item) {
+        deselectAnimal();
+        selectedTileId = -1;
+        selectedPlant = "";
         logger.info(String.format("changing your selected item to : %s", item));
         selectedItem = item;
     }
@@ -450,6 +457,12 @@ public class Game extends JFrame implements Runnable {
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
+        for (Item item : gameMap.getItems()) {
+            if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xAdjusted - TILE_SIZE, yAdjusted - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = item.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
+            }
+        }
         if (!stoppedChecking) {
             int smallerX = (int) Math.floor(xAdjusted / (32.0 * ZOOM));
             int smallerY = (int) Math.floor(yAdjusted / (32.0 * ZOOM));
@@ -458,7 +471,21 @@ public class Game extends JFrame implements Runnable {
                     logger.warn("Can't place tile under player");
                     return;
                 }
-                gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
+                if (selectedTileId != -1) {
+                    gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
+                }
+                if (selectedItem.length() > 2) {
+                    logger.info("Will put item on the ground");
+                    Sprite sprite = plantService.getPreviews().get(selectedItem);
+                    Item item = new Item(xAdjusted, yAdjusted, selectedItem, sprite);
+                    gameMap.addItem(item);
+                    BackpackButton button = (BackpackButton) backpackGui.getButton(sprite);
+                    button.setObjectCount(button.getObjectCount() - 1);
+                    if (button.getObjectCount() == 0) {
+                        button.makeEmpty();
+                        changeSelectedItem(button.getDefaultId());
+                    }
+                }
             }
             if (guiList.contains(possibleAnimalButtons)) {
                 createNewAnimal(smallerX, smallerY);
@@ -521,6 +548,25 @@ public class Game extends JFrame implements Runnable {
             logger.info("No empty slots in backpack");
         }
         gameMap.removePlant(plant);
+    }
+
+    public void pickUpItem(String itemName, Sprite sprite, Rectangle rectangle) {
+        GUIButton button = backpackGui.getButton(sprite);
+        if (button instanceof BackpackButton) {
+            logger.info("found a slot in backpack");
+            if (button.getSprite() == null) {
+                logger.info("slot was empty, will put plant");
+                button.setSprite(sprite);
+                button.setObjectCount(1);
+                ((BackpackButton) button).setItem(itemName);
+            } else {
+                logger.info("plant is already in backpack, will increment");
+                button.setObjectCount(button.getObjectCount() + 1);
+            }
+        } else {
+            logger.info("No empty slots in backpack");
+        }
+        gameMap.removeItem(itemName, rectangle);
     }
 
     public void rightClick(int x, int y) {
