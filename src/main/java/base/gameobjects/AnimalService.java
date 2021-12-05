@@ -20,8 +20,9 @@ public class AnimalService {
     public static final String BUTTERFLY = "butterfly";
     public static final String CAT = "cat";
     public static final String PIG = "pig";
+    public static final String BUNNY = "bunny";
 
-    List<String> animalNames = Arrays.asList(Rat.NAME, Mouse.NAME, Chicken.NAME, Butterfly.NAME, Cat.NAME, Pig.NAME);
+    List<String> animalNames = Arrays.asList(Rat.NAME, Mouse.NAME, Chicken.NAME, Butterfly.NAME, Cat.NAME, Pig.NAME, Bunny.NAME);
 
     protected static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
 
@@ -64,6 +65,9 @@ public class AnimalService {
             case PIG:
                 animal = new Pig(startX, startY, 3);
                 break;
+            case BUNNY:
+                animal = new Bunny(startX, startY, 2);
+                break;
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalName));
                 throw new IllegalArgumentException();
@@ -90,6 +94,9 @@ public class AnimalService {
         }
         if (animal instanceof Pig) {
             return PIG;
+        }
+        if (animal instanceof Bunny) {
+            return BUNNY;
         }
         return null;
     }
