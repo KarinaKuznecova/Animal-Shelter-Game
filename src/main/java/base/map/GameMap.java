@@ -3,6 +3,7 @@ package base.map;
 import base.gameobjects.*;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
+import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,6 +137,18 @@ public class GameMap {
 
             return true;
         }
+        if (line.startsWith("item")) {
+            String[] splitLine = line.split(",");
+            String itemId = splitLine[0];
+            String itemName = itemId.split("-")[1];
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            Sprite sprite = plantService.getPreviews().get(itemName);
+            Item item = new Item(x, y, itemName, sprite);
+            items.add(item);
+            return true;
+        }
+
         return false;
     }
 
@@ -362,6 +375,7 @@ public class GameMap {
                 printWriter.println("AlphaFill:" + alphaBackground);
             }
             savePlants(printWriter);
+            saveItems(printWriter);
             printWriter.println("//layer,tileId,xPos,yPos,regularTile,portalDirection");
             for (List<MapTile> layer : layeredTiles.values()) {
                 for (MapTile tile : layer) {
@@ -398,6 +412,16 @@ public class GameMap {
         printWriter.println("//type, xPosition, yPosition, growingStage");
         for (Plant plant : plants) {
             printWriter.println("plant-" + plant.getPlantType() + "," + plant.getRectangle().getX() + "," + plant.getRectangle().getY() + "," + plant.getGrowingStage());
+        }
+    }
+    public void saveItems(PrintWriter printWriter) {
+        if (items.isEmpty()) {
+            return;
+        }
+        printWriter.println("//Items");
+        printWriter.println("//type, xPosition, yPosition");
+        for (Item item : items) {
+            printWriter.println("item-" + item.getItemName() + "," + item.getRectangle().getX() + "," + item.getRectangle().getY());
         }
     }
 
