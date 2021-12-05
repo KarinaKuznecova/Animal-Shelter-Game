@@ -4,7 +4,9 @@ import base.Game;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 
-public interface GameObject {
+import java.io.Serializable;
+
+public interface GameObject extends Serializable {
 
     //should be called as often as possible
     void render(RenderHandler renderer, int xZoom, int yZoom);
