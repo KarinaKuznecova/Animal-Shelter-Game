@@ -606,6 +606,7 @@ public class Game extends JFrame implements Runnable {
     public void showBackpack() {
         if (guiList.contains(backpackGui)) {
             guiList.remove(backpackGui);
+            renderer.clearNumbers();
         } else {
             guiList.add(backpackGui);
         }

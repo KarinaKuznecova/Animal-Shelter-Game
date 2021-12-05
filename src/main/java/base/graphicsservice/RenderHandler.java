@@ -119,6 +119,10 @@ public class RenderHandler {
         textToDraw.put(numberPosition, String.valueOf(number));
     }
 
+    public void clearNumbers() {
+        textToDraw.clear();
+    }
+
     public void renderPixelsArrays(int[] renderPixels, int renderWidth, int renderHeight, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed) {
         for (int y = 0; y < renderHeight; y++) {
             for (int x = 0; x < renderWidth; x++) {
