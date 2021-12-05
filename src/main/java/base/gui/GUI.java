@@ -6,14 +6,17 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class GUI implements GameObject {
+public class GUI implements GameObject, Serializable {
 
-    private Sprite backgroundSprite;
-    private List<GUIButton> buttons;
-    private Rectangle rectangle = new Rectangle();
-    private boolean fixedOnScreen;
+    private static final long serialVersionUID = 1L;
+
+    private final Sprite backgroundSprite;
+    private final List<GUIButton> buttons;
+    private final Rectangle rectangle = new Rectangle();
+    private final boolean fixedOnScreen;
 
     public GUI(Sprite backgroundSprite, List<GUIButton> buttons, int xPosition, int yPosition, boolean fixedOnScreen) {
         this.backgroundSprite = backgroundSprite;
@@ -102,5 +105,13 @@ public class GUI implements GameObject {
             }
         }
         return null;
+    }
+
+    public void setGame(Game game) {
+        for (GUIButton button : buttons) {
+            if (button instanceof BackpackButton) {
+                ((BackpackButton) button).setGame(game);
+            }
+        }
     }
 }

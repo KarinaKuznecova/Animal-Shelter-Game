@@ -1,10 +1,13 @@
 package base.graphicsservice;
 
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class Sprite {
+public class Sprite implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private int width;
     private int height;

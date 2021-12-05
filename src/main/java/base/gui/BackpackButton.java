@@ -7,20 +7,23 @@ import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BackpackButton extends GUIButton {
+import java.io.Serializable;
+
+public class BackpackButton extends GUIButton implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String item;
-    private final Game game;
+    private transient Game game;
     private boolean isGreen = false;
     private final String defaultId;
 
     protected static final Logger logger = LoggerFactory.getLogger(BackpackButton.class);
 
-    public BackpackButton(Game game, String item, Sprite tileSprite, Rectangle rectangle, String defaultId) {
+    public BackpackButton(String item, Sprite tileSprite, Rectangle rectangle, String defaultId) {
         super(tileSprite, rectangle, true);
         this.item = item;
         this.sprite = tileSprite;
-        this.game = game;
         this.defaultId = defaultId;
         rectangle.generateGraphics(3, 0xFFDB3D);
     }
@@ -81,5 +84,9 @@ public class BackpackButton extends GUIButton {
 
     public String getDefaultId() {
         return defaultId;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 }

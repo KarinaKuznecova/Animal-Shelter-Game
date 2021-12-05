@@ -19,7 +19,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -320,11 +320,20 @@ public class Game extends JFrame implements Runnable {
     }
 
     void loadBackpack() {
+        backpackGui = loadBackpackFromFile();
+        if (backpackGui != null) {
+            backpackGui.setGame(this);
+        } else {
+            loadEmptyBackpack();
+        }
+    }
+
+    void loadEmptyBackpack() {
         List<GUIButton> buttons = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 Rectangle buttonRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), i * (TILE_SIZE * ZOOM), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-                buttons.add(new BackpackButton(this, String.valueOf(i) + j, null, buttonRectangle, String.valueOf(i) + j));
+                buttons.add(new BackpackButton(String.valueOf(i) + j, null, buttonRectangle, String.valueOf(i) + j));
             }
         }
         backpackGui = new GUI(buttons, 5, this.getHeight() - (4 * (TILE_SIZE * ZOOM + 2)), true);
@@ -578,6 +587,32 @@ public class Game extends JFrame implements Runnable {
     public void saveMap() {
         renderer.setTextToDraw("...saving game...", 40);
         gameMap.saveMap();
+
+        saveObjects();
+    }
+
+    private void saveObjects() {
+        logger.info("Attempt to save backpack");
+        try {
+            FileOutputStream outputStream = new FileOutputStream("backpack.bag");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream.writeObject(backpackGui);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            logger.error("Unable to save backpack");
+        }
+    }
+
+    private GUI loadBackpackFromFile() {
+        logger.info("Attempt to load backpack");
+        try {
+            FileInputStream inputStream = new FileInputStream("backpack.bag");
+            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+            return (GUI) objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            logger.warn("No previous backpacks found, will load empty");
+        }
+        return null;
     }
 
     public void hideGuiPanels() {

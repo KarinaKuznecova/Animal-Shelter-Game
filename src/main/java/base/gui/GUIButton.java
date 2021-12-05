@@ -6,7 +6,11 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
-public abstract class GUIButton implements GameObject {
+import java.io.Serializable;
+
+public abstract class GUIButton implements GameObject, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     protected Sprite sprite;
     protected Rectangle region;
