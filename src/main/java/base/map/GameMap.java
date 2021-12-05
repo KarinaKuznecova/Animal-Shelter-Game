@@ -27,7 +27,7 @@ public class GameMap {
     private final Map<Integer, List<MapTile>> layeredTiles = new HashMap<>();
     private final List<MapTile> portals = new ArrayList<>();
     private final List<Animal> allAnimals;
-    private final List<Plant> plants = new CopyOnWriteArrayList<>();
+    private List<Plant> plants = new CopyOnWriteArrayList<>();
     private final List<Item> items = new CopyOnWriteArrayList<>();
 
     int backGroundTileId = -1;      //background of walkable part of the map
@@ -481,6 +481,10 @@ public class GameMap {
 
     public List<Plant> getPlants() {
         return plants;
+    }
+
+    public void setPlants(List<Plant> plants) {
+        this.plants = plants;
     }
 
     public boolean isThereGrassOrDirt(int x, int y) {

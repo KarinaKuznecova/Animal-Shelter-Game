@@ -14,9 +14,12 @@ public class ImageLoader {
 
     protected static final Logger logger = LoggerFactory.getLogger(ImageLoader.class);
 
+    private ImageLoader() {
+    }
+
     public static BufferedImage loadImage(String path) {
         try {
-            logger.info(String.format("Will try to load - %s", path));
+            logger.debug(String.format("Will try to load - %s", path));
             BufferedImage image = ImageIO.read(Objects.requireNonNull(Game.class.getResource(path)));
             BufferedImage formattedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
             formattedImage.getGraphics().drawImage(image, 0, 0, null);

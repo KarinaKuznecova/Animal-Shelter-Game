@@ -46,12 +46,12 @@ public class Game extends JFrame implements Runnable {
     private transient GameMap gameMap;
     private transient List<GameObject> gameObjectsList;
     private transient List<GameObject> guiList;
+    private transient Map<String, List<Plant>> plantsOnMaps;
 
     private transient Player player;
     private transient AnimatedSprite playerAnimations;
 
     private transient GameTips gameTips;
-    private transient Map<Sprite, Integer> backpack = new HashMap<>();
 
     private transient TileService tileService;
     private transient AnimalService animalService;
@@ -181,8 +181,10 @@ public class Game extends JFrame implements Runnable {
     private void loadMap() {
         logger.info("Game map loading started");
 
+        plantsOnMaps = new HashMap<>();
         tileService = new TileService();
         gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
+        plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
 
         logger.info("Game map loaded");
     }
@@ -190,12 +192,16 @@ public class Game extends JFrame implements Runnable {
     public void loadSecondaryMap(String mapPath) {
         logger.info("Game map loading started");
         saveMap();
+        plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
 
         String previousMapName = gameMap.getMapName();
         logger.debug(String.format("Previous map name: %s", previousMapName));
 
         gameMap = new GameMap(new File(mapPath), tileService);
 
+        if (plantsOnMaps.containsKey(gameMap.getMapName())) {
+            gameMap.setPlants(plantsOnMaps.get(gameMap.getMapName()));
+        }
         logger.info(String.format("Game map %s loaded", gameMap.getMapName()));
 
         MapTile portalToPrevious = gameMap.getPortalTo(previousMapName);
@@ -350,8 +356,12 @@ public class Game extends JFrame implements Runnable {
     }
 
     void refreshGuiPanels() {
+        boolean backpackOpen = guiList.contains(backpackGui);
         guiList.clear();
         switchTopPanel(selectedPanel);
+        if (backpackOpen) {
+            guiList.add(backpackGui);
+        }
     }
 
     private void loadGameObjects(int startX, int startY) {
@@ -409,8 +419,10 @@ public class Game extends JFrame implements Runnable {
         for (Animal animal : getGameMap().getAnimals()) {
             animal.update(this);
         }
-        for (Plant plant : getGameMap().getPlants()) {
-            plant.update(this);
+        for (List<Plant> plants : plantsOnMaps.values()) {
+            for (Plant plant : plants) {
+                plant.update(this);
+            }
         }
     }
 
