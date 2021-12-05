@@ -27,7 +27,7 @@ public abstract class GUIButton implements GameObject {
         if (objectCount > 1) {
             renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, objectCount);
         } else {
-            renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed);
+            renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, null);
         }
     }
 
