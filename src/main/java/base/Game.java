@@ -56,9 +56,11 @@ public class Game extends JFrame implements Runnable {
     private transient TileService tileService;
     private transient AnimalService animalService;
     private transient PlantService plantService;
+    private transient GuiService guiService;
+    private transient BackpackService backpackService;
 
     private final transient GUI[] tileButtonsArray = new GUI[10];
-    private final transient GUI[] terrainButtonsArray = new GUI[11];
+    private transient GUI[] terrainButtonsArray;
     private transient GUI yourAnimalButtons;
     private transient GUI possibleAnimalButtons;
     private transient GUI plantsGui;
@@ -96,6 +98,8 @@ public class Game extends JFrame implements Runnable {
     private void initializeServices() {
         animalService = new AnimalService();
         plantService = new PlantService();
+        guiService = new GuiService();
+        backpackService = new BackpackService();
     }
 
     private void loadUI() {
@@ -181,18 +185,21 @@ public class Game extends JFrame implements Runnable {
     private void loadMap() {
         logger.info("Game map loading started");
 
-        plantsOnMaps = new HashMap<>();
         tileService = new TileService();
         gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
-        plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
+        cachePlants();
 
         logger.info("Game map loaded");
+    }
+
+    private void cachePlants() {
+        plantsOnMaps = new HashMap<>();
+        plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
     }
 
     public void loadSecondaryMap(String mapPath) {
         logger.info("Game map loading started");
         saveMap();
-        plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
 
         String previousMapName = gameMap.getMapName();
         logger.debug(String.format("Previous map name: %s", previousMapName));
@@ -205,15 +212,19 @@ public class Game extends JFrame implements Runnable {
         logger.info(String.format("Game map %s loaded", gameMap.getMapName()));
 
         MapTile portalToPrevious = gameMap.getPortalTo(previousMapName);
+        adjustPlayerPosition(portalToPrevious);
+        renderer.adjustCamera(this, player);
+        refreshGuiPanels();
+    }
+
+    private void adjustPlayerPosition(MapTile portalToPrevious) {
         if (portalToPrevious != null) {
             int previousMapPortalX = gameMap.getSpawnPoint(portalToPrevious, true);
             int previousMapPortalY = gameMap.getSpawnPoint(portalToPrevious, false);
-            loadGameObjects(previousMapPortalX, previousMapPortalY);
+            player.teleportTo(previousMapPortalX, previousMapPortalY);
         } else {
-            loadGameObjects(getWidth() / 2, getHeight() / 2);
+            player.teleportToCenter(this);
         }
-        renderer.adjustCamera(this, player);
-        refreshGuiPanels();
     }
 
     private void loadGuiElements() {
@@ -252,107 +263,46 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void loadYourAnimals() {
-        List<Animal> animals = getGameMap().getAnimals();
-        List<GUIButton> buttons = new CopyOnWriteArrayList<>();
-
-        for (int i = 0; i < animals.size(); i++) {
-            Animal animal = animals.get(i);
-            Sprite animalSprite = animal.getPreviewSprite();
-            Rectangle tileRectangle = new Rectangle(this.getWidth() - (TILE_SIZE * ZOOM + TILE_SIZE), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-            buttons.add(new AnimalIcon(this, i, animalSprite, tileRectangle));
-        }
-
-        yourAnimalButtons = new GUI(buttons, 5, 5, true);
+        yourAnimalButtons = guiService.loadYourAnimals(this);
     }
 
     void loadPossibleAnimalsPanel() {
         Map<String, Sprite> previews = animalService.getAnimalPreviewSprites();
-        List<GUIButton> buttons = new ArrayList<>();
-
-        int i = 0;
-        for (Map.Entry<String, Sprite> entry : previews.entrySet()) {
-            Sprite animalSprite = entry.getValue();
-            Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
-            buttons.add(new NewAnimalButton(this, entry.getKey(), animalSprite, tileRectangle));
-            i++;
-        }
-        Rectangle tileRectangle = new Rectangle((previews.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
-        buttons.add(new NewAnimalButton(this, "", null, tileRectangle));
-        changeAnimal("");
-
-        possibleAnimalButtons = new GUI(buttons, 5, 5, true);
+        possibleAnimalButtons = guiService.loadPossibleAnimalsPanel(this, previews);
     }
 
     void loadPlantsPanel() {
-        List<GUIButton> buttons = new ArrayList<>();
         Map<String, Sprite> previews = plantService.getPreviews();
-
-        int i = 0;
-        for (Map.Entry<String, Sprite> entry : previews.entrySet()) {
-            Sprite previewSprite = entry.getValue();
-            Rectangle tileRectangle = new Rectangle(i * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-            buttons.add(new PlantButton(this, entry.getKey(), previewSprite, tileRectangle));
-            i++;
-        }
-        Rectangle oneMoreTileRectangle = new Rectangle((previews.size()) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-        buttons.add(new PlantButton(this, "", null, oneMoreTileRectangle));
-        changeSelectedPlant("");
-
-        plantsGui = new GUI(buttons, 5, 5, true);
+        plantsGui = guiService.loadPlantsPanel(this, previews);
     }
 
     void loadTerrainGui() {
         List<Tile> tiles = tileService.getTerrainTiles();
-
-        List<GUIButton> buttons = new ArrayList<>();
-        for (int i = 0, j = 0; i < tiles.size(); i++, j++) {
-            Rectangle tileRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-            buttons.add(new SDKButton(this, i, tiles.get(i).getSprite(), tileRectangle));
-            if (i != 0 && i % 18 == 0) {
-                Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-                buttons.add(new SDKButton(this, -1, null, oneMoreTileRectangle));
-                terrainButtonsArray[i / 18 - 1] = new GUI(buttons, 5, 5, true);
-
-                buttons = new ArrayList<>();
-                j = -1;
-            }
-            if (i == tiles.size() - 1) {
-                Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-                buttons.add(new SDKButton(this, -1, null, oneMoreTileRectangle));
-                int temp = (i - (i % 18)) / 18;
-                terrainButtonsArray[temp] = new GUI(buttons, 5, 5, true);
-            }
-        }
+        terrainButtonsArray = guiService.loadTerrainGui(this, tiles);
     }
 
     void loadBackpack() {
-        backpackGui = loadBackpackFromFile();
+        backpackGui = backpackService.loadBackpackFromFile();
         if (backpackGui != null) {
             backpackGui.setGame(this);
         } else {
-            loadEmptyBackpack();
+            backpackGui = guiService.loadEmptyBackpack(this);
         }
     }
 
-    void loadEmptyBackpack() {
-        List<GUIButton> buttons = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                Rectangle buttonRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), i * (TILE_SIZE * ZOOM), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-                buttons.add(new BackpackButton(String.valueOf(i) + j, null, buttonRectangle, String.valueOf(i) + j));
-            }
-        }
-        backpackGui = new GUI(buttons, 5, this.getHeight() - (4 * (TILE_SIZE * ZOOM + 2)), true);
-    }
-
-    void enableDefaultGui() {
-        changeTile(-1);
-        changeYourAnimal(-1);
-        changeSelectedPlant("");
+    private void enableDefaultGui() {
+        deselectEverything();
 
         guiList = new CopyOnWriteArrayList<>();
         guiList.add(tileButtonsArray[0]);
         guiList.add(yourAnimalButtons);
+    }
+
+    private void deselectEverything() {
+        changeTile(-1);
+        changeYourAnimal(-1);
+        changeSelectedPlant("");
+        changeSelectedItem("");
     }
 
     void refreshGuiPanels() {
@@ -427,86 +377,83 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void changeTile(int tileId) {
-        selectedItem = "";
+        deselectBagItem();
         logger.info(String.format("changing tile to new tile : %d", tileId));
         selectedTileId = tileId;
     }
 
     public void changeAnimal(String animalType) {
-        selectedItem = "";
+        deselectBagItem();
         logger.info(String.format("changing selected animal to : %s", animalType));
         selectedAnimal = animalType;
     }
 
     public void changeYourAnimal(int animalId) {
-        selectedItem = "";
+        deselectBagItem();
         logger.info(String.format("changing your selected animal to : %d", animalId));
         selectedYourAnimal = animalId;
     }
 
     public void changeSelectedPlant(String plantType) {
-        selectedItem = "";
+        deselectBagItem();
         logger.info(String.format("changing your selected plant to : %s", plantType));
         selectedPlant = plantType;
     }
 
     public void changeSelectedItem(String item) {
         deselectAnimal();
-        selectedTileId = -1;
-        selectedPlant = "";
+        deselectTile();
+        deselectPlant();
         logger.info(String.format("changing your selected item to : %s", item));
         selectedItem = item;
     }
 
-    public void leftClick(int x, int y) {
-        int xAdjusted = x + renderer.getCamera().getX();
-        int yAdjusted = y + renderer.getCamera().getY();
-        logger.debug(String.format("Click on x: %d", xAdjusted));
-        logger.debug(String.format("Click on y: %d", yAdjusted));
-        Rectangle mouseRectangle = new Rectangle(x, y, 1, 1);
+    private void deselectPlant() {
+        selectedPlant = "";
+    }
+
+    private void deselectTile() {
+        selectedTileId = -1;
+    }
+
+    private void deselectBagItem() {
+        selectedItem = "";
+    }
+
+    public void deselectAnimal() {
+        selectedYourAnimal = -1;
+    }
+
+    public void leftClick(int xScreenRelated, int yScreenRelated) {
+        int xMapRelated = xScreenRelated + renderer.getCamera().getX();
+        int yMapRelated = yScreenRelated + renderer.getCamera().getY();
+        logger.debug(String.format("Click on x: %d", xMapRelated));
+        logger.debug(String.format("Click on y: %d", yMapRelated));
+        Rectangle mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
         boolean stoppedChecking = false;
 
         for (GameObject gameObject : guiList) {
             if (!stoppedChecking) {
                 deselectAnimal();
+                mouseRectangle = new Rectangle(xScreenRelated, yScreenRelated, 1, 1);
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
         for (GameObject gameObject : gameMap.getPlants()) {
             if (!stoppedChecking) {
-                mouseRectangle = new Rectangle(xAdjusted - TILE_SIZE, yAdjusted - TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
         for (Item item : gameMap.getItems()) {
             if (!stoppedChecking) {
-                mouseRectangle = new Rectangle(xAdjusted - TILE_SIZE, yAdjusted - TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 stoppedChecking = item.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
         if (!stoppedChecking) {
-            int smallerX = (int) Math.floor(xAdjusted / (32.0 * ZOOM));
-            int smallerY = (int) Math.floor(yAdjusted / (32.0 * ZOOM));
+            int smallerX = (int) Math.floor(xMapRelated / (32.0 * ZOOM));
+            int smallerY = (int) Math.floor(yMapRelated / (32.0 * ZOOM));
             if (!guiList.contains(possibleAnimalButtons)) {
-                if (player.getPlayerRectangle().intersects(xAdjusted, yAdjusted, TILE_SIZE, TILE_SIZE)) {
-                    logger.warn("Can't place tile under player");
-                    return;
-                }
-                if (selectedTileId != -1) {
-                    gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
-                }
-                if (selectedItem.length() > 2) {
-                    logger.info("Will put item on the ground");
-                    Sprite sprite = plantService.getPreviews().get(selectedItem);
-                    Item item = new Item(xAdjusted, yAdjusted, selectedItem, sprite);
-                    gameMap.addItem(item);
-                    BackpackButton button = (BackpackButton) backpackGui.getButton(sprite);
-                    button.setObjectCount(button.getObjectCount() - 1);
-                    if (button.getObjectCount() == 0) {
-                        button.makeEmpty();
-                        changeSelectedItem(button.getDefaultId());
-                    }
-                }
+                setNewTile(xMapRelated, yMapRelated, smallerX, smallerY);
             }
             if (guiList.contains(possibleAnimalButtons)) {
                 createNewAnimal(smallerX, smallerY);
@@ -515,6 +462,27 @@ public class Game extends JFrame implements Runnable {
                 createNewPlant(smallerX, smallerY);
             }
         }
+    }
+
+    private void setNewTile(int xAdjusted, int yAdjusted, int smallerX, int smallerY) {
+        if (selectedTileId != -1) {
+            if (player.getPlayerRectangle().intersects(xAdjusted, yAdjusted, TILE_SIZE, TILE_SIZE)) {
+                logger.warn("Can't place tile under player");
+            } else {
+                gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
+            }
+        }
+        if (selectedItem.length() > 2) {
+            logger.info("Will put item on the ground");
+            putItemOnTheGround(xAdjusted, yAdjusted);
+        }
+    }
+
+    private void putItemOnTheGround(int xAdjusted, int yAdjusted) {
+        Sprite sprite = plantService.getPlantSprite(selectedItem);
+        Item item = new Item(xAdjusted, yAdjusted, selectedItem, sprite);
+        gameMap.addItem(item);
+        guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButton(sprite));
     }
 
     private void createNewAnimal(int x, int y) {
@@ -554,25 +522,17 @@ public class Game extends JFrame implements Runnable {
 
     public void pickUpPlant(Plant plant) {
         GUIButton button = backpackGui.getButton(plant.getPreviewSprite());
-        if (button instanceof BackpackButton) {
-            logger.info("found a slot in backpack");
-            if (button.getSprite() == null) {
-                logger.info("slot was empty, will put plant");
-                button.setSprite(plant.getPreviewSprite());
-                button.setObjectCount(1);
-                ((BackpackButton) button).setItem(plant.getPlantType());
-            } else {
-                logger.info("plant is already in backpack, will increment");
-                button.setObjectCount(button.getObjectCount() + 1);
-            }
-        } else {
-            logger.info("No empty slots in backpack");
-        }
+        pickUp(plant.getPlantType(), plant.getPreviewSprite(), button);
         gameMap.removePlant(plant);
     }
 
     public void pickUpItem(String itemName, Sprite sprite, Rectangle rectangle) {
         GUIButton button = backpackGui.getButton(sprite);
+        pickUp(itemName, sprite, button);
+        gameMap.removeItem(itemName, rectangle);
+    }
+
+    private void pickUp(String itemName, Sprite sprite, GUIButton button) {
         if (button instanceof BackpackButton) {
             logger.info("found a slot in backpack");
             if (button.getSprite() == null) {
@@ -587,7 +547,6 @@ public class Game extends JFrame implements Runnable {
         } else {
             logger.info("No empty slots in backpack");
         }
-        gameMap.removeItem(itemName, rectangle);
     }
 
     public void rightClick(int x, int y) {
@@ -598,33 +557,11 @@ public class Game extends JFrame implements Runnable {
 
     public void saveMap() {
         renderer.setTextToDraw("...saving game...", 40);
+
+        plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
         gameMap.saveMap();
 
-        saveObjects();
-    }
-
-    private void saveObjects() {
-        logger.info("Attempt to save backpack");
-        try {
-            FileOutputStream outputStream = new FileOutputStream("backpack.bag");
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-            objectOutputStream.writeObject(backpackGui);
-            objectOutputStream.close();
-        } catch (IOException e) {
-            logger.error("Unable to save backpack");
-        }
-    }
-
-    private GUI loadBackpackFromFile() {
-        logger.info("Attempt to load backpack");
-        try {
-            FileInputStream inputStream = new FileInputStream("backpack.bag");
-            ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-            return (GUI) objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            logger.warn("No previous backpacks found, will load empty");
-        }
-        return null;
+        backpackService.saveBackpack(backpackGui);
     }
 
     public void hideGuiPanels() {
@@ -635,13 +572,12 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    public void replaceMapWithDefault() {
-
-        logger.info("Default game map loading started");
+    public void teleportToStarterMap() {
+        logger.info("Starting game map loading started");
 
         gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
         player.teleportToCenter(this);
-        logger.info("Default game map loaded");
+        logger.info("Starting game map loaded");
 
         renderer.adjustCamera(this, player);
         loadSDKGUI();
@@ -651,36 +587,59 @@ public class Game extends JFrame implements Runnable {
         logger.info(String.format("Switching panels to id: %d", panelId));
 
         boolean backpackOpen = guiList.contains(backpackGui);
+
         selectedPanel = panelId;
-        if (panelId == 0) {
-            if (!guiList.contains(possibleAnimalButtons)) {
-                guiList.clear();
-                guiList.add(possibleAnimalButtons);
-                regularTiles = true;
-            }
-        } else if (panelId == 10) {
-            if (!guiList.contains(plantsGui)) {
-                selectedTileId = -1;
-                guiList.clear();
-                guiList.add(plantsGui);
-            }
+
+        if (isNewAnimalsPanel(panelId)) {
+            showNewAnimalsPanel();
+        } else if (isPlantsPanel(panelId)) {
+            showNewPlantsPanel();
         } else if (regularTiles) {
-            if (tileButtonsArray[panelId - 1] != null && !guiList.contains(tileButtonsArray[panelId - 1])) {
-                guiList.clear();
-                guiList.add(tileButtonsArray[panelId - 1]);
-            }
+            showNewTilesPanel(panelId, tileButtonsArray);
         } else {
-            if (terrainButtonsArray[panelId - 1] != null && !guiList.contains(terrainButtonsArray[panelId - 1])) {
-                guiList.clear();
-                guiList.add(terrainButtonsArray[panelId - 1]);
-            }
+            showNewTilesPanel(panelId, terrainButtonsArray);
         }
-        if (!guiList.contains(yourAnimalButtons)) {
-            loadYourAnimals();
-            guiList.add(yourAnimalButtons);
-        }
+        showYourAnimals();
         if (backpackOpen) {
             guiList.add(backpackGui);
+        }
+    }
+
+    private boolean isNewAnimalsPanel(int panelId) {
+        return panelId == 0;
+    }
+
+    private boolean isPlantsPanel(int panelId) {
+        return panelId == 10;
+    }
+
+    private void showYourAnimals() {
+        if (!guiList.contains(yourAnimalButtons)) {
+            guiService.loadYourAnimals(this);
+            guiList.add(yourAnimalButtons);
+        }
+    }
+
+    private void showNewPlantsPanel() {
+        if (!guiList.contains(plantsGui)) {
+            deselectTile();
+            guiList.clear();
+            guiList.add(plantsGui);
+        }
+    }
+
+    private void showNewAnimalsPanel() {
+        if (!guiList.contains(possibleAnimalButtons)) {
+            guiList.clear();
+            guiList.add(possibleAnimalButtons);
+            regularTiles = true;
+        }
+    }
+
+    private void showNewTilesPanel(int panelId, GUI[] tileButtonsArray) {
+        if (tileButtonsArray[panelId - 1] != null && !guiList.contains(tileButtonsArray[panelId - 1])) {
+            guiList.clear();
+            guiList.add(tileButtonsArray[panelId - 1]);
         }
     }
 
@@ -698,11 +657,8 @@ public class Game extends JFrame implements Runnable {
             selectedPanel = 1;
             guiList.add(tileButtonsArray[0]);
         }
-        selectedTileId = -1;
-
-        loadYourAnimals();
-        guiList.add(yourAnimalButtons);
-
+        deselectTile();
+        showYourAnimals();
     }
 
     public void showBackpack() {
@@ -715,28 +671,38 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    public void deselectAnimal() {
-        selectedYourAnimal = -1;
-    }
-
     public void deleteAnimal() {
         if (selectedYourAnimal == -1) {
             logger.debug("Nothing to delete - no animal is selected");
             return;
         }
         logger.info("Will remove selected animal");
-        int temp = selectedYourAnimal;
+        int previouslySelected = selectedYourAnimal;
         gameMap.removeAnimal(selectedYourAnimal);
         gameMap.saveAnimals();
         refreshGuiPanels();
 
+        adjustSelectedAnimal(previouslySelected);
+
+        logger.info("Animal removed");
+    }
+
+    private void adjustSelectedAnimal(int previouslySelected) {
         if (gameMap.getAnimals().size() <= selectedYourAnimal) {
             selectedYourAnimal = gameMap.getAnimals().size() - 1;
         } else {
-            selectedYourAnimal = temp;
+            selectedYourAnimal = previouslySelected;
         }
+    }
 
-        logger.info("Animal removed");
+    public void showTips() {
+        if (renderer.getTextToDrawInCenter().isEmpty()) {
+            logger.info("will start drawing text");
+            renderer.setTextToDrawInCenter(gameTips.getLines());
+        } else {
+            logger.debug("removing text");
+            renderer.removeText();
+        }
     }
 
     public int getSelectedTileId() {
@@ -769,15 +735,5 @@ public class Game extends JFrame implements Runnable {
 
     public GameMap getGameMap() {
         return gameMap;
-    }
-
-    public void showTips() {
-        if (renderer.getTextToDrawInCenter().isEmpty()) {
-            logger.info("will start drawing text");
-            renderer.setTextToDrawInCenter(gameTips.getLines());
-        } else {
-            logger.debug("removing text");
-            renderer.removeText();
-        }
     }
 }

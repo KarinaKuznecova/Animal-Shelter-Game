@@ -36,7 +36,7 @@ public class KeyboardListener implements KeyListener, FocusListener {
             game.showBackpack();
         }
         if (keys[KeyEvent.VK_H]) {
-            game.replaceMapWithDefault();
+            game.teleportToStarterMap();
         }
         if (keys[KeyEvent.VK_P]) {
             game.switchTopPanel(10);

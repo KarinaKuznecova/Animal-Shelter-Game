@@ -86,4 +86,8 @@ public class PlantService {
         }
         return previews;
     }
+
+    public Sprite getPlantSprite(String plantName) {
+        return ImageLoader.getPreviewSprite(plantMapping.get(plantName));
+    }
 }
