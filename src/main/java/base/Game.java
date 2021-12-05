@@ -188,9 +188,7 @@ public class Game extends JFrame implements Runnable {
 
     public void loadSecondaryMap(String mapPath) {
         logger.info("Game map loading started");
-
-        logger.info("Saving animals on previous map");
-        gameMap.saveAnimals();
+        saveMap();
 
         String previousMapName = gameMap.getMapName();
         logger.debug(String.format("Previous map name: %s", previousMapName));
