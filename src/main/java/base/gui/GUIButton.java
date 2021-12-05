@@ -11,6 +11,7 @@ public abstract class GUIButton implements GameObject {
     protected Sprite sprite;
     protected Rectangle region;
     protected boolean fixed;
+    protected int objectCount;
 
     protected GUIButton(Sprite sprite, Rectangle region, boolean fixed) {
         this.sprite = sprite;
@@ -19,10 +20,15 @@ public abstract class GUIButton implements GameObject {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {}
+    public void render(RenderHandler renderer, int xZoom, int yZoom) {
+    }
 
     public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle interfaceRect) {
-        renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed);
+        if (objectCount > 1) {
+            renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, objectCount);
+        } else {
+            renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed);
+        }
     }
 
     @Override
@@ -47,5 +53,13 @@ public abstract class GUIButton implements GameObject {
 
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
+    }
+
+    public int getObjectCount() {
+        return objectCount;
+    }
+
+    public void setObjectCount(int objectCount) {
+        this.objectCount = objectCount;
     }
 }

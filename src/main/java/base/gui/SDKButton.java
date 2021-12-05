@@ -21,12 +21,16 @@ public class SDKButton extends GUIButton {
     @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle interfaceRect) {
         if (sprite != null) {
-            renderer.renderSprite(sprite,
-                    region.getX() + interfaceRect.getX(),
-                    region.getY() + interfaceRect.getY(),
-                    xZoom,
-                    yZoom,
-                    fixed);
+            if (objectCount > 1) {
+                renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, objectCount);
+            } else {
+                renderer.renderSprite(sprite,
+                        region.getX() + interfaceRect.getX(),
+                        region.getY() + interfaceRect.getY(),
+                        xZoom,
+                        yZoom,
+                        fixed);
+            }
         }
         renderer.renderRectangle(region, interfaceRect, 1, 1, fixed);
     }

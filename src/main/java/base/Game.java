@@ -21,6 +21,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -50,6 +51,7 @@ public class Game extends JFrame implements Runnable {
     private transient AnimatedSprite playerAnimations;
 
     private transient GameTips gameTips;
+    private transient Map<Sprite, Integer> backpack = new HashMap<>();
 
     private transient TileService tileService;
     private transient AnimalService animalService;
@@ -505,8 +507,10 @@ public class Game extends JFrame implements Runnable {
             if (button.getSprite() == null) {
                 logger.info("slot was empty, will put plant");
                 button.setSprite(plant.getPreviewSprite());
+                button.setObjectCount(1);
             } else {
-                logger.info("plant is already in backpack");
+                logger.info("plant is already in backpack, will increment");
+                button.setObjectCount(button.getObjectCount() + 1);
             }
         } else {
             logger.info("No empty slots in backpack");
@@ -660,9 +664,9 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void showTips() {
-        if (renderer.getTextToDraw().isEmpty()) {
+        if (renderer.getTextToDrawInCenter().isEmpty()) {
             logger.info("will start drawing text");
-            renderer.setTextToDraw(gameTips.getLines());
+            renderer.setTextToDrawInCenter(gameTips.getLines());
         } else {
             logger.debug("removing text");
             renderer.removeText();

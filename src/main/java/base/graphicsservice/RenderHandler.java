@@ -8,8 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 public class RenderHandler {
@@ -20,8 +19,9 @@ public class RenderHandler {
     private int maxScreenWidth;
     private int maxScreenHeight;
 
-    private final List<String> textToDraw;
+    private final List<String> textToDrawInCenter;
     private int textCountdown;
+    private Map<Position, String> textToDraw;
 
     protected static final Logger logger = LoggerFactory.getLogger(RenderHandler.class);
 
@@ -37,7 +37,8 @@ public class RenderHandler {
         //Create an array for pixels
         pixels = ((DataBufferInt) view.getRaster().getDataBuffer()).getData();
 
-        textToDraw = new ArrayList<>();
+        textToDrawInCenter = new ArrayList<>();
+        textToDraw = new HashMap<>();
     }
 
     private void setSizeBasedOnScreenSize() {
@@ -55,24 +56,35 @@ public class RenderHandler {
     public void render(Graphics graphics) {
         graphics.drawImage(view.getSubimage(0, 0, camera.getWidth(), camera.getHeight()), 0, 0, camera.getWidth(), camera.getHeight(), null);
 
-        if (!textToDraw.isEmpty() && textCountdown != 1) {
+        if (!textToDrawInCenter.isEmpty() && textCountdown != 1) {
             renderText(graphics);
             if (textCountdown > 1) {
                 textCountdown--;
             }
         }
-        if (!textToDraw.isEmpty() && textCountdown == 1) {
+        if (!textToDrawInCenter.isEmpty() && textCountdown == 1) {
             textCountdown = 0;
             removeText();
+        }
+
+        for (Map.Entry<Position, String> entry : textToDraw.entrySet()) {
+            Position linePosition = entry.getKey();
+            renderText(graphics, entry.getValue(), linePosition.getXPosition(), linePosition.getYPosition());
         }
     }
 
     private void renderText(Graphics graphics) {
         int xOffset = maxScreenWidth / 4;
         int yOffset = 20;
-        for (int i = 0; i < textToDraw.size(); i++) {
-            renderText(graphics, textToDraw.get(i), xOffset, 200 + (yOffset * i));
+        for (int i = 0; i < textToDrawInCenter.size(); i++) {
+            renderText(graphics, textToDrawInCenter.get(i), xOffset, 200 + (yOffset * i));
         }
+    }
+
+    private void renderText(Graphics graphics, String line, int x, int y) {
+        graphics.setColor(Color.black);
+        graphics.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        graphics.drawString(line, x, y);
     }
 
     public void renderRectangle(Rectangle rectangle, int xZoom, int yZoom, boolean fixed) {
@@ -95,6 +107,16 @@ public class RenderHandler {
 
     public void renderSprite(Sprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed) {
         renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, xZoom, yZoom, fixed);
+    }
+
+    public void renderSprite(Sprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed, int count) {
+        renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, xZoom, yZoom, fixed);
+        renderNumber(count, xPosition + (sprite.getWidth() * xZoom - 15), yPosition + (sprite.getHeight() * yZoom - 10));
+    }
+
+    public void renderNumber(int number, int xPosition, int yPosition) {
+        Position numberPosition = new Position(xPosition, yPosition);
+        textToDraw.put(numberPosition, String.valueOf(number));
     }
 
     public void renderPixelsArrays(int[] renderPixels, int renderWidth, int renderHeight, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed) {
@@ -184,16 +206,10 @@ public class RenderHandler {
         }
     }
 
-    private void renderText(Graphics graphics, String line, int x, int y) {
-        graphics.setColor(Color.black);
-        graphics.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        graphics.drawString(line, x, y);
-    }
-
-    public void setTextToDraw(List<String> textToDraw) {
-        logger.debug(String.format("adding %d lines", textToDraw.size()));
+    public void setTextToDrawInCenter(List<String> textToDrawInCenter) {
+        logger.debug(String.format("adding %d lines", textToDrawInCenter.size()));
         removeText();
-        this.textToDraw.addAll(textToDraw);
+        this.textToDrawInCenter.addAll(textToDrawInCenter);
     }
 
     public void setTextToDraw(String line, int timer) {
@@ -201,17 +217,17 @@ public class RenderHandler {
         setTextToDraw(line);
     }
 
-    public void setTextToDraw(String line) {
+    private void setTextToDraw(String line) {
         logger.debug(String.format("adding <%s> line", line));
         removeText();
-        textToDraw.add(line);
+        textToDrawInCenter.add(line);
     }
 
     public void removeText() {
-        textToDraw.clear();
+        textToDrawInCenter.clear();
     }
 
-    public List<String> getTextToDraw() {
-        return textToDraw;
+    public List<String> getTextToDrawInCenter() {
+        return textToDrawInCenter;
     }
 }
