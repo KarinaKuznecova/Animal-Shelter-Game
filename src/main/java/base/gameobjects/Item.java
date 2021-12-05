@@ -12,11 +12,11 @@ import static base.Game.TILE_SIZE;
 public class Item implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Item.class);
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
     private final String itemName;
     private final Sprite sprite;
-    Rectangle rectangle;
+    private final Rectangle rectangle;
 
     public Item(int x, int y, String itemName, Sprite sprite) {
         this.x = x;

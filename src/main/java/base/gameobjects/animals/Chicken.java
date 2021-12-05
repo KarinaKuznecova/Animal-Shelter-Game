@@ -7,7 +7,7 @@ public class Chicken extends Animal {
 
     public static final String NAME = "chicken";
 
-    public Chicken(int startX, int startY, int speed) {
-        super(NAME, startX, startY, speed, 32);
+    public Chicken(int startX, int startY, int speed, int hungerLevel) {
+        super(NAME, startX, startY, speed, 32, hungerLevel);
     }
 }

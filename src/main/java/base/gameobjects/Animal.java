@@ -16,6 +16,7 @@ import java.util.Random;
 
 import static base.Game.TILE_SIZE;
 import static base.Game.ZOOM;
+import static base.gameobjects.AnimalService.IMAGES_PATH;
 import static base.navigationservice.Direction.*;
 
 public abstract class Animal implements GameObject {
@@ -24,28 +25,32 @@ public abstract class Animal implements GameObject {
     private Sprite sprite;
     private AnimatedSprite animatedSprite = null;
     private final Rectangle animalRectangle;
-    private int speed;
+    private final Random random;
+    private final int tileSize;
+
     private Direction direction;
     private int movingTicks = 0;
-    private Random random;
     private String homeMap;
+    private int speed;
     private String color;
-    private int tileSize;
+    private final String animalName;
 
-    private String animalName;
-    protected final String imagesPath = "img/";
+    protected static final int MAX_HUNGER = 10000;
+    protected static final int MIN_HUNGER = 1;
+    private int currentHunger;
 
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
-    protected Animal(String animalName, int startX, int startY, int speed, int tileSize) {
-        this(animalName, startX, startY, speed, "MainMap", tileSize);
+    protected Animal(String animalName, int startX, int startY, int speed, int tileSize, int currentHunger) {
+        this(animalName, startX, startY, speed, "MainMap", tileSize, currentHunger);
     }
 
-    protected Animal(String animalName, int startX, int startY, int speed, String homeMap, int tileSize) {
+    protected Animal(String animalName, int startX, int startY, int speed, String homeMap, int tileSize, int currentHunger) {
         this.animalName = animalName;
         this.tileSize = tileSize;
         this.homeMap = homeMap;
         this.speed = speed;
+        this.currentHunger = currentHunger;
 
         setSprite();
         setPreviewSprite();
@@ -59,14 +64,14 @@ public abstract class Animal implements GameObject {
     }
 
     private void setSprite() {
-        sprite = ImageLoader.getAnimatedSprite(imagesPath + animalName + ".png", tileSize);
+        sprite = ImageLoader.getAnimatedSprite(IMAGES_PATH + animalName + ".png", tileSize);
         if (sprite != null) {
             animatedSprite = (AnimatedSprite) sprite;
         }
     }
 
     private void setPreviewSprite() {
-        previewSprite = ImageLoader.getPreviewSprite(imagesPath + animalName + "-preview.png");
+        previewSprite = ImageLoader.getPreviewSprite(IMAGES_PATH + animalName + "-preview.png");
     }
 
     private void updateDirection() {
@@ -115,6 +120,36 @@ public abstract class Animal implements GameObject {
             }
         }
         movingTicks--;
+        decreaseHungerLevel();
+        if (checkForFood(game)) {
+            direction = STAY;
+            movingTicks = getRandomMovingTicks();
+        }
+    }
+
+    private void decreaseHungerLevel() {
+        if (currentHunger > MIN_HUNGER) {
+            currentHunger--;
+        }
+        if (currentHunger != 0 && currentHunger % 1000 == 0) {
+            logger.debug(String.format("Hunger level for %s is %d percent", animalName, currentHunger / 100));
+        }
+        if (currentHunger < 1000) {
+            speed = 1;
+        }
+    }
+
+    private boolean checkForFood(Game game) {
+        for (Item item : game.getGameMap().getItems()) {
+            if (animalRectangle.intersects(item.getRectangle())) {
+                logger.info("Animal ate food");
+                currentHunger = MAX_HUNGER;
+                speed = 3;
+                game.getGameMap().removeItem(item.getItemName(), item.getRectangle());
+                return true;
+            }
+        }
+        return false;
     }
 
     private void handleMoving(GameMap gameMap, Direction direction) {
@@ -244,7 +279,6 @@ public abstract class Animal implements GameObject {
             }
             if (isAnimalStuck(gameMap)) {
                 logger.error("Animal is stuck completely");
-//                throw new IllegalStateException();
             }
         }
     }
@@ -320,11 +354,11 @@ public abstract class Animal implements GameObject {
         this.color = color;
     }
 
-    public String getAnimalName() {
-        return animalName;
+    public int getCurrentHunger() {
+        return currentHunger;
     }
 
-    public void setAnimalName(String animalName) {
-        this.animalName = animalName;
+    public void setCurrentHunger(int currentHunger) {
+        this.currentHunger = currentHunger;
     }
 }

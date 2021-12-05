@@ -7,8 +7,8 @@ public class Butterfly extends Animal {
 
     public static final String NAME = "butterfly";
 
-    public Butterfly(int startX, int startY, int speed) {
-        super(NAME, startX, startY, speed, 32);
+    public Butterfly(int startX, int startY, int speed, int hungerLevel) {
+        super(NAME, startX, startY, speed, 32, hungerLevel);
     }
 
     @Override
