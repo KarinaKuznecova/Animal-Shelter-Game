@@ -67,3 +67,4 @@ Grass-9-1-1
 Pumpkin-1-1-2
 Pumpkin-2-1-2
 Pumpkin-3-1-2
+FoodBowl-6-6-1

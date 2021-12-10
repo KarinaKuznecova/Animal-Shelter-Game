@@ -89,9 +89,18 @@ public class GUI implements GameObject, Serializable {
         return buttons.size();
     }
 
-    public GUIButton getButton(Sprite sprite) {
+    public GUIButton getButtonBySprite(Sprite sprite) {
         for (GUIButton button : buttons) {
             if (sprite.equals(button.getSprite())) {
+                return button;
+            }
+        }
+        return getEmptyButton();
+    }
+
+    public GUIButton getButtonByItemName(String itemName) {
+        for (GUIButton button : buttons) {
+            if (button instanceof BackpackButton && itemName.equals(((BackpackButton) button).getItemName())) {
                 return button;
             }
         }

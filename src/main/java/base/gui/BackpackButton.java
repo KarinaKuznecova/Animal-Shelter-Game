@@ -76,6 +76,10 @@ public class BackpackButton extends GUIButton implements Serializable {
         this.item = item;
     }
 
+    public String getItemName() {
+        return item;
+    }
+
     public void makeEmpty() {
         setItem(defaultId);
         sprite = null;

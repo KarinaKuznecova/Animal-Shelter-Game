@@ -315,7 +315,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void loadGameObjects(int startX, int startY) {
-        gameObjectsList = new ArrayList<>();
+        gameObjectsList = new CopyOnWriteArrayList<>();
         player = new Player(playerAnimations, startX, startY);
         gameObjectsList.add(player);
 
@@ -444,6 +444,12 @@ public class Game extends JFrame implements Runnable {
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
+        for (GameObject gameObject : getGameMap().getInteractiveObjects()) {
+            if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
+            }
+        }
         for (Item item : gameMap.getItems()) {
             if (!stoppedChecking) {
                 mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -465,17 +471,25 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    private void setNewTile(int xAdjusted, int yAdjusted, int smallerX, int smallerY) {
+    private void setNewTile(int xMapRelated, int yMapRelated, int smallerX, int smallerY) {
         if (selectedTileId != -1) {
-            if (player.getPlayerRectangle().intersects(xAdjusted, yAdjusted, TILE_SIZE, TILE_SIZE)) {
+            if (player.getPlayerRectangle().intersects(xMapRelated, yMapRelated, TILE_SIZE, TILE_SIZE)) {
                 logger.warn("Can't place tile under player");
             } else {
-                gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
+                if (selectedTileId == 68) {
+                    logger.debug("Food bowl!");
+                    int xAlligned = xMapRelated - (xMapRelated % (TILE_SIZE * ZOOM));
+                    int yAlligned = yMapRelated - (yMapRelated % (TILE_SIZE * ZOOM));
+                    FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
+                    getGameMap().addObject(foodBowl);
+                } else {
+                    gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
+                }
             }
         }
         if (selectedItem.length() > 2) {
             logger.info("Will put item on the ground");
-            putItemOnTheGround(xAdjusted, yAdjusted);
+            putItemOnTheGround(xMapRelated, yMapRelated);
         }
     }
 
@@ -483,7 +497,7 @@ public class Game extends JFrame implements Runnable {
         Sprite sprite = plantService.getPlantSprite(selectedItem);
         Item item = new Item(xAdjusted, yAdjusted, selectedItem, sprite);
         gameMap.addItem(item);
-        guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButton(sprite));
+        guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButtonBySprite(sprite));
     }
 
     private void createNewAnimal(int x, int y) {
@@ -522,13 +536,13 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void pickUpPlant(Plant plant) {
-        GUIButton button = backpackGui.getButton(plant.getPreviewSprite());
+        GUIButton button = backpackGui.getButtonBySprite(plant.getPreviewSprite());
         pickUp(plant.getPlantType(), plant.getPreviewSprite(), button);
         gameMap.removePlant(plant);
     }
 
     public void pickUpItem(String itemName, Sprite sprite, Rectangle rectangle) {
-        GUIButton button = backpackGui.getButton(sprite);
+        GUIButton button = backpackGui.getButtonBySprite(sprite);
         pickUp(itemName, sprite, button);
         gameMap.removeItem(itemName, rectangle);
     }
@@ -550,10 +564,24 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
+    public void removeItemFromInventory(String itemName) {
+        guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButtonByItemName(itemName));
+    }
+
     public void rightClick(int x, int y) {
-        x = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
-        y = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
-        gameMap.removeTile(x, y, tileService.getLayerById(selectedTileId, regularTiles), regularTiles);
+        int xAdjusted = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
+        int yAdjusted = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
+        if (selectedTileId == 68) {
+            logger.debug("Food bowl to remove!");
+            int xMapRelated = x + renderer.getCamera().getX();
+            int yMapRelated = y + renderer.getCamera().getY();
+            int xAlligned = xMapRelated - (xMapRelated % (TILE_SIZE * ZOOM));
+            int yAlligned = yMapRelated - (yMapRelated % (TILE_SIZE * ZOOM));
+            FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
+            getGameMap().removeObject(foodBowl);
+        } else {
+            gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles);
+        }
     }
 
     public void saveMap() {
@@ -616,7 +644,7 @@ public class Game extends JFrame implements Runnable {
 
     private void showYourAnimals() {
         if (!guiList.contains(yourAnimalButtons)) {
-            guiService.loadYourAnimals(this);
+            yourAnimalButtons = guiService.loadYourAnimals(this);
             guiList.add(yourAnimalButtons);
         }
     }
