@@ -85,7 +85,7 @@ public class AnimatedSprite extends Sprite implements GameObject {
         else {
             currentSprite++;
         }
-        if (currentSprite >= endSprite) {
+        if (currentSprite > endSprite) {
             currentSprite = startSprite;
         }
     }

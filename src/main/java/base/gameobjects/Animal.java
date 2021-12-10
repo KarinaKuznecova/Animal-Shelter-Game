@@ -1,6 +1,7 @@
 package base.gameobjects;
 
 import base.Game;
+import base.gameobjects.animals.Butterfly;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
@@ -103,7 +104,7 @@ public abstract class Animal implements GameObject {
         }
 
         handleMoving(game.getGameMap(), randomDirection);
-        if (randomDirection != STAY) {
+        if (randomDirection != STAY || this instanceof Butterfly) {
             isMoving = true;
         }
 
@@ -121,10 +122,14 @@ public abstract class Animal implements GameObject {
         }
         movingTicks--;
         decreaseHungerLevel();
-        if (checkForFood(game)) {
+        if (!(this instanceof Butterfly) && isHungerLow() && checkForFood(game)) {
             direction = STAY;
             movingTicks = getRandomMovingTicks();
         }
+    }
+
+    private boolean isHungerLow() {
+        return currentHunger < MAX_HUNGER / 100 * 70;
     }
 
     private void decreaseHungerLevel() {
@@ -142,10 +147,21 @@ public abstract class Animal implements GameObject {
     private boolean checkForFood(Game game) {
         for (Item item : game.getGameMap().getItems()) {
             if (animalRectangle.intersects(item.getRectangle())) {
-                logger.info("Animal ate food");
+                logger.info(String.format("%s ate food", animalName));
                 currentHunger = MAX_HUNGER;
                 speed = 3;
                 game.getGameMap().removeItem(item.getItemName(), item.getRectangle());
+                logger.debug(String.format("Hunger level for %s is 100 percent", animalName));
+                return true;
+            }
+        }
+        for (FoodBowl bowl : game.getGameMap().getFoodBowls()) {
+            if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
+                logger.info(String.format("%s ate food", animalName));
+                currentHunger = MAX_HUNGER;
+                speed = 3;
+                bowl.emptyBowl();
+                logger.debug(String.format("Hunger level for %s is 100 percent", animalName));
                 return true;
             }
         }

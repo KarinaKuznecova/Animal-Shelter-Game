@@ -30,6 +30,7 @@ public class GameMap {
     private final List<Animal> allAnimals;
     private List<Plant> plants = new CopyOnWriteArrayList<>();
     private final List<Item> items = new CopyOnWriteArrayList<>();
+    private final List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
 
     int backGroundTileId = -1;      //background of walkable part of the map
     int alphaBackground = -1;       //outside the walkable part
@@ -148,6 +149,18 @@ public class GameMap {
             items.add(item);
             return true;
         }
+        if (line.startsWith("bowl")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            boolean shouldBeFull = Boolean.valueOf(splitLine[3]);
+            FoodBowl foodBowl = new FoodBowl(x, y);
+            if (shouldBeFull) {
+                foodBowl.fillBowl();
+            }
+            interactiveObjects.add(foodBowl);
+            return true;
+        }
 
         return false;
     }
@@ -255,6 +268,11 @@ public class GameMap {
             }
         }
         for (GameObject gameObject : items) {
+            if (gameObject.getLayer() == layer) {
+                gameObject.render(renderer, ZOOM, ZOOM);
+            }
+        }
+        for (GameObject gameObject : interactiveObjects) {
             if (gameObject.getLayer() == layer) {
                 gameObject.render(renderer, ZOOM, ZOOM);
             }
@@ -414,14 +432,18 @@ public class GameMap {
             printWriter.println("plant-" + plant.getPlantType() + "," + plant.getRectangle().getX() + "," + plant.getRectangle().getY() + "," + plant.getGrowingStage());
         }
     }
+
     public void saveItems(PrintWriter printWriter) {
-        if (items.isEmpty()) {
+        if (items.isEmpty() && interactiveObjects.isEmpty()) {
             return;
         }
         printWriter.println("//Items");
         printWriter.println("//type, xPosition, yPosition");
         for (Item item : items) {
             printWriter.println("item-" + item.getItemName() + "," + item.getRectangle().getX() + "," + item.getRectangle().getY());
+        }
+        for (FoodBowl foodBowl : getFoodBowls()) {
+            printWriter.println("bowl," + foodBowl.getRectangle().getX() + "," + foodBowl.getRectangle().getY() + "," + foodBowl.isFull());
         }
     }
 
@@ -546,19 +568,6 @@ public class GameMap {
         return true;
     }
 
-    public void addItem(Item item) {
-        logger.debug("Adding item to the list");
-        items.add(item);
-    }
-
-    public void removeItem(String itemName, Rectangle rectangle) {
-        items.removeIf(item -> itemName.equals(item.getItemName()) && rectangle.intersects(item.getRectangle()));
-    }
-
-    public List<Item> getItems () {
-        return items;
-    }
-
     public boolean isInsideOfMap(int x, int y) {
         if (x < 0 || x > mapWidth || y < 0 || y > mapHeight) {
             logger.info("Outside of modifiable map");
@@ -575,5 +584,40 @@ public class GameMap {
             }
         }
         return false;
+    }
+
+    public void addItem(Item item) {
+        logger.debug("Adding item to the list");
+        items.add(item);
+    }
+
+    public void removeItem(String itemName, Rectangle rectangle) {
+        items.removeIf(item -> itemName.equals(item.getItemName()) && rectangle.intersects(item.getRectangle()));
+    }
+
+    public List<Item> getItems () {
+        return items;
+    }
+
+    public void addObject(GameObject object) {
+        interactiveObjects.add(object);
+    }
+
+    public void removeObject(GameObject object) {
+        interactiveObjects.remove(object);
+    }
+
+    public List<GameObject> getInteractiveObjects() {
+        return interactiveObjects;
+    }
+
+    public List<FoodBowl> getFoodBowls() {
+        List<FoodBowl> bowls = new ArrayList<>();
+        for (GameObject object : interactiveObjects) {
+            if (object instanceof FoodBowl) {
+                bowls.add((FoodBowl) object);
+            }
+        }
+        return bowls;
     }
 }
