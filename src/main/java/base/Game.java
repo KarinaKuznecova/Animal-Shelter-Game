@@ -10,6 +10,8 @@ import base.map.Tile;
 import base.map.TileService;
 import base.navigationservice.KeyboardListener;
 import base.navigationservice.MouseEventListener;
+import base.navigationservice.Route;
+import base.navigationservice.RouteCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +60,7 @@ public class Game extends JFrame implements Runnable {
     private transient PlantService plantService;
     private transient GuiService guiService;
     private transient BackpackService backpackService;
+    private transient RouteCalculator routeCalculator;
 
     private final transient GUI[] tileButtonsArray = new GUI[10];
     private transient GUI[] terrainButtonsArray;
@@ -100,6 +103,7 @@ public class Game extends JFrame implements Runnable {
         plantService = new PlantService();
         guiService = new GuiService();
         backpackService = new BackpackService();
+        routeCalculator = new RouteCalculator();
     }
 
     private void loadUI() {
@@ -209,6 +213,7 @@ public class Game extends JFrame implements Runnable {
         if (plantsOnMaps.containsKey(gameMap.getMapName())) {
             gameMap.setPlants(plantsOnMaps.get(gameMap.getMapName()));
         }
+        cachePlants();
         logger.info(String.format("Game map %s loaded", gameMap.getMapName()));
 
         MapTile portalToPrevious = gameMap.getPortalTo(previousMapName);
@@ -456,6 +461,12 @@ public class Game extends JFrame implements Runnable {
                 stoppedChecking = item.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
         }
+        for (Animal animal : gameMap.getAnimals()) {
+            if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = animal.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
+            }
+        }
         if (!stoppedChecking) {
             int smallerX = (int) Math.floor(xMapRelated / (32.0 * ZOOM));
             int smallerY = (int) Math.floor(yMapRelated / (32.0 * ZOOM));
@@ -494,8 +505,10 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void putItemOnTheGround(int xAdjusted, int yAdjusted) {
+        int xAlligned = xAdjusted - (xAdjusted % (TILE_SIZE * ZOOM));
+        int yAlligned = yAdjusted - (yAdjusted % (TILE_SIZE * ZOOM));
         Sprite sprite = plantService.getPlantSprite(selectedItem);
-        Item item = new Item(xAdjusted, yAdjusted, selectedItem, sprite);
+        Item item = new Item(xAlligned, yAlligned, selectedItem, sprite);
         gameMap.addItem(item);
         guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButtonBySprite(sprite));
     }
@@ -532,6 +545,8 @@ public class Game extends JFrame implements Runnable {
         if (gameMap.isThereGrassOrDirt(tileX, tileY) && gameMap.isPlaceEmpty(1, tileX, tileY) && gameMap.isInsideOfMap(x, y)) {
             Plant plant = plantService.createPlant(selectedPlant, tileX, tileY, gameMap.getMapName());
             gameMap.addPlant(plant);
+            List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
+            plantList.add(plant);
         }
     }
 
@@ -539,6 +554,8 @@ public class Game extends JFrame implements Runnable {
         GUIButton button = backpackGui.getButtonBySprite(plant.getPreviewSprite());
         pickUp(plant.getPlantType(), plant.getPreviewSprite(), button);
         gameMap.removePlant(plant);
+        List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
+        plantList.remove(plant);
     }
 
     public void pickUpItem(String itemName, Sprite sprite, Rectangle rectangle) {
@@ -732,6 +749,10 @@ public class Game extends JFrame implements Runnable {
             logger.debug("removing text");
             renderer.removeText();
         }
+    }
+
+    public Route calculateRoute(Animal animal) {
+        return routeCalculator.calculateRoute(getGameMap(), animal);
     }
 
     public int getSelectedTileId() {

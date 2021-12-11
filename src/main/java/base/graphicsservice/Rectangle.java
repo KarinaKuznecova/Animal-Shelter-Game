@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import static base.Game.ZOOM;
 
@@ -125,5 +126,18 @@ public class Rectangle implements Serializable {
 
     private boolean intersectsByX(MapTile tile, int xPos) {
         return !(xPos > tile.getX() * (Game.TILE_SIZE * ZOOM) + Game.TILE_SIZE || tile.getX() * (Game.TILE_SIZE * ZOOM) > xPos + width);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Rectangle rectangle = (Rectangle) o;
+        return x == rectangle.x && y == rectangle.y && width == rectangle.width && height == rectangle.height;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, width, height);
     }
 }
