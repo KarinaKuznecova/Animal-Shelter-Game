@@ -505,8 +505,10 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void putItemOnTheGround(int xAdjusted, int yAdjusted) {
+        int xAlligned = xAdjusted - (xAdjusted % (TILE_SIZE * ZOOM));
+        int yAlligned = yAdjusted - (yAdjusted % (TILE_SIZE * ZOOM));
         Sprite sprite = plantService.getPlantSprite(selectedItem);
-        Item item = new Item(xAdjusted, yAdjusted, selectedItem, sprite);
+        Item item = new Item(xAlligned, yAlligned, selectedItem, sprite);
         gameMap.addItem(item);
         guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButtonBySprite(sprite));
     }
