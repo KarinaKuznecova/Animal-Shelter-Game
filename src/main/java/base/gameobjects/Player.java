@@ -80,8 +80,8 @@ public class Player implements GameObject {
         }
 
         if (newDirection != direction) {
-            logger.debug(String.format("Direction was: %s", direction));
-            logger.debug(String.format("New direction is: %s", newDirection));
+//            logger.debug(String.format("Direction was: %s", direction));
+//            logger.debug(String.format("New direction is: %s", newDirection));
             direction = newDirection;
             updateDirection();
         }
@@ -129,7 +129,7 @@ public class Player implements GameObject {
     }
 
     void handleUnwalkable(Direction direction) {
-        logger.debug(String.format("INTERSECTS %s", direction.name()));
+//        logger.debug(String.format("INTERSECTS %s", direction.name()));
         switch (direction) {
             case LEFT:
                 playerRectangle.setX(playerRectangle.getX() + 1);
@@ -150,7 +150,7 @@ public class Player implements GameObject {
         if (game.getGameMap().getPortals() != null) {
             for (MapTile tile : game.getGameMap().getPortals()) {
                 if (playerRectangle.intersects(tile)) {
-                    logger.info("In the portal");
+//                    logger.debug("In the portal");
                     MapService mapService = new MapService();
                     String mapFileLocation = mapService.getMapConfig(tile.getPortalDirection());
                     game.loadSecondaryMap(mapFileLocation);
@@ -192,11 +192,11 @@ public class Player implements GameObject {
 
     private boolean nearPortal(List<MapTile> portals) {
         for (MapTile portal : portals) {
-            logger.info(String.format("Portal X: %d player X: %d", portal.getX() * (Game.TILE_SIZE * Game.ZOOM), playerRectangle.getX()));
+            logger.debug(String.format("Portal X: %d player X: %d", portal.getX() * (Game.TILE_SIZE * Game.ZOOM), playerRectangle.getX()));
             int diffX = portal.getX() * (Game.TILE_SIZE * Game.ZOOM) - playerRectangle.getX();
-            logger.info(String.format("diff x: %d", diffX));
+            logger.debug(String.format("diff x: %d", diffX));
             int diffY = portal.getY() * (Game.TILE_SIZE * Game.ZOOM) - playerRectangle.getY();
-            logger.info(String.format("diff y: %d", diffY));
+            logger.debug(String.format("diff y: %d", diffY));
             if (Math.abs(diffX) <= Game.TILE_SIZE * Game.ZOOM && Math.abs(diffY) <= Game.TILE_SIZE * Game.ZOOM) {
                 return true;
             }

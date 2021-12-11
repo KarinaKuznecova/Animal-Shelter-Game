@@ -9,6 +9,7 @@ import base.graphicsservice.Sprite;
 import base.map.GameMap;
 import base.map.MapTile;
 import base.navigationservice.Direction;
+import base.navigationservice.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ public abstract class Animal implements GameObject {
 
     private Direction direction;
     private int movingTicks = 0;
+    private Route route;
     private String homeMap;
     private int speed;
     private String color;
@@ -61,6 +63,7 @@ public abstract class Animal implements GameObject {
         animalRectangle = new Rectangle(startX, startY, tileSize, tileSize);
         animalRectangle.generateGraphics(1, 123);
 
+        route = new Route();
         random = new Random();
     }
 
@@ -96,20 +99,25 @@ public abstract class Animal implements GameObject {
     @Override
     public void update(Game game) {
         boolean isMoving = false;
-        Direction randomDirection = direction;
+        Direction nextDirection = direction;
 
         if (movingTicks < 1) {
-            randomDirection = getRandomDirection();
-            movingTicks = getRandomMovingTicks();
+            if (!route.isEmpty()) {
+                nextDirection = route.getNextStep();
+                movingTicks = getMovingTickToAdjustPosition(nextDirection);
+            } else {
+                nextDirection = getRandomDirection();
+                movingTicks = getRandomMovingTicks();
+            }
         }
 
-        handleMoving(game.getGameMap(), randomDirection);
-        if (randomDirection != STAY || this instanceof Butterfly) {
+        handleMoving(game.getGameMap(), nextDirection);
+        if (nextDirection != STAY || this instanceof Butterfly) {
             isMoving = true;
         }
 
-        if (randomDirection != direction) {
-            direction = randomDirection;
+        if (nextDirection != direction) {
+            direction = nextDirection;
             updateDirection();
         }
 
@@ -122,6 +130,9 @@ public abstract class Animal implements GameObject {
         }
         movingTicks--;
         decreaseHungerLevel();
+        if (!(this instanceof Butterfly) && currentHunger < MAX_HUNGER / 100 * 25 && route.isEmpty()) {
+            route = game.calculateRoute(this);
+        }
         if (!(this instanceof Butterfly) && isHungerLow() && checkForFood(game)) {
             direction = STAY;
             movingTicks = getRandomMovingTicks();
@@ -136,10 +147,10 @@ public abstract class Animal implements GameObject {
         if (currentHunger > MIN_HUNGER) {
             currentHunger--;
         }
-        if (currentHunger != 0 && currentHunger % 1000 == 0) {
-            logger.debug(String.format("Hunger level for %s is %d percent", animalName, currentHunger / 100));
+        if (currentHunger != 0 && currentHunger % (MAX_HUNGER / 10) == 0) {
+            logger.debug(String.format("Hunger level for %s is %d percent", animalName, currentHunger / (MAX_HUNGER / 100)));
         }
-        if (currentHunger < 1000) {
+        if (currentHunger < MAX_HUNGER / 100 * 10) {
             speed = 1;
         }
     }
@@ -170,6 +181,7 @@ public abstract class Animal implements GameObject {
 
     private void handleMoving(GameMap gameMap, Direction direction) {
         if (unwalkableInThisDirection(gameMap, direction)) {
+            route = new Route();
             handleUnwalkable(direction);
             return;
         }
@@ -236,24 +248,39 @@ public abstract class Animal implements GameObject {
         return random.nextInt(20) + 64;
     }
 
+    private int getMovingTickToAdjustPosition(Direction direction) {
+        switch (direction) {
+            case DOWN:
+                return ((64 - (getCurrentY() % 64)) / speed) + speed;
+            case UP:
+                return ((64 + (getCurrentY() % 64)) / speed) - speed;
+            case RIGHT:
+                return ((64 - (getCurrentX() % 64)) / speed) + speed;
+            case LEFT:
+                return ((64 + (getCurrentX() % 64)) / speed) - speed;
+            default:
+                return 64 / speed;
+        }
+    }
+
     private boolean unwalkableInThisDirection(GameMap gameMap, Direction direction) {
-        int xPosition = animalRectangle.getX() + (animalRectangle.getWidth() / 2);
-        int yPosition = animalRectangle.getY() + animalRectangle.getHeight();
+        int xPosition = animalRectangle.getX();
+        int yPosition = animalRectangle.getY();
 
         List<MapTile> tilesOnLayer = gameMap.getTilesOnLayer(getLayer());
 
         switch (direction) {
             case LEFT:
-                xPosition = xPosition - speed;
+                xPosition = xPosition - (speed + 1);
                 break;
             case RIGHT:
-                xPosition = xPosition + speed;
+                xPosition = xPosition + (speed + 1);
                 break;
             case UP:
-                yPosition = yPosition - speed;
+                yPosition = yPosition - (speed + 1);
                 break;
             case DOWN:
-                yPosition = yPosition + speed;
+                yPosition = yPosition + (speed + 1);
                 break;
         }
         if (tilesOnLayer != null) {
@@ -276,6 +303,7 @@ public abstract class Animal implements GameObject {
 
     public void tryToMove(GameMap gameMap) {
         logger.info(String.format("Animal %s is stuck, will try to move to nearest directions", this));
+        route = new Route();
         for (Direction potentialDirection : Direction.values()) {
             if (!unwalkableInThisDirection(gameMap, potentialDirection)) {
                 moveAnimalTo(potentialDirection);
@@ -325,6 +353,7 @@ public abstract class Animal implements GameObject {
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
         if (mouseRectangle.intersects(animalRectangle)) {
             logger.info("Click on Animal: ");
+            tryToMove(game.getGameMap());
             return true;
         }
         return false;

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.Game.TILE_SIZE;
@@ -25,7 +26,7 @@ public class GameMap {
     private final PlantService plantService = new PlantService();
 
     private final File mapFile;
-    private final Map<Integer, List<MapTile>> layeredTiles = new HashMap<>();
+    private final Map<Integer, List<MapTile>> layeredTiles = new ConcurrentHashMap<>();
     private final List<MapTile> portals = new ArrayList<>();
     private final List<Animal> allAnimals;
     private List<Plant> plants = new CopyOnWriteArrayList<>();
@@ -595,7 +596,7 @@ public class GameMap {
         items.removeIf(item -> itemName.equals(item.getItemName()) && rectangle.intersects(item.getRectangle()));
     }
 
-    public List<Item> getItems () {
+    public List<Item> getItems() {
         return items;
     }
 
