@@ -70,7 +70,7 @@ public class RouteCalculator {
                 searchQueue.remove(0);
                 boolean isFood = isThereFood(gameMap, rectangleToCheck);
                 if (isFood) {
-                    logger.info(String.format("%s Found Food!", animal));
+                    logger.info(String.format("%s Found Food!", animal.getAnimalName()));
                     return map.get(rectangleToCheck);
                 } else {
 //                    logger.debug(String.format("No food in here - x: %d, y: %d", rectangleToCheck.getX(), rectangleToCheck.getY()));

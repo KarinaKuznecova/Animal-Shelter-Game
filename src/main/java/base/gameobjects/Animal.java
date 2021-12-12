@@ -38,7 +38,7 @@ public abstract class Animal implements GameObject {
     private String color;
     private final String animalName;
 
-    protected static final int MAX_HUNGER = 10000;
+    protected static final int MAX_HUNGER = 30000;
     protected static final int MIN_HUNGER = 1;
     private int currentHunger;
 
@@ -405,5 +405,9 @@ public abstract class Animal implements GameObject {
 
     public void setCurrentHunger(int currentHunger) {
         this.currentHunger = currentHunger;
+    }
+
+    public String getAnimalName() {
+        return animalName;
     }
 }
