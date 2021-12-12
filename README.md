@@ -16,11 +16,12 @@ You can grow food :) To plant something - **press P**. When it is fully grown - 
 
 **Press ESC** to show/hide all these tips
 
+_Used art from opengameart.org_
+
 ## Plans for future
 
 It is supposed to become a nice game, where you rescue animals(mini-quests), they live with you in your animal shelter and some animals can help you build your base/home, because some builds will requere resources and effort. 
 Sometimes you will have visitors, who would make donations(resources) or/and adopt animals from you. You will be able to choose which animal is available for adoption and which animal you will leave for yourself. 
-Used art from opengameart.org
 
 More screenshots:
 
