@@ -4,10 +4,7 @@ import base.gameobjects.*;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
 import base.gui.*;
-import base.map.GameMap;
-import base.map.MapTile;
-import base.map.Tile;
-import base.map.TileService;
+import base.map.*;
 import base.navigationservice.KeyboardListener;
 import base.navigationservice.MouseEventListener;
 import base.navigationservice.Route;
@@ -61,6 +58,7 @@ public class Game extends JFrame implements Runnable {
     private transient GuiService guiService;
     private transient BackpackService backpackService;
     private transient RouteCalculator routeCalculator;
+    private transient MapService mapService;
 
     private final transient GUI[] tileButtonsArray = new GUI[10];
     private transient GUI[] terrainButtonsArray;
@@ -104,6 +102,8 @@ public class Game extends JFrame implements Runnable {
         guiService = new GuiService();
         backpackService = new BackpackService();
         routeCalculator = new RouteCalculator();
+        mapService = new MapService();
+        plantsOnMaps = new HashMap<>();
     }
 
     private void loadUI() {
@@ -191,14 +191,9 @@ public class Game extends JFrame implements Runnable {
 
         tileService = new TileService();
         gameMap = new GameMap(new File(GAME_MAP_PATH), tileService);
-        cachePlants();
+        cacheAllPlants();
 
         logger.info("Game map loaded");
-    }
-
-    private void cachePlants() {
-        plantsOnMaps = new HashMap<>();
-        plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
     }
 
     public void loadSecondaryMap(String mapPath) {
@@ -213,13 +208,25 @@ public class Game extends JFrame implements Runnable {
         if (plantsOnMaps.containsKey(gameMap.getMapName())) {
             gameMap.setPlants(plantsOnMaps.get(gameMap.getMapName()));
         }
-        cachePlants();
+        addPlantsToCache();
         logger.info(String.format("Game map %s loaded", gameMap.getMapName()));
 
         MapTile portalToPrevious = gameMap.getPortalTo(previousMapName);
         adjustPlayerPosition(portalToPrevious);
         renderer.adjustCamera(this, player);
         refreshGuiPanels();
+    }
+
+    private void cacheAllPlants () {
+        List<String> mapNames = mapService.getAllMapsNames();
+        for (String mapName : mapNames) {
+            GameMap map = new GameMap(new File(mapService.getMapConfig(mapName)), tileService);
+            plantsOnMaps.put(map.getMapName(), map.getPlants());
+        }
+    }
+
+    private void addPlantsToCache() {
+        plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
     }
 
     private void adjustPlayerPosition(MapTile portalToPrevious) {

@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class MapService {
 
@@ -38,5 +36,9 @@ public class MapService {
 
     public String getMapConfig(String mapName) {
         return mapFiles.get(mapName);
+    }
+
+    public List<String> getAllMapsNames() {
+        return new ArrayList<>(mapFiles.keySet());
     }
 }

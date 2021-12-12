@@ -10,6 +10,6 @@ public class Carrot  extends Plant {
 
     public Carrot(Sprite previewSprite, AnimatedSprite animatedSprite, int x, int y, String plantType) {
         super(previewSprite, animatedSprite, x, y, plantType);
-        setGrowingTime(550);
+        setGrowingTime(4300);
     }
 }

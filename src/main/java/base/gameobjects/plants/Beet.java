@@ -10,6 +10,6 @@ public class Beet  extends Plant {
 
     public Beet(Sprite previewSprite, AnimatedSprite animatedSprite, int x, int y, String plantType) {
         super(previewSprite, animatedSprite, x, y, plantType);
-        setGrowingTime(500);
+        setGrowingTime(5500);
     }
 }

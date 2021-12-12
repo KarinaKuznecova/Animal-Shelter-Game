@@ -14,7 +14,7 @@ import static base.Game.TILE_SIZE;
 public class Plant implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Plant.class);
-    public static final int DEFAULT_GROWING_TIME = 400;
+    public static final int DEFAULT_GROWING_TIME = 3000;
 
     Sprite previewSprite;
     AnimatedSprite animatedSprite;
