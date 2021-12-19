@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
-import static base.Game.TILE_SIZE;
+import static base.constants.Constants.TILE_SIZE;
 
 public class TileService {
 
@@ -21,30 +23,10 @@ public class TileService {
     public static final String TILE_LIST_PATH = "maps/Tile-new.txt";
     public static final String TERRAIN_TILE_LIST_PATH = "maps/Tile-terrain.txt";
 
-    private List<Tile> tileList = new ArrayList<>();
-    private List<Tile> terrainTiles = new ArrayList<>();
+    private List<Tile> tileList;
+    private List<Tile> terrainTiles;
 
-    protected static final Logger logger = LoggerFactory.getLogger(TileService.class);
-
-    public TileService(File tilesFile, SpriteSheet spriteSheet) {
-        try {
-            Scanner scanner = new Scanner(tilesFile);
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (!line.startsWith("//")) {
-                    String[] splitLine = line.split("-");
-                    String tileName = splitLine[0];
-                    int spriteXPosition = Integer.parseInt(splitLine[1]);
-                    int spriteYPosition = Integer.parseInt(splitLine[2]);
-                    int layer = Integer.parseInt(splitLine[3]);
-                    Tile tile = new Tile(tileName, spriteSheet.getSprite(spriteXPosition, spriteYPosition), layer);
-                    tileList.add(tile);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+    private static final Logger logger = LoggerFactory.getLogger(TileService.class);
 
     public TileService() {
         logger.info("Loading regular tiles");

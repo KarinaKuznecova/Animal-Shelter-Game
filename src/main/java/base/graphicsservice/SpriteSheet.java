@@ -16,7 +16,7 @@ public class SpriteSheet {
     private int spriteSizeX;
     private boolean loaded = false;
 
-    protected static final Logger logger = LoggerFactory.getLogger(SpriteSheet.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpriteSheet.class);
 
     public SpriteSheet(BufferedImage sheetImage) {
         image = sheetImage;
@@ -38,7 +38,7 @@ public class SpriteSheet {
                 spriteId++;
             }
         }
-        logger.info("Sprites loaded successfully");
+        logger.debug("Sprites loaded successfully");
         loaded = true;
     }
 

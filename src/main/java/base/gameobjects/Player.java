@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import static base.constants.Constants.TILE_SIZE;
+import static base.constants.Constants.ZOOM;
 import static base.navigationservice.Direction.*;
 
 public class Player implements GameObject {
@@ -23,7 +25,7 @@ public class Player implements GameObject {
     private int speed = 5;
     private Direction direction;
 
-    protected static final Logger logger = LoggerFactory.getLogger(Player.class);
+    private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
     public Player(Sprite playerSprite, int startX, int startY) {
         this.sprite = playerSprite;
@@ -33,7 +35,7 @@ public class Player implements GameObject {
         }
 
         updateDirection();
-        playerRectangle = new Rectangle(startX, startY, Game.TILE_SIZE, Game.TILE_SIZE);
+        playerRectangle = new Rectangle(startX, startY, TILE_SIZE, TILE_SIZE);
         playerRectangle.generateGraphics(1, 123);
     }
 
@@ -80,8 +82,6 @@ public class Player implements GameObject {
         }
 
         if (newDirection != direction) {
-//            logger.debug(String.format("Direction was: %s", direction));
-//            logger.debug(String.format("New direction is: %s", newDirection));
             direction = newDirection;
             updateDirection();
         }
@@ -111,7 +111,7 @@ public class Player implements GameObject {
                 }
                 break;
             case RIGHT:
-                if (playerRectangle.getX() < (game.getGameMap().getMapWidth() * Game.TILE_SIZE - playerRectangle.getWidth()) * Game.ZOOM || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getX() < (game.getGameMap().getMapWidth() * TILE_SIZE - playerRectangle.getWidth()) * ZOOM || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setX(playerRectangle.getX() + speed);
                 }
                 break;
@@ -121,7 +121,7 @@ public class Player implements GameObject {
                 }
                 break;
             case DOWN:
-                if (playerRectangle.getY() < (game.getGameMap().getMapHeight() * Game.TILE_SIZE - playerRectangle.getHeight()) * Game.ZOOM || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getY() < (game.getGameMap().getMapHeight() * TILE_SIZE - playerRectangle.getHeight()) * ZOOM || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setY(playerRectangle.getY() + speed);
                 }
                 break;
@@ -129,7 +129,6 @@ public class Player implements GameObject {
     }
 
     void handleUnwalkable(Direction direction) {
-//        logger.debug(String.format("INTERSECTS %s", direction.name()));
         switch (direction) {
             case LEFT:
                 playerRectangle.setX(playerRectangle.getX() + 1);
@@ -150,10 +149,7 @@ public class Player implements GameObject {
         if (game.getGameMap().getPortals() != null) {
             for (MapTile tile : game.getGameMap().getPortals()) {
                 if (playerRectangle.intersects(tile)) {
-//                    logger.debug("In the portal");
-                    MapService mapService = new MapService();
-                    String mapFileLocation = mapService.getMapConfig(tile.getPortalDirection());
-                    game.loadSecondaryMap(mapFileLocation);
+                    game.loadSecondaryMap(tile.getPortalDirection());
                 }
             }
         }
@@ -192,12 +188,12 @@ public class Player implements GameObject {
 
     private boolean nearPortal(List<MapTile> portals) {
         for (MapTile portal : portals) {
-            logger.debug(String.format("Portal X: %d player X: %d", portal.getX() * (Game.TILE_SIZE * Game.ZOOM), playerRectangle.getX()));
-            int diffX = portal.getX() * (Game.TILE_SIZE * Game.ZOOM) - playerRectangle.getX();
+            logger.debug(String.format("Portal X: %d player X: %d", portal.getX() * (TILE_SIZE * ZOOM), playerRectangle.getX()));
+            int diffX = portal.getX() * (TILE_SIZE * ZOOM) - playerRectangle.getX();
             logger.debug(String.format("diff x: %d", diffX));
-            int diffY = portal.getY() * (Game.TILE_SIZE * Game.ZOOM) - playerRectangle.getY();
+            int diffY = portal.getY() * (TILE_SIZE * ZOOM) - playerRectangle.getY();
             logger.debug(String.format("diff y: %d", diffY));
-            if (Math.abs(diffX) <= Game.TILE_SIZE * Game.ZOOM && Math.abs(diffY) <= Game.TILE_SIZE * Game.ZOOM) {
+            if (Math.abs(diffX) <= TILE_SIZE * ZOOM && Math.abs(diffY) <= TILE_SIZE * ZOOM) {
                 return true;
             }
         }
@@ -208,17 +204,17 @@ public class Player implements GameObject {
     private boolean shouldUpdateYCamera(Game game) {
         int screenHeight = game.getHeight();
         int halfHeight = screenHeight / 2;
-        int mapEnd = game.getGameMap().getMapHeight() * (Game.TILE_SIZE * Game.ZOOM);
+        int mapEnd = game.getGameMap().getMapHeight() * (TILE_SIZE * ZOOM);
         int diffToEnd = mapEnd - playerRectangle.getY();
-        return diffToEnd + 96 > halfHeight && playerRectangle.getY() + (Game.TILE_SIZE * Game.ZOOM) > halfHeight;
+        return diffToEnd + 96 > halfHeight && playerRectangle.getY() + (TILE_SIZE * ZOOM) > halfHeight;
     }
 
     private boolean shouldUpdateXCamera(Game game) {
         int screenWidth = game.getWidth();
         int halfWidth = screenWidth / 2;
-        int mapEnd = game.getGameMap().getMapWidth() * (Game.TILE_SIZE * Game.ZOOM);
+        int mapEnd = game.getGameMap().getMapWidth() * (TILE_SIZE * ZOOM);
         int diffToEnd = mapEnd - playerRectangle.getX();
-        return diffToEnd + 64 > halfWidth && playerRectangle.getX() + (Game.TILE_SIZE * Game.ZOOM) > halfWidth;
+        return diffToEnd + 64 > halfWidth && playerRectangle.getX() + (TILE_SIZE * ZOOM) > halfWidth;
     }
 
     public void updateCamera(Game game) {

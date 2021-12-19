@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-import static base.Game.TILE_SIZE;
+import static base.constants.Constants.TILE_SIZE;
 
 public class Plant implements GameObject {
 

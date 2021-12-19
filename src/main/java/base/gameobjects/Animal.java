@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Random;
 
-import static base.Game.TILE_SIZE;
-import static base.Game.ZOOM;
+import static base.constants.Constants.TILE_SIZE;
+import static base.constants.Constants.ZOOM;
 import static base.gameobjects.AnimalService.IMAGES_PATH;
 import static base.navigationservice.Direction.*;
 
@@ -29,6 +29,7 @@ public abstract class Animal implements GameObject {
     private final Rectangle animalRectangle;
     private final Random random;
     private final int tileSize;
+    private String fileName;
 
     private Direction direction;
     private int movingTicks = 0;
@@ -193,7 +194,7 @@ public abstract class Animal implements GameObject {
                 }
                 break;
             case RIGHT:
-                if (animalRectangle.getX() < (gameMap.getMapWidth() * TILE_SIZE - animalRectangle.getWidth()) * Game.ZOOM) {
+                if (animalRectangle.getX() < (gameMap.getMapWidth() * TILE_SIZE - animalRectangle.getWidth()) * ZOOM) {
                     animalRectangle.setX(animalRectangle.getX() + speed);
                 }
                 break;
@@ -203,7 +204,7 @@ public abstract class Animal implements GameObject {
                 }
                 break;
             case DOWN:
-                if (animalRectangle.getY() < (gameMap.getMapHeight() * TILE_SIZE - animalRectangle.getHeight()) * Game.ZOOM) {
+                if (animalRectangle.getY() < (gameMap.getMapHeight() * TILE_SIZE - animalRectangle.getHeight()) * ZOOM) {
                     animalRectangle.setY(animalRectangle.getY() + speed);
                 }
                 break;
@@ -409,5 +410,13 @@ public abstract class Animal implements GameObject {
 
     public String getAnimalName() {
         return animalName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }
