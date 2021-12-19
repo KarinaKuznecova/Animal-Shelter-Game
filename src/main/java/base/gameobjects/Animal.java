@@ -82,7 +82,13 @@ public abstract class Animal implements GameObject {
     private void updateDirection() {
         if (animatedSprite != null && direction != STAY) {
 //            animatedSprite.setAnimationRange(direction.directionNumber, direction.directionNumber + 12);          // if vertical
-            animatedSprite.setAnimationRange((direction.directionNumber * 3), (direction.directionNumber * 3 + 2)); //if horizontal increase
+            int startSprite = direction.directionNumber * animatedSprite.getSpritesSize() / 4;
+            int endSprite = direction.directionNumber * animatedSprite.getSpritesSize() / 4 + 2;
+            if (direction.name().startsWith("EAT") && animatedSprite.getSpritesSize() == 28) {
+                startSprite = (direction.directionNumber - 5) * animatedSprite.getSpritesSize() / 4 + 3;
+                endSprite = startSprite + 3;
+            }
+            animatedSprite.setAnimationRange(startSprite, endSprite); //if horizontal increase
         }
     }
 
@@ -138,7 +144,19 @@ public abstract class Animal implements GameObject {
             route = game.calculateRoute(this);
         }
         if (!(this instanceof Butterfly) && isHungerLow() && checkForFood(game)) {
-            direction = STAY;
+            if (direction == UP) {
+                direction = EAT_UP;
+            }
+            if (direction == DOWN) {
+                direction = EAT_DOWN;
+            }
+            if (direction == LEFT) {
+                direction = EAT_LEFT;
+            }
+            if (direction == RIGHT) {
+                direction = EAT_RIGHT;
+            }
+            updateDirection();
             movingTicks = getRandomMovingTicks();
         }
     }

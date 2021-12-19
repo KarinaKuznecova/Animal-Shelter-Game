@@ -5,7 +5,11 @@ public enum Direction {
     LEFT(1),
     UP(2),
     RIGHT(3),
-    STAY(4);
+    STAY(4),
+    EAT_DOWN(5),
+    EAT_LEFT(6),
+    EAT_UP(7),
+    EAT_RIGHT(8);
 
     public final int directionNumber;
 
