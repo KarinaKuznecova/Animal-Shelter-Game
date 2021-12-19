@@ -796,7 +796,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void moveAnimalToAnotherMap(Animal animal, MapTile portal) {
-        if (!animal.getHomeMap().equals(gameMap.getMapName()) || ("MainMap".equals(animal.getHomeMap()) && portal.getPortalDirection().startsWith("Bottom"))) {
+        if (("MainMap".equals(animal.getHomeMap()) && portal.getPortalDirection().startsWith("Bottom"))) {
             return;
         }
         String destination = portal.getPortalDirection();
@@ -819,8 +819,13 @@ public class Game extends JFrame implements Runnable {
             animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
     }
 
-    public Route calculateRoute(Animal animal) {
-        return routeCalculator.calculateRoute(getGameMap(animal.getHomeMap()), animal);
+    public Route calculateRouteToFood(Animal animal) {
+        return routeCalculator.calculateRouteToFood(getGameMap(animal.getHomeMap()), animal);
+    }
+
+    public Route calculateRouteToMap(Animal animal, String destination) {
+        logger.debug(String.format("Looking how to get to %s for %s", destination, animal.getAnimalName()));
+        return routeCalculator.calculateRouteToPortal(getGameMap(animal.getHomeMap()), animal, destination);
     }
 
     public void refreshCurrentMapCache() {

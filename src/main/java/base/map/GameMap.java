@@ -252,6 +252,15 @@ public class GameMap {
         return false;
     }
 
+    public boolean isTherePortal(Rectangle rectangle) {
+        for (MapTile portal : getPortals()) {
+            if (rectangle.intersects(portal)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addItem(Item item) {
         logger.debug("Adding item to the list");
         items.add(item);

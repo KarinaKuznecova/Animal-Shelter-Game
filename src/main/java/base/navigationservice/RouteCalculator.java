@@ -17,9 +17,24 @@ public class RouteCalculator {
 
     protected static final Logger logger = LoggerFactory.getLogger(RouteCalculator.class);
 
-    public Route calculateRoute(GameMap gameMap, Animal animal) {
+    public Route calculateRouteToFood(GameMap gameMap, Animal animal) {
+        return calculateRoute(gameMap, animal, null);
+    }
+
+    public Route calculateRouteToPortal(GameMap gameMap, Animal animal, String destination) {
+        return calculateRoute(gameMap, animal, destination);
+    }
+
+    public Route calculateRoute(GameMap gameMap, Animal animal, String destination) {
         Route newRoute = new Route();
 
+        MapTile portal = null;
+        if (destination != null && getPortal(gameMap, destination) != null) {
+            portal = getPortal(gameMap, destination);
+        }
+        if (destination != null && portal == null) {
+            return newRoute;
+        }
         List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
 
         int adjustedX = animal.getCurrentX() - (animal.getCurrentX() % 64);
@@ -67,17 +82,26 @@ public class RouteCalculator {
             }
             if (!searched.contains(rectangleToCheck)) {
                 searchQueue.remove(0);
-                boolean isFood = isThereFood(gameMap, rectangleToCheck);
-                if (isFood) {
-                    logger.info(String.format("%s Found Food!", animal.getAnimalName()));
+                boolean found;
+                if (destination != null) {
+                    found = isTherePortal(portal, rectangleToCheck);
+                } else {
+                    found = isThereFood(gameMap, rectangleToCheck);
+                }
+                if (found) {
+                    logger.info(String.format("%s found his way!", animal.getAnimalName()));
                     return map.get(rectangleToCheck);
                 } else {
                     searched.add(rectangleToCheck);
                     fillSearchQueue(gameMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
                 }
+
             } else {
                 searchQueue.remove(0);
             }
+        }
+        if (destination == null && newRoute.isEmpty()) {
+            newRoute = calculateRouteToPortal(gameMap, animal, NavigationService.getNextMapToGetToHome(gameMap.getMapName()));
         }
         return newRoute;
     }
@@ -141,28 +165,28 @@ public class RouteCalculator {
     }
 
     public Rectangle tryUp(GameMap gameMap, Rectangle rectangle) {
-        if (rectangle.getY() - 64 > 0 && canWalkThisDirection(gameMap, UP, rectangle.getX(), rectangle.getY())) {
+        if (rectangle.getY() >= 0 && canWalkThisDirection(gameMap, UP, rectangle.getX(), rectangle.getY())) {
             return new Rectangle(rectangle.getX(), rectangle.getY() - 64, 63, 63);
         }
         return null;
     }
 
     public Rectangle tryDown(GameMap gameMap, Rectangle rectangle) {
-        if (rectangle.getY() + 64 < gameMap.getMapHeight() * 64 && canWalkThisDirection(gameMap, DOWN, rectangle.getX(), rectangle.getY())) {
+        if (rectangle.getY() + 64 <= gameMap.getMapHeight() * 64 && canWalkThisDirection(gameMap, DOWN, rectangle.getX(), rectangle.getY())) {
             return new Rectangle(rectangle.getX(), rectangle.getY() + 64, 63, 63);
         }
         return null;
     }
 
     public Rectangle tryLeft(GameMap gameMap, Rectangle rectangle) {
-        if (rectangle.getX() - 64 > 0 && canWalkThisDirection(gameMap, LEFT, rectangle.getX(), rectangle.getY())) {
+        if (rectangle.getX() >= 0 && canWalkThisDirection(gameMap, LEFT, rectangle.getX(), rectangle.getY())) {
             return new Rectangle(rectangle.getX() - 64, rectangle.getY(), 63, 63);
         }
         return null;
     }
 
     public Rectangle tryRight(GameMap gameMap, Rectangle rectangle) {
-        if (rectangle.getX() + 64 < gameMap.getMapWidth() * 64 && canWalkThisDirection(gameMap, RIGHT, rectangle.getX(), rectangle.getY())) {
+        if (rectangle.getX() + 64 <= gameMap.getMapWidth() * 64 && canWalkThisDirection(gameMap, RIGHT, rectangle.getX(), rectangle.getY())) {
             return new Rectangle(rectangle.getX() + 64, rectangle.getY(), 63, 63);
         }
         return null;
@@ -202,6 +226,11 @@ public class RouteCalculator {
 
     public boolean isWalkable(GameMap gameMap, int x, int y) {
         Rectangle rectangle = new Rectangle(x, y, 64, 64);
+
+        if (gameMap.isTherePortal(rectangle)) {
+            return true;
+        }
+
         List<MapTile> tilesOnLayer = new ArrayList<>(gameMap.getTilesOnLayer(2));
         if (tilesOnLayer.isEmpty()) {
             return true;
@@ -218,5 +247,18 @@ public class RouteCalculator {
             }
         }
         return true;
+    }
+
+    private MapTile getPortal(GameMap gameMap, String destination) {
+        for (MapTile portal : gameMap.getPortals()) {
+            if (destination.equalsIgnoreCase(portal.getPortalDirection())) {
+                return portal;
+            }
+        }
+        return null;
+    }
+
+    private boolean isTherePortal(MapTile portal, Rectangle rectangle) {
+        return rectangle.intersects(portal);
     }
 }

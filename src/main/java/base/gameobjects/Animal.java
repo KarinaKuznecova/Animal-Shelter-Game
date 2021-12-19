@@ -9,6 +9,7 @@ import base.graphicsservice.Sprite;
 import base.map.GameMap;
 import base.map.MapTile;
 import base.navigationservice.Direction;
+import base.navigationservice.NavigationService;
 import base.navigationservice.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,9 +85,15 @@ public abstract class Animal implements GameObject {
 //            animatedSprite.setAnimationRange(direction.directionNumber, direction.directionNumber + 12);          // if vertical
             int startSprite = direction.directionNumber * animatedSprite.getSpritesSize() / 4;
             int endSprite = direction.directionNumber * animatedSprite.getSpritesSize() / 4 + 2;
-            if (direction.name().startsWith("EAT") && animatedSprite.getSpritesSize() == 28) {
-                startSprite = (direction.directionNumber - 5) * animatedSprite.getSpritesSize() / 4 + 3;
-                endSprite = startSprite + 3;
+            if (direction.name().startsWith("EAT")) {
+                if (animatedSprite.getSpritesSize() == 28) {
+                    startSprite = (direction.directionNumber - 5) * animatedSprite.getSpritesSize() / 4 + 3;
+                    endSprite = startSprite + 3;
+                }
+                else {
+                    startSprite = (direction.directionNumber - 5) * animatedSprite.getSpritesSize() / 4;
+                    endSprite = (direction.directionNumber - 5) * animatedSprite.getSpritesSize() / 4 + 2;
+                }
             }
             animatedSprite.setAnimationRange(startSprite, endSprite); //if horizontal increase
         }
@@ -107,6 +114,10 @@ public abstract class Animal implements GameObject {
     public void update(Game game) {
         boolean isMoving = false;
         Direction nextDirection = direction;
+
+        if (route.isEmpty() && getHomeMap().startsWith("Bottom")) {
+            route = game.calculateRouteToMap(this, NavigationService.getNextMapToGetToCenter(getHomeMap()));
+        }
 
         if (movingTicks < 1) {
             if (!route.isEmpty()) {
@@ -141,7 +152,7 @@ public abstract class Animal implements GameObject {
         movingTicks--;
         decreaseHungerLevel();
         if (!(this instanceof Butterfly) && currentHunger < MAX_HUNGER / 100 * 25 && route.isEmpty()) {
-            route = game.calculateRoute(this);
+            route = game.calculateRouteToFood(this);
         }
         if (!(this instanceof Butterfly) && isHungerLow() && checkForFood(game)) {
             if (direction == UP) {
@@ -155,6 +166,9 @@ public abstract class Animal implements GameObject {
             }
             if (direction == RIGHT) {
                 direction = EAT_RIGHT;
+            }
+            if (animatedSprite.getSpritesSize() < 28) {
+                direction = STAY;
             }
             updateDirection();
             movingTicks = getRandomMovingTicks();
@@ -178,7 +192,13 @@ public abstract class Animal implements GameObject {
     }
 
     private boolean checkForFood(Game game) {
-        for (Item item : game.getGameMap(homeMap).getItems()) {
+        List<Item> items;
+        if (game.getGameMap().getMapName().equalsIgnoreCase(getHomeMap())) {
+            items = game.getGameMap().getItems();
+        } else {
+            items = game.getGameMap(homeMap).getItems();
+        }
+        for (Item item : items) {
             if (animalRectangle.intersects(item.getRectangle())) {
                 logger.info(String.format("%s ate food", animalName));
                 currentHunger = MAX_HUNGER;
@@ -188,7 +208,13 @@ public abstract class Animal implements GameObject {
                 return true;
             }
         }
-        for (FoodBowl bowl : game.getGameMap(homeMap).getFoodBowls()) {
+        List<FoodBowl> bowls;
+        if (game.getGameMap().getMapName().equalsIgnoreCase(getHomeMap())) {
+            bowls = game.getGameMap().getFoodBowls();
+        } else {
+            bowls = game.getGameMap(homeMap).getFoodBowls();
+        }
+        for (FoodBowl bowl : bowls) {
             if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
                 logger.info(String.format("%s ate food", animalName));
                 currentHunger = MAX_HUNGER;
