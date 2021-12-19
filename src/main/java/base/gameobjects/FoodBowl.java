@@ -9,7 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-import static base.Game.TILE_SIZE;
+import static base.constants.Constants.TILE_SIZE;
+import static base.constants.FilePath.FOOD_BOWL_PATH;
 
 public class FoodBowl implements GameObject {
 
@@ -24,7 +25,7 @@ public class FoodBowl implements GameObject {
     public FoodBowl(int x, int y) {
         this.x = x;
         this.y = y;
-        sprite = ImageLoader.getAnimatedSprite("img/bowl.png", TILE_SIZE);
+        sprite = ImageLoader.getAnimatedSprite(FOOD_BOWL_PATH, TILE_SIZE);
         sprite.setAnimationRange(0, 1);
         sprite.vertical = false;
 

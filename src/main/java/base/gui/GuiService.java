@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static base.Game.TILE_SIZE;
-import static base.Game.ZOOM;
+import static base.constants.Constants.TILE_SIZE;
+import static base.constants.Constants.ZOOM;
 
 public class GuiService {
 
     public GUI loadYourAnimals(Game game) {
-        List<Animal> animals = game.getGameMap().getAnimals();
+        List<Animal> animals = game.getAnimalsOnMaps().get(game.getGameMap().getMapName());
         List<GUIButton> buttons = new CopyOnWriteArrayList<>();
 
         for (int i = 0; i < animals.size(); i++) {
@@ -106,6 +106,6 @@ public class GuiService {
             game.changeSelectedItem(button.getDefaultId());
         }
     }
-    
+
 
 }

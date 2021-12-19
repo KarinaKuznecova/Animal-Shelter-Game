@@ -20,7 +20,6 @@ public class RouteCalculator {
     public Route calculateRoute(GameMap gameMap, Animal animal) {
         Route newRoute = new Route();
 
-//        logger.debug(String.format("Will calculate route for %s", animal));
         List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
 
         int adjustedX = animal.getCurrentX() - (animal.getCurrentX() % 64);
@@ -73,7 +72,6 @@ public class RouteCalculator {
                     logger.info(String.format("%s Found Food!", animal.getAnimalName()));
                     return map.get(rectangleToCheck);
                 } else {
-//                    logger.debug(String.format("No food in here - x: %d, y: %d", rectangleToCheck.getX(), rectangleToCheck.getY()));
                     searched.add(rectangleToCheck);
                     fillSearchQueue(gameMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
                 }

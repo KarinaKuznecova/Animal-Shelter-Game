@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class ImageLoader {
 
-    protected static final Logger logger = LoggerFactory.getLogger(ImageLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImageLoader.class);
 
     private ImageLoader() {
     }

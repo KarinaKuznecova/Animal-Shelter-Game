@@ -2,316 +2,81 @@ package base.map;
 
 import base.gameobjects.*;
 import base.graphicsservice.Rectangle;
-import base.graphicsservice.RenderHandler;
-import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static base.Game.TILE_SIZE;
-import static base.Game.ZOOM;
+import static base.constants.Constants.TILE_SIZE;
+import static base.constants.Constants.ZOOM;
 
 public class GameMap {
 
     private final TileService tileService;
-    private final AnimalService animalService = new AnimalService();
-    private final PlantService plantService = new PlantService();
-
-    private final File mapFile;
     private final Map<Integer, List<MapTile>> layeredTiles = new ConcurrentHashMap<>();
     private final List<MapTile> portals = new ArrayList<>();
-    private final List<Animal> allAnimals;
     private List<Plant> plants = new CopyOnWriteArrayList<>();
     private final List<Item> items = new CopyOnWriteArrayList<>();
     private final List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
 
-    int backGroundTileId = -1;      //background of walkable part of the map
-    int alphaBackground = -1;       //outside the walkable part
+    int backGroundTileId = -1;
     private int mapWidth = -1;
     private int mapHeight = -1;
     int maxLayer = -1;
 
-    private String mapName;
+    private final String mapName;
 
-    protected static final Logger logger = LoggerFactory.getLogger(GameMap.class);
+    private static final Logger logger = LoggerFactory.getLogger(GameMap.class);
 
-    public GameMap(File mapFile, TileService tileService) {
+    public GameMap(String mapName, TileService tileService) {
+        this.mapName = mapName;
         this.tileService = tileService;
-        this.mapFile = mapFile;
-        loadMapFromFile();
-        allAnimals = animalService.loadAnimalsFromFile(getMapName());
-        logger.info(String.format("There will be %d animals on map %s", allAnimals.size(), getMapName()));
     }
 
-    private void loadMapFromFile() {
-        try (Scanner scanner = new Scanner(mapFile)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-
-                if (handleConfigLines(line)) {
-                    continue;
-                }
-
-                if (loadPlantLines(line)) {
-                    continue;
-                }
-
-                String[] splitLine = line.split(",");
-                if (splitLine.length >= 4) {
-                    int layer = Integer.parseInt(splitLine[0]);
-                    List<MapTile> tiles;
-                    if (layeredTiles.containsKey(layer)) {
-                        tiles = layeredTiles.get(layer);
-                    } else {
-                        tiles = new ArrayList<>();
-                        layeredTiles.put(layer, tiles);
-                    }
-                    if (maxLayer < layer) {
-                        maxLayer = layer;
-                        logger.info(String.format("max layer: %d", maxLayer));
-                    }
-                    int tileId = Integer.parseInt(splitLine[1]);
-                    int xPosition = Integer.parseInt(splitLine[2]);
-                    int yPosition = Integer.parseInt(splitLine[3]);
-                    boolean isRegular = true;
-                    if (splitLine.length >= 5) {
-                        String terrain = splitLine[4];
-                        if (terrain.length() == 1) {
-                            isRegular = "y".equals(terrain);
-                        }
-                    }
-                    MapTile tile = new MapTile(layer, tileId, xPosition, yPosition, isRegular);
-                    checkIfPortal(splitLine, tile);
-                    tiles.add(tile);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    public int getBackGroundTileId() {
+        return backGroundTileId;
     }
 
-    private boolean handleConfigLines(String line) {
-        if (line.startsWith("Fill:")) {
-            String[] splitLine = line.split(":");
-            backGroundTileId = Integer.parseInt(splitLine[1]);
-            return true;
-        }
-        if (line.startsWith("AlphaFill:")) {
-            String[] splitLine = line.split(":");
-            alphaBackground = Integer.parseInt(splitLine[1]);
-            return true;
-        }
-        if (line.startsWith("Size:")) {
-            defineMapSize(line);
-            return true;
-        }
-        if (line.startsWith("//")) {        //just a comment
-            return true;
-        }
-        if (line.startsWith("Name:")) {
-            String[] splitLine = line.split(":");
-            mapName = String.valueOf(splitLine[1]);
-            return true;
-        }
-        return false;
+    public void setBackGroundTileId(int backGroundTileId) {
+        this.backGroundTileId = backGroundTileId;
     }
 
-    private boolean loadPlantLines(String line) {
-        if (line.startsWith("plant")) {
-            String[] splitLine = line.split(",");
-            String plantId = splitLine[0];
-            String plantType = plantId.split("-")[1];
-            int x = Integer.parseInt(splitLine[1]);
-            int y = Integer.parseInt(splitLine[2]);
-            int growingStage = Integer.parseInt(splitLine[3]);
-
-            Plant plant = plantService.createPlant(plantType, x, y, getMapName());
-            plant.setGrowingStage(growingStage);
-            plants.add(plant);
-
-            return true;
-        }
-        if (line.startsWith("item")) {
-            String[] splitLine = line.split(",");
-            String itemId = splitLine[0];
-            String itemName = itemId.split("-")[1];
-            int x = Integer.parseInt(splitLine[1]);
-            int y = Integer.parseInt(splitLine[2]);
-            Sprite sprite = plantService.getPreviews().get(itemName);
-            Item item = new Item(x, y, itemName, sprite);
-            items.add(item);
-            return true;
-        }
-        if (line.startsWith("bowl")) {
-            String[] splitLine = line.split(",");
-            int x = Integer.parseInt(splitLine[1]);
-            int y = Integer.parseInt(splitLine[2]);
-            boolean shouldBeFull = Boolean.valueOf(splitLine[3]);
-            FoodBowl foodBowl = new FoodBowl(x, y);
-            if (shouldBeFull) {
-                foodBowl.fillBowl();
-            }
-            interactiveObjects.add(foodBowl);
-            return true;
-        }
-
-        return false;
+    public Map<Integer, List<MapTile>> getLayeredTiles() {
+        return layeredTiles;
     }
 
-    private void defineMapSize(String line) {
-        String[] splitLine = line.split(":");
-        mapWidth = Integer.parseInt(splitLine[1]);
-        if (mapWidth < 20) {
-            mapWidth = 20;
-        }
-        mapHeight = Integer.parseInt(splitLine[2]);
-        if (mapHeight < 20) {
-            mapHeight = 20;
-        }
-        logger.info(String.format("Size of the map is %d by %d tiles", mapWidth, mapHeight));
+    public int getMaxLayer() {
+        return maxLayer;
     }
 
-    private void checkIfPortal(String[] splitLine, MapTile tile) {
-        if (splitLine.length == 5) {
-            String lastPiece = splitLine[4];
-            if (lastPiece.length() > 1) {
-                logger.info("Found portal as in old map config");
-                tile.setPortal(true);
-                tile.setPortalDirection(splitLine[4]);
-                portals.add(tile);
-            }
-        } else if (splitLine.length >= 6) {
-            logger.info("Found portal");
-            tile.setPortal(true);
-            tile.setPortalDirection(splitLine[5]);
-            portals.add(tile);
-        }
+    public void setMaxLayer(int maxLayer) {
+        this.maxLayer = maxLayer;
     }
 
-    public void renderMap(RenderHandler renderer, List<GameObject> gameObjects) {
-        int tileWidth = TILE_SIZE * ZOOM;
-        int tileHeight = TILE_SIZE * ZOOM;
-
-        adjustMaxLayer(gameObjects);
-
-        renderFixedSizeMap(renderer, gameObjects, tileWidth, tileHeight);
+    public void setMapWidth(int mapWidth) {
+        this.mapWidth = mapWidth;
     }
 
-    private void adjustMaxLayer(List<GameObject> gameObjects) {
-        for (GameObject gameObject : gameObjects) {
-            if (maxLayer < gameObject.getLayer()) {
-                maxLayer = gameObject.getLayer();
-                logger.info(String.format("max layer: %d", maxLayer));
-            }
-        }
-        for (Animal animal : allAnimals) {
-            if (maxLayer < animal.getLayer()) {
-                maxLayer = animal.getLayer();
-                logger.info(String.format("max layer: %d", maxLayer));
-            }
-        }
+    public void setMapHeight(int mapHeight) {
+        this.mapHeight = mapHeight;
     }
 
-    private void renderFixedSizeMap(RenderHandler renderer, List<GameObject> gameObjects, int tileWidth, int tileHeight) {
-
-        renderBackground(renderer, tileWidth, tileHeight);
-
-        for (int i = 0; i <= maxLayer; i++) {
-            List<MapTile> tiles = layeredTiles.get(i);
-            if (tiles != null) {
-                // with for-each loop there is ConcurrentModificationException often, but with this loop everything works fine
-                for (int j = 0; j < tiles.size(); j++) {
-                    MapTile mappedTile = tiles.get(j);
-                    if (mappedTile.getLayer() == i) {
-                        renderTile(renderer, tileWidth, tileHeight, mappedTile);
-                    }
-                }
-            }
-            renderGameObjects(renderer, gameObjects, i);
-        }
+    public TileService getTileService() {
+        return tileService;
     }
 
-    private void renderBackground(RenderHandler renderer, int tileWidth, int tileHeight) {
-        if (alphaBackground >= 0) {
-            renderInSightOfCamera(renderer, tileWidth, tileHeight, alphaBackground);
-        }
-        if (backGroundTileId >= 0) {
-            for (int i = 0; i < mapHeight * tileHeight; i += tileHeight) {
-                for (int j = 0; j < mapWidth * tileWidth; j += tileWidth) {
-                    tileService.renderTerrainTile(backGroundTileId, renderer, j, i, ZOOM, ZOOM);
-                }
-            }
-        }
-    }
-
-    private void renderInSightOfCamera(RenderHandler renderer, int tileWidth, int tileHeight, int tileId) {
-        Rectangle camera = renderer.getCamera();
-
-        for (int i = camera.getY() - tileHeight - (camera.getY() % tileHeight); i < camera.getY() + camera.getHeight(); i += tileHeight) {
-            for (int j = camera.getX() - tileWidth - (camera.getX() % tileWidth); j < camera.getX() + camera.getWidth(); j += tileWidth) {
-                tileService.renderTerrainTile(tileId, renderer, j, i, ZOOM, ZOOM);
-            }
-        }
-    }
-
-    private void renderGameObjects(RenderHandler renderer, List<GameObject> gameObjects, int layer) {
-        for (GameObject gameObject : gameObjects) {
-            if (gameObject.getLayer() == layer) {
-                gameObject.render(renderer, ZOOM, ZOOM);
-            }
-        }
-        for (GameObject gameObject : items) {
-            if (gameObject.getLayer() == layer) {
-                gameObject.render(renderer, ZOOM, ZOOM);
-            }
-        }
-        for (GameObject gameObject : interactiveObjects) {
-            if (gameObject.getLayer() == layer) {
-                gameObject.render(renderer, ZOOM, ZOOM);
-            }
-        }
-        for (Animal animal : allAnimals) {
-            if (!animal.getHomeMap().equals(mapName)) {
-                logger.error(String.format("Animal %s doesn't belong to map %s", animal, getMapName()));
-                continue;
-            }
-            if (animal.getLayer() == layer) {
-                animal.render(renderer, ZOOM, ZOOM);
-            }
-        }
-        animalService.fixStuckAnimals(this, getAnimals());
-
-        for (Plant plant : plants) {
-            if (plant.getLayer() == layer) {
-                plant.render(renderer, ZOOM, ZOOM);
-            }
-        }
-    }
-
-    private void renderTile(RenderHandler renderer, int tileWidth, int tileHeight, MapTile mappedTile) {
-        int xPosition = mappedTile.getX() * tileWidth;
-        int yPosition = mappedTile.getY() * tileHeight;
-        if (xPosition <= mapWidth * tileWidth && yPosition <= mapHeight * tileHeight) {
-            if (mappedTile.isRegularTile()) {
-                tileService.renderTile(mappedTile.getId(), renderer, xPosition, yPosition, ZOOM, ZOOM);
-            } else {
-                tileService.renderTerrainTile(mappedTile.getId(), renderer, xPosition, yPosition, ZOOM, ZOOM);
-            }
-        }
+    public void addPortal(MapTile tile) {
+        portals.add(tile);
     }
 
     public List<MapTile> getPortals() {
         return portals;
     }
-
 
     public List<MapTile> getTilesOnLayer(int layer) {
         return layeredTiles.get(layer);
@@ -372,94 +137,6 @@ public class GameMap {
         return false;
     }
 
-    public void saveMap() {
-        logger.info("Saving map");
-        try {
-            if (mapFile.exists()) {
-                Files.deleteIfExists(mapFile.toPath());
-            }
-            if (!mapFile.createNewFile()) {
-                logger.error(String.format("Unable to create file: %s", mapFile));
-                throw new IllegalArgumentException();
-            }
-
-            PrintWriter printWriter = new PrintWriter(mapFile);
-
-            printWriter.println("Name:" + mapName);
-            printWriter.println("Size:" + mapWidth + ":" + mapHeight);
-            if (backGroundTileId >= 0) {
-                printWriter.println("Fill:" + backGroundTileId);
-            }
-            if (alphaBackground >= 0) {
-                printWriter.println("AlphaFill:" + alphaBackground);
-            }
-            savePlants(printWriter);
-            saveItems(printWriter);
-            printWriter.println("//layer,tileId,xPos,yPos,regularTile,portalDirection");
-            for (List<MapTile> layer : layeredTiles.values()) {
-                for (MapTile tile : layer) {
-                    String isRegular = tile.isRegularTile() ? "y" : "n";
-                    if (tile.getPortalDirection() != null) {
-                        printWriter.println(tile.getLayer() + "," + tile.getId() + "," + tile.getX() + "," + tile.getY() + "," + isRegular + "," + tile.getPortalDirection());
-                    } else {
-                        printWriter.println(tile.getLayer() + "," + tile.getId() + "," + tile.getX() + "," + tile.getY() + "," + isRegular);
-                    }
-                }
-            }
-            printWriter.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        saveAnimals();
-    }
-
-    public void saveAnimals() {
-        if (!allAnimals.isEmpty()) {
-            deleteAnimalFilesForCurrentMap();
-            for (Animal animal : allAnimals) {
-                animalService.saveAnimalToFile(animal);
-            }
-        }
-    }
-
-    public void savePlants(PrintWriter printWriter) {
-        if (plants.isEmpty()) {
-            return;
-        }
-        printWriter.println("//Plants");
-        printWriter.println("//type, xPosition, yPosition, growingStage");
-        for (Plant plant : plants) {
-            printWriter.println("plant-" + plant.getPlantType() + "," + plant.getRectangle().getX() + "," + plant.getRectangle().getY() + "," + plant.getGrowingStage());
-        }
-    }
-
-    public void saveItems(PrintWriter printWriter) {
-        if (items.isEmpty() && interactiveObjects.isEmpty()) {
-            return;
-        }
-        printWriter.println("//Items");
-        printWriter.println("//type, xPosition, yPosition");
-        for (Item item : items) {
-            printWriter.println("item-" + item.getItemName() + "," + item.getRectangle().getX() + "," + item.getRectangle().getY());
-        }
-        for (FoodBowl foodBowl : getFoodBowls()) {
-            printWriter.println("bowl," + foodBowl.getRectangle().getX() + "," + foodBowl.getRectangle().getY() + "," + foodBowl.isFull());
-        }
-    }
-
-    private void deleteAnimalFilesForCurrentMap() {
-        logger.info("Deleting all animal files related to current map");
-        File animalsDirectory = new File("animals/");
-        if (animalsDirectory.listFiles() != null && animalsDirectory.listFiles().length > 0) {
-            for (File file : Objects.requireNonNull(animalsDirectory.listFiles())) {
-                if (file.getName().startsWith(getMapName())) {
-                    file.delete();
-                }
-            }
-        }
-    }
-
     public MapTile getPortalTo(String destination) {
         for (MapTile tile : getPortals()) {
             if (tile.getPortalDirection().equals(destination)) {
@@ -504,18 +181,6 @@ public class GameMap {
 
     public int getMapHeight() {
         return mapHeight;
-    }
-
-    public List<Animal> getAnimals() {
-        return allAnimals;
-    }
-
-    public void addAnimal(Animal newAnimal) {
-        allAnimals.add(newAnimal);
-    }
-
-    public void removeAnimal(int existingAnimalId) {
-        allAnimals.remove(existingAnimalId);
     }
 
     public void addPlant(Plant plant) {
@@ -614,7 +279,7 @@ public class GameMap {
 
     public List<FoodBowl> getFoodBowls() {
         List<FoodBowl> bowls = new ArrayList<>();
-        for (GameObject object : interactiveObjects) {
+        for (GameObject object : getInteractiveObjects()) {
             if (object instanceof FoodBowl) {
                 bowls.add((FoodBowl) object);
             }

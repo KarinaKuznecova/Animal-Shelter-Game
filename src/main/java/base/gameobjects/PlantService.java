@@ -11,24 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static base.constants.FilePath.*;
+
 public class PlantService {
 
     protected static final Logger logger = LoggerFactory.getLogger(PlantService.class);
-
-    String carrot = "img/carrot.png";
-    String carrotPreview = "img/carrot-preview.png";
-
-    String beet = "img/beet.png";
-    String beetPreview = "img/beet-preview.png";
-
-    String tomato = "img/tomato.png";
-    String tomatoPreview = "img/tomato-preview.png";
-
-    String strawberry = "img/strawberry.png";
-    String strawberryPreview = "img/strawberry-preview.png";
-
-    String bellpepper = "img/bellpepper.png";
-    String bellpepperPreview = "img/bellpepper-preview.png";
 
     Map<String, String> plantAnimations;
     Map<String, String> plantMapping;
@@ -38,23 +25,23 @@ public class PlantService {
     public PlantService() {
         plantAnimations = new HashMap<>();
         plantMapping = new HashMap<>();
-        plantAnimations.put(carrotPreview, carrot);
-        plantMapping.put(Carrot.NAME, carrotPreview);
+        plantAnimations.put(CARROT_PREVIEW, CARROT);
+        plantMapping.put(Carrot.NAME, CARROT_PREVIEW);
 
-        plantAnimations.put(beetPreview, beet);
-        plantMapping.put(Beet.NAME, beetPreview);
+        plantAnimations.put(BEET_PREVIEW, BEET);
+        plantMapping.put(Beet.NAME, BEET_PREVIEW);
 
-        plantAnimations.put(tomatoPreview, tomato);
-        plantMapping.put(Tomato.NAME, tomatoPreview);
+        plantAnimations.put(TOMATO_PREVIEW, TOMATO);
+        plantMapping.put(Tomato.NAME, TOMATO_PREVIEW);
 
-        plantAnimations.put(strawberryPreview, strawberry);
-        plantMapping.put(Strawberry.NAME, strawberryPreview);
+        plantAnimations.put(STRAWBERRY_PREVIEW, STRAWBERRY);
+        plantMapping.put(Strawberry.NAME, STRAWBERRY_PREVIEW);
 
-        plantAnimations.put(bellpepperPreview, bellpepper);
-        plantMapping.put(Bellpepper.NAME, bellpepperPreview);
+        plantAnimations.put(BELLPEPPER_PREVIEW, BELLPEPPER);
+        plantMapping.put(Bellpepper.NAME, BELLPEPPER_PREVIEW);
     }
 
-    public Plant createPlant(String plantName, int x, int y, String mapName) {
+    public Plant createPlant(String plantName, int x, int y) {
         String previewPath = plantMapping.get(plantName);
         Sprite previewSprite = ImageLoader.getPreviewSprite(previewPath);
         AnimatedSprite animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(previewPath), 32);

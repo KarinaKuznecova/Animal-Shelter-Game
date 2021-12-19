@@ -1,15 +1,22 @@
 package base.graphicsservice;
 
 import base.Game;
+import base.gameobjects.Animal;
+import base.gameobjects.GameObject;
+import base.gameobjects.Plant;
 import base.gameobjects.Player;
+import base.map.GameMap;
+import base.map.MapTile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.util.*;
 import java.util.List;
+import java.util.*;
+
+import static base.constants.Constants.*;
 
 public class RenderHandler {
 
@@ -70,6 +77,74 @@ public class RenderHandler {
         for (Map.Entry<Position, String> entry : textToDraw.entrySet()) {
             Position linePosition = entry.getKey();
             renderText(graphics, entry.getValue(), linePosition.getXPosition(), linePosition.getYPosition());
+        }
+    }
+
+    public void renderMap(GameMap gameMap) {
+        renderBackground(gameMap);
+
+        for (int i = 0; i <= gameMap.getMaxLayer(); i++) {
+            List<MapTile> tiles = gameMap.getLayeredTiles().get(i);
+            if (tiles != null) {
+                // with for-each loop there is ConcurrentModificationException often, but with this loop everything works fine
+                for (int j = 0; j < tiles.size(); j++) {
+                    MapTile mappedTile = tiles.get(j);
+                    if (mappedTile.getLayer() == i) {
+                        renderTile(gameMap, mappedTile);
+                    }
+                }
+            }
+            renderGameObjects(gameMap, i);
+        }
+    }
+
+    private void renderBackground(GameMap gameMap) {
+        int backGroundTileId = gameMap.getBackGroundTileId();
+        if (backGroundTileId >= 0) {
+            for (int i = 0; i < gameMap.getMapHeight() * TILE_SIZE * ZOOM; i += TILE_SIZE * ZOOM) {
+                for (int j = 0; j < gameMap.getMapWidth() * TILE_SIZE * ZOOM; j += TILE_SIZE * ZOOM) {
+                    renderSprite(gameMap.getTileService().getTerrainTiles().get(backGroundTileId).getSprite(), i, j, ZOOM, ZOOM, false);
+                }
+            }
+        }
+    }
+
+    private void renderTile(GameMap gameMap, MapTile mappedTile) {
+        int xPosition = mappedTile.getX() * TILE_SIZE * ZOOM;
+        int yPosition = mappedTile.getY() * TILE_SIZE * ZOOM;
+        if (xPosition <= gameMap.getMapWidth() * TILE_SIZE * ZOOM && yPosition <= gameMap.getMapHeight() * TILE_SIZE * ZOOM) {
+            if (mappedTile.isRegularTile()) {
+                renderSprite(gameMap.getTileService().getTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, ZOOM, false);
+            } else {
+                renderSprite(gameMap.getTileService().getTerrainTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, ZOOM, false);
+            }
+        }
+    }
+
+    private void renderGameObjects(GameMap gameMap, int layer) {
+        for (GameObject gameObject : gameMap.getItems()) {
+            if (gameObject.getLayer() == layer) {
+                gameObject.render(this, ZOOM, ZOOM);
+            }
+        }
+        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
+            if (gameObject.getLayer() == layer) {
+                gameObject.render(this, ZOOM, ZOOM);
+            }
+        }
+        for (Plant plant : gameMap.getPlants()) {
+            if (plant.getLayer() == layer) {
+                plant.render(this, ZOOM, ZOOM);
+            }
+        }
+    }
+
+    public void renderAnimals(List<Animal> animals) {
+        if (animals == null) {
+            return;
+        }
+        for (Animal animal : animals) {
+            animal.render(this, ZOOM, ZOOM);
         }
     }
 
@@ -156,7 +231,7 @@ public class RenderHandler {
     }
 
     private boolean isAlphaColor(int pixel) {
-        return pixel == Game.ALPHA;
+        return pixel == ALPHA;
     }
 
     private boolean isInGlobalRange(int pixelIndex) {
@@ -187,7 +262,7 @@ public class RenderHandler {
         Rectangle playerRect = player.getPlayerRectangle();
 
         logger.info("Adjusting X");
-        int mapEnd = game.getGameMap().getMapWidth() * (Game.TILE_SIZE * Game.ZOOM);
+        int mapEnd = game.getGameMap().getMapWidth() * (TILE_SIZE * ZOOM);
         int diffToEnd = mapEnd - playerRect.getX();
         if (diffToEnd < 96) {
             logger.info("Adjustment will be on the right side");
@@ -200,7 +275,7 @@ public class RenderHandler {
         }
 
         logger.info("Adjusting Y");
-        mapEnd = game.getGameMap().getMapHeight() * (Game.TILE_SIZE * Game.ZOOM);
+        mapEnd = game.getGameMap().getMapHeight() * (TILE_SIZE * ZOOM);
         diffToEnd = mapEnd - playerRect.getY();
 
         if (diffToEnd < 96) {

@@ -1,6 +1,5 @@
 package base.graphicsservice;
 
-import base.Game;
 import base.map.MapTile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static base.Game.ZOOM;
+import static base.constants.Constants.*;
 
 public class Rectangle implements Serializable {
 
@@ -80,7 +79,7 @@ public class Rectangle implements Serializable {
                 if (i < borderWidth || i >= height - borderWidth || j < borderWidth || j >= width - borderWidth) {
                     pixels[i + j * width] = color;
                 } else {
-                    pixels[i + j * width] = Game.ALPHA;
+                    pixels[i + j * width] = ALPHA;
                 }
             }
         }
@@ -121,11 +120,11 @@ public class Rectangle implements Serializable {
     }
 
     private boolean intersectsByY(MapTile tile, int yPos) {
-        return !(yPos > tile.getY() * (Game.TILE_SIZE * ZOOM) + Game.TILE_SIZE || tile.getY() * (Game.TILE_SIZE * ZOOM) > yPos + ((Game.TILE_SIZE * ZOOM) - (Game.TILE_SIZE / 2)));     //48 = 32 + 32/2
+        return !(yPos > tile.getY() * (TILE_SIZE * ZOOM) + TILE_SIZE || tile.getY() * (TILE_SIZE * ZOOM) > yPos + ((TILE_SIZE * ZOOM) - (TILE_SIZE / 2)));     //48 = 32 + 32/2
     }
 
     private boolean intersectsByX(MapTile tile, int xPos) {
-        return !(xPos > tile.getX() * (Game.TILE_SIZE * ZOOM) + Game.TILE_SIZE || tile.getX() * (Game.TILE_SIZE * ZOOM) > xPos + width);
+        return !(xPos > tile.getX() * (TILE_SIZE * ZOOM) + TILE_SIZE || tile.getX() * (TILE_SIZE * ZOOM) > xPos + width);
     }
 
     @Override

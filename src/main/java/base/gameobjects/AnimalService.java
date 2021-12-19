@@ -113,6 +113,12 @@ public class AnimalService {
         }
     }
 
+    public void saveAllAnimals(List<Animal> animals) {
+        for (Animal animal : animals) {
+            saveAnimalToFile(animal);
+        }
+    }
+
     public void saveAnimalToFile(Animal animal) {
         logger.info("Saving animal to file");
 
@@ -127,6 +133,7 @@ public class AnimalService {
 
             PrintWriter printWriter = new PrintWriter(animalFile);
 
+            printWriter.println("CurrentMap:" + animal.getHomeMap());
             printWriter.println("Type:" + getAnimalType(animal));
             printWriter.println("HomeMap:" + animal.getHomeMap());
             printWriter.println("Speed:" + animal.getSpeed());
@@ -145,7 +152,7 @@ public class AnimalService {
     }
 
     private String getFilePath(Animal animal, int id) {
-        String path = "animals/" + animal.getHomeMap() + "-" + getAnimalType(animal) + "-" + id;
+        String path = "animals/" + getAnimalType(animal) + "-" + id;
 
         File animalFile = new File(path);
         if (animalFile.exists()) {
@@ -154,7 +161,7 @@ public class AnimalService {
         return path;
     }
 
-    public List<Animal> loadAnimalsFromFile(String mapName) {
+    public List<Animal> loadAllAnimals() {
         logger.info("Loading animals from files");
         List<Animal> animalsOnMap = new ArrayList<>();
         File directory = new File("animals/");
@@ -163,56 +170,72 @@ public class AnimalService {
             return animalsOnMap;
         }
         for (File file : Objects.requireNonNull(directory.listFiles())) {
-            if (file.getName().startsWith(mapName)) {
-                String animalType = null;
-                String color = null;
-                int speed;
-                int hunger = MAX_HUNGER;
-                int x = 0;
-                int y = 0;
-                try (Scanner scanner = new Scanner(file)) {
-                    while (scanner.hasNextLine()) {
-                        String line = scanner.nextLine();
-                        if (line.startsWith("Type:")) {
-                            String[] splitLine = line.split(":");
-                            animalType = splitLine[1];
-                            continue;
-                        }
-                        if (line.startsWith("Speed:")) {
-                            String[] splitLine = line.split(":");
-                            speed = Integer.parseInt(splitLine[1]);
-                            continue;
-                        }
-                        if (line.startsWith("Color:")) {
-                            String[] splitLine = line.split(":");
-                            color = splitLine[1];
-                            continue;
-                        }
-                        if (line.startsWith("Hunger:")) {
-                            String[] splitLine = line.split(":");
-                            hunger = Integer.parseInt(splitLine[1]);
-                            continue;
-                        }
-                        if (line.startsWith("X:")) {
-                            String[] splitLine = line.split(":");
-                            x = Integer.parseInt(splitLine[1]);
-                            continue;
-                        }
-                        if (line.startsWith("Y:")) {
-                            String[] splitLine = line.split(":");
-                            y = Integer.parseInt(splitLine[1]);
-                        }
+            String mapName = "";
+            String animalType = null;
+            String color = null;
+            int speed;
+            int hunger = MAX_HUNGER;
+            int x = 0;
+            int y = 0;
+            try (Scanner scanner = new Scanner(file)) {
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    if (line.startsWith("CurrentMap:")) {
+                        String[] splitLine = line.split(":");
+                        mapName = splitLine[1];
+                        continue;
                     }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    if (line.startsWith("Type:")) {
+                        String[] splitLine = line.split(":");
+                        animalType = splitLine[1];
+                        continue;
+                    }
+                    if (line.startsWith("Speed:")) {
+                        String[] splitLine = line.split(":");
+                        speed = Integer.parseInt(splitLine[1]);
+                        continue;
+                    }
+                    if (line.startsWith("Color:")) {
+                        String[] splitLine = line.split(":");
+                        color = splitLine[1];
+                        continue;
+                    }
+                    if (line.startsWith("Hunger:")) {
+                        String[] splitLine = line.split(":");
+                        hunger = Integer.parseInt(splitLine[1]);
+                        continue;
+                    }
+                    if (line.startsWith("X:")) {
+                        String[] splitLine = line.split(":");
+                        x = Integer.parseInt(splitLine[1]);
+                        continue;
+                    }
+                    if (line.startsWith("Y:")) {
+                        String[] splitLine = line.split(":");
+                        y = Integer.parseInt(splitLine[1]);
+                    }
                 }
-                if (animalType != null) {
-                    Animal animal = createAnimal(animalType, x, y, mapName, color, hunger);
-                    animalsOnMap.add(animal);
-                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            if (animalType != null) {
+                Animal animal = createAnimal(animalType, x, y, mapName, color, hunger);
+                animal.setFileName(file.getName());
+                animalsOnMap.add(animal);
             }
         }
         return animalsOnMap;
+    }
+
+    public void deleteAnimalFiles(List<Animal> animals) {
+        logger.info("Deleting all animal files");
+        for (Animal animal : animals) {
+            File fileToDelete = new File("animals/" + animal.getFileName());
+            if (fileToDelete.exists()) {
+                boolean success = fileToDelete.delete();
+                System.out.println(success);
+            }
+        }
     }
 
     public String getNextColor(String animalType) {
