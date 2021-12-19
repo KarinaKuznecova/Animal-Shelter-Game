@@ -16,6 +16,7 @@ public abstract class GUIButton implements GameObject, Serializable {
     protected Rectangle region;
     protected boolean fixed;
     protected int objectCount;
+    protected boolean multipleOptions;
 
     protected GUIButton(Sprite sprite, Rectangle region, boolean fixed) {
         this.sprite = sprite;
@@ -30,8 +31,10 @@ public abstract class GUIButton implements GameObject, Serializable {
     public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle interfaceRect) {
         if (objectCount > 1) {
             renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, objectCount);
+        } else if (multipleOptions) {
+            renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, "<   >");
         } else {
-            renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, null);
+            renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, 0);
         }
     }
 
