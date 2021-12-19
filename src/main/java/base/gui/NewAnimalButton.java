@@ -20,17 +20,29 @@ public class NewAnimalButton extends GUIButton {
         this.animalType = animalType;
         this.game = game;
         rectangle.generateGraphics(3, 0xFFDB3D);
+        if (animalType.equalsIgnoreCase("Cat")) {
+            multipleOptions = true;
+        }
     }
 
     @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle rectangle) {
         if (sprite != null) {
-            renderer.renderSprite(sprite,
-                    region.getX() + rectangle.getX(),
-                    region.getY() + rectangle.getY(),
-                    xZoom,
-                    yZoom,
-                    fixed);
+            if (multipleOptions) {
+                renderer.renderSprite(sprite,
+                        region.getX() + rectangle.getX(),
+                        region.getY() + rectangle.getY(),
+                        xZoom,
+                        yZoom,
+                        fixed, "<      >");
+            } else {
+                renderer.renderSprite(sprite,
+                        region.getX() + rectangle.getX(),
+                        region.getY() + rectangle.getY(),
+                        xZoom,
+                        yZoom,
+                        fixed);
+            }
         }
         renderer.renderRectangle(region, rectangle, 1, 1, fixed);
     }

@@ -184,10 +184,18 @@ public class RenderHandler {
         renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, xZoom, yZoom, fixed);
     }
 
+    public void renderSprite(Sprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed, String line) {
+        renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, xZoom, yZoom, fixed);
+        Position position = new Position(xPosition + (sprite.getWidth() * xZoom - 62), yPosition + (sprite.getHeight() * yZoom - 6));
+        if (line != null) {
+            textToDraw.put(position, line);
+        }
+    }
+
     public void renderSprite(Sprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed, Integer count) {
         renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, xZoom, yZoom, fixed);
         Position numberPosition = new Position(xPosition + (sprite.getWidth() * xZoom - 15), yPosition + (sprite.getHeight() * yZoom - 10));
-        if (count != null) {
+        if (count != null && count != 0) {
             renderNumber(count, numberPosition);
         } else {
             textToDraw.remove(numberPosition);
