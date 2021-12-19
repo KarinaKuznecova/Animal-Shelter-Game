@@ -19,7 +19,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +39,7 @@ public class Game extends JFrame implements Runnable {
     private transient List<GameObject> guiList;
     private transient Map<String, List<Plant>> plantsOnMaps;
     private transient Map<String, List<Animal>> animalsOnMaps;
+    private transient Map<String, GameMap> gameMaps;
 
     private transient Player player;
     private transient GameTips gameTips;
@@ -97,6 +97,7 @@ public class Game extends JFrame implements Runnable {
         mapService = new MapService();
         plantsOnMaps = new HashMap<>();
         animalsOnMaps = new HashMap<>();
+        gameMaps = new HashMap<>();
     }
 
     private void loadUI() {
@@ -173,6 +174,11 @@ public class Game extends JFrame implements Runnable {
 
         gameMap = mapService.loadGameMap("MainMap", tileService);
         loadAnimalsOnMaps();
+
+        for (String mapName : mapService.getAllMapsNames()) {
+            GameMap map = mapService.loadGameMap(mapName, tileService);
+            gameMaps.put(mapName, map);
+        }
 
         logger.info("Game map loaded");
     }
@@ -337,14 +343,14 @@ public class Game extends JFrame implements Runnable {
     private void loadAnimalsOnMaps() {
         List<String> mapNames = mapService.getAllMapsNames();
         for (String mapName : mapNames) {
-            animalsOnMaps.put(mapName, new ArrayList<>());
+            animalsOnMaps.put(mapName, new CopyOnWriteArrayList<>());
         }
         List<Animal> animals = animalService.loadAllAnimals();
         for (Animal animal : animals) {
             if (animalsOnMaps.get(animal.getHomeMap()) != null) {
                 animalsOnMaps.get(animal.getHomeMap()).add(animal);
             } else {
-                List<Animal> listForMap = new ArrayList<>();
+                List<Animal> listForMap = new CopyOnWriteArrayList<>();
                 listForMap.add(animal);
                 animalsOnMaps.put(animal.getHomeMap(), listForMap);
             }
@@ -508,6 +514,7 @@ public class Game extends JFrame implements Runnable {
                 createNewPlant(smallerX, smallerY);
             }
         }
+        refreshCurrentMapCache();
     }
 
     private void setNewTile(int xMapRelated, int yMapRelated, int smallerX, int smallerY) {
@@ -627,11 +634,13 @@ public class Game extends JFrame implements Runnable {
         } else {
             gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles);
         }
+        refreshCurrentMapCache();
     }
 
     public void saveMap() {
         renderer.setTextToDraw("...saving game...", 40);
 
+        refreshCurrentMapCache();
         plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
         mapService.saveMap(gameMap);
 
@@ -654,7 +663,8 @@ public class Game extends JFrame implements Runnable {
     public void teleportToStarterMap() {
         logger.info("Starting game map loading started");
 
-        gameMap = mapService.loadGameMap("MainMap", tileService);
+        refreshCurrentMapCache();
+        gameMap = gameMaps.get("MainMap");
         player.teleportToCenter(this);
         logger.info("Starting game map loaded");
 
@@ -785,8 +795,36 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
+    public void moveAnimalToAnotherMap(Animal animal, MapTile portal) {
+        if (!animal.getHomeMap().equals(gameMap.getMapName()) || ("MainMap".equals(animal.getHomeMap()) && portal.getPortalDirection().startsWith("Bottom"))) {
+            return;
+        }
+        String destination = portal.getPortalDirection();
+
+        animalsOnMaps.get(gameMap.getMapName()).remove(animal);
+        animalsOnMaps.get(destination).add(animal);
+
+        animalService.deleteAnimalFiles(animal);
+
+        animal.setHomeMap(destination);
+        adjustAnimalPosition(animal);
+
+        animalService.saveAnimalToFile(animal);
+
+        refreshCurrentMapCache();
+        refreshGuiPanels();
+    }
+
+    private void adjustAnimalPosition(Animal animal) {
+            animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
+    }
+
     public Route calculateRoute(Animal animal) {
-        return routeCalculator.calculateRoute(getGameMap(), animal);
+        return routeCalculator.calculateRoute(getGameMap(animal.getHomeMap()), animal);
+    }
+
+    public void refreshCurrentMapCache() {
+        gameMaps.put(gameMap.getMapName(), gameMap);
     }
 
     public int getSelectedTileId() {
@@ -819,6 +857,10 @@ public class Game extends JFrame implements Runnable {
 
     public GameMap getGameMap() {
         return gameMap;
+    }
+
+    public GameMap getGameMap(String mapName) {
+        return gameMaps.get(mapName);
     }
 
     public Map<String, List<Animal>> getAnimalsOnMaps() {
