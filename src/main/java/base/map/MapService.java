@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.FilePath.MAPS_LIST_PATH;
 
@@ -249,7 +250,7 @@ public class MapService {
     }
 
     public List<Plant> getOnlyPlantsFromMap(String mapName) {
-        List<Plant> plants = new ArrayList<>();
+        List<Plant> plants = new CopyOnWriteArrayList<>();
         try (Scanner scanner = new Scanner(new File(getMapConfig(mapName)))) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();

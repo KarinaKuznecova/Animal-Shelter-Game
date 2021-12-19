@@ -133,7 +133,6 @@ public class AnimalService {
 
             PrintWriter printWriter = new PrintWriter(animalFile);
 
-            printWriter.println("CurrentMap:" + animal.getHomeMap());
             printWriter.println("Type:" + getAnimalType(animal));
             printWriter.println("HomeMap:" + animal.getHomeMap());
             printWriter.println("Speed:" + animal.getSpeed());
@@ -146,6 +145,7 @@ public class AnimalService {
 
             printWriter.close();
 
+            animal.setFileName(animalFile.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -180,7 +180,7 @@ public class AnimalService {
             try (Scanner scanner = new Scanner(file)) {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
-                    if (line.startsWith("CurrentMap:")) {
+                    if (line.startsWith("HomeMap:")) {
                         String[] splitLine = line.split(":");
                         mapName = splitLine[1];
                         continue;
@@ -227,13 +227,19 @@ public class AnimalService {
         return animalsOnMap;
     }
 
+    public void deleteAnimalFiles(Animal animal) {
+        logger.info("Deleting animal file");
+        List<Animal> animalList = new ArrayList<>();
+        animalList.add(animal);
+        deleteAnimalFiles(animalList);
+    }
+
     public void deleteAnimalFiles(List<Animal> animals) {
         logger.info("Deleting all animal files");
         for (Animal animal : animals) {
             File fileToDelete = new File("animals/" + animal.getFileName());
             if (fileToDelete.exists()) {
-                boolean success = fileToDelete.delete();
-                System.out.println(success);
+                fileToDelete.delete();
             }
         }
     }

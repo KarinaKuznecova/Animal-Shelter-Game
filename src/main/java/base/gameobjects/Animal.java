@@ -112,7 +112,7 @@ public abstract class Animal implements GameObject {
             }
         }
 
-        handleMoving(game.getGameMap(), nextDirection);
+        handleMoving(game.getGameMap(homeMap), nextDirection);
         if (nextDirection != STAY || this instanceof Butterfly) {
             isMoving = true;
         }
@@ -129,6 +129,9 @@ public abstract class Animal implements GameObject {
                 animatedSprite.reset();
             }
         }
+
+        checkPortals(game);
+
         movingTicks--;
         decreaseHungerLevel();
         if (!(this instanceof Butterfly) && currentHunger < MAX_HUNGER / 100 * 25 && route.isEmpty()) {
@@ -157,17 +160,17 @@ public abstract class Animal implements GameObject {
     }
 
     private boolean checkForFood(Game game) {
-        for (Item item : game.getGameMap().getItems()) {
+        for (Item item : game.getGameMap(homeMap).getItems()) {
             if (animalRectangle.intersects(item.getRectangle())) {
                 logger.info(String.format("%s ate food", animalName));
                 currentHunger = MAX_HUNGER;
                 speed = 3;
-                game.getGameMap().removeItem(item.getItemName(), item.getRectangle());
+                game.getGameMap(homeMap).removeItem(item.getItemName(), item.getRectangle());
                 logger.debug(String.format("Hunger level for %s is 100 percent", animalName));
                 return true;
             }
         }
-        for (FoodBowl bowl : game.getGameMap().getFoodBowls()) {
+        for (FoodBowl bowl : game.getGameMap(homeMap).getFoodBowls()) {
             if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
                 logger.info(String.format("%s ate food", animalName));
                 currentHunger = MAX_HUNGER;
@@ -189,22 +192,22 @@ public abstract class Animal implements GameObject {
 
         switch (direction) {
             case LEFT:
-                if (animalRectangle.getX() > 0) {
+                if (animalRectangle.getX() > 0 || nearPortal(gameMap.getPortals())) {
                     animalRectangle.setX(animalRectangle.getX() - speed);
                 }
                 break;
             case RIGHT:
-                if (animalRectangle.getX() < (gameMap.getMapWidth() * TILE_SIZE - animalRectangle.getWidth()) * ZOOM) {
+                if (animalRectangle.getX() < (gameMap.getMapWidth() * TILE_SIZE - animalRectangle.getWidth()) * ZOOM || nearPortal(gameMap.getPortals())) {
                     animalRectangle.setX(animalRectangle.getX() + speed);
                 }
                 break;
             case UP:
-                if (animalRectangle.getY() > 0) {
+                if (animalRectangle.getY() > 0 || nearPortal(gameMap.getPortals())) {
                     animalRectangle.setY(animalRectangle.getY() - speed);
                 }
                 break;
             case DOWN:
-                if (animalRectangle.getY() < (gameMap.getMapHeight() * TILE_SIZE - animalRectangle.getHeight()) * ZOOM) {
+                if (animalRectangle.getY() < (gameMap.getMapHeight() * TILE_SIZE - animalRectangle.getHeight()) * ZOOM || nearPortal(gameMap.getPortals())) {
                     animalRectangle.setY(animalRectangle.getY() + speed);
                 }
                 break;
@@ -293,6 +296,30 @@ public abstract class Animal implements GameObject {
         }
         return false;
 
+    }
+
+    private boolean nearPortal(List<MapTile> portals) {
+        for (MapTile portal : portals) {
+            logger.debug(String.format("Portal X: %d player X: %d", portal.getX() * (TILE_SIZE * ZOOM), animalRectangle.getX()));
+            int diffX = portal.getX() * (TILE_SIZE * ZOOM) - animalRectangle.getX();
+            logger.debug(String.format("diff x: %d", diffX));
+            int diffY = portal.getY() * (TILE_SIZE * ZOOM) - animalRectangle.getY();
+            logger.debug(String.format("diff y: %d", diffY));
+            if (Math.abs(diffX) <= TILE_SIZE * ZOOM && Math.abs(diffY) <= TILE_SIZE * ZOOM) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void checkPortals(Game game) {
+        if (game.getGameMap(homeMap).getPortals() != null) {
+            for (MapTile tile : game.getGameMap(homeMap).getPortals()) {
+                if (animalRectangle.intersects(tile)) {
+                    game.moveAnimalToAnotherMap(this, tile);
+                }
+            }
+        }
     }
 
     public boolean isAnimalStuck(GameMap gameMap) {

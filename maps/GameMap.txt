@@ -2,14 +2,6 @@ Size:20:20
 Fill:14
 //Plants
 //type, xPosition, yPosition, growingStage
-plant-strawberry,896,512,3
-plant-strawberry,896,512,3
-plant-strawberry,960,512,3
-plant-strawberry,960,512,3
-plant-strawberry,1024,512,3
-plant-strawberry,1024,512,3
-plant-strawberry,1088,512,3
-plant-strawberry,1088,512,3
 plant-bellpepper,896,576,3
 plant-bellpepper,896,576,3
 plant-bellpepper,960,576,3
@@ -42,6 +34,10 @@ plant-carrot,1024,768,3
 plant-carrot,1024,768,3
 plant-carrot,1088,768,3
 plant-carrot,1088,768,3
+plant-strawberry,896,512,3
+plant-strawberry,960,512,3
+plant-strawberry,1024,512,3
+plant-strawberry,1088,512,3
 //Items
 //type, xPosition, yPosition
 bowl,512,128,true
