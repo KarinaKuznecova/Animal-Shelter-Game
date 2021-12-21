@@ -1,5 +1,8 @@
 package base.constants;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Constants {
 
     public static final int ALPHA = 0xFF80FF00;
@@ -23,4 +26,7 @@ public class Constants {
     public static final String BOTTOM_LEFT_MAP = "BottomLeftMap";
     public static final String BOTTOM_CENTER_MAP = "BottomCenterMap";
     public static final String BOTTOM_RIGHT_MAP = "BottomRightMap";
+
+    public static final List<String> MAPS_NEAR_MAIN_MAP = Arrays.asList(TOP_CENTER_MAP, SECOND_MAP, WATER_MAP, BOTTOM_CENTER_MAP);
+    public static final List<String> HOME_MAPS = Arrays.asList(TOP_CENTER_MAP, TOP_RIGHT_MAP);
 }

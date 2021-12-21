@@ -17,14 +17,17 @@ import static base.constants.Constants.ZOOM;
 public class GuiService {
 
     public GUI loadYourAnimals(Game game) {
-        List<Animal> animals = game.getAnimalsOnMaps().get(game.getGameMap().getMapName());
+        List<Animal> animalsOnAllMaps = new ArrayList<>();
+        for (List<Animal> animalsOnMaps : game.getAnimalsOnMaps().values()) {
+            animalsOnAllMaps.addAll(animalsOnMaps);
+        }
         List<GUIButton> buttons = new CopyOnWriteArrayList<>();
 
-        for (int i = 0; i < animals.size(); i++) {
-            Animal animal = animals.get(i);
+        for (int i = 0; i < animalsOnAllMaps.size(); i++) {
+            Animal animal = animalsOnAllMaps.get(i);
             Sprite animalSprite = animal.getPreviewSprite();
             Rectangle tileRectangle = new Rectangle(game.getWidth() - (TILE_SIZE * ZOOM + TILE_SIZE), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
-            buttons.add(new AnimalIcon(game, i, animalSprite, tileRectangle));
+            buttons.add(new AnimalIcon(game, animal, animalSprite, tileRectangle));
         }
         return new GUI(buttons, 5, 5, true);
     }

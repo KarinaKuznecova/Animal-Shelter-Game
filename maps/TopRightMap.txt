@@ -1,7 +1,5 @@
-Name:TopRightMap
 Size:20:20
 Fill:112
-AlphaFill:113
 //layer,tileId,xPos,yPos,regularTile,portalDirection
 0,112,-1,10,n,TopCenterMap
 0,111,3,13,n

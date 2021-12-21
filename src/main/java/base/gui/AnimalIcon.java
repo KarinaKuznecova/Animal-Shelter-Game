@@ -1,22 +1,31 @@
 package base.gui;
 
 import base.Game;
+import base.gameobjects.Animal;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
 public class AnimalIcon extends GUIButton {
 
-    private Game game;
+    private final Game game;
     private boolean isGreen = false;
-    private int animalId;
+    private final Animal animal;
 
-    public AnimalIcon(Game game, int animalId, Sprite sprite, Rectangle rectangle) {
+    public AnimalIcon(Game game, Animal animal, Sprite sprite, Rectangle rectangle) {
         super(sprite, rectangle, true);
         this.sprite = sprite;
-        this.animalId = animalId;
+        this.animal = animal;
         this.game = game;
-        rectangle.generateGraphics(3, 0xFFDB3D);
+        if (isAnimalOnActiveMap(game)) {
+            rectangle.generateGraphics(3, 0xFFDB3D);
+        } else {
+            rectangle.generateGraphics(3, 0x111111);
+        }
+    }
+
+    private boolean isAnimalOnActiveMap(Game game) {
+        return animal.getHomeMap().equalsIgnoreCase(game.getGameMap().getMapName());
     }
 
     @Override
@@ -34,14 +43,18 @@ public class AnimalIcon extends GUIButton {
 
     @Override
     public void update(Game game) {
-        if (animalId == game.getYourSelectedAnimal()) {
+        if (animal == game.getYourSelectedAnimal()) {
             if (!isGreen) {
                 region.generateGraphics(3, 0x67FF3D);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateGraphics(3, 0xFFDB3D);
+                if (isAnimalOnActiveMap(game)) {
+                    region.generateGraphics(3, 0xFFDB3D);
+                } else {
+                    region.generateGraphics(3, 0x111111);
+                }
                 isGreen = false;
             }
         }
@@ -54,6 +67,10 @@ public class AnimalIcon extends GUIButton {
 
     @Override
     public void activate() {
-        game.changeYourAnimal(animalId);
+        game.changeYourAnimal(animal);
+    }
+
+    public Animal getAnimal() {
+        return animal;
     }
 }
