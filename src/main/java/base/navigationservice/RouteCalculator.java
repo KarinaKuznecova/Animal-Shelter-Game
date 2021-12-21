@@ -101,7 +101,7 @@ public class RouteCalculator {
             }
         }
         if (destination == null && newRoute.isEmpty()) {
-            newRoute = calculateRouteToPortal(gameMap, animal, NavigationService.getNextMapToGetToHome(gameMap.getMapName()));
+            newRoute = calculateRouteToPortal(gameMap, animal, NavigationService.getNextPortalToGetToHome(gameMap.getMapName()));
         }
         return newRoute;
     }

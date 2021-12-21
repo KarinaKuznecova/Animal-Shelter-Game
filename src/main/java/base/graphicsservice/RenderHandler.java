@@ -206,7 +206,7 @@ public class RenderHandler {
         textToDraw.put(numberPosition, String.valueOf(number));
     }
 
-    public void clearNumbers() {
+    public void clearRenderedText() {
         textToDraw.clear();
     }
 

@@ -17,8 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Random;
 
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.gameobjects.AnimalService.IMAGES_PATH;
 import static base.navigationservice.Direction.*;
 
@@ -116,7 +115,10 @@ public abstract class Animal implements GameObject {
         Direction nextDirection = direction;
 
         if (route.isEmpty() && getHomeMap().startsWith("Bottom")) {
-            route = game.calculateRouteToMap(this, NavigationService.getNextMapToGetToCenter(getHomeMap()));
+            route = game.calculateRouteToMap(this, NavigationService.getNextPortalToGetToCenter(getHomeMap()));
+        }
+        if (route.isEmpty() && this instanceof Butterfly && HOME_MAPS.contains(getHomeMap())) {
+            route = game.calculateRouteToMap(this, NavigationService.getNextPortalToOutside(getHomeMap()));
         }
 
         if (movingTicks < 1) {
@@ -360,6 +362,9 @@ public abstract class Animal implements GameObject {
         if (game.getGameMap(homeMap).getPortals() != null) {
             for (MapTile tile : game.getGameMap(homeMap).getPortals()) {
                 if (animalRectangle.intersects(tile)) {
+                    if (this instanceof Butterfly && HOME_MAPS.contains(tile.getPortalDirection())) {
+                        return;
+                    }
                     game.moveAnimalToAnotherMap(this, tile);
                 }
             }

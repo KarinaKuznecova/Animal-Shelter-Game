@@ -1,15 +1,10 @@
 package base.navigationservice;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static base.constants.Constants.*;
 
 public class NavigationService {
 
-    public static final List<String> MAPS_NEAR_MAIN_MAP = Arrays.asList(TOP_CENTER_MAP, SECOND_MAP, WATER_MAP, BOTTOM_CENTER_MAP);
-
-    public static String getNextMapToGetToCenter(String mapName) {
+    public static String getNextPortalToGetToCenter(String mapName) {
         if (MAPS_NEAR_MAIN_MAP.contains(mapName) || mapName == null) {
             return MAIN_MAP;
         }
@@ -22,7 +17,7 @@ public class NavigationService {
         return mapName;
     }
 
-    public static String getNextMapToGetToHome(String mapName) {
+    public static String getNextPortalToGetToHome(String mapName) {
         if (mapName == null) {
             return null;
         }
@@ -33,5 +28,15 @@ public class NavigationService {
             return MAIN_MAP;
         }
         return TOP_CENTER_MAP;
+    }
+
+    public static String getNextPortalToOutside(String mapName) {
+        if (TOP_CENTER_MAP.equalsIgnoreCase(mapName)) {
+            return TOP_LEFT_MAP;
+        }
+        if (TOP_RIGHT_MAP.equalsIgnoreCase(mapName)) {
+            return TOP_CENTER_MAP;
+        }
+        return mapName;
     }
 }

@@ -63,7 +63,7 @@ public class Game extends JFrame implements Runnable {
 
     private int selectedTileId = -1;
     private String selectedAnimal = "";
-    private int selectedYourAnimal = -1;
+    private Animal selectedYourAnimal = null;
     private String selectedPlant = "";
     private int selectedPanel = 1;
     private String selectedItem = "";
@@ -287,7 +287,7 @@ public class Game extends JFrame implements Runnable {
 
     private void deselectEverything() {
         changeTile(-1);
-        changeYourAnimal(-1);
+        changeYourAnimal(null);
         changeSelectedPlant("");
         changeSelectedItem("");
     }
@@ -427,10 +427,14 @@ public class Game extends JFrame implements Runnable {
         selectedAnimal = animalType;
     }
 
-    public void changeYourAnimal(int animalId) {
+    public void changeYourAnimal(Animal animal) {
         deselectBagItem();
-        logger.info(String.format("changing your selected animal to : %d", animalId));
-        selectedYourAnimal = animalId;
+        if (animal == null) {
+            logger.info("changing your selected animal to null");
+        } else {
+            logger.info(String.format("changing your selected animal to : %s", animal.getAnimalName()));
+        }
+        selectedYourAnimal = animal;
     }
 
     public void changeSelectedPlant(String plantType) {
@@ -460,7 +464,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void deselectAnimal() {
-        selectedYourAnimal = -1;
+        selectedYourAnimal = null;
     }
 
     public void leftClick(int xScreenRelated, int yScreenRelated) {
@@ -567,7 +571,7 @@ public class Game extends JFrame implements Runnable {
         int i = yourAnimalButtons.getButtonCount();
         Rectangle tileRectangle = new Rectangle(this.getWidth() - (TILE_SIZE * ZOOM + TILE_SIZE), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
 
-        AnimalIcon animalIcon = new AnimalIcon(this, i, animal.getPreviewSprite(), tileRectangle);
+        AnimalIcon animalIcon = new AnimalIcon(this, animal, animal.getPreviewSprite(), tileRectangle);
         yourAnimalButtons.addButton(animalIcon);
     }
 
@@ -679,6 +683,7 @@ public class Game extends JFrame implements Runnable {
 
         selectedPanel = panelId;
 
+        renderer.clearRenderedText();
         if (isNewAnimalsPanel(panelId)) {
             showNewAnimalsPanel();
         } else if (isPlantsPanel(panelId)) {
@@ -754,35 +759,24 @@ public class Game extends JFrame implements Runnable {
         if (guiList.contains(backpackGui)) {
             guiList.remove(backpackGui);
             changeSelectedItem("");
-            renderer.clearNumbers();
+            renderer.clearRenderedText();
         } else {
             guiList.add(backpackGui);
         }
     }
 
     public void deleteAnimal() {
-        if (selectedYourAnimal == -1) {
+        if (selectedYourAnimal == null) {
             logger.debug("Nothing to delete - no animal is selected");
             return;
         }
         logger.info("Will remove selected animal");
-        int previouslySelected = selectedYourAnimal;
-        animalService.deleteAnimalFiles(animalsOnMaps.get(gameMap.getMapName()));
-        animalsOnMaps.get(gameMap.getMapName()).remove(selectedYourAnimal);
+        animalService.deleteAnimalFiles(animalsOnMaps.get(selectedYourAnimal.getHomeMap()));
+        animalsOnMaps.get(selectedYourAnimal.getHomeMap()).remove(selectedYourAnimal);
         animalService.saveAllAnimals(animalsOnMaps.get(gameMap.getMapName()));
         refreshGuiPanels();
 
-        adjustSelectedAnimal(previouslySelected);
-
         logger.info("Animal removed");
-    }
-
-    private void adjustSelectedAnimal(int previouslySelected) {
-        if (animalsOnMaps.get(gameMap.getMapName()).size() <= selectedYourAnimal) {
-            selectedYourAnimal = animalsOnMaps.get(gameMap.getMapName()).size() - 1;
-        } else {
-            selectedYourAnimal = previouslySelected;
-        }
     }
 
     public void showTips() {
@@ -801,13 +795,14 @@ public class Game extends JFrame implements Runnable {
         }
         String destination = portal.getPortalDirection();
 
-        animalsOnMaps.get(gameMap.getMapName()).remove(animal);
+        String previousMap = animal.getHomeMap();
+        animalsOnMaps.get(animal.getHomeMap()).remove(animal);
         animalsOnMaps.get(destination).add(animal);
 
         animalService.deleteAnimalFiles(animal);
 
         animal.setHomeMap(destination);
-        adjustAnimalPosition(animal);
+        adjustAnimalPosition(animal, previousMap);
 
         animalService.saveAnimalToFile(animal);
 
@@ -815,8 +810,14 @@ public class Game extends JFrame implements Runnable {
         refreshGuiPanels();
     }
 
-    private void adjustAnimalPosition(Animal animal) {
-            animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
+    private void adjustAnimalPosition(Animal animal, String previousMap) {
+        MapTile portalToPrevious = gameMaps.get(animal.getHomeMap()).getPortalTo(previousMap);
+        if (portalToPrevious != null) {
+            int previousMapPortalX = gameMap.getSpawnPoint(portalToPrevious, true);
+            int previousMapPortalY = gameMap.getSpawnPoint(portalToPrevious, false);
+            animal.teleportAnimalTo(previousMapPortalX, previousMapPortalY);
+        }
+        animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
     }
 
     public Route calculateRouteToFood(Animal animal) {
@@ -840,7 +841,7 @@ public class Game extends JFrame implements Runnable {
         return selectedAnimal;
     }
 
-    public int getYourSelectedAnimal() {
+    public Animal getYourSelectedAnimal() {
         return selectedYourAnimal;
     }
 
