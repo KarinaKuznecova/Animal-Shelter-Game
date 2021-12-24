@@ -63,7 +63,6 @@ public class PlantService {
                 logger.error(String.format("Unknown plant requested or plant not defined : %s", plantName));
                 throw new IllegalArgumentException();
         }
-
     }
 
     public Map<String, Sprite> getPreviews() {
