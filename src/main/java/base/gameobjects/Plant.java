@@ -9,8 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-import static base.constants.Constants.DEFAULT_PLANT_GROWING_TIME;
-import static base.constants.Constants.TILE_SIZE;
+import static base.constants.Constants.*;
 
 public class Plant implements GameObject {
 
@@ -34,7 +33,6 @@ public class Plant implements GameObject {
 
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
     }
-
 
     @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom) {

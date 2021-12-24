@@ -307,26 +307,26 @@ public class RenderHandler {
         int diffToEnd = mapEnd - playerRect.getX();
         if (diffToEnd < 96) {
             logger.info("Adjustment will be on the right side");
-            camera.setX(mapEnd + 64 - game.getWidth());
+            camera.setX(mapEnd + (TILE_SIZE * ZOOM) - game.getWidth());
         }
 
-        if (playerRect.getX() < 96) {
+        if (playerRect.getX() < (TILE_SIZE * ZOOM) + TILE_SIZE) {
             logger.info("Adjustment will be on the left side");
-            camera.setX(-64);
+            camera.setX(-(TILE_SIZE * ZOOM));
         }
 
         logger.info("Adjusting Y");
         mapEnd = game.getGameMap().getMapHeight() * (TILE_SIZE * ZOOM);
         diffToEnd = mapEnd - playerRect.getY();
 
-        if (diffToEnd < 96) {
+        if (diffToEnd < (TILE_SIZE * ZOOM) + TILE_SIZE) {
             logger.info("Adjustment will be on the bottom side");
-            camera.setY(mapEnd + 96 - game.getHeight());
+            camera.setY(mapEnd + (TILE_SIZE * ZOOM) + TILE_SIZE - game.getHeight());
         }
 
         if (playerRect.getY() < 96) {
             logger.info("Adjustment will be on the top side");
-            camera.setY(-64);
+            camera.setY(-(TILE_SIZE * ZOOM));
         }
     }
 

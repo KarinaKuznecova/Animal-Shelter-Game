@@ -299,15 +299,15 @@ public abstract class Animal implements GameObject {
     private int getMovingTickToAdjustPosition(Direction direction) {
         switch (direction) {
             case DOWN:
-                return ((64 - (getCurrentY() % 64)) / speed) + speed;
+                return (((TILE_SIZE * ZOOM) - (getCurrentY() % (TILE_SIZE * ZOOM))) / speed) + speed;
             case UP:
-                return ((64 + (getCurrentY() % 64)) / speed) - speed;
+                return (((TILE_SIZE * ZOOM) + (getCurrentY() % (TILE_SIZE * ZOOM))) / speed) - speed;
             case RIGHT:
-                return ((64 - (getCurrentX() % 64)) / speed) + speed;
+                return (((TILE_SIZE * ZOOM) - (getCurrentX() % (TILE_SIZE * ZOOM))) / speed) + speed;
             case LEFT:
-                return ((64 + (getCurrentX() % 64)) / speed) - speed;
+                return (((TILE_SIZE * ZOOM) + (getCurrentX() % (TILE_SIZE * ZOOM))) / speed) - speed;
             default:
-                return 64 / speed;
+                return (TILE_SIZE * ZOOM) / speed;
         }
     }
 

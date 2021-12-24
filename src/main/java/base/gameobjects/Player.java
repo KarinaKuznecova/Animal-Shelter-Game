@@ -214,7 +214,7 @@ public class Player implements GameObject {
         int halfWidth = screenWidth / 2;
         int mapEnd = game.getGameMap().getMapWidth() * (TILE_SIZE * ZOOM);
         int diffToEnd = mapEnd - playerRectangle.getX();
-        return diffToEnd + 64 > halfWidth && playerRectangle.getX() + (TILE_SIZE * ZOOM) > halfWidth;
+        return diffToEnd + (TILE_SIZE * ZOOM) > halfWidth && playerRectangle.getX() + (TILE_SIZE * ZOOM) > halfWidth;
     }
 
     public void updateCamera(Game game) {
