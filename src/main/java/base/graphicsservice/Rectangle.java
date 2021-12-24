@@ -108,11 +108,11 @@ public class Rectangle implements Serializable {
     }
 
     private boolean intersectsByY(MapTile tile) {
-        return !(y > tile.getY() * 64 + 32 || tile.getY() * 64 > y + height);
+        return !(y > tile.getY() * 64 + 32 || tile.getY() * 64 >= y + height);
     }
 
     private boolean intersectsByX(MapTile tile) {
-        return !(x > tile.getX() * 64 + 32 || tile.getX() * 64 > x + width);
+        return !(x > tile.getX() * 64 + 32 || tile.getX() * 64 >= x + width);
     }
 
     public boolean potentialIntersects(MapTile tile, int xPos, int yPos) {

@@ -816,8 +816,9 @@ public class Game extends JFrame implements Runnable {
             int previousMapPortalX = gameMap.getSpawnPoint(portalToPrevious, true);
             int previousMapPortalY = gameMap.getSpawnPoint(portalToPrevious, false);
             animal.teleportAnimalTo(previousMapPortalX, previousMapPortalY);
+        } else {
+            animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
         }
-        animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
     }
 
     public Route calculateRouteToFood(Animal animal) {

@@ -230,6 +230,9 @@ public class RouteCalculator {
         if (gameMap.isTherePortal(rectangle)) {
             return true;
         }
+        else if (x < 0 || y < 0 || x > gameMap.getMapWidth() * 64 || y > gameMap.getMapHeight() * 64) {
+            return false;
+        }
 
         List<MapTile> tilesOnLayer = new ArrayList<>(gameMap.getTilesOnLayer(2));
         if (tilesOnLayer.isEmpty()) {
