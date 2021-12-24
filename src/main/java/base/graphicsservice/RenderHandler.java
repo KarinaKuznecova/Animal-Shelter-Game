@@ -80,7 +80,7 @@ public class RenderHandler {
         }
     }
 
-    public void renderMap(GameMap gameMap) {
+    public void renderMap(Game game, GameMap gameMap) {
         renderBackground(gameMap);
 
         for (int i = 0; i <= gameMap.getMaxLayer(); i++) {
@@ -94,7 +94,7 @@ public class RenderHandler {
                     }
                 }
             }
-            renderGameObjects(gameMap, i);
+            renderGameObjects(game, gameMap, i);
         }
     }
 
@@ -121,7 +121,16 @@ public class RenderHandler {
         }
     }
 
-    private void renderGameObjects(GameMap gameMap, int layer) {
+    private void renderGameObjects(Game game, GameMap gameMap, int layer) {
+        if (game.getPlayer().getLayer() == layer) {
+            game.getPlayer().render(this, ZOOM, ZOOM);
+        }
+        List<Animal> animalsOnCurrentMap = game.getAnimalsOnMaps().get(gameMap.getMapName());
+        for (Animal animal : animalsOnCurrentMap) {
+            if (animal.getLayer() == layer) {
+                animal.render(this, ZOOM, ZOOM);
+            }
+        }
         for (GameObject gameObject : gameMap.getItems()) {
             if (gameObject.getLayer() == layer) {
                 gameObject.render(this, ZOOM, ZOOM);

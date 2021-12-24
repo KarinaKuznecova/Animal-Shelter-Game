@@ -381,13 +381,11 @@ public class Game extends JFrame implements Runnable {
         Graphics graphics = bufferStrategy.getDrawGraphics();
         super.paint(graphics);
 
-        renderer.renderMap(gameMap);
+        renderer.renderMap(this, gameMap);
 
         for (GameObject gameObject : guiList) {
             gameObject.render(renderer, ZOOM, ZOOM);
         }
-        player.render(renderer, ZOOM, ZOOM);
-        renderer.renderAnimals(animalsOnMaps.get(gameMap.getMapName()));
 
         renderer.render(graphics);
 
@@ -874,5 +872,9 @@ public class Game extends JFrame implements Runnable {
 
     public Map<String, List<Animal>> getAnimalsOnMaps() {
         return animalsOnMaps;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }
