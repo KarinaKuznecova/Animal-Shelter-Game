@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
+import static base.constants.ColorConstant.GREEN;
+import static base.constants.ColorConstant.YELLOW;
+
 public class BackpackButton extends GUIButton implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,7 +28,7 @@ public class BackpackButton extends GUIButton implements Serializable {
         this.item = item;
         this.sprite = tileSprite;
         this.defaultId = defaultId;
-        rectangle.generateGraphics(3, 0xFFDB3D);
+        rectangle.generateGraphics(3, YELLOW);
     }
 
     @Override
@@ -50,12 +53,12 @@ public class BackpackButton extends GUIButton implements Serializable {
     public void update(Game game) {
         if (item.equals(game.getSelectedItem())) {
             if (!isGreen) {
-                region.generateGraphics(3,0x67FF3D);
+                region.generateGraphics(3, GREEN);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateGraphics(3,0xFFDB3D);
+                region.generateGraphics(3, YELLOW);
                 isGreen = false;
             }
         }

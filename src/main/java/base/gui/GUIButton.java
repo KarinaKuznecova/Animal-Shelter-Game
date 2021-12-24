@@ -31,8 +31,6 @@ public abstract class GUIButton implements GameObject, Serializable {
     public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle interfaceRect) {
         if (objectCount > 1) {
             renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, objectCount);
-        } else if (multipleOptions) {
-            renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, "<   >");
         } else {
             renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, 0);
         }

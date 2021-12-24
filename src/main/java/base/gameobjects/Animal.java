@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Random;
 
 import static base.constants.Constants.*;
-import static base.gameobjects.AnimalService.IMAGES_PATH;
+import static base.constants.FilePath.IMAGES_PATH;
 import static base.navigationservice.Direction.*;
 
 public abstract class Animal implements GameObject {
@@ -46,7 +46,7 @@ public abstract class Animal implements GameObject {
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
     protected Animal(String animalName, int startX, int startY, int speed, int tileSize, int currentHunger) {
-        this(animalName, startX, startY, speed, "MainMap", tileSize, currentHunger);
+        this(animalName, startX, startY, speed, MAIN_MAP, tileSize, currentHunger);
     }
 
     protected Animal(String animalName, int startX, int startY, int speed, String homeMap, int tileSize, int currentHunger) {
@@ -62,7 +62,6 @@ public abstract class Animal implements GameObject {
         direction = DOWN;
         updateDirection();
         animalRectangle = new Rectangle(startX, startY, tileSize, tileSize);
-        animalRectangle.generateGraphics(1, 123);
 
         route = new Route();
         random = new Random();
@@ -346,7 +345,7 @@ public abstract class Animal implements GameObject {
                 if (this instanceof Butterfly && HOME_MAPS.contains(portal.getPortalDirection()) && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
                     return true;
                 }
-                if ("MainMap".equals(getHomeMap()) && portal.getPortalDirection().startsWith("Bottom") && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
+                if (MAIN_MAP.equals(getHomeMap()) && portal.getPortalDirection().startsWith("Bottom") && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
                     return true;
                 }
             }
@@ -477,10 +476,6 @@ public abstract class Animal implements GameObject {
 
     public int getCurrentHunger() {
         return currentHunger;
-    }
-
-    public void setCurrentHunger(int currentHunger) {
-        this.currentHunger = currentHunger;
     }
 
     public String getAnimalName() {

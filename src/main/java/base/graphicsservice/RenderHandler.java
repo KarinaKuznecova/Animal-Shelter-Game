@@ -16,7 +16,9 @@ import java.awt.image.DataBufferInt;
 import java.util.List;
 import java.util.*;
 
-import static base.constants.Constants.*;
+import static base.constants.ColorConstant.ALPHA;
+import static base.constants.Constants.TILE_SIZE;
+import static base.constants.Constants.ZOOM;
 
 public class RenderHandler {
 

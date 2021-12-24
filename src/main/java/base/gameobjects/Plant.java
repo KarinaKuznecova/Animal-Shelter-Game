@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
+import static base.constants.Constants.DEFAULT_PLANT_GROWING_TIME;
 import static base.constants.Constants.TILE_SIZE;
 
 public class Plant implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Plant.class);
-    public static final int DEFAULT_GROWING_TIME = 3000;
 
     Sprite previewSprite;
     AnimatedSprite animatedSprite;
@@ -33,7 +33,6 @@ public class Plant implements GameObject {
         this.plantType = plantType;
 
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
-        rectangle.generateGraphics(1, 123);
     }
 
 
@@ -108,7 +107,7 @@ public class Plant implements GameObject {
     }
 
     public int getGrowingTime() {
-        return growingTime > 0 ? growingTime : DEFAULT_GROWING_TIME;
+        return growingTime > 0 ? growingTime : DEFAULT_PLANT_GROWING_TIME;
     }
 
     public void setGrowingTime(int growingTime) {
