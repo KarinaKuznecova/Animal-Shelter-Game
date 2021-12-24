@@ -76,22 +76,6 @@ public class TileService {
         return tiles;
     }
 
-    public void renderTile(int tileIndex, RenderHandler renderer, int xPosition, int yPosition, int xZoom, int yZoom) {
-        if (tileIndex >= 0 && tileList.size() > tileIndex) {
-            renderer.renderSprite(tileList.get(tileIndex).getSprite(), xPosition, yPosition, xZoom, yZoom, false);
-        } else {
-            logger.info(String.format("tileIndex: %d is out of bounds", tileIndex));
-        }
-    }
-
-    public void renderTerrainTile(int tileIndex, RenderHandler renderer, int xPosition, int yPosition, int xZoom, int yZoom) {
-        if (tileIndex >= 0 && terrainTiles.size() > tileIndex) {
-            renderer.renderSprite(terrainTiles.get(tileIndex).getSprite(), xPosition, yPosition, xZoom, yZoom, false);
-        } else {
-            logger.info(String.format("tileIndex: %d is out of bounds", tileIndex));
-        }
-    }
-
     public List<Tile> getTiles() {
         return tileList;
     }

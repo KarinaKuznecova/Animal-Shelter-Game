@@ -60,7 +60,12 @@ public class RenderHandler {
         }
     }
 
-    public void render(Graphics graphics) {
+    public void render(Game game, Graphics graphics) {
+
+        if (game.getSelectedTileId() != -1 && game.getMousePosition() != null) {
+            renderTilePreview(game);
+        }
+
         graphics.drawImage(view.getSubimage(0, 0, camera.getWidth(), camera.getHeight()), 0, 0, camera.getWidth(), camera.getHeight(), null);
 
         if (!textToDrawInCenter.isEmpty() && textCountdown != 1) {
@@ -78,6 +83,29 @@ public class RenderHandler {
             Position linePosition = entry.getKey();
             renderText(graphics, entry.getValue(), linePosition.getXPosition(), linePosition.getYPosition());
         }
+    }
+
+    private void renderTilePreview(Game game) {
+        int xScreenRelated = (int) game.getMousePosition().getX() - 10;
+        int yScreenRelated = (int) game.getMousePosition().getY() - 32;
+        int xPositionActual = xScreenRelated + getCamera().getX();
+        int yPositionActual = yScreenRelated + getCamera().getY();
+        int xPosition = xPositionActual - (xPositionActual % (TILE_SIZE * ZOOM));
+        int yPosition = yPositionActual - (yPositionActual % (TILE_SIZE * ZOOM));
+        MapTile potentialTile = new MapTile(5, game.getSelectedTileId(), xPosition, yPosition, game.isRegularTiles());
+
+        if (game.getSelectedTileId() == -1) {
+            return;
+        }
+
+        Sprite sprite;
+        if (potentialTile.isRegularTile()) {
+            sprite = game.getGameMap().getTileService().getTiles().get(potentialTile.getId()).getSprite();
+        } else {
+            sprite = game.getGameMap().getTileService().getTerrainTiles().get(potentialTile.getId()).getSprite();
+        }
+
+        renderSprite(sprite, xPosition, yPosition, ZOOM, ZOOM, false);
     }
 
     public void renderMap(Game game, GameMap gameMap) {
@@ -145,15 +173,6 @@ public class RenderHandler {
             if (plant.getLayer() == layer) {
                 plant.render(this, ZOOM, ZOOM);
             }
-        }
-    }
-
-    public void renderAnimals(List<Animal> animals) {
-        if (animals == null) {
-            return;
-        }
-        for (Animal animal : animals) {
-            animal.render(this, ZOOM, ZOOM);
         }
     }
 
