@@ -175,12 +175,16 @@ public class Game extends JFrame implements Runnable {
         gameMap = mapService.loadGameMap("MainMap", tileService);
         loadAnimalsOnMaps();
 
+        initialCacheMaps();
+
+        logger.info("Game map loaded");
+    }
+
+    private void initialCacheMaps() {
         for (String mapName : mapService.getAllMapsNames()) {
             GameMap map = mapService.loadGameMap(mapName, tileService);
             gameMaps.put(mapName, map);
         }
-
-        logger.info("Game map loaded");
     }
 
     public void loadSecondaryMap(String mapName) {
@@ -387,7 +391,7 @@ public class Game extends JFrame implements Runnable {
             gameObject.render(renderer, ZOOM, ZOOM);
         }
 
-        renderer.render(graphics);
+        renderer.render(this, graphics);
 
         graphics.dispose();
         bufferStrategy.show();
@@ -421,12 +425,14 @@ public class Game extends JFrame implements Runnable {
 
     public void changeAnimal(String animalType) {
         deselectBagItem();
+        deselectTile();
         logger.info(String.format("changing selected animal to : %s", animalType));
         selectedAnimal = animalType;
     }
 
     public void changeYourAnimal(Animal animal) {
         deselectBagItem();
+        deselectTile();
         if (animal == null) {
             logger.info("changing your selected animal to null");
         } else {
@@ -437,6 +443,7 @@ public class Game extends JFrame implements Runnable {
 
     public void changeSelectedPlant(String plantType) {
         deselectBagItem();
+        deselectTile();
         logger.info(String.format("changing your selected plant to : %s", plantType));
         selectedPlant = plantType;
     }
@@ -876,5 +883,9 @@ public class Game extends JFrame implements Runnable {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public boolean isRegularTiles() {
+        return regularTiles;
     }
 }
