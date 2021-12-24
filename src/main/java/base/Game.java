@@ -641,7 +641,7 @@ public class Game extends JFrame implements Runnable {
             FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
             getGameMap().removeObject(foodBowl);
         } else {
-            gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles);
+            gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
         }
         refreshCurrentMapCache();
     }
