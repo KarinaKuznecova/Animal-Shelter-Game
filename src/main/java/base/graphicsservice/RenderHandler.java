@@ -88,6 +88,9 @@ public class RenderHandler {
     }
 
     private void renderTilePreview(Game game) {
+        if (game.getMousePosition() == null) {
+            return;
+        }
         int xScreenRelated = (int) game.getMousePosition().getX() - 10;
         int yScreenRelated = (int) game.getMousePosition().getY() - 32;
         int xPositionActual = xScreenRelated + getCamera().getX();

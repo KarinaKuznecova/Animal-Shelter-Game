@@ -72,6 +72,9 @@ public class AnimalService {
     }
 
     public String getAnimalType(Animal animal) {
+        if (animal.getAnimalName().startsWith("cat")) {
+            return "cat";
+        }
         return animal.getAnimalName();
     }
 

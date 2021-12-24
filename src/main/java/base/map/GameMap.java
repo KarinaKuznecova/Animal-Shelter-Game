@@ -122,9 +122,9 @@ public class GameMap {
         }
     }
 
-    public void removeTile(int tileX, int tileY, int layer, boolean regularTiles) {
+    public void removeTile(int tileX, int tileY, int layer, boolean regularTiles, int selectedTile) {
         if (layeredTiles.get(layer) != null && !isThereAPortal(tileX, tileY)) {
-            layeredTiles.get(layer).removeIf(tile -> tile.getX() == tileX && tile.getY() == tileY && tile.isRegularTile() == regularTiles);
+            layeredTiles.get(layer).removeIf(tile -> tile.getX() == tileX && tile.getY() == tileY && tile.isRegularTile() == regularTiles && tile.getId() == selectedTile);
         }
     }
 
