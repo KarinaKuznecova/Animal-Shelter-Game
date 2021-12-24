@@ -5,7 +5,10 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
-public class PlantButton extends GUIButton{
+import static base.constants.ColorConstant.GREEN;
+import static base.constants.ColorConstant.YELLOW;
+
+public class PlantButton extends GUIButton {
 
     private final String plantType;
     private final Game game;
@@ -16,7 +19,7 @@ public class PlantButton extends GUIButton{
         this.plantType = plantType;
         this.sprite = tileSprite;
         this.game = game;
-        rectangle.generateGraphics(3, 0xFFDB3D);
+        rectangle.generateGraphics(3, YELLOW);
     }
 
     @Override
@@ -46,12 +49,12 @@ public class PlantButton extends GUIButton{
     public void update(Game game) {
         if (plantType.equals(game.getSelectedPlant())) {
             if (!isGreen) {
-                region.generateGraphics(3,0x67FF3D);
+                region.generateGraphics(3, GREEN);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateGraphics(3,0xFFDB3D);
+                region.generateGraphics(3, YELLOW);
                 isGreen = false;
             }
         }

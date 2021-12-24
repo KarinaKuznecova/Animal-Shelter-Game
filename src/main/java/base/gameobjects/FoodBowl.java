@@ -30,7 +30,6 @@ public class FoodBowl implements GameObject {
         sprite.vertical = false;
 
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
-        rectangle.generateGraphics(1, 123);
 
         isFull = false;
     }

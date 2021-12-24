@@ -7,7 +7,9 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static base.constants.Constants.*;
+import static base.constants.ColorConstant.ALPHA;
+import static base.constants.Constants.TILE_SIZE;
+import static base.constants.Constants.ZOOM;
 
 public class Rectangle implements Serializable {
 

@@ -531,7 +531,7 @@ public class Game extends JFrame implements Runnable {
             if (player.getPlayerRectangle().intersects(xMapRelated, yMapRelated, TILE_SIZE, TILE_SIZE)) {
                 logger.warn("Can't place tile under player");
             } else {
-                if (selectedTileId == 68) {
+                if (selectedTileId == BOWL_TILE_ID) {
                     logger.debug("Food bowl!");
                     int xAlligned = xMapRelated - (xMapRelated % (TILE_SIZE * ZOOM));
                     int yAlligned = yMapRelated - (yMapRelated % (TILE_SIZE * ZOOM));
@@ -632,7 +632,7 @@ public class Game extends JFrame implements Runnable {
     public void rightClick(int x, int y) {
         int xAdjusted = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
         int yAdjusted = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
-        if (selectedTileId == 68) {
+        if (selectedTileId == BOWL_TILE_ID) {
             logger.debug("Food bowl to remove!");
             int xMapRelated = x + renderer.getCamera().getX();
             int yMapRelated = y + renderer.getCamera().getY();
@@ -678,7 +678,7 @@ public class Game extends JFrame implements Runnable {
         logger.info("Starting game map loading started");
 
         refreshCurrentMapCache();
-        gameMap = gameMaps.get("MainMap");
+        gameMap = gameMaps.get(MAIN_MAP);
         player.teleportToCenter(this);
         logger.info("Starting game map loaded");
 

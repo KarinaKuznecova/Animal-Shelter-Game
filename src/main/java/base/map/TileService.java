@@ -1,7 +1,6 @@
 package base.map;
 
 import base.graphicsservice.ImageLoader;
-import base.graphicsservice.RenderHandler;
 import base.graphicsservice.SpriteSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +13,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import static base.constants.Constants.TILE_SIZE;
+import static base.constants.FilePath.*;
 
 public class TileService {
-
-    public static final String SPRITES_PATH = "img/tiles-new.png";
-    public static final String TERRAIN_SPRITES_PATH = "img/terrain-tiles.png";
-
-    public static final String TILE_LIST_PATH = "maps/Tile-new.txt";
-    public static final String TERRAIN_TILE_LIST_PATH = "maps/Tile-terrain.txt";
 
     private List<Tile> tileList;
     private List<Tile> terrainTiles;

@@ -5,6 +5,9 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
+import static base.constants.ColorConstant.GREEN;
+import static base.constants.ColorConstant.YELLOW;
+
 public class SDKButton extends GUIButton {
 
     Game game;
@@ -15,7 +18,7 @@ public class SDKButton extends GUIButton {
         super(tileSprite, rectangle, true);
         this.game = game;
         this.tileID = tileID;
-        rectangle.generateGraphics(3, 0xFFDB3D);
+        rectangle.generateGraphics(3, YELLOW);
     }
 
     @Override
@@ -45,12 +48,12 @@ public class SDKButton extends GUIButton {
     public void update(Game game) {
         if (tileID == game.getSelectedTileId()) {
             if (!isGreen) {
-                region.generateGraphics(3,0x67FF3D);
+                region.generateGraphics(3, GREEN);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateGraphics(3,0xFFDB3D);
+                region.generateGraphics(3, YELLOW);
                 isGreen = false;
             }
         }

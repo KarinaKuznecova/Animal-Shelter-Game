@@ -6,6 +6,8 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
+import static base.constants.ColorConstant.*;
+
 public class AnimalIcon extends GUIButton {
 
     private final Game game;
@@ -18,9 +20,9 @@ public class AnimalIcon extends GUIButton {
         this.animal = animal;
         this.game = game;
         if (isAnimalOnActiveMap(game)) {
-            rectangle.generateGraphics(3, 0xFFDB3D);
+            rectangle.generateGraphics(3, YELLOW);
         } else {
-            rectangle.generateGraphics(3, 0x111111);
+            rectangle.generateGraphics(3, GRAY);
         }
     }
 
@@ -45,15 +47,15 @@ public class AnimalIcon extends GUIButton {
     public void update(Game game) {
         if (animal == game.getYourSelectedAnimal()) {
             if (!isGreen) {
-                region.generateGraphics(3, 0x67FF3D);
+                region.generateGraphics(3, GREEN);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
                 if (isAnimalOnActiveMap(game)) {
-                    region.generateGraphics(3, 0xFFDB3D);
+                    region.generateGraphics(3, YELLOW);
                 } else {
-                    region.generateGraphics(3, 0x111111);
+                    region.generateGraphics(3, GRAY);
                 }
                 isGreen = false;
             }

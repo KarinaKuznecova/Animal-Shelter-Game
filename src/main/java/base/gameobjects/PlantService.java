@@ -20,24 +20,24 @@ public class PlantService {
     Map<String, String> plantAnimations;
     Map<String, String> plantMapping;
 
-    List<String> plantTypes = Arrays.asList("carrot", "beet", "tomato", "strawberry", "bellpepper");
+    List<String> plantTypes = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME);
 
     public PlantService() {
         plantAnimations = new HashMap<>();
         plantMapping = new HashMap<>();
-        plantAnimations.put(CARROT_PREVIEW, CARROT);
+        plantAnimations.put(CARROT_PREVIEW, CARROT_IMG);
         plantMapping.put(Carrot.NAME, CARROT_PREVIEW);
 
-        plantAnimations.put(BEET_PREVIEW, BEET);
+        plantAnimations.put(BEET_PREVIEW, BEET_IMG);
         plantMapping.put(Beet.NAME, BEET_PREVIEW);
 
-        plantAnimations.put(TOMATO_PREVIEW, TOMATO);
+        plantAnimations.put(TOMATO_PREVIEW, TOMATO_IMG);
         plantMapping.put(Tomato.NAME, TOMATO_PREVIEW);
 
-        plantAnimations.put(STRAWBERRY_PREVIEW, STRAWBERRY);
+        plantAnimations.put(STRAWBERRY_PREVIEW, STRAWBERRY_IMG);
         plantMapping.put(Strawberry.NAME, STRAWBERRY_PREVIEW);
 
-        plantAnimations.put(BELLPEPPER_PREVIEW, BELLPEPPER);
+        plantAnimations.put(BELLPEPPER_PREVIEW, BELLPEPPER_IMG);
         plantMapping.put(Bellpepper.NAME, BELLPEPPER_PREVIEW);
     }
 

@@ -12,19 +12,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
+import static base.constants.FilePath.ANIMALS_DIR_PATH;
 import static base.gameobjects.Animal.MAX_HUNGER;
 
 public class AnimalService {
-
-    public static final String RAT = "rat";
-    public static final String MOUSE = "mouse";
-    public static final String CHICKEN = "chicken";
-    public static final String BUTTERFLY = "butterfly";
-    public static final String CAT = "cat";
-    public static final String PIG = "pig";
-    public static final String BUNNY = "bunny";
-
-    public static final String IMAGES_PATH = "img/";
 
     List<String> animalNames = Arrays.asList(Rat.NAME, Mouse.NAME, Chicken.NAME, Butterfly.NAME, Cat.NAME, Pig.NAME, Bunny.NAME);
 
@@ -51,25 +42,25 @@ public class AnimalService {
     public Animal createAnimal(String animalName, int startX, int startY, String mapName, String color, int hunger) {
         Animal animal;
         switch (animalName.toLowerCase()) {
-            case RAT:
+            case Rat.NAME:
                 animal = new Rat(startX, startY, 3, hunger);
                 break;
-            case MOUSE:
+            case Mouse.NAME:
                 animal = new Mouse(startX, startY, 3, hunger);
                 break;
-            case CHICKEN:
+            case Chicken.NAME:
                 animal = new Chicken(startX, startY, 3, hunger);
                 break;
-            case BUTTERFLY:
+            case Butterfly.NAME:
                 animal = new Butterfly(startX, startY, 1, hunger);
                 break;
-            case CAT:
+            case Cat.NAME:
                 animal = new Cat(startX, startY, 3, color, hunger);
                 break;
-            case PIG:
+            case Pig.NAME:
                 animal = new Pig(startX, startY, 3, hunger);
                 break;
-            case BUNNY:
+            case Bunny.NAME:
                 animal = new Bunny(startX, startY, 3, hunger);
                 break;
             default:
@@ -81,28 +72,7 @@ public class AnimalService {
     }
 
     public String getAnimalType(Animal animal) {
-        if (animal instanceof Rat) {
-            return RAT;
-        }
-        if (animal instanceof Mouse) {
-            return MOUSE;
-        }
-        if (animal instanceof Chicken) {
-            return CHICKEN;
-        }
-        if (animal instanceof Butterfly) {
-            return BUTTERFLY;
-        }
-        if (animal instanceof Cat) {
-            return CAT;
-        }
-        if (animal instanceof Pig) {
-            return PIG;
-        }
-        if (animal instanceof Bunny) {
-            return BUNNY;
-        }
-        return null;
+        return animal.getAnimalName();
     }
 
     public void fixStuckAnimals(GameMap gameMap, List<Animal> animals) {
@@ -150,7 +120,7 @@ public class AnimalService {
     }
 
     private String getFilePath(Animal animal, int id) {
-        String path = "animals/" + getAnimalType(animal) + "-" + id;
+        String path = ANIMALS_DIR_PATH + getAnimalType(animal) + "-" + id;
 
         File animalFile = new File(path);
         if (animalFile.exists()) {
@@ -162,7 +132,7 @@ public class AnimalService {
     public List<Animal> loadAllAnimals() {
         logger.info("Loading animals from files");
         List<Animal> animalsOnMap = new ArrayList<>();
-        File directory = new File("animals/");
+        File directory = new File(ANIMALS_DIR_PATH);
         if (directory.listFiles() == null || directory.listFiles().length == 0) {
             logger.info("No animals on this map");
             return animalsOnMap;
@@ -234,7 +204,7 @@ public class AnimalService {
 
     public void deleteAnimalFiles(List<Animal> animals) {
         for (Animal animal : animals) {
-            File fileToDelete = new File("animals/" + animal.getFileName());
+            File fileToDelete = new File(ANIMALS_DIR_PATH + animal.getFileName());
             if (fileToDelete.exists()) {
                 fileToDelete.delete();
             }

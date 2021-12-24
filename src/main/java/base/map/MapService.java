@@ -1,6 +1,9 @@
 package base.map;
 
-import base.gameobjects.*;
+import base.gameobjects.FoodBowl;
+import base.gameobjects.Item;
+import base.gameobjects.Plant;
+import base.gameobjects.PlantService;
 import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +23,6 @@ public class MapService {
     private File mapListFile = new File(MAPS_LIST_PATH);
     private Map<String, String> mapFiles = new HashMap<>();
     private PlantService plantService = new PlantService();
-    private AnimalService animalService = new AnimalService();
 
     protected static final Logger logger = LoggerFactory.getLogger(MapService.class);
 

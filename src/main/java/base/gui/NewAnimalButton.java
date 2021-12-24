@@ -2,9 +2,13 @@ package base.gui;
 
 import base.Game;
 import base.gameobjects.AnimalService;
+import base.gameobjects.animals.Cat;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
+
+import static base.constants.ColorConstant.GREEN;
+import static base.constants.ColorConstant.YELLOW;
 
 public class NewAnimalButton extends GUIButton {
 
@@ -19,8 +23,8 @@ public class NewAnimalButton extends GUIButton {
         this.sprite = sprite;
         this.animalType = animalType;
         this.game = game;
-        rectangle.generateGraphics(3, 0xFFDB3D);
-        if (animalType.equalsIgnoreCase("Cat")) {
+        rectangle.generateGraphics(3, YELLOW);
+        if (animalType.equalsIgnoreCase(Cat.NAME)) {
             multipleOptions = true;
         }
     }
@@ -51,12 +55,12 @@ public class NewAnimalButton extends GUIButton {
     public void update(Game game) {
         if (animalType.equals(game.getSelectedAnimal())) {
             if (!isGreen) {
-                region.generateGraphics(3, 0x67FF3D);
+                region.generateGraphics(3, GREEN);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateGraphics(3, 0xFFDB3D);
+                region.generateGraphics(3, YELLOW);
                 isGreen = false;
             }
         }

@@ -25,7 +25,6 @@ public class Item implements GameObject {
         this.sprite = sprite;
 
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
-        rectangle.generateGraphics(1, 123);
     }
 
     @Override
