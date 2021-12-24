@@ -63,7 +63,6 @@ plant-carrot,1152,1088,3
 bowl,576,704,true
 bowl,640,704,true
 bowl,704,704,true
-bowl,128,320,true
 //layer,tileId,xPos,yPos,regularTile,portalDirection
 0,14,20,10,n,TopCenterMap
 0,48,19,10,n

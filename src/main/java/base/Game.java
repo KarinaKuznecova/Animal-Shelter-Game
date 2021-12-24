@@ -648,11 +648,16 @@ public class Game extends JFrame implements Runnable {
         plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
         mapService.saveMap(gameMap);
 
-        animalService.deleteAnimalFiles(animalsOnMaps.get(gameMap.getMapName()));
-        for (Animal animal : animalsOnMaps.get(gameMap.getMapName())) {
-            animalService.saveAnimalToFile(animal);
-        }
+        for (List<Animal> animals : animalsOnMaps.values()) {
+            if (animals.isEmpty()) {
+                continue;
+            }
+            logger.info("Deleting all animal files");
+            animalService.deleteAnimalFiles(animals);
 
+            logger.info("Saving animals to file");
+            animalService.saveAllAnimals(animals);
+        }
         backpackService.saveBackpack(backpackGui);
     }
 
@@ -790,9 +795,6 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void moveAnimalToAnotherMap(Animal animal, MapTile portal) {
-        if (("MainMap".equals(animal.getHomeMap()) && portal.getPortalDirection().startsWith("Bottom"))) {
-            return;
-        }
         String destination = portal.getPortalDirection();
 
         String previousMap = animal.getHomeMap();

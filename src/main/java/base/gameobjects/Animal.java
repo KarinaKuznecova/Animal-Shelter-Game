@@ -88,8 +88,7 @@ public abstract class Animal implements GameObject {
                 if (animatedSprite.getSpritesSize() == 28) {
                     startSprite = (direction.directionNumber - 5) * animatedSprite.getSpritesSize() / 4 + 3;
                     endSprite = startSprite + 3;
-                }
-                else {
+                } else {
                     startSprite = (direction.directionNumber - 5) * animatedSprite.getSpritesSize() / 4;
                     endSprite = (direction.directionNumber - 5) * animatedSprite.getSpritesSize() / 4 + 2;
                 }
@@ -340,8 +339,19 @@ public abstract class Animal implements GameObject {
                 }
             }
         }
-        return false;
 
+        List<MapTile> portals = gameMap.getPortals();
+        if (portals != null) {
+            for (MapTile portal : portals) {
+                if (this instanceof Butterfly && HOME_MAPS.contains(portal.getPortalDirection()) && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
+                    return true;
+                }
+                if ("MainMap".equals(getHomeMap()) && portal.getPortalDirection().startsWith("Bottom") && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean nearPortal(List<MapTile> portals) {
@@ -362,9 +372,6 @@ public abstract class Animal implements GameObject {
         if (game.getGameMap(homeMap).getPortals() != null) {
             for (MapTile tile : game.getGameMap(homeMap).getPortals()) {
                 if (animalRectangle.intersects(tile)) {
-                    if (this instanceof Butterfly && HOME_MAPS.contains(tile.getPortalDirection())) {
-                        return;
-                    }
                     game.moveAnimalToAnotherMap(this, tile);
                 }
             }
@@ -392,15 +399,7 @@ public abstract class Animal implements GameObject {
             animalRectangle.setY(gameMap.getMapHeight() * TILE_SIZE * ZOOM / 2);
         }
         if (isAnimalStuck(gameMap)) {
-            logger.info("Moving to center didn't work, will try move to left up to 5 times");
-            int attempts = 0;
-            while (isAnimalStuck(gameMap) && attempts <= 5) {
-                moveAnimalTo(LEFT);
-                attempts++;
-            }
-            if (isAnimalStuck(gameMap)) {
-                logger.error("Animal is stuck completely");
-            }
+            logger.error("Animal is stuck completely");
         }
     }
 

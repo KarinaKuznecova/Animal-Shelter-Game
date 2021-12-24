@@ -120,8 +120,6 @@ public class AnimalService {
     }
 
     public void saveAnimalToFile(Animal animal) {
-        logger.info("Saving animal to file");
-
         String path = getFilePath(animal, 0);
 
         File animalFile = new File(path);
@@ -235,7 +233,6 @@ public class AnimalService {
     }
 
     public void deleteAnimalFiles(List<Animal> animals) {
-        logger.info("Deleting all animal files");
         for (Animal animal : animals) {
             File fileToDelete = new File("animals/" + animal.getFileName());
             if (fileToDelete.exists()) {
