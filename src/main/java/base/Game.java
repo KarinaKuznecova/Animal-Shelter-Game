@@ -1,6 +1,7 @@
 package base;
 
 import base.constants.FilePath;
+import base.events.EventService;
 import base.gameobjects.*;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
@@ -19,7 +20,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +51,7 @@ public class Game extends JFrame implements Runnable {
     private transient BackpackService backpackService;
     private transient RouteCalculator routeCalculator;
     private transient MapService mapService;
+    private transient EventService eventService;
 
     private transient GUI[] tileButtonsArray = new GUI[10];
     private transient GUI[] terrainButtonsArray;
@@ -98,6 +99,7 @@ public class Game extends JFrame implements Runnable {
         plantsOnMaps = new HashMap<>();
         animalsOnMaps = new HashMap<>();
         gameMaps = new HashMap<>();
+        eventService = new EventService();
     }
 
     private void loadUI() {
@@ -394,6 +396,7 @@ public class Game extends JFrame implements Runnable {
                 plant.update(this);
             }
         }
+        eventService.update(this);
     }
 
     public void changeTile(int tileId) {
