@@ -8,7 +8,7 @@ import base.map.TileService;
 
 import java.util.List;
 
-import static base.constants.BigObjects.MASTER_TILE_LIST;
+import static base.constants.MultiOptionalObjects.MASTER_TILE_LIST;
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.ColorConstant.YELLOW;
 

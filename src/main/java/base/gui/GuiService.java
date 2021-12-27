@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static base.constants.BigObjects.MASTER_TILE_LIST;
+import static base.constants.MultiOptionalObjects.MASTER_TILE_LIST;
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
 

@@ -7,7 +7,7 @@ import base.gameobjects.Plant;
 import base.gameobjects.Player;
 import base.map.GameMap;
 import base.map.MapTile;
-import base.map.bigobjects.BigObject;
+import base.map.bigobjects.Bookcase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +17,7 @@ import java.awt.image.DataBufferInt;
 import java.util.List;
 import java.util.*;
 
+import static base.constants.MultiOptionalObjects.bookcases;
 import static base.constants.ColorConstant.ALPHA;
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
@@ -92,7 +93,6 @@ public class RenderHandler {
         if (game.getMousePosition() == null) {
             return;
         }
-        BufferedImage subimage = view.getSubimage(0, 0, camera.getWidth(), camera.getHeight());
 
         int xScreenRelated = (int) game.getMousePosition().getX() - 10;
         int yScreenRelated = (int) game.getMousePosition().getY() - 32;
@@ -106,6 +106,20 @@ public class RenderHandler {
             return;
         }
 
+        if (bookcases.contains(game.getSelectedTileId()) && game.isRegularTiles()) {
+            int xSmaller = xPosition / (TILE_SIZE * ZOOM);
+            int ySmaller = yPosition / (TILE_SIZE * ZOOM);
+            for (MapTile mapTile : new Bookcase(xSmaller, ySmaller, bookcases.indexOf(game.getSelectedTileId())).getObjectParts()) {
+                drawPreview(game, mapTile.getX() * (TILE_SIZE * ZOOM), mapTile.getY() * (TILE_SIZE * ZOOM), mapTile);
+            }
+        } else {
+            drawPreview(game, xPosition, yPosition, potentialTile);
+        }
+
+    }
+
+    private void drawPreview(Game game, int xPosition, int yPosition, MapTile potentialTile) {
+        BufferedImage subimage = view.getSubimage(0, 0, camera.getWidth(), camera.getHeight());
         Sprite sprite;
         if (potentialTile.isRegularTile()) {
             sprite = game.getGameMap().getTileService().getTiles().get(potentialTile.getId()).getSprite();
@@ -127,8 +141,8 @@ public class RenderHandler {
         int[] result = new int[(renderWidth * xZoom) * (renderHeight * yZoom)];
         for (int y = 0; y < renderHeight; y++) {            //every row
             for (int x = 0; x < renderWidth; x++) {         // every pixel of row
-                for (int yZ = 0; yZ < yZoom; yZ++) {            // repeat for zoom
-                    for (int xZ = 0; xZ < xZoom; xZ++) {           // repeat for zoom
+                for (int yZ = 0; yZ < yZoom; yZ++) {            // repeat for y zoom
+                    for (int xZ = 0; xZ < xZoom; xZ++) {           // repeat for x zoom
 
                         int xPos = (x * xZoom + xZ);
                         int yPos = (y * yZoom + yZ);

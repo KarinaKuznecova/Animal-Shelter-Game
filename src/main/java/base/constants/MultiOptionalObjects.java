@@ -3,7 +3,7 @@ package base.constants;
 import java.util.Arrays;
 import java.util.List;
 
-public class BigObjects {
+public class MultiOptionalObjects {
 
     public static final List<Integer> flowerIds = Arrays.asList(0, 1, 2, 3, 4, 5, 6);
     public static final List<Integer> chairIds = Arrays.asList(18, 19, 20, 21);

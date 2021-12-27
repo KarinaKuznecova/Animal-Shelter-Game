@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static base.constants.BigObjects.bookcases;
+import static base.constants.MultiOptionalObjects.bookcases;
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
 
