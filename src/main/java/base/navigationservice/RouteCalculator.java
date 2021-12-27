@@ -211,23 +211,23 @@ public class RouteCalculator {
     private boolean canWalkThisDirection(GameMap gameMap, Direction direction, int xPosition, int yPosition) {
         switch (direction) {
             case LEFT:
-                xPosition = xPosition - (TILE_SIZE * ZOOM) - 1;
+                xPosition = xPosition - (TILE_SIZE * ZOOM);
                 break;
             case RIGHT:
-                xPosition = xPosition + (TILE_SIZE * ZOOM) - 1;
+                xPosition = xPosition + (TILE_SIZE * ZOOM);
                 break;
             case UP:
-                yPosition = yPosition - (TILE_SIZE * ZOOM) - 1;
+                yPosition = yPosition - (TILE_SIZE * ZOOM);
                 break;
             case DOWN:
-                yPosition = yPosition + (TILE_SIZE * ZOOM) - 1;
+                yPosition = yPosition + (TILE_SIZE * ZOOM);
                 break;
         }
         return isWalkable(gameMap, xPosition, yPosition);
     }
 
     public boolean isWalkable(GameMap gameMap, int x, int y) {
-        Rectangle rectangle = new Rectangle(x, y, (TILE_SIZE * ZOOM), (TILE_SIZE * ZOOM));
+        Rectangle rectangle = new Rectangle(x, y, (TILE_SIZE * ZOOM) - 1, (TILE_SIZE * ZOOM) - 1);
 
         if (gameMap.isTherePortal(rectangle)) {
             return true;

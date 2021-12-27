@@ -1,5 +1,7 @@
 Size:22:22
 Fill:14
+//Items
+//type, xPosition, yPosition
 //layer,tileId,xPos,yPos,regularTile,portalDirection
 0,48,10,-1,n,MainMap
 0,48,-1,10,n,BottomLeftMap

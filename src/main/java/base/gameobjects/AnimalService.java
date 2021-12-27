@@ -17,7 +17,7 @@ import static base.gameobjects.Animal.MAX_HUNGER;
 
 public class AnimalService {
 
-    List<String> animalNames = Arrays.asList(Rat.NAME, Mouse.NAME, Chicken.NAME, Butterfly.NAME, Cat.NAME, Pig.NAME, Bunny.NAME);
+    public List<String> animalNames = Arrays.asList(Rat.NAME, Mouse.NAME, Chicken.NAME, Butterfly.NAME, Cat.NAME, Pig.NAME, Bunny.NAME);
 
     protected static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
 

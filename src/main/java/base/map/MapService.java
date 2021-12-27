@@ -1,9 +1,6 @@
 package base.map;
 
-import base.gameobjects.FoodBowl;
-import base.gameobjects.Item;
-import base.gameobjects.Plant;
-import base.gameobjects.PlantService;
+import base.gameobjects.*;
 import base.gameobjects.plants.Corn;
 import base.graphicsservice.Sprite;
 import org.slf4j.Logger;

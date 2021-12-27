@@ -539,7 +539,7 @@ public class Game extends JFrame implements Runnable {
         guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButtonBySprite(sprite));
     }
 
-    private void createNewAnimal(int x, int y) {
+    public void createNewAnimal(int x, int y) {
         if (selectedAnimal.isEmpty()) {
             return;
         }
@@ -802,8 +802,8 @@ public class Game extends JFrame implements Runnable {
     private void adjustAnimalPosition(Animal animal, String previousMap) {
         MapTile portalToPrevious = gameMaps.get(animal.getHomeMap()).getPortalTo(previousMap);
         if (portalToPrevious != null) {
-            int previousMapPortalX = gameMap.getSpawnPoint(portalToPrevious, true);
-            int previousMapPortalY = gameMap.getSpawnPoint(portalToPrevious, false);
+            int previousMapPortalX = gameMaps.get(animal.getHomeMap()).getSpawnPoint(portalToPrevious, true);
+            int previousMapPortalY = gameMaps.get(animal.getHomeMap()).getSpawnPoint(portalToPrevious, false);
             animal.teleportAnimalTo(previousMapPortalX, previousMapPortalY);
         } else {
             animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
@@ -817,6 +817,10 @@ public class Game extends JFrame implements Runnable {
     public Route calculateRouteToMap(Animal animal, String destination) {
         logger.debug(String.format("Looking how to get to %s for %s", destination, animal.getAnimalName()));
         return routeCalculator.calculateRouteToPortal(getGameMap(animal.getHomeMap()), animal, destination);
+    }
+
+    public boolean isBackpackEmpty() {
+        return backpackService.isBackPackEmpty(this);
     }
 
     public void refreshCurrentMapCache() {
@@ -869,5 +873,17 @@ public class Game extends JFrame implements Runnable {
 
     public boolean isRegularTiles() {
         return regularTiles;
+    }
+
+    public GUI getBackpackGui() {
+        return backpackGui;
+    }
+
+    public TileService getTileService() {
+        return tileService;
+    }
+
+    public AnimalService getAnimalService() {
+        return animalService;
     }
 }

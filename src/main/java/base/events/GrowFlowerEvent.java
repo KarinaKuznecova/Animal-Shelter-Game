@@ -47,6 +47,7 @@ public class GrowFlowerEvent extends Event{
             int flowerId = random.nextInt(flowerIds.size());
             logger.info(String.format("Place was empty, will add flower with id %d", flowerId));
             map.setTile(x, y, flowerIds.get(flowerId), true);
+            happened = true;
         }
     }
 

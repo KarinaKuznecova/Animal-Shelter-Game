@@ -1,9 +1,6 @@
 package base.map;
 
-import base.gameobjects.FoodBowl;
-import base.gameobjects.GameObject;
-import base.gameobjects.Item;
-import base.gameobjects.Plant;
+import base.gameobjects.*;
 import base.graphicsservice.Rectangle;
 import base.map.bigobjects.BigObject;
 import base.map.bigobjects.Bookcase;
