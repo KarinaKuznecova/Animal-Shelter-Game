@@ -26,7 +26,7 @@ public class TileService {
         logger.info("Loading regular tiles");
         SpriteSheet spriteSheet = loadSpriteSheets(SPRITES_PATH);
         tileList = getTilesFromFile(TILE_LIST_PATH, spriteSheet);
-
+        logger.info(String.format("Loaded %d tiles", tileList.size()));
         logger.info("Loading technical terrain tiles");
         SpriteSheet terrainSpriteSheet = loadSpriteSheets(TERRAIN_SPRITES_PATH);
         terrainTiles = getTilesFromFile(TERRAIN_TILE_LIST_PATH, terrainSpriteSheet);
@@ -61,6 +61,9 @@ public class TileService {
                     int spriteYPosition = Integer.parseInt(splitLine[2]);
                     int layer = Integer.parseInt(splitLine[3]);
                     Tile tile = new Tile(tileName, spriteSheet.getSprite(spriteXPosition, spriteYPosition), layer);
+                    if (splitLine.length > 4) {
+                        tile.setVisible(false);
+                    }
                     tiles.add(tile);
                 }
             }

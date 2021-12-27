@@ -4,6 +4,7 @@ import base.gameobjects.FoodBowl;
 import base.gameobjects.Item;
 import base.gameobjects.Plant;
 import base.gameobjects.PlantService;
+import base.gameobjects.plants.Corn;
 import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static base.constants.Constants.TILE_SIZE;
+import static base.constants.Constants.ZOOM;
 import static base.constants.FilePath.MAPS_LIST_PATH;
 
 public class MapService {
@@ -80,7 +83,7 @@ public class MapService {
                     }
                     if (gameMap.getMaxLayer() < layer) {
                         gameMap.setMaxLayer(layer);
-                        logger.info(String.format("max layer: %d", gameMap.getMaxLayer()));
+                        logger.debug(String.format("max layer: %d", gameMap.getMaxLayer()));
                     }
                     int tileId = Integer.parseInt(splitLine[1]);
                     int xPosition = Integer.parseInt(splitLine[2]);
@@ -138,9 +141,14 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             int growingStage = Integer.parseInt(splitLine[3]);
+            int growingTicks = 0;
+            if (splitLine.length > 4) {
+                growingTicks = Integer.parseInt(splitLine[4]);
+            }
 
             Plant plant = plantService.createPlant(plantType, x, y);
             plant.setGrowingStage(growingStage);
+            plant.setGrowingTicks(growingTicks);
             gameMap.addPlant(plant);
             return true;
         }
@@ -175,13 +183,13 @@ public class MapService {
         if (splitLine.length == 5) {
             String lastPiece = splitLine[4];
             if (lastPiece.length() > 1) {
-                logger.info("Found portal as in old map config");
+                logger.debug("Found portal as in old map config");
                 tile.setPortal(true);
                 tile.setPortalDirection(splitLine[4]);
                 gameMap.addPortal(tile);
             }
         } else if (splitLine.length >= 6) {
-            logger.info("Found portal");
+            logger.debug("Found portal");
             tile.setPortal(true);
             tile.setPortalDirection(splitLine[5]);
             gameMap.addPortal(tile);
@@ -231,9 +239,17 @@ public class MapService {
             return;
         }
         printWriter.println("//Plants");
-        printWriter.println("//type, xPosition, yPosition, growingStage");
+        printWriter.println("//type, xPosition, yPosition, growingStage, growingTicks");
         for (Plant plant : gameMap.getPlants()) {
-            printWriter.println("plant-" + plant.getPlantType() + "," + plant.getRectangle().getX() + "," + plant.getRectangle().getY() + "," + plant.getGrowingStage());
+            String plantType = plant.getPlantType();
+            int plantX = plant.getRectangle().getX();
+            int plantY = plant.getRectangle().getY();
+            int growingStage = plant.getGrowingStage();
+            int growingTicks = plant.getGrowingTicks();
+            if (Corn.NAME.equals(plant.getPlantType())) {
+                plantY += TILE_SIZE * ZOOM;
+            }
+            printWriter.println("plant-" + plantType + "," + plantX + "," + plantY + "," + growingStage + "," + growingTicks);
         }
     }
 

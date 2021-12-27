@@ -20,7 +20,7 @@ public class PlantService {
     Map<String, String> plantAnimations;
     Map<String, String> plantMapping;
 
-    List<String> plantTypes = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME);
+    List<String> plantTypes = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME, Corn.NAME);
 
     public PlantService() {
         plantAnimations = new HashMap<>();
@@ -39,12 +39,21 @@ public class PlantService {
 
         plantAnimations.put(BELLPEPPER_PREVIEW, BELLPEPPER_IMG);
         plantMapping.put(Bellpepper.NAME, BELLPEPPER_PREVIEW);
+
+        plantAnimations.put(CORN_PREVIEW, CORN_IMG);
+        plantMapping.put(Corn.NAME, CORN_PREVIEW);
     }
 
     public Plant createPlant(String plantName, int x, int y) {
         String previewPath = plantMapping.get(plantName);
         Sprite previewSprite = ImageLoader.getPreviewSprite(previewPath);
-        AnimatedSprite animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(previewPath), 32);
+        AnimatedSprite animatedSprite;
+        if (Corn.NAME.equals(plantName)) {
+            animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(previewPath), 32, 64);
+            y -= 64;
+        } else {
+            animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(previewPath), 32);
+        }
         animatedSprite.setSpeed(0);
         animatedSprite.setAnimationRange(0, 4);
 
@@ -59,6 +68,8 @@ public class PlantService {
                 return new Strawberry(previewSprite, animatedSprite, x, y, plantName);
             case Tomato.NAME:
                 return new Tomato(previewSprite, animatedSprite, x, y, plantName);
+            case Corn.NAME:
+                return new Corn(previewSprite, animatedSprite, x, y, plantName);
             default:
                 logger.error(String.format("Unknown plant requested or plant not defined : %s", plantName));
                 throw new IllegalArgumentException();

@@ -22,6 +22,12 @@ public class FilePath {
     public static final String BELLPEPPER_IMG = "img/bellpepper.png";
     public static final String BELLPEPPER_PREVIEW = "img/bellpepper-preview.png";
 
+    public static final String CORN_IMG = "img/corn.png";
+    public static final String CORN_PREVIEW = "img/corn-preview.png";
+
+    public static final String TREE_IMG = "img/tree.png";
+    public static final String TREE_PREVIEW = "img/tree-preview.png";
+
     //config
     public static final String MAPS_LIST_PATH = "maps/MapList.txt";
     public static final String TIPS_FILE_PATH = "config/tips.txt";

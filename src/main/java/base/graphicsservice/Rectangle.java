@@ -129,6 +129,18 @@ public class Rectangle implements Serializable {
         return !(xPos > tile.getX() * (TILE_SIZE * ZOOM) + TILE_SIZE || tile.getX() * (TILE_SIZE * ZOOM) > xPos + width);
     }
 
+    public boolean potentialIntersects(Rectangle rectangle, int xPos, int yPos) {
+        return (intersectsByX(rectangle, xPos) && intersectsByY(rectangle, yPos));
+    }
+
+    private boolean intersectsByY(Rectangle rectangle, int yPos) {
+        return !(yPos > rectangle.getY() * (TILE_SIZE * ZOOM) + TILE_SIZE || rectangle.getY() * (TILE_SIZE * ZOOM) > yPos + ((TILE_SIZE * ZOOM) - (TILE_SIZE / 2)));     //48 = 32 + 32/2
+    }
+
+    private boolean intersectsByX(Rectangle rectangle, int xPos) {
+        return !(xPos > rectangle.getX() * (TILE_SIZE * ZOOM) + TILE_SIZE || rectangle.getX() * (TILE_SIZE * ZOOM) > xPos + width);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -7,6 +7,7 @@ import base.gameobjects.Plant;
 import base.gameobjects.Player;
 import base.map.GameMap;
 import base.map.MapTile;
+import base.map.bigobjects.BigObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,13 +92,15 @@ public class RenderHandler {
         if (game.getMousePosition() == null) {
             return;
         }
+        BufferedImage subimage = view.getSubimage(0, 0, camera.getWidth(), camera.getHeight());
+
         int xScreenRelated = (int) game.getMousePosition().getX() - 10;
         int yScreenRelated = (int) game.getMousePosition().getY() - 32;
         int xPositionActual = xScreenRelated + getCamera().getX();
         int yPositionActual = yScreenRelated + getCamera().getY();
-        int xPosition = xPositionActual - (xPositionActual % (TILE_SIZE * ZOOM));
-        int yPosition = yPositionActual - (yPositionActual % (TILE_SIZE * ZOOM));
-        MapTile potentialTile = new MapTile(5, game.getSelectedTileId(), xPosition, yPosition, game.isRegularTiles());
+        int xPosition = xScreenRelated - (xPositionActual % (TILE_SIZE * ZOOM));
+        int yPosition = yScreenRelated - (yPositionActual % (TILE_SIZE * ZOOM));
+        MapTile potentialTile = new MapTile(5, game.getSelectedTileId(), 0, 0, game.isRegularTiles());
 
         if (game.getSelectedTileId() == -1) {
             return;
@@ -110,12 +113,48 @@ public class RenderHandler {
             sprite = game.getGameMap().getTileService().getTerrainTiles().get(potentialTile.getId()).getSprite();
         }
 
-        renderSprite(sprite, xPosition, yPosition, ZOOM, ZOOM, false);
+        BufferedImage tmpImage = new BufferedImage(TILE_SIZE * ZOOM, TILE_SIZE * ZOOM, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics tGraphics = subimage.createGraphics();
+        int[] result = fillTransparentArray(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), ZOOM, ZOOM);
+        tmpImage.setRGB(0, 0, tmpImage.getWidth(), tmpImage.getHeight(), result, 0, tmpImage.getWidth());
+        tGraphics.drawImage(tmpImage, xPosition, yPosition, null);
+        tGraphics.dispose();
+    }
+
+    public int[] fillTransparentArray(int[] spritePixels, int renderWidth, int renderHeight, int xZoom, int yZoom) {
+        int pixel = 0;
+        int[] result = new int[(renderWidth * xZoom) * (renderHeight * yZoom)];
+        for (int y = 0; y < renderHeight; y++) {            //every row
+            for (int x = 0; x < renderWidth; x++) {         // every pixel of row
+                for (int yZ = 0; yZ < yZoom; yZ++) {            // repeat for zoom
+                    for (int xZ = 0; xZ < xZoom; xZ++) {           // repeat for zoom
+
+                        int xPos = (x * xZoom + xZ);
+                        int yPos = (y * yZoom + yZ);
+
+                        int pixelIndex = xPos + yPos * renderWidth * xZoom;
+
+                        int transparency = 70;
+                        if (isAlphaColor(spritePixels[pixel])) {
+                            transparency = 0;
+                        }
+                        Color c = new Color(spritePixels[pixel]);
+                        int r = c.getRed();
+                        int g = c.getGreen();
+                        int b = c.getBlue();
+                        c = new Color(r, g, b, transparency);
+                        result[pixelIndex] = c.getRGB();
+                    }
+                }
+                pixel++;
+            }
+        }
+        return result;
     }
 
     public void renderMap(Game game, GameMap gameMap) {
         renderBackground(gameMap);
-
         for (int i = 0; i <= gameMap.getMaxLayer(); i++) {
             List<MapTile> tiles = gameMap.getLayeredTiles().get(i);
             if (tiles != null) {
