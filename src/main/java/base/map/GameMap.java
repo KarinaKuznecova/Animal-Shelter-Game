@@ -1,7 +1,13 @@
 package base.map;
 
-import base.gameobjects.*;
+import base.gameobjects.FoodBowl;
+import base.gameobjects.GameObject;
+import base.gameobjects.Item;
+import base.gameobjects.Plant;
 import base.graphicsservice.Rectangle;
+import base.map.bigobjects.BigObject;
+import base.map.bigobjects.Bookcase;
+import base.map.bigobjects.Bush;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static base.constants.MultiOptionalObjects.bookcases;
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
 
@@ -23,6 +30,7 @@ public class GameMap {
     private List<Plant> plants = new CopyOnWriteArrayList<>();
     private final List<Item> items = new CopyOnWriteArrayList<>();
     private final List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
+    private final List<BigObject> bigObjects = new CopyOnWriteArrayList<>();
 
     int backGroundTileId = -1;
     private int mapWidth = -1;
@@ -86,6 +94,21 @@ public class GameMap {
         if (tileId == -1) {
             return;
         }
+
+        if (tileId == 66 && !regularTiles) {
+            addBigObject(new Bush(tileX, tileY));
+            return;
+        }
+        if (bookcases.contains(tileId) && regularTiles) {
+            for (MapTile tile : new Bookcase(tileX, tileY, bookcases.indexOf(tileId)).getObjectParts()) {
+                if (layeredTiles.get(tile.getLayer()) == null) {
+                    layeredTiles.put(tile.getLayer(), new CopyOnWriteArrayList<>());
+                }
+                layeredTiles.get(tile.getLayer()).add(tile);
+            }
+            return;
+        }
+
         int layer = tileService.getLayerById(tileId, regularTiles);
 
         if (isThereAPortal(tileX, tileY) && regularTiles) {
@@ -123,6 +146,16 @@ public class GameMap {
     }
 
     public void removeTile(int tileX, int tileY, int layer, boolean regularTiles, int selectedTile) {
+        if (selectedTile == 66 && !regularTiles) {
+            removeBigObject(new Bush(tileX, tileY));
+            return;
+        }
+        if (bookcases.contains(selectedTile) && regularTiles) {
+            for (MapTile tile : new Bookcase(tileX, tileY, bookcases.indexOf(selectedTile)).getObjectParts()) {
+                removeTile(tile.getX(), tile.getY(), tile.getLayer(), false, tile.getId());
+            }
+            return;
+        }
         if (layeredTiles.get(layer) != null && !isThereAPortal(tileX, tileY)) {
             layeredTiles.get(layer).removeIf(tile -> tile.getX() == tileX && tile.getY() == tileY && tile.isRegularTile() == regularTiles && tile.getId() == selectedTile);
         }
@@ -294,5 +327,17 @@ public class GameMap {
             }
         }
         return bowls;
+    }
+
+    public List<BigObject> getBigObjects() {
+        return bigObjects;
+    }
+
+    public void addBigObject(BigObject bigObject) {
+        bigObjects.add(bigObject);
+    }
+
+    public void removeBigObject(BigObject bigObject) {
+        bigObjects.remove(bigObject);
     }
 }

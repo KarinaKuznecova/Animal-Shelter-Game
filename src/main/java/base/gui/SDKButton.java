@@ -4,7 +4,11 @@ import base.Game;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
+import base.map.TileService;
 
+import java.util.List;
+
+import static base.constants.MultiOptionalObjects.MASTER_TILE_LIST;
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.ColorConstant.YELLOW;
 
@@ -19,12 +23,27 @@ public class SDKButton extends GUIButton {
         this.game = game;
         this.tileID = tileID;
         rectangle.generateGraphics(3, YELLOW);
+
+        checkIfContainsMultipleOptions(tileID);
+    }
+
+    private void checkIfContainsMultipleOptions(int tileID) {
+        for (List<Integer> list : MASTER_TILE_LIST) {
+            if (list.contains(tileID)) {
+                multipleOptions = true;
+                break;
+            }
+        }
     }
 
     @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle interfaceRect) {
         if (sprite != null) {
-            if (objectCount > 1) {
+            if (multipleOptions) {
+                renderer.renderSprite(sprite,
+                        region.getX() + interfaceRect.getX(),
+                        region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, "<      >");
+            } else if (objectCount > 1) {
                 renderer.renderSprite(sprite,
                         region.getX() + interfaceRect.getX(),
                         region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, objectCount);
@@ -41,6 +60,11 @@ public class SDKButton extends GUIButton {
     }
 
     public void activate() {
+        int nextId = guiService.getNextId(tileID);
+        if (isGreen && nextId != tileID) {
+            tileID = nextId;
+            sprite = new TileService().getTiles().get(tileID).getSprite();
+        }
         game.changeTile(tileID);
     }
 

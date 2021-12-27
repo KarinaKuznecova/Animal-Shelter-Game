@@ -52,7 +52,7 @@ public class Game extends JFrame implements Runnable {
     private transient RouteCalculator routeCalculator;
     private transient MapService mapService;
 
-    private final transient GUI[] tileButtonsArray = new GUI[10];
+    private transient GUI[] tileButtonsArray = new GUI[10];
     private transient GUI[] terrainButtonsArray;
     private transient GUI yourAnimalButtons;
     private transient GUI possibleAnimalButtons;
@@ -229,28 +229,7 @@ public class Game extends JFrame implements Runnable {
 
     private void loadSDKGUI() {
         List<Tile> tiles = tileService.getTiles();
-
-        List<GUIButton> buttons = new ArrayList<>();
-        for (int i = 0, j = 0; i < tiles.size(); i++, j++) {
-//              Rectangle tileRectangle = new Rectangle(0, i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);       // vertical on top left side
-            Rectangle tileRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //horizontal on top left
-            buttons.add(new SDKButton(this, i, tiles.get(i).getSprite(), tileRectangle));
-            if (i != 0 && i % 10 == 0) {
-                Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
-                buttons.add(new SDKButton(this, -1, null, oneMoreTileRectangle));
-                tileButtonsArray[i / 10 - 1] = new GUI(buttons, 5, 5, true);
-
-                buttons = new ArrayList<>();
-                j = -1;
-            }
-            if (i == tiles.size() - 1) {
-                Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);  //one more horizontal on top left
-                buttons.add(new SDKButton(this, -1, null, oneMoreTileRectangle));
-                int temp = (i - (i % 10)) / 10;
-                tileButtonsArray[temp] = new GUI(buttons, 5, 5, true);
-            }
-        }
-
+        tileButtonsArray = guiService.loadTerrainGui(this, tiles, 10);
     }
 
     private void loadYourAnimals() {
@@ -269,7 +248,7 @@ public class Game extends JFrame implements Runnable {
 
     void loadTerrainGui() {
         List<Tile> tiles = tileService.getTerrainTiles();
-        terrainButtonsArray = guiService.loadTerrainGui(this, tiles);
+        terrainButtonsArray = guiService.loadTerrainGui(this, tiles, 18);
     }
 
     void loadBackpack() {

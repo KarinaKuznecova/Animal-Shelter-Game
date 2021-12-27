@@ -43,7 +43,7 @@ public class Plant implements GameObject {
 
     @Override
     public void update(Game game) {
-        if (growingStage < 3) {
+        if (growingStage < animatedSprite.getSpritesSize() - 1) {
             growingTicks++;
             if (growingTicks > getGrowingTime()) {
                 animatedSprite.incrementSprite();
@@ -62,7 +62,7 @@ public class Plant implements GameObject {
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
             logger.info("Plant is clicked");
-            if (growingStage == 3) {
+            if (growingStage == animatedSprite.getSpritesSize() - 1) {
                 game.pickUpPlant(this);
             }
             return true;
@@ -114,5 +114,13 @@ public class Plant implements GameObject {
 
     public String getPlantType() {
         return plantType;
+    }
+
+    public int getGrowingTicks() {
+        return growingTicks;
+    }
+
+    public void setGrowingTicks(int growingTicks) {
+        this.growingTicks = growingTicks;
     }
 }

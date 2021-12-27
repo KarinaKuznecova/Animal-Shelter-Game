@@ -4,7 +4,6 @@ import base.Game;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
-import base.map.MapService;
 import base.map.MapTile;
 import base.navigationservice.Direction;
 import base.navigationservice.KeyboardListener;
@@ -159,22 +158,21 @@ public class Player implements GameObject {
         int xPosition = playerRectangle.getX();
         int yPosition = playerRectangle.getY();
 
-        List<MapTile> tilesOnLayer = game.getGameMap().getTilesOnLayer(getLayer());
-
         switch (direction) {
             case LEFT:
-                xPosition = xPosition - speed;
+                xPosition = xPosition - (speed * 2);
                 break;
             case RIGHT:
-                xPosition = xPosition + speed;
+                xPosition = xPosition + (speed * 2);
                 break;
             case UP:
-                yPosition = yPosition - speed;
+                yPosition = yPosition - (speed * 2);
                 break;
             case DOWN:
-                yPosition = yPosition + speed;
+                yPosition = yPosition + (speed * 2);
                 break;
         }
+        List<MapTile> tilesOnLayer = game.getGameMap().getTilesOnLayer(getLayer());
         if (tilesOnLayer != null) {
             for (MapTile tile : tilesOnLayer) {
                 if (playerRectangle.potentialIntersects(tile, xPosition, yPosition)) {

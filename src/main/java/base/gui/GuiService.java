@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static base.constants.MultiOptionalObjects.MASTER_TILE_LIST;
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
 
@@ -66,17 +67,21 @@ public class GuiService {
         return new GUI(buttons, 5, 5, true);
     }
 
-    public GUI[] loadTerrainGui(Game game, List<Tile> tiles) {
+    public GUI[] loadTerrainGui(Game game, List<Tile> tiles, int buttonCount) {
         GUI[] terrainButtonsArray = new GUI[11];
 
         List<GUIButton> buttons = new ArrayList<>();
-        for (int i = 0, j = 0; i < tiles.size(); i++, j++) {
+        for (int i = 0, j = 0, k = 0; i < tiles.size(); i++) {
+            Tile tile = tiles.get(i);
+            if (!tile.isVisible()) {
+                continue;
+            }
             Rectangle tileRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
             buttons.add(new SDKButton(game, i, tiles.get(i).getSprite(), tileRectangle));
-            if (i != 0 && i % 18 == 0) {
+            if (k != 0 && k % buttonCount == 0) {
                 Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
                 buttons.add(new SDKButton(game, -1, null, oneMoreTileRectangle));
-                terrainButtonsArray[i / 18 - 1] = new GUI(buttons, 5, 5, true);
+                terrainButtonsArray[k / buttonCount - 1] = new GUI(buttons, 5, 5, true);
 
                 buttons = new ArrayList<>();
                 j = -1;
@@ -84,9 +89,11 @@ public class GuiService {
             if (i == tiles.size() - 1) {
                 Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
                 buttons.add(new SDKButton(game, -1, null, oneMoreTileRectangle));
-                int temp = (i - (i % 18)) / 18;
+                int temp = (k - (k % buttonCount)) / buttonCount;
                 terrainButtonsArray[temp] = new GUI(buttons, 5, 5, true);
             }
+            j++;
+            k++;
         }
         return terrainButtonsArray;
     }
@@ -110,5 +117,17 @@ public class GuiService {
         }
     }
 
+    public int getNextId(int id) {
+
+        for (List<Integer> list : MASTER_TILE_LIST) {
+            if (list.contains(id)) {
+                if (list.indexOf(id) == list.size() - 1) {
+                    return list.get(0);
+                }
+                return list.get(list.indexOf(id) + 1);
+            }
+        }
+        return id;
+    }
 
 }
