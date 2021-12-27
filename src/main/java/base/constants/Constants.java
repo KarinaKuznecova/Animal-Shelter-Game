@@ -19,6 +19,7 @@ public class Constants {
     public static final String CAT_WHITE = "cat-white";
     public static final String CAT_BROWN = "cat-brown";
     public static final String CAT_CARAMEL = "cat-caramel";
+    public static final List<String> CAT_COLORS = Arrays.asList(CAT_BLACK, CAT_WHITE, CAT_BROWN, CAT_CARAMEL);
 
     public static final String MAIN_MAP = "MainMap";
     public static final String SECOND_MAP = "SecondMap";
@@ -33,6 +34,6 @@ public class Constants {
     public static final List<String> MAPS_NEAR_MAIN_MAP = Arrays.asList(TOP_CENTER_MAP, SECOND_MAP, WATER_MAP, BOTTOM_CENTER_MAP);
     public static final List<String> HOME_MAPS = Arrays.asList(TOP_CENTER_MAP, TOP_RIGHT_MAP);
     public static final List<String> OUTSIDE_MAPS = Arrays.asList(TOP_LEFT_MAP, SECOND_MAP, MAIN_MAP, WATER_MAP, BOTTOM_LEFT_MAP, BOTTOM_CENTER_MAP, BOTTOM_RIGHT_MAP);
-
+    public static final List<String> BOTTOM_MAPS = Arrays.asList(BOTTOM_LEFT_MAP, BOTTOM_CENTER_MAP, BOTTOM_RIGHT_MAP);
 
 }

@@ -169,7 +169,7 @@ public class RenderHandler {
 
     public void renderMap(Game game, GameMap gameMap) {
         renderBackground(gameMap);
-        for (int i = 0; i <= gameMap.getMaxLayer(); i++) {
+        for (int i = 0; i <= 5; i++) {
             List<MapTile> tiles = gameMap.getLayeredTiles().get(i);
             if (tiles != null) {
                 // with for-each loop there is ConcurrentModificationException often, but with this loop everything works fine

@@ -38,14 +38,14 @@ plant-strawberry,896,512,3,0
 plant-strawberry,960,512,3,0
 plant-strawberry,1024,512,3,0
 plant-strawberry,1088,512,3,0
-plant-corn,128,448,2,4797
-plant-corn,192,448,2,4778
-plant-corn,256,448,2,4760
-plant-corn,320,448,2,4743
-plant-corn,384,448,2,4702
-plant-corn,448,448,2,4689
-plant-corn,512,448,2,4672
-plant-corn,64,448,0,678
+plant-corn,128,448,3,0
+plant-corn,192,448,3,0
+plant-corn,256,448,3,0
+plant-corn,320,448,3,0
+plant-corn,384,448,3,0
+plant-corn,448,448,3,0
+plant-corn,512,448,3,0
+plant-corn,64,448,3,0
 //Items
 //type, xPosition, yPosition
 bowl,512,128,true

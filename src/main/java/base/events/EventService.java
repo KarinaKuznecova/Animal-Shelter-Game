@@ -12,12 +12,13 @@ public class EventService {
     protected static final Logger logger = LoggerFactory.getLogger(EventService.class);
 
     int ticks;
-    int eventTime = 1000;
+    int eventTime = 3000;
 
     List<Event> eventList = new ArrayList<>();
 
     public EventService() {
         eventList.add(new GrowFlowerEvent());
+        eventList.add(new FindAnimalEvent());
     }
 
     public void update(Game game) {
@@ -28,9 +29,8 @@ public class EventService {
             calculateChances(game);
 
             Event event = getEvent();
-            if (event != null && event.getChance() != 0) {
+            if (event != null && event.getChance() > 0) {
                 event.startEvent(game);
-                event.endEvent();
             }
             ticks = 0;
         }

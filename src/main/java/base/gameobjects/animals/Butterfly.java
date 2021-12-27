@@ -1,7 +1,6 @@
 package base.gameobjects.animals;
 
 import base.gameobjects.Animal;
-import base.graphicsservice.ImageLoader;
 
 public class Butterfly extends Animal {
 

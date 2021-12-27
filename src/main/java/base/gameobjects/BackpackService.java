@@ -1,10 +1,13 @@
 package base.gameobjects;
 
+import base.Game;
 import base.gui.GUI;
+import base.gui.GUIButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.List;
 
 import static base.constants.FilePath.BACKPACK_FILE_NAME;
 
@@ -34,5 +37,15 @@ public class BackpackService {
             logger.warn("No previous backpacks found, will load empty");
         }
         return null;
+    }
+
+    public boolean isBackPackEmpty(Game game) {
+        List<GUIButton> buttons = game.getBackpackGui().getButtons();
+        for (GUIButton button : buttons) {
+            if (button.getObjectCount() > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }

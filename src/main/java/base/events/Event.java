@@ -15,10 +15,6 @@ public abstract class Event {
 
     abstract void startEvent(Game game);
 
-    void endEvent() {
-        happened = true;
-    }
-
     public int getChance() {
         return chance;
     }
