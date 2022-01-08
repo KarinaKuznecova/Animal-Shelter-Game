@@ -2,6 +2,7 @@ package base.gui;
 
 import base.Game;
 import base.gameobjects.Animal;
+import base.graphicsservice.Position;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
@@ -41,6 +42,17 @@ public class AnimalIcon extends GUIButton {
                     fixed);
         }
         renderer.renderRectangle(region, rectangle, 1, 1, fixed);
+        if (isGreen) {
+            renderStats(renderer, rectangle);
+        }
+    }
+
+    private void renderStats(RenderHandler renderer, Rectangle rectangle) {
+        Rectangle statsRectangle = new Rectangle(region.getX() - 250, region.getY(), 240, 60);
+        statsRectangle.generateGraphics(2, GRAY);
+        renderer.renderRectangle(statsRectangle, rectangle, 1, 1, fixed);
+        renderer.renderText("Hunger: " + animal.getCurrentHungerInPercent() + "%", new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 30));
+        renderer.renderText("Location: " + animal.getHomeMap(), new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 50));
     }
 
     @Override
@@ -57,6 +69,7 @@ public class AnimalIcon extends GUIButton {
                 } else {
                     region.generateGraphics(3, GRAY);
                 }
+                game.getRenderer().clearRenderedText();
                 isGreen = false;
             }
         }

@@ -79,9 +79,9 @@ public class Rectangle implements Serializable {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (i < borderWidth || i >= height - borderWidth || j < borderWidth || j >= width - borderWidth) {
-                    pixels[i + j * width] = color;
+                    pixels[i * width + j] = color;
                 } else {
-                    pixels[i + j * width] = ALPHA;
+                    pixels[i * width + j] = ALPHA;
                 }
             }
         }
