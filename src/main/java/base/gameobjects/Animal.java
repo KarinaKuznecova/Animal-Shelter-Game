@@ -480,6 +480,10 @@ public abstract class Animal implements GameObject {
         return currentHunger;
     }
 
+    public int getCurrentHungerInPercent() {
+        return currentHunger / (MAX_HUNGER / 100);
+    }
+
     public String getAnimalName() {
         return animalName;
     }
