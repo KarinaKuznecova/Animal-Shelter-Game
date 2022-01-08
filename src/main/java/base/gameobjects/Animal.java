@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Random;
 
+import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.IMAGES_PATH;
 import static base.navigationservice.Direction.*;
@@ -61,7 +62,8 @@ public abstract class Animal implements GameObject {
 
         direction = DOWN;
         updateDirection();
-        animalRectangle = new Rectangle(startX, startY, tileSize, tileSize);
+        animalRectangle = new Rectangle(startX + ((tileSize - 32) / 2), startY + (tileSize - 32), 32, 32);
+        animalRectangle.generateGraphics(1, GREEN);
 
         route = new Route();
         random = new Random();
