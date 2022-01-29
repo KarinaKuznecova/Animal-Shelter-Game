@@ -62,7 +62,7 @@ public abstract class Animal implements GameObject {
 
         direction = DOWN;
         updateDirection();
-        animalRectangle = new Rectangle(startX + ((tileSize - 32) / 2), startY + (tileSize - 32), 32, 32);
+        animalRectangle = new Rectangle(startX, startY, 32, 32);
         animalRectangle.generateGraphics(1, GREEN);
 
         route = new Route();
@@ -100,8 +100,10 @@ public abstract class Animal implements GameObject {
 
     @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom) {
+        int xForSprite = animalRectangle.getX() - (tileSize - 32);
+        int yForSprite = animalRectangle.getY() - ((tileSize - 32) + ((tileSize - 32) / 2));
         if (animatedSprite != null) {
-            renderer.renderSprite(animatedSprite, animalRectangle.getX(), animalRectangle.getY(), xZoom, yZoom, false);
+            renderer.renderSprite(animatedSprite, xForSprite, yForSprite, xZoom, yZoom, false);
         } else if (sprite != null) {
             renderer.renderSprite(sprite, animalRectangle.getX(), animalRectangle.getY(), xZoom, yZoom, false);
         } else {
