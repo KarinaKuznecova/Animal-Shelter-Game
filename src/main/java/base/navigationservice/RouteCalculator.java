@@ -37,8 +37,11 @@ public class RouteCalculator {
 
     public Route calculateRoute(GameMap gameMap, Animal animal, String destination) {
         Route newRoute = new Route();
-
+        logger.debug(String.format("%s is looking for a way to : %s", animal.getAnimalName(), destination));
         MapTile portal = null;
+        if (destination == null) {
+            return newRoute;
+        }
         if (!isWaterOrFood(destination) && getPortal(gameMap, destination) != null) {
             portal = getPortal(gameMap, destination);
         }
@@ -80,8 +83,8 @@ public class RouteCalculator {
                 searchQueue.remove(0);
             }
         }
-        if (isWaterOrFood(destination) && newRoute.isEmpty()) {
-            newRoute = calculateRouteToPortal(gameMap, animal, NavigationService.getNextPortalToGetToHome(gameMap.getMapName()));
+        if (isWaterOrFood(destination) && newRoute.isEmpty() && !animal.getCurrentMap().equals(animal.getHomeMap())) {
+            newRoute = calculateRouteToPortal(gameMap, animal, NavigationService.getNextPortalTo(animal.getCurrentMap(), animal.getHomeMap()));
         }
         return newRoute;
     }
@@ -283,6 +286,9 @@ public class RouteCalculator {
     }
 
     private MapTile getPortal(GameMap gameMap, String destination) {
+        if (destination == null) {
+            return null;
+        }
         for (MapTile portal : gameMap.getPortals()) {
             if (destination.equalsIgnoreCase(portal.getPortalDirection())) {
                 return portal;

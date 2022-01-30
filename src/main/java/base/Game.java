@@ -333,12 +333,12 @@ public class Game extends JFrame implements Runnable {
         }
         List<Animal> animals = animalService.loadAllAnimals();
         for (Animal animal : animals) {
-            if (animalsOnMaps.get(animal.getHomeMap()) != null) {
-                animalsOnMaps.get(animal.getHomeMap()).add(animal);
+            if (animalsOnMaps.get(animal.getCurrentMap()) != null) {
+                animalsOnMaps.get(animal.getCurrentMap()).add(animal);
             } else {
                 List<Animal> listForMap = new CopyOnWriteArrayList<>();
                 listForMap.add(animal);
-                animalsOnMaps.put(animal.getHomeMap(), listForMap);
+                animalsOnMaps.put(animal.getCurrentMap(), listForMap);
             }
         }
     }
@@ -772,8 +772,8 @@ public class Game extends JFrame implements Runnable {
             return;
         }
         logger.info("Will remove selected animal");
-        animalService.deleteAnimalFiles(animalsOnMaps.get(selectedYourAnimal.getHomeMap()));
-        animalsOnMaps.get(selectedYourAnimal.getHomeMap()).remove(selectedYourAnimal);
+        animalService.deleteAnimalFiles(animalsOnMaps.get(selectedYourAnimal.getCurrentMap()));
+        animalsOnMaps.get(selectedYourAnimal.getCurrentMap()).remove(selectedYourAnimal);
         animalService.saveAllAnimals(animalsOnMaps.get(gameMap.getMapName()));
         refreshGuiPanels();
 
@@ -793,13 +793,13 @@ public class Game extends JFrame implements Runnable {
     public void moveAnimalToAnotherMap(Animal animal, MapTile portal) {
         String destination = portal.getPortalDirection();
 
-        String previousMap = animal.getHomeMap();
-        animalsOnMaps.get(animal.getHomeMap()).remove(animal);
+        String previousMap = animal.getCurrentMap();
+        animalsOnMaps.get(animal.getCurrentMap()).remove(animal);
         animalsOnMaps.get(destination).add(animal);
 
         animalService.deleteAnimalFiles(animal);
 
-        animal.setHomeMap(destination);
+        animal.setCurrentMap(destination);
         adjustAnimalPosition(animal, previousMap);
 
         animalService.saveAnimalToFile(animal);
@@ -809,10 +809,10 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void adjustAnimalPosition(Animal animal, String previousMap) {
-        MapTile portalToPrevious = gameMaps.get(animal.getHomeMap()).getPortalTo(previousMap);
+        MapTile portalToPrevious = gameMaps.get(animal.getCurrentMap()).getPortalTo(previousMap);
         if (portalToPrevious != null) {
-            int previousMapPortalX = gameMaps.get(animal.getHomeMap()).getSpawnPoint(portalToPrevious, true);
-            int previousMapPortalY = gameMaps.get(animal.getHomeMap()).getSpawnPoint(portalToPrevious, false);
+            int previousMapPortalX = gameMaps.get(animal.getCurrentMap()).getSpawnPoint(portalToPrevious, true);
+            int previousMapPortalY = gameMaps.get(animal.getCurrentMap()).getSpawnPoint(portalToPrevious, false);
             animal.teleportAnimalTo(previousMapPortalX, previousMapPortalY);
         } else {
             animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
@@ -820,16 +820,16 @@ public class Game extends JFrame implements Runnable {
     }
 
     public Route calculateRouteToFood(Animal animal) {
-        return routeCalculator.calculateRouteToFood(getGameMap(animal.getHomeMap()), animal);
+        return routeCalculator.calculateRouteToFood(getGameMap(animal.getCurrentMap()), animal);
     }
 
     public Route calculateRouteToWater(Animal animal) {
-        return routeCalculator.calculateRouteToWater(getGameMap(animal.getHomeMap()), animal);
+        return routeCalculator.calculateRouteToWater(getGameMap(animal.getCurrentMap()), animal);
     }
 
     public Route calculateRouteToMap(Animal animal, String destination) {
         logger.debug(String.format("Looking how to get to %s for %s", destination, animal.getAnimalName()));
-        return routeCalculator.calculateRouteToPortal(getGameMap(animal.getHomeMap()), animal, destination);
+        return routeCalculator.calculateRouteToPortal(getGameMap(animal.getCurrentMap()), animal, destination);
     }
 
     public boolean isBackpackEmpty() {

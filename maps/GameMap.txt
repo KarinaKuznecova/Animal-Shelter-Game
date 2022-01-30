@@ -1,3 +1,4 @@
+Game version: 1.2.2
 Size:20:20
 Fill:14
 //Plants
@@ -18,10 +19,6 @@ plant-tomato,1024,640,3,0
 plant-tomato,1024,640,3,0
 plant-tomato,1088,640,3,0
 plant-tomato,1088,640,3,0
-plant-beet,896,704,3,0
-plant-beet,896,704,3,0
-plant-beet,960,704,3,0
-plant-beet,960,704,3,0
 plant-beet,1024,704,3,0
 plant-beet,1024,704,3,0
 plant-beet,1088,704,3,0
@@ -46,10 +43,8 @@ plant-corn,384,448,3,0
 plant-corn,448,448,3,0
 plant-corn,512,448,3,0
 plant-corn,64,448,3,0
-//Items
-//type, xPosition, yPosition
-bowl,512,128,true
-bowl,768,128,true
+plant-strawberry,896,704,3,0
+plant-strawberry,960,704,3,0
 //layer,tileId,xPos,yPos,regularTile,portalDirection
 0,48,-1,4,n,SecondMap
 0,14,20,4,n,WaterMap
