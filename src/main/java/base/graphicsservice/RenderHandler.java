@@ -93,7 +93,6 @@ public class RenderHandler {
         if (game.getMousePosition() == null) {
             return;
         }
-
         int xScreenRelated = (int) game.getMousePosition().getX() - 10;
         int yScreenRelated = (int) game.getMousePosition().getY() - 32;
         int xPositionActual = xScreenRelated + getCamera().getX();
@@ -102,15 +101,15 @@ public class RenderHandler {
         int yPosition = yScreenRelated - (yPositionActual % (TILE_SIZE * ZOOM));
         MapTile potentialTile = new MapTile(5, game.getSelectedTileId(), 0, 0, game.isRegularTiles());
 
-        if (game.getSelectedTileId() == -1) {
-            return;
-        }
-
         if (bookcases.contains(game.getSelectedTileId()) && game.isRegularTiles()) {
             int xSmaller = xPosition / (TILE_SIZE * ZOOM);
             int ySmaller = yPosition / (TILE_SIZE * ZOOM);
-            for (MapTile mapTile : new Bookcase(xSmaller, ySmaller, bookcases.indexOf(game.getSelectedTileId())).getObjectParts()) {
-                drawPreview(game, mapTile.getX() * (TILE_SIZE * ZOOM), mapTile.getY() * (TILE_SIZE * ZOOM), mapTile);
+            Bookcase bookcase = new Bookcase(xSmaller, ySmaller, bookcases.indexOf(game.getSelectedTileId()));
+            for (MapTile mapTile : bookcase.getObjectParts()) {
+                int xForCurrentPart = mapTile.getX() * (TILE_SIZE * ZOOM);
+                int yForCurrentPart = mapTile.getY() * (TILE_SIZE * ZOOM);
+
+                drawPreview(game, xForCurrentPart, yForCurrentPart, mapTile);
             }
         } else {
             drawPreview(game, xPosition, yPosition, potentialTile);
@@ -280,7 +279,7 @@ public class RenderHandler {
 
     public void renderSprite(Sprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed, Integer count) {
         renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, xZoom, yZoom, fixed);
-        Position numberPosition = new Position(xPosition + (sprite.getWidth() * xZoom - 15), yPosition + (sprite.getHeight() * yZoom - 10));
+        Position numberPosition = new Position(xPosition + (sprite.getWidth() * xZoom - 25), yPosition + (sprite.getHeight() * yZoom - 5));
         if (count != null && count != 0) {
             renderNumber(count, numberPosition);
         } else {

@@ -91,13 +91,20 @@ public class GameMap {
         if (tileId == -1) {
             return;
         }
-
         if (tileId == 66 && !regularTiles) {
             addBigObject(new Bush(tileX, tileY));
             return;
         }
-        if (bookcases.contains(tileId) && regularTiles) {
-            for (MapTile tile : new Bookcase(tileX, tileY, bookcases.indexOf(tileId)).getObjectParts()) {
+
+        int layer = tileService.getLayerById(tileId, regularTiles);
+
+        if (bookcases.contains(tileId) && regularTiles && !isThereAPortal(tileX, tileY)) {
+
+            Bookcase bookcase = new Bookcase(tileX, tileY, bookcases.indexOf(tileId));
+            if (placeIsTaken(tileX, tileY, layer, bookcase)) {
+                return;
+            }
+            for (MapTile tile : bookcase.getObjectParts()) {
                 if (layeredTiles.get(tile.getLayer()) == null) {
                     layeredTiles.put(tile.getLayer(), new CopyOnWriteArrayList<>());
                 }
@@ -106,40 +113,49 @@ public class GameMap {
             return;
         }
 
-        int layer = tileService.getLayerById(tileId, regularTiles);
-
         if (isThereAPortal(tileX, tileY) && regularTiles) {
             logger.debug("Can't place regular tile on portal");
             return;
         }
 
-        boolean foundTile = false;
-        if (layeredTiles.get(layer) != null) {
-            for (MapTile tile : layeredTiles.get(layer)) {
-                if (tile.getX() == tileX && tile.getY() == tileY) {
-                    if (!tile.isRegularTile() && regularTiles) {
-                        logger.debug("Attempt to modify terrain tile when regular tile is selected");
-                        if (tile.getLayer() == layer) {
-                            foundTile = true;
-                        }
-                        break;
-                    }
-                    tile.setId(tileId);
-                    foundTile = true;
-                    break;
-                }
+        MapTile existingTile = getExistingTile(layer, tileX, tileY);
+        if (existingTile != null) {
+            if (!existingTile.isRegularTile() && regularTiles) {
+                logger.debug("Attempt to modify terrain tile when regular tile is selected");
+            } else {
+                existingTile.setId(tileId);
             }
         } else {
-            List<MapTile> tiles = new ArrayList<>();
-            tiles.add(new MapTile(layer, tileId, tileX, tileY, regularTiles));
-            layeredTiles.put(layer, tiles);
-        }
-        if (!foundTile) {
-            layeredTiles.get(layer).add(new MapTile(layer, tileId, tileX, tileY, regularTiles));
+            MapTile tile = new MapTile(layer, tileId, tileX, tileY, regularTiles);
+            if (layeredTiles.get(tile.getLayer()) == null) {
+                layeredTiles.put(tile.getLayer(), new CopyOnWriteArrayList<>());
+            }
+            layeredTiles.get(tile.getLayer()).add(tile);
         }
         if (maxLayer < layer) {
             maxLayer = layer;
         }
+    }
+
+    private boolean placeIsTaken(int tileX, int tileY, int layer, Bookcase bookcase) {
+        for (MapTile tile : bookcase.getObjectParts()) {
+            MapTile existingTile = getExistingTile(layer, tileX, tileY);
+            if (isThereAPortal(tile.getX(), tile.getY()) || (existingTile != null && !existingTile.isRegularTile())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private MapTile getExistingTile(int layer, int tileX, int tileY) {
+        if (layeredTiles.get(layer) != null) {
+            for (MapTile tile : layeredTiles.get(layer)) {
+                if (tile.getX() == tileX && tile.getY() == tileY) {
+                    return tile;
+                }
+            }
+        }
+        return null;
     }
 
     public void removeTile(int tileX, int tileY, int layer, boolean regularTiles, int selectedTile) {
