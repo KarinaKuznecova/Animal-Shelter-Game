@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
+import static base.constants.Constants.CURRENT_GAME_VERSION;
 import static base.constants.FilePath.ANIMALS_DIR_PATH;
 import static base.gameobjects.Animal.MAX_HUNGER;
 
@@ -103,6 +104,8 @@ public class AnimalService {
             }
 
             PrintWriter printWriter = new PrintWriter(animalFile);
+
+            printWriter.println("Game version: " + CURRENT_GAME_VERSION);
 
             printWriter.println("Type:" + getAnimalType(animal));
             printWriter.println("HomeMap:" + animal.getHomeMap());

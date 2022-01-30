@@ -14,8 +14,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.constants.FilePath.MAPS_LIST_PATH;
 
 public class MapService {
@@ -206,6 +205,8 @@ public class MapService {
             }
 
             PrintWriter printWriter = new PrintWriter(mapFile);
+
+            printWriter.println("Game version: " + CURRENT_GAME_VERSION);
 
             printWriter.println("Size:" + gameMap.getMapWidth() + ":" + gameMap.getMapHeight());
             if (gameMap.getBackGroundTileId() >= 0) {
