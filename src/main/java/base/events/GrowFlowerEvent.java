@@ -1,6 +1,7 @@
 package base.events;
 
 import base.Game;
+import base.constants.MapConstants;
 import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +27,10 @@ public class GrowFlowerEvent extends Event{
         if (happened) {
             chance--;
         }
-        if (OUTSIDE_MAPS.contains(game.getGameMap().getMapName())) {
+        if (MapConstants.OUTSIDE_MAPS.contains(game.getGameMap().getMapName())) {
             chance++;
         }
-        if (HOME_MAPS.contains(game.getGameMap().getMapName())) {
+        if (MapConstants.HOME_MAPS.contains(game.getGameMap().getMapName())) {
             chance--;
         }
         logger.info(String.format("Event 'Grow Random Flower' chance is %d", chance));
