@@ -3,6 +3,7 @@ package base.gui;
 import base.Game;
 import base.gameobjects.AnimalService;
 import base.gameobjects.animals.Cat;
+import base.gameobjects.animals.Rat;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
@@ -24,7 +25,7 @@ public class NewAnimalButton extends GUIButton {
         this.animalType = animalType;
         this.game = game;
         rectangle.generateGraphics(3, YELLOW);
-        if (animalType.equalsIgnoreCase(Cat.NAME)) {
+        if (animalType.equalsIgnoreCase(Cat.NAME) || animalType.equalsIgnoreCase(Rat.NAME)) {
             multipleOptions = true;
         }
     }

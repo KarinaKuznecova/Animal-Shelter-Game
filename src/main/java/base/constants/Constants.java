@@ -22,6 +22,13 @@ public class Constants {
     public static final String CAT_WHITE = "cat-white";
     public static final String CAT_BROWN = "cat-brown";
     public static final String CAT_CARAMEL = "cat-caramel";
-    public static final List<String> CAT_COLORS = Arrays.asList(CAT_BLACK, CAT_WHITE, CAT_BROWN, CAT_CARAMEL);
+    public static final List<String> CAT_COLORS = Arrays.asList(CAT_WHITE, CAT_BROWN, CAT_CARAMEL, CAT_BLACK);
+
+    public static final String RAT_BLACK = "rat-black";
+    public static final String RAT_BLACK_WHITE = "rat-blackwhite";
+    public static final String RAT_RED = "rat-red";
+    public static final String RAT_WHITE = "rat-white";
+    public static final String RAT_SILVER = "rat-silver";
+    public static final List<String> RAT_COLORS = Arrays.asList(RAT_BLACK_WHITE, RAT_RED, RAT_WHITE, RAT_SILVER, RAT_BLACK);
 
 }

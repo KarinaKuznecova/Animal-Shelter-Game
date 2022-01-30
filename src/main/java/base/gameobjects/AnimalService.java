@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-import static base.constants.Constants.CURRENT_GAME_VERSION;
+import static base.constants.Constants.*;
 import static base.constants.FilePath.ANIMALS_DIR_PATH;
 import static base.gameobjects.Animal.MAX_HUNGER;
 import static base.gameobjects.Animal.MAX_THIRST;
@@ -45,7 +45,7 @@ public class AnimalService {
         Animal animal;
         switch (animalName.toLowerCase()) {
             case Rat.NAME:
-                animal = new Rat(startX, startY, 3, hunger, thirst);
+                animal = new Rat(startX, startY, 3, color, hunger, thirst);
                 break;
             case Mouse.NAME:
                 animal = new Mouse(startX, startY, 3, hunger, thirst);
@@ -74,8 +74,8 @@ public class AnimalService {
     }
 
     public String getAnimalType(Animal animal) {
-        if (animal.getAnimalName().startsWith("cat")) {
-            return "cat";
+        if (animal.getAnimalName().contains("-")) {
+            return animal.getAnimalName().substring(0, animal.getAnimalName().indexOf("-"));
         }
         return animal.getAnimalName();
     }
@@ -227,10 +227,16 @@ public class AnimalService {
 
     public String getNextColor(String animalType) {
         if (animalType.startsWith(Cat.NAME)) {
-            if (Cat.colors.size() == Cat.colors.indexOf(animalType) + 1) {
-                return Cat.colors.get(0);
+            if (CAT_COLORS.size() == CAT_COLORS.indexOf(animalType) + 1) {
+                return CAT_COLORS.get(0);
             }
-            return Cat.colors.get(Cat.colors.indexOf(animalType) + 1);
+            return CAT_COLORS.get(CAT_COLORS.indexOf(animalType) + 1);
+        }
+        if (animalType.startsWith(Rat.NAME)) {
+            if (RAT_COLORS.size() == RAT_COLORS.indexOf(animalType) + 1) {
+                return RAT_COLORS.get(0);
+            }
+            return RAT_COLORS.get(RAT_COLORS.indexOf(animalType) + 1);
         }
         return animalType;
     }
@@ -243,6 +249,9 @@ public class AnimalService {
         }
         if (animalType.startsWith(Cat.NAME)) {
             return new Cat(0, 0, 0, color).getPreviewSprite();
+        }
+        if (animalType.startsWith(Rat.NAME)) {
+            return new Rat(0, 0, 0, color).getPreviewSprite();
         }
         return null;
     }
