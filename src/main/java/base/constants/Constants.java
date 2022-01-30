@@ -8,6 +8,8 @@ public class Constants {
     public static final int TILE_SIZE = 32;
     public static final int ZOOM = 2;
 
+    public static final String CURRENT_GAME_VERSION = "1.2.2";
+
     public static final int BOWL_TILE_ID = 68;
 
     public static final int DEFAULT_PLANT_GROWING_TIME = 3000;
