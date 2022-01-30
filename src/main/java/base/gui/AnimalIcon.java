@@ -29,7 +29,7 @@ public class AnimalIcon extends GUIButton {
     }
 
     private boolean isAnimalOnActiveMap(Game game) {
-        return animal.getHomeMap().equalsIgnoreCase(game.getGameMap().getMapName());
+        return animal.getCurrentMap().equalsIgnoreCase(game.getGameMap().getMapName());
     }
 
     @Override
@@ -54,7 +54,7 @@ public class AnimalIcon extends GUIButton {
         renderer.renderRectangle(statsRectangle, rectangle, 1, 1, fixed);
         renderer.renderText("Hunger: " + animal.getCurrentHungerInPercent() + "%", new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 30));
         renderer.renderText("Thirst: " + animal.getCurrentThirstInPercent() + "%", new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 50));
-        renderer.renderText("Location: " + PRETTIER_MAP_NAMES.get(animal.getHomeMap()), new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 70));
+        renderer.renderText("Location: " + PRETTIER_MAP_NAMES.get(animal.getCurrentMap()), new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 70));
     }
 
     @Override

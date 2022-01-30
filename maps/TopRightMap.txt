@@ -1,3 +1,4 @@
+Game version: 1.2.2
 Size:20:20
 Fill:112
 //layer,tileId,xPos,yPos,regularTile,portalDirection
