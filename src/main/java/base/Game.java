@@ -653,6 +653,7 @@ public class Game extends JFrame implements Runnable {
             switchTopPanel(selectedPanel);
         } else {
             guiList.clear();
+            renderer.clearRenderedText();
         }
     }
 
