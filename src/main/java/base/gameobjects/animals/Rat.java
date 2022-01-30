@@ -8,7 +8,7 @@ public class Rat extends Animal {
 
     public static final String NAME = "rat";
 
-    public Rat(int startX, int startY, int speed, int hungerLevel) {
-        super(NAME, startX, startY, speed, 32, hungerLevel);
+    public Rat(int startX, int startY, int speed, int hungerLevel, int currentThirst) {
+        super(NAME, startX, startY, speed, 32, hungerLevel, currentThirst);
     }
 }

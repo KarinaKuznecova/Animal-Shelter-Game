@@ -5,6 +5,7 @@ public class FilePath {
     //images
     public static final String PLAYER_SHEET_PATH = "img/betty.png";
     public static final String FOOD_BOWL_PATH = "img/bowl.png";
+    public static final String WATER_BOWL_PATH = "img/water-bowl.png";
 
     //plants
     public static final String CARROT_IMG = "img/carrot.png";

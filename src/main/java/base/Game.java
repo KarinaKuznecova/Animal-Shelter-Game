@@ -514,12 +514,15 @@ public class Game extends JFrame implements Runnable {
             if (player.getPlayerRectangle().intersects(xMapRelated, yMapRelated, TILE_SIZE, TILE_SIZE)) {
                 logger.warn("Can't place tile under player");
             } else {
+                int xAlligned = xMapRelated - (xMapRelated % (TILE_SIZE * ZOOM));
+                int yAlligned = yMapRelated - (yMapRelated % (TILE_SIZE * ZOOM));
                 if (selectedTileId == BOWL_TILE_ID) {
-                    logger.debug("Food bowl!");
-                    int xAlligned = xMapRelated - (xMapRelated % (TILE_SIZE * ZOOM));
-                    int yAlligned = yMapRelated - (yMapRelated % (TILE_SIZE * ZOOM));
                     FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
                     getGameMap().addObject(foodBowl);
+                }
+                if (selectedTileId == WATER_BOWL_TILE_ID) {
+                    WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned);
+                    getGameMap().addObject(waterBowl);
                 } else {
                     gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
                 }
@@ -615,14 +618,18 @@ public class Game extends JFrame implements Runnable {
     public void rightClick(int x, int y) {
         int xAdjusted = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
         int yAdjusted = (int) Math.floor((y + renderer.getCamera().getY()) / (32.0 * ZOOM));
+
+        int xMapRelated = x + renderer.getCamera().getX();
+        int yMapRelated = y + renderer.getCamera().getY();
+        int xAlligned = xMapRelated - (xMapRelated % (TILE_SIZE * ZOOM));
+        int yAlligned = yMapRelated - (yMapRelated % (TILE_SIZE * ZOOM));
         if (selectedTileId == BOWL_TILE_ID) {
-            logger.debug("Food bowl to remove!");
-            int xMapRelated = x + renderer.getCamera().getX();
-            int yMapRelated = y + renderer.getCamera().getY();
-            int xAlligned = xMapRelated - (xMapRelated % (TILE_SIZE * ZOOM));
-            int yAlligned = yMapRelated - (yMapRelated % (TILE_SIZE * ZOOM));
             FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
             getGameMap().removeObject(foodBowl);
+        }
+        else if (selectedTileId == WATER_BOWL_TILE_ID) {
+            WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned);
+            getGameMap().removeObject(waterBowl);
         } else {
             gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
         }
@@ -814,6 +821,10 @@ public class Game extends JFrame implements Runnable {
 
     public Route calculateRouteToFood(Animal animal) {
         return routeCalculator.calculateRouteToFood(getGameMap(animal.getHomeMap()), animal);
+    }
+
+    public Route calculateRouteToWater(Animal animal) {
+        return routeCalculator.calculateRouteToWater(getGameMap(animal.getHomeMap()), animal);
     }
 
     public Route calculateRouteToMap(Animal animal, String destination) {

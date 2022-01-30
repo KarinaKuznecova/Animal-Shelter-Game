@@ -15,6 +15,7 @@ import java.util.*;
 import static base.constants.Constants.CURRENT_GAME_VERSION;
 import static base.constants.FilePath.ANIMALS_DIR_PATH;
 import static base.gameobjects.Animal.MAX_HUNGER;
+import static base.gameobjects.Animal.MAX_THIRST;
 
 public class AnimalService {
 
@@ -25,7 +26,7 @@ public class AnimalService {
     public Map<String, Sprite> getAnimalPreviewSprites() {
         Map<String, Sprite> previews = new HashMap<>();
         for (String animalName : animalNames) {
-            previews.put(animalName, createAnimal(animalName, 1, 1, "", null, MAX_HUNGER).getPreviewSprite());
+            previews.put(animalName, createAnimal(animalName, 1, 1, "", null, MAX_HUNGER, MAX_THIRST).getPreviewSprite());
         }
         return previews;
     }
@@ -35,34 +36,34 @@ public class AnimalService {
             String[] split = animalType.split("-");
             String name = split[0];
             String color = split[1];
-            return createAnimal(name, x, y, mapName, color, MAX_HUNGER);
+            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST);
         }
-        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER);
+        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST);
     }
 
-    public Animal createAnimal(String animalName, int startX, int startY, String mapName, String color, int hunger) {
+    public Animal createAnimal(String animalName, int startX, int startY, String mapName, String color, int hunger, int thirst) {
         Animal animal;
         switch (animalName.toLowerCase()) {
             case Rat.NAME:
-                animal = new Rat(startX, startY, 3, hunger);
+                animal = new Rat(startX, startY, 3, hunger, thirst);
                 break;
             case Mouse.NAME:
-                animal = new Mouse(startX, startY, 3, hunger);
+                animal = new Mouse(startX, startY, 3, hunger, thirst);
                 break;
             case Chicken.NAME:
-                animal = new Chicken(startX, startY, 3, hunger);
+                animal = new Chicken(startX, startY, 3, hunger, thirst);
                 break;
             case Butterfly.NAME:
-                animal = new Butterfly(startX, startY, 1, hunger);
+                animal = new Butterfly(startX, startY, 1, hunger, thirst);
                 break;
             case Cat.NAME:
-                animal = new Cat(startX, startY, 3, color, hunger);
+                animal = new Cat(startX, startY, 3, color, hunger, thirst);
                 break;
             case Pig.NAME:
-                animal = new Pig(startX, startY, 3, hunger);
+                animal = new Pig(startX, startY, 3, hunger, thirst);
                 break;
             case Bunny.NAME:
-                animal = new Bunny(startX, startY, 3, hunger);
+                animal = new Bunny(startX, startY, 3, hunger, thirst);
                 break;
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalName));
@@ -149,6 +150,7 @@ public class AnimalService {
             String color = null;
             int speed;
             int hunger = MAX_HUNGER;
+            int thirst = MAX_THIRST;
             int x = 0;
             int y = 0;
             try (Scanner scanner = new Scanner(file)) {
@@ -179,6 +181,11 @@ public class AnimalService {
                         hunger = Integer.parseInt(splitLine[1]);
                         continue;
                     }
+                    if (line.startsWith("Thirst:")) {
+                        String[] splitLine = line.split(":");
+                        thirst = Integer.parseInt(splitLine[1]);
+                        continue;
+                    }
                     if (line.startsWith("X:")) {
                         String[] splitLine = line.split(":");
                         x = Integer.parseInt(splitLine[1]);
@@ -193,7 +200,7 @@ public class AnimalService {
                 e.printStackTrace();
             }
             if (animalType != null) {
-                Animal animal = createAnimal(animalType, x, y, mapName, color, hunger);
+                Animal animal = createAnimal(animalType, x, y, mapName, color, hunger, thirst);
                 animal.setFileName(file.getName());
                 animalsOnMap.add(animal);
             }

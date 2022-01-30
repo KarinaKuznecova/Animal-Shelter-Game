@@ -342,6 +342,16 @@ public class GameMap {
         return bowls;
     }
 
+    public List<WaterBowl> getWaterBowls() {
+        List<WaterBowl> bowls = new ArrayList<>();
+        for (GameObject object : getInteractiveObjects()) {
+            if (object instanceof WaterBowl) {
+                bowls.add((WaterBowl) object);
+            }
+        }
+        return bowls;
+    }
+
     public List<BigObject> getBigObjects() {
         return bigObjects;
     }

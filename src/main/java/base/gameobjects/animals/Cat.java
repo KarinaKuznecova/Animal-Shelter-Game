@@ -14,12 +14,12 @@ public class Cat extends Animal {
     public static final List<String> colors = Arrays.asList(CAT_WHITE, CAT_BROWN, CAT_CARAMEL, CAT_BLACK);
 
     public Cat(int startX, int startY, int speed, String color) {
-        super(color != null ? NAME + "-" + color : CAT_BLACK, startX, startY, speed, 32, MAX_HUNGER);
+        super(color != null ? NAME + "-" + color : CAT_BLACK, startX, startY, speed, 32, MAX_HUNGER, MAX_THIRST);
         setColor(color);
     }
 
-    public Cat(int startX, int startY, int speed, String color, int hungerLevel) {
-        super(color != null ? NAME + "-" + color : CAT_BLACK, startX, startY, speed, 32, hungerLevel);
+    public Cat(int startX, int startY, int speed, String color, int hungerLevel, int currentThirst) {
+        super(color != null ? NAME + "-" + color : CAT_BLACK, startX, startY, speed, 32, hungerLevel, currentThirst);
         setColor(color);
     }
 }
