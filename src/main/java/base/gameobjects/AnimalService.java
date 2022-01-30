@@ -69,7 +69,7 @@ public class AnimalService {
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalName));
                 throw new IllegalArgumentException();
         }
-        animal.setHomeMap(mapName);
+        animal.setCurrentMap(mapName);
         return animal;
     }
 
@@ -109,12 +109,13 @@ public class AnimalService {
             printWriter.println("Game version: " + CURRENT_GAME_VERSION);
 
             printWriter.println("Type:" + getAnimalType(animal));
-            printWriter.println("HomeMap:" + animal.getHomeMap());
+            printWriter.println("CurrentMap:" + animal.getCurrentMap());
             printWriter.println("Speed:" + animal.getSpeed());
             if (animal.getColor() != null) {
                 printWriter.println("Color:" + animal.getColor());
             }
             printWriter.println("Hunger:" + animal.getCurrentHunger());
+            printWriter.println("Thirst:" + animal.getCurrentThirst());
             printWriter.println("X:" + animal.getCurrentX());
             printWriter.println("Y:" + animal.getCurrentY());
 
@@ -156,7 +157,7 @@ public class AnimalService {
             try (Scanner scanner = new Scanner(file)) {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
-                    if (line.startsWith("HomeMap:")) {
+                    if (line.startsWith("HomeMap:") || line.startsWith("CurrentMap")) {
                         String[] splitLine = line.split(":");
                         mapName = splitLine[1];
                         continue;

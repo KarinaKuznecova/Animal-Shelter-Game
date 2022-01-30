@@ -4,8 +4,6 @@ import base.Game;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static base.constants.Constants.TILE_SIZE;
 
@@ -51,7 +49,7 @@ public class Chest implements GameObject {
         if (mouseRectangle.intersects(rectangle) && !isOpen) {
             sprite = game.getTileService().getTiles().get(37).getSprite();
             isOpen = true;
-            animal.setHomeMap(game.getGameMap().getMapName());
+            animal.setCurrentMap(game.getGameMap().getMapName());
             game.getAnimalsOnMaps().get(game.getGameMap().getMapName()).add(animal);
             game.addAnimalToPanel(animal);
             game.saveMap();

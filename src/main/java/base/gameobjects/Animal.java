@@ -36,6 +36,7 @@ public abstract class Animal implements GameObject {
     private Direction direction;
     private int movingTicks = 0;
     private transient Route route;
+    private String currentMap;
     private String homeMap;
     private int speed;
     private String color;
@@ -55,13 +56,14 @@ public abstract class Animal implements GameObject {
         this(animalName, startX, startY, speed, MapConstants.MAIN_MAP, tileSize, currentHunger, currentThirst);
     }
 
-    protected Animal(String animalName, int startX, int startY, int speed, String homeMap, int tileSize, int currentHunger, int currentThirst) {
+    protected Animal(String animalName, int startX, int startY, int speed, String currentMap, int tileSize, int currentHunger, int currentThirst) {
         this.animalName = animalName;
         this.tileSize = tileSize;
-        this.homeMap = homeMap;
+        this.currentMap = currentMap;
         this.speed = speed;
         this.currentHunger = currentHunger;
         this.currentThirst = currentThirst;
+        homeMap = MapConstants.TOP_CENTER_MAP;
 
         setSprite();
         setPreviewSprite();
@@ -122,11 +124,11 @@ public abstract class Animal implements GameObject {
         boolean isMoving = false;
         Direction nextDirection = direction;
 
-        if (route.isEmpty() && getHomeMap().startsWith("Bottom")) {
-            route = game.calculateRouteToMap(this, NavigationService.getNextPortalToGetToCenter(getHomeMap()));
+        if (route.isEmpty() && getCurrentMap().startsWith("Bottom")) {
+            route = game.calculateRouteToMap(this, NavigationService.getNextPortalToGetToCenter(getCurrentMap()));
         }
-        if (route.isEmpty() && this instanceof Butterfly && MapConstants.HOME_MAPS.contains(getHomeMap())) {
-            route = game.calculateRouteToMap(this, NavigationService.getNextPortalToOutside(getHomeMap()));
+        if (route.isEmpty() && this instanceof Butterfly && MapConstants.HOME_MAPS.contains(getCurrentMap())) {
+            route = game.calculateRouteToMap(this, NavigationService.getNextPortalToOutside(getCurrentMap()));
         }
 
         if (movingTicks < 1) {
@@ -139,7 +141,7 @@ public abstract class Animal implements GameObject {
             }
         }
 
-        handleMoving(game.getGameMap(homeMap), nextDirection);
+        handleMoving(game.getGameMap(currentMap), nextDirection);
         if (nextDirection != STAY || this instanceof Butterfly) {
             isMoving = true;
         }
@@ -225,26 +227,26 @@ public abstract class Animal implements GameObject {
 
     private boolean checkForFood(Game game) {
         List<Item> items;
-        if (game.getGameMap().getMapName().equalsIgnoreCase(getHomeMap())) {
+        if (game.getGameMap().getMapName().equalsIgnoreCase(getCurrentMap())) {
             items = game.getGameMap().getItems();
         } else {
-            items = game.getGameMap(homeMap).getItems();
+            items = game.getGameMap(currentMap).getItems();
         }
         for (Item item : items) {
             if (animalRectangle.intersects(item.getRectangle())) {
                 logger.info(String.format("%s ate food", animalName));
                 currentHunger = MAX_HUNGER;
                 speed = 3;
-                game.getGameMap(homeMap).removeItem(item.getItemName(), item.getRectangle());
+                game.getGameMap(currentMap).removeItem(item.getItemName(), item.getRectangle());
                 logger.debug(String.format("Hunger level for %s is 100 percent", animalName));
                 return true;
             }
         }
         List<FoodBowl> bowls;
-        if (game.getGameMap().getMapName().equalsIgnoreCase(getHomeMap())) {
+        if (game.getGameMap().getMapName().equalsIgnoreCase(getCurrentMap())) {
             bowls = game.getGameMap().getFoodBowls();
         } else {
-            bowls = game.getGameMap(homeMap).getFoodBowls();
+            bowls = game.getGameMap(currentMap).getFoodBowls();
         }
         for (FoodBowl bowl : bowls) {
             if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
@@ -261,10 +263,10 @@ public abstract class Animal implements GameObject {
 
     private boolean checkForWater(Game game) {
         List<WaterBowl> bowls;
-        if (game.getGameMap().getMapName().equalsIgnoreCase(getHomeMap())) {
+        if (game.getGameMap().getMapName().equalsIgnoreCase(getCurrentMap())) {
             bowls = game.getGameMap().getWaterBowls();
         } else {
-            bowls = game.getGameMap(homeMap).getWaterBowls();
+            bowls = game.getGameMap(currentMap).getWaterBowls();
         }
         for (WaterBowl bowl : bowls) {
             if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
@@ -397,7 +399,7 @@ public abstract class Animal implements GameObject {
                 if (this instanceof Butterfly && MapConstants.HOME_MAPS.contains(portal.getPortalDirection()) && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
                     return true;
                 }
-                if (MapConstants.MAIN_MAP.equals(getHomeMap()) && portal.getPortalDirection().startsWith("Bottom") && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
+                if (MapConstants.MAIN_MAP.equals(getCurrentMap()) && portal.getPortalDirection().startsWith("Bottom") && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
                     return true;
                 }
             }
@@ -420,8 +422,8 @@ public abstract class Animal implements GameObject {
     }
 
     private void checkPortals(Game game) {
-        if (game.getGameMap(homeMap).getPortals() != null) {
-            for (MapTile tile : game.getGameMap(homeMap).getPortals()) {
+        if (game.getGameMap(currentMap).getPortals() != null) {
+            for (MapTile tile : game.getGameMap(currentMap).getPortals()) {
                 if (animalRectangle.intersects(tile)) {
                     game.moveAnimalToAnotherMap(this, tile);
                 }
@@ -486,12 +488,12 @@ public abstract class Animal implements GameObject {
         return false;
     }
 
-    public String getHomeMap() {
-        return homeMap;
+    public String getCurrentMap() {
+        return currentMap;
     }
 
-    public void setHomeMap(String homeMap) {
-        this.homeMap = homeMap;
+    public void setCurrentMap(String currentMap) {
+        this.currentMap = currentMap;
     }
 
     public Sprite getPreviewSprite() {
@@ -530,6 +532,10 @@ public abstract class Animal implements GameObject {
         return currentHunger;
     }
 
+    public int getCurrentThirst() {
+        return currentThirst;
+    }
+
     public int getCurrentHungerInPercent() {
         return currentHunger / (MAX_HUNGER / 100);
     }
@@ -548,5 +554,13 @@ public abstract class Animal implements GameObject {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String getHomeMap() {
+        return homeMap;
+    }
+
+    public void setHomeMap(String homeMap) {
+        this.homeMap = homeMap;
     }
 }
