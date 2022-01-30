@@ -171,6 +171,18 @@ public class MapService {
             gameMap.addObject(foodBowl);
             return true;
         }
+        if (line.startsWith("water-bowl")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            boolean shouldBeFull = Boolean.parseBoolean(splitLine[3]);
+            WaterBowl waterBowl = new WaterBowl(x, y);
+            if (shouldBeFull) {
+                waterBowl.fillBowl();
+            }
+            gameMap.addObject(waterBowl);
+            return true;
+        }
 
         return false;
     }
@@ -262,6 +274,9 @@ public class MapService {
         }
         for (FoodBowl foodBowl : gameMap.getFoodBowls()) {
             printWriter.println("bowl," + foodBowl.getRectangle().getX() + "," + foodBowl.getRectangle().getY() + "," + foodBowl.isFull());
+        }
+        for (WaterBowl waterBowl : gameMap.getWaterBowls()) {
+            printWriter.println("water-bowl," + waterBowl.getRectangle().getX() + "," + waterBowl.getRectangle().getY() + "," + waterBowl.isFull());
         }
     }
 

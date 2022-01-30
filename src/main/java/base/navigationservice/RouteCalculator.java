@@ -3,6 +3,7 @@ package base.navigationservice;
 import base.gameobjects.Animal;
 import base.gameobjects.FoodBowl;
 import base.gameobjects.Item;
+import base.gameobjects.WaterBowl;
 import base.graphicsservice.Rectangle;
 import base.map.GameMap;
 import base.map.MapTile;
@@ -19,8 +20,15 @@ public class RouteCalculator {
 
     protected static final Logger logger = LoggerFactory.getLogger(RouteCalculator.class);
 
+    public static final String WATER = "water";
+    public static final String FOOD = "food";
+
     public Route calculateRouteToFood(GameMap gameMap, Animal animal) {
-        return calculateRoute(gameMap, animal, null);
+        return calculateRoute(gameMap, animal, FOOD);
+    }
+
+    public Route calculateRouteToWater(GameMap gameMap, Animal animal) {
+        return calculateRoute(gameMap, animal, WATER);
     }
 
     public Route calculateRouteToPortal(GameMap gameMap, Animal animal, String destination) {
@@ -31,14 +39,54 @@ public class RouteCalculator {
         Route newRoute = new Route();
 
         MapTile portal = null;
-        if (destination != null && getPortal(gameMap, destination) != null) {
+        if (!isWaterOrFood(destination) && getPortal(gameMap, destination) != null) {
             portal = getPortal(gameMap, destination);
         }
-        if (destination != null && portal == null) {
+        if (!isWaterOrFood(destination) && portal == null) {
             return newRoute;
         }
         List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
 
+        fillInitialRoutes(gameMap, searchQueue, animal);
+
+        List<Rectangle> searched = new ArrayList<>();
+        while (!searchQueue.isEmpty()) {
+            Map<Rectangle, Route> map = searchQueue.get(0);
+            Rectangle rectangleToCheck = null;
+            for (Rectangle rectangle : map.keySet()) {
+                rectangleToCheck = rectangle;
+            }
+            if (!searched.contains(rectangleToCheck)) {
+                searchQueue.remove(0);
+                boolean found;
+                if (!isWaterOrFood(destination)) {
+                    found = isTherePortal(portal, rectangleToCheck);
+                } else if (FOOD.equals(destination)) {
+                    found = isThereFood(gameMap, rectangleToCheck);
+                } else if (WATER.equals(destination)) {
+                    found = isThereWater(gameMap, rectangleToCheck);
+                } else {
+                    found = false;
+                }
+                if (found) {
+                    logger.info(String.format("%s found his way to %s!", animal.getAnimalName(), destination));
+                    return map.get(rectangleToCheck);
+                } else {
+                    searched.add(rectangleToCheck);
+                    fillSearchQueue(gameMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
+                }
+
+            } else {
+                searchQueue.remove(0);
+            }
+        }
+        if (isWaterOrFood(destination) && newRoute.isEmpty()) {
+            newRoute = calculateRouteToPortal(gameMap, animal, NavigationService.getNextPortalToGetToHome(gameMap.getMapName()));
+        }
+        return newRoute;
+    }
+
+    private void fillInitialRoutes(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Animal animal) {
         int adjustedX = animal.getCurrentX() - (animal.getCurrentX() % (TILE_SIZE * ZOOM));
         int adjustedY = animal.getCurrentY() - (animal.getCurrentY() % (TILE_SIZE * ZOOM));
         Rectangle initialRectangle = new Rectangle(adjustedX, adjustedY, TILE_SIZE, TILE_SIZE);
@@ -74,38 +122,10 @@ public class RouteCalculator {
             potentialRoute4.addStep(RIGHT);
             searchQueue.add(map);
         }
+    }
 
-        List<Rectangle> searched = new ArrayList<>();
-        while (!searchQueue.isEmpty()) {
-            Map<Rectangle, Route> map = searchQueue.get(0);
-            Rectangle rectangleToCheck = null;
-            for (Rectangle rectangle : map.keySet()) {
-                rectangleToCheck = rectangle;
-            }
-            if (!searched.contains(rectangleToCheck)) {
-                searchQueue.remove(0);
-                boolean found;
-                if (destination != null) {
-                    found = isTherePortal(portal, rectangleToCheck);
-                } else {
-                    found = isThereFood(gameMap, rectangleToCheck);
-                }
-                if (found) {
-                    logger.info(String.format("%s found his way!", animal.getAnimalName()));
-                    return map.get(rectangleToCheck);
-                } else {
-                    searched.add(rectangleToCheck);
-                    fillSearchQueue(gameMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
-                }
-
-            } else {
-                searchQueue.remove(0);
-            }
-        }
-        if (destination == null && newRoute.isEmpty()) {
-            newRoute = calculateRouteToPortal(gameMap, animal, NavigationService.getNextPortalToGetToHome(gameMap.getMapName()));
-        }
-        return newRoute;
+    private boolean isWaterOrFood(String destination) {
+        return WATER.equals(destination) || FOOD.equals(destination);
     }
 
     public void fillSearchQueue(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangleChecked, Route potentialRoute, List<Rectangle> searched) {
@@ -202,6 +222,15 @@ public class RouteCalculator {
         }
         for (Item item : gameMap.getItems()) {
             if (item.getRectangle().intersects(rectangle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isThereWater(GameMap gameMap, Rectangle rectangle) {
+        for (WaterBowl waterBowl : gameMap.getWaterBowls()) {
+            if (waterBowl.isFull() && waterBowl.getRectangle().intersects(rectangle)) {
                 return true;
             }
         }

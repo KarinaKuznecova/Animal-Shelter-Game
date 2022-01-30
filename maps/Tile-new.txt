@@ -72,3 +72,4 @@ bookcase1-0-7-2-np
 bookcase2-1-7-2-np
 bookcase3-2-7-2-np
 bookcase4-3-7-2
+WaterBowl-6-7-1

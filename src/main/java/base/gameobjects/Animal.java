@@ -35,7 +35,7 @@ public abstract class Animal implements GameObject {
 
     private Direction direction;
     private int movingTicks = 0;
-    private Route route;
+    private transient Route route;
     private String homeMap;
     private int speed;
     private String color;
@@ -45,18 +45,23 @@ public abstract class Animal implements GameObject {
     protected static final int MIN_HUNGER = 1;
     private int currentHunger;
 
+    protected static final int MAX_THIRST = 25000;
+    protected static final int MIN_THIRST = 1;
+    private int currentThirst;
+
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
-    protected Animal(String animalName, int startX, int startY, int speed, int tileSize, int currentHunger) {
-        this(animalName, startX, startY, speed, MapConstants.MAIN_MAP, tileSize, currentHunger);
+    protected Animal(String animalName, int startX, int startY, int speed, int tileSize, int currentHunger, int currentThirst) {
+        this(animalName, startX, startY, speed, MapConstants.MAIN_MAP, tileSize, currentHunger, currentThirst);
     }
 
-    protected Animal(String animalName, int startX, int startY, int speed, String homeMap, int tileSize, int currentHunger) {
+    protected Animal(String animalName, int startX, int startY, int speed, String homeMap, int tileSize, int currentHunger, int currentThirst) {
         this.animalName = animalName;
         this.tileSize = tileSize;
         this.homeMap = homeMap;
         this.speed = speed;
         this.currentHunger = currentHunger;
+        this.currentThirst = currentThirst;
 
         setSprite();
         setPreviewSprite();
@@ -159,7 +164,13 @@ public abstract class Animal implements GameObject {
         if (!(this instanceof Butterfly) && currentHunger < MAX_HUNGER / 100 * 25 && route.isEmpty()) {
             route = game.calculateRouteToFood(this);
         }
-        if (!(this instanceof Butterfly) && isHungerLow() && checkForFood(game)) {
+
+        decreaseThirstLevel();
+        if (!(this instanceof Butterfly) && currentThirst < MAX_THIRST / 100 * 25 && route.isEmpty()) {
+            route = game.calculateRouteToWater(this);
+        }
+
+        if (!(this instanceof Butterfly) && (isHungerLow() && checkForFood(game)) || (isThirstLow() && checkForWater(game))) {
             if (direction == UP) {
                 direction = EAT_UP;
             }
@@ -184,6 +195,10 @@ public abstract class Animal implements GameObject {
         return currentHunger < MAX_HUNGER / 100 * 70;
     }
 
+    private boolean isThirstLow() {
+        return currentThirst < MAX_THIRST / 100 * 70;
+    }
+
     private void decreaseHungerLevel() {
         if (currentHunger > MIN_HUNGER) {
             currentHunger--;
@@ -192,6 +207,18 @@ public abstract class Animal implements GameObject {
             logger.debug(String.format("Hunger level for %s is %d percent", animalName, currentHunger / (MAX_HUNGER / 100)));
         }
         if (currentHunger < MAX_HUNGER / 100 * 10) {
+            speed = 1;
+        }
+    }
+
+    private void decreaseThirstLevel() {
+        if (currentThirst > MIN_THIRST) {
+            currentThirst--;
+        }
+        if (currentThirst != 0 && currentThirst % (MAX_THIRST / 10) == 0) {
+            logger.debug(String.format("Thirst level for %s is %d percent", animalName, currentThirst / (MAX_THIRST / 100)));
+        }
+        if (currentThirst < MAX_THIRST / 100 * 10) {
             speed = 1;
         }
     }
@@ -226,6 +253,26 @@ public abstract class Animal implements GameObject {
                 speed = 3;
                 bowl.emptyBowl();
                 logger.debug(String.format("Hunger level for %s is 100 percent", animalName));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkForWater(Game game) {
+        List<WaterBowl> bowls;
+        if (game.getGameMap().getMapName().equalsIgnoreCase(getHomeMap())) {
+            bowls = game.getGameMap().getWaterBowls();
+        } else {
+            bowls = game.getGameMap(homeMap).getWaterBowls();
+        }
+        for (WaterBowl bowl : bowls) {
+            if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
+                logger.info(String.format("%s drank water", animalName));
+                currentThirst = MAX_THIRST;
+                speed = 3;
+                bowl.emptyBowl();
+                logger.debug(String.format("Thirst level for %s is 100 percent", animalName));
                 return true;
             }
         }
@@ -485,6 +532,10 @@ public abstract class Animal implements GameObject {
 
     public int getCurrentHungerInPercent() {
         return currentHunger / (MAX_HUNGER / 100);
+    }
+
+    public int getCurrentThirstInPercent() {
+        return currentThirst / (MAX_THIRST / 100);
     }
 
     public String getAnimalName() {

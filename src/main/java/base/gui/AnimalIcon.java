@@ -49,11 +49,12 @@ public class AnimalIcon extends GUIButton {
     }
 
     private void renderStats(RenderHandler renderer, Rectangle rectangle) {
-        Rectangle statsRectangle = new Rectangle(region.getX() - 250, region.getY(), 240, 60);
+        Rectangle statsRectangle = new Rectangle(region.getX() - 250, region.getY(), 240, 80);
         statsRectangle.generateGraphics(2, GRAY);
         renderer.renderRectangle(statsRectangle, rectangle, 1, 1, fixed);
         renderer.renderText("Hunger: " + animal.getCurrentHungerInPercent() + "%", new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 30));
-        renderer.renderText("Location: " + PRETTIER_MAP_NAMES.get(animal.getHomeMap()), new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 50));
+        renderer.renderText("Thirst: " + animal.getCurrentThirstInPercent() + "%", new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 50));
+        renderer.renderText("Location: " + PRETTIER_MAP_NAMES.get(animal.getHomeMap()), new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 70));
     }
 
     @Override
