@@ -8,6 +8,7 @@ import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
 import static base.constants.ColorConstant.*;
+import static base.constants.MapConstants.PRETTIER_MAP_NAMES;
 
 public class AnimalIcon extends GUIButton {
 
@@ -52,7 +53,7 @@ public class AnimalIcon extends GUIButton {
         statsRectangle.generateGraphics(2, GRAY);
         renderer.renderRectangle(statsRectangle, rectangle, 1, 1, fixed);
         renderer.renderText("Hunger: " + animal.getCurrentHungerInPercent() + "%", new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 30));
-        renderer.renderText("Location: " + animal.getHomeMap(), new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 50));
+        renderer.renderText("Location: " + PRETTIER_MAP_NAMES.get(animal.getHomeMap()), new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 50));
     }
 
     @Override

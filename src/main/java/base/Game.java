@@ -1,6 +1,7 @@
 package base;
 
 import base.constants.FilePath;
+import base.constants.MapConstants;
 import base.events.EventService;
 import base.gameobjects.*;
 import base.graphicsservice.Rectangle;
@@ -661,7 +662,7 @@ public class Game extends JFrame implements Runnable {
         logger.info("Starting game map loading started");
 
         refreshCurrentMapCache();
-        gameMap = gameMaps.get(MAIN_MAP);
+        gameMap = gameMaps.get(MapConstants.MAIN_MAP);
         player.teleportToCenter(this);
         logger.info("Starting game map loaded");
 

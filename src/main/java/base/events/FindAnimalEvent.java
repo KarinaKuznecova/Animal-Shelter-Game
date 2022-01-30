@@ -1,6 +1,7 @@
 package base.events;
 
 import base.Game;
+import base.constants.MapConstants;
 import base.gameobjects.Animal;
 import base.gameobjects.AnimalService;
 import base.gameobjects.Chest;
@@ -24,14 +25,14 @@ public class FindAnimalEvent extends Event {
     @Override
     void calculateChance(Game game) {
         chance = 5;
-        if (!BOTTOM_MAPS.contains(game.getGameMap().getMapName()) || (!repeatable && happened)) {
+        if (!MapConstants.BOTTOM_MAPS.contains(game.getGameMap().getMapName()) || (!repeatable && happened)) {
             chance = 0;
             return;
         }
         if (happened) {
             chance--;
         }
-        if (BOTTOM_LEFT_MAP.equals(game.getGameMap().getMapName()) || BOTTOM_CENTER_MAP.equals(game.getGameMap().getMapName())) {
+        if (MapConstants.BOTTOM_LEFT_MAP.equals(game.getGameMap().getMapName()) || MapConstants.BOTTOM_CENTER_MAP.equals(game.getGameMap().getMapName())) {
             chance++;
         }
         if (game.isBackpackEmpty()) {

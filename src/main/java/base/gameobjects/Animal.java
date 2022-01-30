@@ -1,6 +1,7 @@
 package base.gameobjects;
 
 import base.Game;
+import base.constants.MapConstants;
 import base.gameobjects.animals.Butterfly;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
@@ -47,7 +48,7 @@ public abstract class Animal implements GameObject {
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
     protected Animal(String animalName, int startX, int startY, int speed, int tileSize, int currentHunger) {
-        this(animalName, startX, startY, speed, MAIN_MAP, tileSize, currentHunger);
+        this(animalName, startX, startY, speed, MapConstants.MAIN_MAP, tileSize, currentHunger);
     }
 
     protected Animal(String animalName, int startX, int startY, int speed, String homeMap, int tileSize, int currentHunger) {
@@ -119,7 +120,7 @@ public abstract class Animal implements GameObject {
         if (route.isEmpty() && getHomeMap().startsWith("Bottom")) {
             route = game.calculateRouteToMap(this, NavigationService.getNextPortalToGetToCenter(getHomeMap()));
         }
-        if (route.isEmpty() && this instanceof Butterfly && HOME_MAPS.contains(getHomeMap())) {
+        if (route.isEmpty() && this instanceof Butterfly && MapConstants.HOME_MAPS.contains(getHomeMap())) {
             route = game.calculateRouteToMap(this, NavigationService.getNextPortalToOutside(getHomeMap()));
         }
 
@@ -346,10 +347,10 @@ public abstract class Animal implements GameObject {
         List<MapTile> portals = gameMap.getPortals();
         if (portals != null) {
             for (MapTile portal : portals) {
-                if (this instanceof Butterfly && HOME_MAPS.contains(portal.getPortalDirection()) && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
+                if (this instanceof Butterfly && MapConstants.HOME_MAPS.contains(portal.getPortalDirection()) && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
                     return true;
                 }
-                if (MAIN_MAP.equals(getHomeMap()) && portal.getPortalDirection().startsWith("Bottom") && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
+                if (MapConstants.MAIN_MAP.equals(getHomeMap()) && portal.getPortalDirection().startsWith("Bottom") && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
                     return true;
                 }
             }
