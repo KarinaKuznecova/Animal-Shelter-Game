@@ -94,7 +94,7 @@ public abstract class Animal implements GameObject {
             int startSprite = direction.directionNumber * animatedSprite.getSpritesSize() / 4;
             int endSprite = direction.directionNumber * animatedSprite.getSpritesSize() / 4 + 2;
             if (direction.name().startsWith("EAT")) {
-                if (animatedSprite.getSpritesSize() == 28) {
+                if (animatedSprite.getSpritesSize() >= 28) {
                     startSprite = (direction.directionNumber - 5) * animatedSprite.getSpritesSize() / 4 + 3;
                     endSprite = startSprite + 3;
                 } else {
