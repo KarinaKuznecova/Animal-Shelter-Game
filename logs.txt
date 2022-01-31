@@ -1,0 +1,35 @@
+17:51:37 - Loading regular tiles
+17:51:37 - Sprite sheet loading started
+17:51:38 - Sprite sheet loading done
+17:51:38 - Loaded 74 tiles
+17:51:38 - Loading technical terrain tiles
+17:51:38 - Sprite sheet loading started
+17:51:38 - Sprite sheet loading done
+17:51:38 - Loading maps list
+17:51:38 - Screen size will be 1344 by 1344
+17:51:39 - Game map loading started
+17:51:39 - Size of the map is 20 by 20 tiles
+17:51:39 - Loading animals from files
+17:51:39 - No animals on this map
+17:51:39 - Size of the map is 22 by 22 tiles
+17:51:39 - Size of the map is 20 by 20 tiles
+17:51:39 - Size of the map is 22 by 22 tiles
+17:51:39 - Size of the map is 20 by 20 tiles
+17:51:40 - Size of the map is 22 by 22 tiles
+17:51:40 - Size of the map is 20 by 20 tiles
+17:51:40 - Size of the map is 22 by 22 tiles
+17:51:40 - Size of the map is 22 by 22 tiles
+17:51:40 - Size of the map is 20 by 20 tiles
+17:51:40 - Game map loaded
+17:51:40 - changing selected animal to : 
+17:51:40 - changing your selected plant to : 
+17:51:40 - Attempt to load backpack
+17:51:40 - No previous backpacks found, will load empty
+17:51:40 - changing tile to new tile : -1
+17:51:40 - changing your selected animal to null
+17:51:40 - changing your selected plant to : 
+17:51:40 - changing your selected item to : 
+17:51:40 - Loading player animations
+17:51:40 - Player animations loaded
+17:51:40 - Caching plants
+17:51:41 - Caching plants finished
