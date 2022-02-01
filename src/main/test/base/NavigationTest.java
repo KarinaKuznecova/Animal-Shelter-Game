@@ -12,6 +12,9 @@ class NavigationTest {
 
     @Test
     public void TestCenter() {
+        //tests the getNextPortalToGetToCenter method
+        //method input - BottomLeftMap 
+        //expected output - BottomCenterMap
         NavigationService nav = new NavigationService();
         String mapName = "BottomCenterMap";
         String expected = MapConstants.BOTTOM_CENTER_MAP;
@@ -21,6 +24,9 @@ class NavigationTest {
 
     @Test
     public void TestHome() {
+        //tests the getNextPortalToGetHome method
+        //method input - WaterMap
+        //expected output - MainMap
         NavigationService nav = new NavigationService();
         String mapName = "WaterMap";
         String expected = MapConstants.MAIN_MAP;
@@ -30,6 +36,9 @@ class NavigationTest {
 
     @Test
     public void TestPortalOne() {
+        //tests the getNextPortalToGetToCenter method
+        //method inputs - BottomCenterMap, BottomLeftMap
+        //expected output - BottomLeftMap
         NavigationService nav = new NavigationService();
         String currentMap = "BottomCenterMap";
         String destination = "BottomLeftMap";
@@ -39,7 +48,9 @@ class NavigationTest {
     }
 
     public void TestPortalTwo(){
-
+        //tests the getNextPortalToGetToCenter method
+        //method input - TopCenterMap, TopLeftMap
+        //expected output - TopLeftMap
         NavigationService nav = new NavigationService();
         String currentMap = "TopCenterMap";
         String destination = "TopLeftMap";
@@ -49,6 +60,9 @@ class NavigationTest {
     }
 
     public void TestPortalThree(){
+        //tests the getNextPortalToGetToCenter method
+        //method input - MainMap, TopCenterMap
+        //expected output - TopCenterMap
         NavigationService nav = new NavigationService();
         String currentMap = "MainMap";
         String destination = "TopCenterMap";
@@ -59,8 +73,9 @@ class NavigationTest {
 
     @Test
     public void TestOutside(){
-        //input - Top center Map
-        //expected output - top left map
+        //tests the getNextPortalToGetToOutside method
+        //method input - TopCenterMap
+        //expected output - TopLeftMap
         NavigationService nav = new NavigationService();
         String mapName = "TopCenterMap";
         String expected = MapConstants.TOP_LEFT_MAP;
