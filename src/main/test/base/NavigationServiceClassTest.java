@@ -11,10 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class NavigationServiceClassTest {
 
     NavigationService nav = new NavigationService();
-    String mapName = "";
-    String currentMap = "";
-    String expected ="";
-    String result = "";
 
     @Test
     public void getNextPortalToGetToCenter_FromBottomLeftMap() {
