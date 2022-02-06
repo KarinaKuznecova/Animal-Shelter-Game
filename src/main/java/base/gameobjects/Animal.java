@@ -448,8 +448,7 @@ public abstract class Animal implements GameObject {
         }
         if (isAnimalStuck(gameMap)) {
             logger.info("Animal still stuck, will try to move to center");
-            animalRectangle.setX(gameMap.getMapWidth() * TILE_SIZE * ZOOM / 2);
-            animalRectangle.setY(gameMap.getMapHeight() * TILE_SIZE * ZOOM / 2);
+            moveAnimalToCenter(gameMap);
         }
         if (isAnimalStuck(gameMap)) {
             logger.error("Animal is stuck completely");
@@ -482,10 +481,19 @@ public abstract class Animal implements GameObject {
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
         if (mouseRectangle.intersects(animalRectangle)) {
             logger.info("Click on Animal: ");
-            tryToMove(game.getGameMap());
+            moveAnimalToCenter(game.getGameMap());
             return true;
         }
         return false;
+    }
+
+    private void moveAnimalToCenter(GameMap gameMap) {
+        animalRectangle.setX(gameMap.getMapWidth() * TILE_SIZE * ZOOM / 2);
+        animalRectangle.setY(gameMap.getMapHeight() * TILE_SIZE * ZOOM / 2);
+
+        if (isAnimalStuck(gameMap)) {
+            tryToMove(gameMap);
+        }
     }
 
     public String getCurrentMap() {
