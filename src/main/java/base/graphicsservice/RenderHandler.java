@@ -67,7 +67,12 @@ public class RenderHandler {
     public void render(Game game, Graphics graphics) {
 
         if (game.getSelectedTileId() != -1 && game.getMousePosition() != null) {
-            renderTilePreview(game);
+            try {
+                renderTilePreview(game);
+            } catch (NullPointerException e) {
+                // Sometimes there is NPE when mouse is outside the game window. Will catch it and ignore.
+                logger.error("Exception with preview", e);
+            }
         }
 
         graphics.drawImage(view.getSubimage(0, 0, camera.getWidth(), camera.getHeight()), 0, 0, camera.getWidth(), camera.getHeight(), null);
