@@ -10,4 +10,9 @@ class GameTest {
     public void sampleTest() {
         System.out.println("Testing test");
     }
+
+    @Test
+    public void sampleTest2() {
+        System.out.println("Testing pull request");
+    }
 }
