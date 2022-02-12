@@ -160,6 +160,7 @@ public abstract class Animal implements GameObject {
             if (!route.isEmpty()) {
                 nextDirection = route.getNextStep();
                 movingTicks = getMovingTickToAdjustPosition(nextDirection);
+                logger.debug(String.format("Direction: %s, moving ticks: %d", direction.name(), movingTicks));
             } else {
                 nextDirection = getRandomDirection();
                 movingTicks = getRandomMovingTicks();
@@ -463,19 +464,8 @@ public abstract class Animal implements GameObject {
         return random.nextInt(20) + 64;
     }
 
-    private int getMovingTickToAdjustPosition(Direction direction) {
-        switch (direction) {
-            case DOWN:
-                return (((TILE_SIZE * ZOOM) - (getCurrentY() % (TILE_SIZE * ZOOM))) / speed) + speed;
-            case UP:
-                return (((TILE_SIZE * ZOOM) + (getCurrentY() % (TILE_SIZE * ZOOM))) / speed) - speed;
-            case RIGHT:
-                return (((TILE_SIZE * ZOOM) - (getCurrentX() % (TILE_SIZE * ZOOM))) / speed) + speed;
-            case LEFT:
-                return (((TILE_SIZE * ZOOM) + (getCurrentX() % (TILE_SIZE * ZOOM))) / speed) - speed;
-            default:
-                return (TILE_SIZE * ZOOM) / speed;
-        }
+    protected int getMovingTickToAdjustPosition(Direction direction) {
+        return Math.abs(NavigationService.getPixelsToAdjustPosition(direction, getCurrentX(), getCurrentY())) / speed;
     }
 
     private boolean unwalkableInThisDirection(GameMap gameMap, Direction direction) {
@@ -699,5 +689,9 @@ public abstract class Animal implements GameObject {
 
     public void setAge(AgeStage age) {
         this.age = age;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 }
