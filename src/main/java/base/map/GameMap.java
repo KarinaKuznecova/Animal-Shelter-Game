@@ -15,9 +15,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static base.constants.Constants.*;
 import static base.constants.MultiOptionalObjects.bookcases;
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
 
 public class GameMap {
 
@@ -350,6 +349,16 @@ public class GameMap {
             }
         }
         return bowls;
+    }
+
+    public List<MapTile> getPillows() {
+        List<MapTile> pillows = new ArrayList<>();
+        for (MapTile tile : layeredTiles.get(1)) {
+            if (tile.getId() == PILLOW_TILE_ID) {
+                pillows.add(tile);
+            }
+        }
+        return pillows;
     }
 
     public List<BigObject> getBigObjects() {

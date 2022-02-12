@@ -8,8 +8,8 @@ public class Pig extends Animal {
 
     public static final String NAME = "pig";
 
-    public Pig(int startX, int startY, int speed, int hungerLevel, int currentThirst) {
-        super(NAME, startX, startY, speed, 64, hungerLevel, currentThirst);
+    public Pig(int startX, int startY, int speed, int hungerLevel, int currentThirst, int currentEnergy) {
+        super(NAME, startX, startY, speed, 64, hungerLevel, currentThirst, currentEnergy);
         setHomeMap(SECOND_MAP);
     }
 }

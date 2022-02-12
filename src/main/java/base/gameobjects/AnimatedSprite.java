@@ -6,11 +6,9 @@ import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 import base.graphicsservice.SpriteSheet;
 
-import java.awt.image.BufferedImage;
-
 public class AnimatedSprite extends Sprite implements GameObject {
 
-    private Sprite[] sprites;
+    private final Sprite[] sprites;
     private int currentSprite = 0;
     private int speed;
     private int counter;
@@ -19,32 +17,12 @@ public class AnimatedSprite extends Sprite implements GameObject {
     private int startSprite = 0;
     private int endSprite;
 
-    //@param speed represents how many frames pass until sprite changes
-    public AnimatedSprite(BufferedImage[] images, int speed) {
-        sprites = new Sprite[images.length];
-        this.speed = speed;
-        this.startSprite = images.length - 1;
-
-        for (int i = 0; i < sprites.length; i++) {
-            sprites[i] = new Sprite(images[i]);
-        }
-    }
-
     //higher number = slower speed
     public AnimatedSprite(SpriteSheet sheet, int speed, boolean vertical) {
         sprites = sheet.getLoadedSprites();
         this.speed = speed;
         this.endSprite = sprites.length - 1;
         this.vertical = vertical;
-    }
-
-    public AnimatedSprite(SpriteSheet sheet, Rectangle[] positions, int speed) {
-        sprites = new Sprite[positions.length];
-        this.speed = speed;
-        this.endSprite = positions.length - 1;
-
-        for (int i = 0; i < positions.length; i++)
-            sprites[i] = new Sprite(sheet, positions[i].getX(), positions[i].getY(), positions[i].getWidth(), positions[i].getHeight());
     }
 
     @Override
@@ -80,9 +58,8 @@ public class AnimatedSprite extends Sprite implements GameObject {
 
     public void incrementSprite() {
         if (vertical) {
-            currentSprite += 4; //do currentSprite++ if horizontal
-        }
-        else {
+            currentSprite += 4;
+        } else {
             currentSprite++;
         }
         if (currentSprite > endSprite) {
@@ -121,5 +98,17 @@ public class AnimatedSprite extends Sprite implements GameObject {
 
     public int getSpritesSize() {
         return sprites.length;
+    }
+
+    public int getCurrentSprite() {
+        return currentSprite;
+    }
+
+    public int getEndSprite() {
+        return endSprite;
+    }
+
+    public int getSpeed() {
+        return speed;
     }
 }

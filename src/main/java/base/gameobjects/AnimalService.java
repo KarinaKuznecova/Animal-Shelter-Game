@@ -14,19 +14,18 @@ import java.util.*;
 
 import static base.constants.Constants.*;
 import static base.constants.FilePath.ANIMALS_DIR_PATH;
-import static base.gameobjects.Animal.MAX_HUNGER;
-import static base.gameobjects.Animal.MAX_THIRST;
+import static base.gameobjects.Animal.*;
 
 public class AnimalService {
 
-    public List<String> animalNames = Arrays.asList(Rat.NAME, Mouse.NAME, Chicken.NAME, Butterfly.NAME, Cat.NAME, Pig.NAME, Bunny.NAME);
+    public static final List<String> ANIMAL_NAMES = Arrays.asList(Rat.NAME, Mouse.NAME, Chicken.NAME, Butterfly.NAME, Cat.NAME, Pig.NAME, Bunny.NAME);
 
     protected static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
 
     public Map<String, Sprite> getAnimalPreviewSprites() {
         Map<String, Sprite> previews = new HashMap<>();
-        for (String animalName : animalNames) {
-            previews.put(animalName, createAnimal(animalName, 1, 1, "", null, MAX_HUNGER, MAX_THIRST).getPreviewSprite());
+        for (String animalName : ANIMAL_NAMES) {
+            previews.put(animalName, createAnimal(animalName, 1, 1, "", null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY).getPreviewSprite());
         }
         return previews;
     }
@@ -36,34 +35,34 @@ public class AnimalService {
             String[] split = animalType.split("-");
             String name = split[0];
             String color = split[1];
-            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST);
+            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY);
         }
-        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST);
+        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY);
     }
 
-    public Animal createAnimal(String animalName, int startX, int startY, String mapName, String color, int hunger, int thirst) {
+    public Animal createAnimal(String animalName, int startX, int startY, String mapName, String color, int hunger, int thirst, int energy) {
         Animal animal;
         switch (animalName.toLowerCase()) {
             case Rat.NAME:
-                animal = new Rat(startX, startY, 3, color, hunger, thirst);
+                animal = new Rat(startX, startY, 3, color, hunger, thirst, energy);
                 break;
             case Mouse.NAME:
-                animal = new Mouse(startX, startY, 3, hunger, thirst);
+                animal = new Mouse(startX, startY, 3, hunger, thirst, energy);
                 break;
             case Chicken.NAME:
-                animal = new Chicken(startX, startY, 3, hunger, thirst);
+                animal = new Chicken(startX, startY, 3, hunger, thirst, energy);
                 break;
             case Butterfly.NAME:
-                animal = new Butterfly(startX, startY, 1, hunger, thirst);
+                animal = new Butterfly(startX, startY, 1, hunger, thirst, energy);
                 break;
             case Cat.NAME:
-                animal = new Cat(startX, startY, 3, color, hunger, thirst);
+                animal = new Cat(startX, startY, 3, color, hunger, thirst, energy);
                 break;
             case Pig.NAME:
-                animal = new Pig(startX, startY, 3, hunger, thirst);
+                animal = new Pig(startX, startY, 3, hunger, thirst, energy);
                 break;
             case Bunny.NAME:
-                animal = new Bunny(startX, startY, 3, hunger, thirst);
+                animal = new Bunny(startX, startY, 3, hunger, thirst, energy);
                 break;
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalName));
@@ -116,6 +115,7 @@ public class AnimalService {
             }
             printWriter.println("Hunger:" + animal.getCurrentHunger());
             printWriter.println("Thirst:" + animal.getCurrentThirst());
+            printWriter.println("Energy:" + animal.getCurrentEnergy());
             printWriter.println("X:" + animal.getCurrentX());
             printWriter.println("Y:" + animal.getCurrentY());
 
@@ -152,6 +152,7 @@ public class AnimalService {
             int speed;
             int hunger = MAX_HUNGER;
             int thirst = MAX_THIRST;
+            int energy = MAX_ENERGY;
             int x = 0;
             int y = 0;
             try (Scanner scanner = new Scanner(file)) {
@@ -187,6 +188,11 @@ public class AnimalService {
                         thirst = Integer.parseInt(splitLine[1]);
                         continue;
                     }
+                    if (line.startsWith("Energy:")) {
+                        String[] splitLine = line.split(":");
+                        energy = Integer.parseInt(splitLine[1]);
+                        continue;
+                    }
                     if (line.startsWith("X:")) {
                         String[] splitLine = line.split(":");
                         x = Integer.parseInt(splitLine[1]);
@@ -201,7 +207,7 @@ public class AnimalService {
                 e.printStackTrace();
             }
             if (animalType != null) {
-                Animal animal = createAnimal(animalType, x, y, mapName, color, hunger, thirst);
+                Animal animal = createAnimal(animalType, x, y, mapName, color, hunger, thirst, energy);
                 animal.setFileName(file.getName());
                 animalsOnMap.add(animal);
             }
