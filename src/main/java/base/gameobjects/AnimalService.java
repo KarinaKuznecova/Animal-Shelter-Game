@@ -14,6 +14,7 @@ import java.util.*;
 
 import static base.constants.Constants.*;
 import static base.constants.FilePath.ANIMALS_DIR_PATH;
+import static base.gameobjects.AgeStage.ADULT;
 import static base.gameobjects.Animal.*;
 
 public class AnimalService {
@@ -25,7 +26,7 @@ public class AnimalService {
     public Map<String, Sprite> getAnimalPreviewSprites() {
         Map<String, Sprite> previews = new HashMap<>();
         for (String animalName : ANIMAL_NAMES) {
-            previews.put(animalName, createAnimal(animalName, 1, 1, "", null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY).getPreviewSprite());
+            previews.put(animalName, createAnimal(animalName, 1, 1, "", null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, ADULT).getPreviewSprite());
         }
         return previews;
     }
@@ -35,34 +36,34 @@ public class AnimalService {
             String[] split = animalType.split("-");
             String name = split[0];
             String color = split[1];
-            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY);
+            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, ADULT);
         }
-        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY);
+        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, ADULT);
     }
 
-    public Animal createAnimal(String animalName, int startX, int startY, String mapName, String color, int hunger, int thirst, int energy) {
+    public Animal createAnimal(String animalName, int startX, int startY, String mapName, String color, int hunger, int thirst, int energy, AgeStage age) {
         Animal animal;
         switch (animalName.toLowerCase()) {
             case Rat.NAME:
-                animal = new Rat(startX, startY, 3, color, hunger, thirst, energy);
+                animal = new Rat(startX, startY, 3, color, hunger, thirst, energy, age);
                 break;
             case Mouse.NAME:
-                animal = new Mouse(startX, startY, 3, hunger, thirst, energy);
+                animal = new Mouse(startX, startY, 3, hunger, thirst, energy, age);
                 break;
             case Chicken.NAME:
-                animal = new Chicken(startX, startY, 3, hunger, thirst, energy);
+                animal = new Chicken(startX, startY, 3, hunger, thirst, energy, age);
                 break;
             case Butterfly.NAME:
-                animal = new Butterfly(startX, startY, 1, hunger, thirst, energy);
+                animal = new Butterfly(startX, startY, 1, hunger, thirst, energy, age);
                 break;
             case Cat.NAME:
-                animal = new Cat(startX, startY, 3, color, hunger, thirst, energy);
+                animal = new Cat(startX, startY, 3, color, hunger, thirst, energy, age);
                 break;
             case Pig.NAME:
-                animal = new Pig(startX, startY, 3, hunger, thirst, energy);
+                animal = new Pig(startX, startY, 3, hunger, thirst, energy, age);
                 break;
             case Bunny.NAME:
-                animal = new Bunny(startX, startY, 3, hunger, thirst, energy);
+                animal = new Bunny(startX, startY, 3, hunger, thirst, energy, age);
                 break;
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalName));
@@ -116,6 +117,7 @@ public class AnimalService {
             printWriter.println("Hunger:" + animal.getCurrentHunger());
             printWriter.println("Thirst:" + animal.getCurrentThirst());
             printWriter.println("Energy:" + animal.getCurrentEnergy());
+            printWriter.println("Age:" + animal.getAge());
             printWriter.println("X:" + animal.getCurrentX());
             printWriter.println("Y:" + animal.getCurrentY());
 
@@ -153,6 +155,7 @@ public class AnimalService {
             int hunger = MAX_HUNGER;
             int thirst = MAX_THIRST;
             int energy = MAX_ENERGY;
+            AgeStage age = ADULT;
             int x = 0;
             int y = 0;
             try (Scanner scanner = new Scanner(file)) {
@@ -193,6 +196,12 @@ public class AnimalService {
                         energy = Integer.parseInt(splitLine[1]);
                         continue;
                     }
+                    if (line.startsWith("Age:")) {
+                        String[] splitLine = line.split(":");
+                        String ageString = splitLine[1];
+                        age = AgeStage.valueOf(ageString);
+                        continue;
+                    }
                     if (line.startsWith("X:")) {
                         String[] splitLine = line.split(":");
                         x = Integer.parseInt(splitLine[1]);
@@ -207,7 +216,7 @@ public class AnimalService {
                 e.printStackTrace();
             }
             if (animalType != null) {
-                Animal animal = createAnimal(animalType, x, y, mapName, color, hunger, thirst, energy);
+                Animal animal = createAnimal(animalType, x, y, mapName, color, hunger, thirst, energy, age);
                 animal.setFileName(file.getName());
                 animalsOnMap.add(animal);
             }

@@ -3,12 +3,13 @@ package base.gameobjects;
 import base.gameobjects.animals.Mouse;
 import org.junit.jupiter.api.Test;
 
+import static base.gameobjects.AgeStage.ADULT;
 import static base.navigationservice.Direction.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AnimalTest {
 
-    Mouse testSubject = new Mouse(0, 0, 2, 100, 100, 100);
+    Mouse testSubject = new Mouse(0, 0, 2, 100, 100, 100, ADULT);
 
     @Test
     public void getStartingSprite_DOWN() {
