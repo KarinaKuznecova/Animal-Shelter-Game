@@ -41,6 +41,7 @@ public abstract class Animal implements GameObject {
     private int speed;
     private String color;
     private final String animalName;
+    private AgeStage age;
 
     protected static final int MAX_HUNGER = 30_000;
     protected static final int MIN_HUNGER = 1;
@@ -57,11 +58,11 @@ public abstract class Animal implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
-    protected Animal(String animalName, int startX, int startY, int speed, int tileSize, int currentHunger, int currentThirst, int currentEnergy) {
-        this(animalName, startX, startY, speed, MapConstants.MAIN_MAP, tileSize, currentHunger, currentThirst, currentEnergy);
+    protected Animal(String animalName, int startX, int startY, int speed, int tileSize, int currentHunger, int currentThirst, int currentEnergy, AgeStage age) {
+        this(animalName, startX, startY, speed, MapConstants.MAIN_MAP, tileSize, currentHunger, currentThirst, currentEnergy, age);
     }
 
-    protected Animal(String animalName, int startX, int startY, int speed, String currentMap, int tileSize, int currentHunger, int currentThirst, int currentEnergy) {
+    protected Animal(String animalName, int startX, int startY, int speed, String currentMap, int tileSize, int currentHunger, int currentThirst, int currentEnergy, AgeStage age) {
         this.animalName = animalName;
         this.tileSize = tileSize;
         this.currentMap = currentMap;
@@ -69,6 +70,7 @@ public abstract class Animal implements GameObject {
         this.currentHunger = currentHunger;
         this.currentThirst = currentThirst;
         this.currentEnergy = currentEnergy;
+        this.age = age;
         homeMap = MapConstants.TOP_CENTER_MAP;
 
         setSprite();
@@ -689,5 +691,13 @@ public abstract class Animal implements GameObject {
 
     public void setHomeMap(String homeMap) {
         this.homeMap = homeMap;
+    }
+
+    public AgeStage getAge() {
+        return age;
+    }
+
+    public void setAge(AgeStage age) {
+        this.age = age;
     }
 }
