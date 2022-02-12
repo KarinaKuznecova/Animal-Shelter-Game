@@ -832,6 +832,10 @@ public class Game extends JFrame implements Runnable {
         return routeCalculator.calculateRouteToPortal(getGameMap(animal.getCurrentMap()), animal, destination);
     }
 
+    public Route calculateRouteToPillow(Animal animal) {
+        return routeCalculator.calculateRouteToPillow(getGameMap(animal.getCurrentMap()), animal);
+    }
+
     public boolean isBackpackEmpty() {
         return backpackService.isBackPackEmpty(this);
     }

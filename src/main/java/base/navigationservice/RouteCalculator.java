@@ -22,6 +22,7 @@ public class RouteCalculator {
 
     public static final String WATER = "water";
     public static final String FOOD = "food";
+    public static final String PILLOW = "pillow";
 
     public Route calculateRouteToFood(GameMap gameMap, Animal animal) {
         return calculateRoute(gameMap, animal, FOOD);
@@ -29,6 +30,10 @@ public class RouteCalculator {
 
     public Route calculateRouteToWater(GameMap gameMap, Animal animal) {
         return calculateRoute(gameMap, animal, WATER);
+    }
+
+    public Route calculateRouteToPillow(GameMap gameMap, Animal animal) {
+        return calculateRoute(gameMap, animal, PILLOW);
     }
 
     public Route calculateRouteToPortal(GameMap gameMap, Animal animal, String destination) {
@@ -42,10 +47,10 @@ public class RouteCalculator {
         if (destination == null) {
             return newRoute;
         }
-        if (!isWaterOrFood(destination) && getPortal(gameMap, destination) != null) {
+        if (isAnotherMap(destination) && getPortal(gameMap, destination) != null) {
             portal = getPortal(gameMap, destination);
         }
-        if (!isWaterOrFood(destination) && portal == null) {
+        if (isAnotherMap(destination) && portal == null) {
             return newRoute;
         }
         List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
@@ -62,12 +67,14 @@ public class RouteCalculator {
             if (!searched.contains(rectangleToCheck)) {
                 searchQueue.remove(0);
                 boolean found;
-                if (!isWaterOrFood(destination)) {
+                if (isAnotherMap(destination)) {
                     found = isTherePortal(portal, rectangleToCheck);
                 } else if (FOOD.equals(destination)) {
                     found = isThereFood(gameMap, rectangleToCheck);
                 } else if (WATER.equals(destination)) {
                     found = isThereWater(gameMap, rectangleToCheck);
+                } else if (PILLOW.equals(destination)) {
+                    found = isTherePillow(gameMap, rectangleToCheck);
                 } else {
                     found = false;
                 }
@@ -83,7 +90,7 @@ public class RouteCalculator {
                 searchQueue.remove(0);
             }
         }
-        if (isWaterOrFood(destination) && newRoute.isEmpty() && !animal.getCurrentMap().equals(animal.getHomeMap())) {
+        if (!isAnotherMap(destination) && newRoute.isEmpty() && !animal.getCurrentMap().equals(animal.getHomeMap())) {
             newRoute = calculateRouteToPortal(gameMap, animal, NavigationService.getNextPortalTo(animal.getCurrentMap(), animal.getHomeMap()));
         }
         return newRoute;
@@ -127,8 +134,8 @@ public class RouteCalculator {
         }
     }
 
-    private boolean isWaterOrFood(String destination) {
-        return WATER.equals(destination) || FOOD.equals(destination);
+    private boolean isAnotherMap(String destination) {
+        return !(WATER.equals(destination) || FOOD.equals(destination) || PILLOW.equals(destination));
     }
 
     public void fillSearchQueue(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangleChecked, Route potentialRoute, List<Rectangle> searched) {
@@ -234,6 +241,15 @@ public class RouteCalculator {
     public boolean isThereWater(GameMap gameMap, Rectangle rectangle) {
         for (WaterBowl waterBowl : gameMap.getWaterBowls()) {
             if (waterBowl.isFull() && waterBowl.getRectangle().intersects(rectangle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isTherePillow(GameMap gameMap, Rectangle rectangle) {
+        for (MapTile pillow : gameMap.getPillows()) {
+            if (rectangle.intersects(pillow)) {
                 return true;
             }
         }
