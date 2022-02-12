@@ -97,9 +97,7 @@ public class RouteCalculator {
     }
 
     private void fillInitialRoutes(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Animal animal) {
-        int adjustedX = animal.getCurrentX() - (animal.getCurrentX() % (TILE_SIZE * ZOOM));
-        int adjustedY = animal.getCurrentY() - (animal.getCurrentY() % (TILE_SIZE * ZOOM));
-        Rectangle initialRectangle = new Rectangle(adjustedX, adjustedY, TILE_SIZE, TILE_SIZE);
+        Rectangle initialRectangle = new Rectangle(animal.getCurrentX(), animal.getCurrentY(), TILE_SIZE, TILE_SIZE);
 
         Route potentialRoute = new Route();
         if (tryDown(gameMap, initialRectangle) != null) {
@@ -198,28 +196,28 @@ public class RouteCalculator {
 
     public Rectangle tryUp(GameMap gameMap, Rectangle rectangle) {
         if (rectangle.getY() >= 0 && canWalkThisDirection(gameMap, UP, rectangle.getX(), rectangle.getY())) {
-            return new Rectangle(rectangle.getX(), rectangle.getY() - (TILE_SIZE * ZOOM), (TILE_SIZE * ZOOM) - 1, (TILE_SIZE * ZOOM) - 1);
+            return new Rectangle(rectangle.getX(), rectangle.getY() - NavigationService.getPixelsToAdjustPosition(UP, rectangle.getX(), rectangle.getY()), (TILE_SIZE * ZOOM) - 1, (TILE_SIZE * ZOOM) - 1);
         }
         return null;
     }
 
     public Rectangle tryDown(GameMap gameMap, Rectangle rectangle) {
         if (rectangle.getY() + (TILE_SIZE * ZOOM) <= gameMap.getMapHeight() * (TILE_SIZE * ZOOM) && canWalkThisDirection(gameMap, DOWN, rectangle.getX(), rectangle.getY())) {
-            return new Rectangle(rectangle.getX(), rectangle.getY() + (TILE_SIZE * ZOOM), (TILE_SIZE * ZOOM) - 1, (TILE_SIZE * ZOOM) - 1);
+            return new Rectangle(rectangle.getX(), rectangle.getY() + NavigationService.getPixelsToAdjustPosition(DOWN, rectangle.getX(), rectangle.getY()), (TILE_SIZE * ZOOM) - 1, (TILE_SIZE * ZOOM) - 1);
         }
         return null;
     }
 
     public Rectangle tryLeft(GameMap gameMap, Rectangle rectangle) {
         if (rectangle.getX() >= 0 && canWalkThisDirection(gameMap, LEFT, rectangle.getX(), rectangle.getY())) {
-            return new Rectangle(rectangle.getX() - (TILE_SIZE * ZOOM), rectangle.getY(), (TILE_SIZE * ZOOM) - 1, (TILE_SIZE * ZOOM) - 1);
+            return new Rectangle(rectangle.getX() - NavigationService.getPixelsToAdjustPosition(LEFT, rectangle.getX(), rectangle.getY()), rectangle.getY(), (TILE_SIZE * ZOOM) - 1, (TILE_SIZE * ZOOM) - 1);
         }
         return null;
     }
 
     public Rectangle tryRight(GameMap gameMap, Rectangle rectangle) {
         if (rectangle.getX() + (TILE_SIZE * ZOOM) <= gameMap.getMapWidth() * (TILE_SIZE * ZOOM) && canWalkThisDirection(gameMap, RIGHT, rectangle.getX(), rectangle.getY())) {
-            return new Rectangle(rectangle.getX() + (TILE_SIZE * ZOOM), rectangle.getY(), (TILE_SIZE * ZOOM) - 1, (TILE_SIZE * ZOOM) - 1);
+            return new Rectangle(rectangle.getX() + NavigationService.getPixelsToAdjustPosition(RIGHT, rectangle.getX(), rectangle.getY()), rectangle.getY(), (TILE_SIZE * ZOOM) - 1, (TILE_SIZE * ZOOM) - 1);
         }
         return null;
     }
@@ -259,23 +257,23 @@ public class RouteCalculator {
     private boolean canWalkThisDirection(GameMap gameMap, Direction direction, int xPosition, int yPosition) {
         switch (direction) {
             case LEFT:
-                xPosition = xPosition - (TILE_SIZE * ZOOM);
+                xPosition = xPosition - Math.abs(NavigationService.getPixelsToAdjustPosition(direction, xPosition, yPosition));
                 break;
             case RIGHT:
-                xPosition = xPosition + (TILE_SIZE * ZOOM);
+                xPosition = xPosition + Math.abs(NavigationService.getPixelsToAdjustPosition(direction, xPosition, yPosition));
                 break;
             case UP:
-                yPosition = yPosition - (TILE_SIZE * ZOOM);
+                yPosition = yPosition - Math.abs(NavigationService.getPixelsToAdjustPosition(direction, xPosition, yPosition));
                 break;
             case DOWN:
-                yPosition = yPosition + (TILE_SIZE * ZOOM);
+                yPosition = yPosition + Math.abs(NavigationService.getPixelsToAdjustPosition(direction, xPosition, yPosition));
                 break;
         }
         return isWalkable(gameMap, xPosition, yPosition);
     }
 
     public boolean isWalkable(GameMap gameMap, int x, int y) {
-        Rectangle rectangle = new Rectangle(x, y, (TILE_SIZE * ZOOM) - 1, (TILE_SIZE * ZOOM) - 1);
+        Rectangle rectangle = new Rectangle(x, y, 32, 32);
 
         if (gameMap.isTherePortal(rectangle)) {
             return true;
@@ -288,13 +286,8 @@ public class RouteCalculator {
             return true;
         }
         for (MapTile tile : tilesOnLayer) {
-            Rectangle tileRectangle = new Rectangle(tile.getX(), tile.getY(), (TILE_SIZE * ZOOM), (TILE_SIZE * ZOOM));
+            Rectangle tileRectangle = new Rectangle(tile.getX() * (TILE_SIZE * ZOOM), tile.getY() * (TILE_SIZE * ZOOM), 32, 32);
             if (rectangle.intersects(tileRectangle)) {
-                return false;
-            }
-            int tileX = Math.abs(tile.getX() * (TILE_SIZE * ZOOM));
-            int tileY = Math.abs(tile.getY() * (TILE_SIZE * ZOOM));
-            if (Math.abs(tileX - x) < (TILE_SIZE * ZOOM) && Math.abs(tileY - y) < (TILE_SIZE * ZOOM)) {
                 return false;
             }
         }
