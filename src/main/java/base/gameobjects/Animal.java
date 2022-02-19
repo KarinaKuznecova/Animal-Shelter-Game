@@ -58,7 +58,7 @@ public abstract class Animal implements GameObject {
 
     protected static final int MAX_ENERGY = 40_000;
     protected static final int MIN_ENERGY = 1;
-    protected static final int SLEEPING_SPEED = 30;
+    protected static final int SLEEPING_SPEED = 15;
     private int currentEnergy;
 
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
@@ -265,7 +265,7 @@ public abstract class Animal implements GameObject {
         decreaseEnergyLevel();
 
         if (!(this instanceof Butterfly) && isSleepy() && !isSleeping()) {
-            if (isTherePillow(game)) {
+            if (route.isEmpty() && isTherePillow(game)) {
                 sleep();
                 return;
             }

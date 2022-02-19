@@ -353,6 +353,9 @@ public class GameMap {
 
     public List<MapTile> getPillows() {
         List<MapTile> pillows = new ArrayList<>();
+        if (layeredTiles.get(1) == null) {
+            return pillows;
+        }
         for (MapTile tile : layeredTiles.get(1)) {
             if (tile.getId() == PILLOW_TILE_ID) {
                 pillows.add(tile);
