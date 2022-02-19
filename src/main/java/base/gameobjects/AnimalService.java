@@ -15,6 +15,7 @@ import java.util.*;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.ANIMALS_DIR_PATH;
 import static base.gameobjects.AgeStage.ADULT;
+import static base.gameobjects.AgeStage.BABY;
 import static base.gameobjects.Animal.*;
 
 public class AnimalService {
@@ -36,9 +37,9 @@ public class AnimalService {
             String[] split = animalType.split("-");
             String name = split[0];
             String color = split[1];
-            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, ADULT);
+            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY);
         }
-        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, ADULT);
+        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY);
     }
 
     public Animal createAnimal(String animalName, int startX, int startY, String mapName, String color, int hunger, int thirst, int energy, AgeStage age) {
@@ -54,7 +55,7 @@ public class AnimalService {
                 animal = new Chicken(startX, startY, 3, hunger, thirst, energy, age);
                 break;
             case Butterfly.NAME:
-                animal = new Butterfly(startX, startY, 1, hunger, thirst, energy, age);
+                animal = new Butterfly(startX, startY, 1, hunger, thirst, energy, ADULT);
                 break;
             case Cat.NAME:
                 animal = new Cat(startX, startY, 3, color, hunger, thirst, energy, age);
@@ -118,6 +119,7 @@ public class AnimalService {
             printWriter.println("Thirst:" + animal.getCurrentThirst());
             printWriter.println("Energy:" + animal.getCurrentEnergy());
             printWriter.println("Age:" + animal.getAge());
+            printWriter.println("CurrentAge:" + animal.getCurrentAge());
             printWriter.println("X:" + animal.getCurrentX());
             printWriter.println("Y:" + animal.getCurrentY());
 
@@ -156,6 +158,7 @@ public class AnimalService {
             int thirst = MAX_THIRST;
             int energy = MAX_ENERGY;
             AgeStage age = ADULT;
+            int currentAge = GROWING_UP_TIME;
             int x = 0;
             int y = 0;
             try (Scanner scanner = new Scanner(file)) {
@@ -202,6 +205,11 @@ public class AnimalService {
                         age = AgeStage.valueOf(ageString);
                         continue;
                     }
+                    if (line.startsWith("CurrentAge:")) {
+                        String[] splitLine = line.split(":");
+                        currentAge = Integer.parseInt(splitLine[1]);
+                        continue;
+                    }
                     if (line.startsWith("X:")) {
                         String[] splitLine = line.split(":");
                         x = Integer.parseInt(splitLine[1]);
@@ -217,6 +225,7 @@ public class AnimalService {
             }
             if (animalType != null) {
                 Animal animal = createAnimal(animalType, x, y, mapName, color, hunger, thirst, energy, age);
+                animal.setCurrentAge(currentAge);
                 animal.setFileName(file.getName());
                 animalsOnMap.add(animal);
             }

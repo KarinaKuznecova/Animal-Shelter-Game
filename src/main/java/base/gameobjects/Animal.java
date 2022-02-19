@@ -21,6 +21,8 @@ import java.util.Random;
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.IMAGES_PATH;
+import static base.gameobjects.AgeStage.ADULT;
+import static base.gameobjects.AgeStage.BABY;
 import static base.navigationservice.Direction.*;
 
 public abstract class Animal implements GameObject {
@@ -40,8 +42,11 @@ public abstract class Animal implements GameObject {
     private String homeMap;
     private int speed;
     private String color;
-    private final String animalName;
+    private String animalName;
+
     private AgeStage age;
+    public static final int GROWING_UP_TIME = 200_000;
+    private int currentAge;
 
     protected static final int MAX_HUNGER = 30_000;
     protected static final int MIN_HUNGER = 1;
@@ -81,18 +86,24 @@ public abstract class Animal implements GameObject {
         animalRectangle = new Rectangle(startX, startY, 32, 32);
         animalRectangle.generateGraphics(1, GREEN);
 
+        if (BABY.equals(age)) {
+            this.speed--;
+        } else {
+            setCurrentAge(GROWING_UP_TIME);
+        }
+
         route = new Route();
         random = new Random();
     }
 
-    private void setSprite() {
+    protected void setSprite() {
         sprite = ImageLoader.getAnimatedSprite(IMAGES_PATH + animalName + ".png", tileSize);
         if (sprite != null) {
             animatedSprite = (AnimatedSprite) sprite;
         }
     }
 
-    private void setPreviewSprite() {
+    protected void setPreviewSprite() {
         previewSprite = ImageLoader.getPreviewSprite(IMAGES_PATH + animalName + "-preview.png");
     }
 
@@ -140,6 +151,10 @@ public abstract class Animal implements GameObject {
     public void render(RenderHandler renderer, int xZoom, int yZoom) {
         int xForSprite = animalRectangle.getX() - (tileSize - 32);
         int yForSprite = animalRectangle.getY() - ((tileSize - 32) + ((tileSize - 32) / 2));
+        if (BABY.equals(age)) {
+            xZoom = 1;
+            yZoom = 1;
+        }
         if (animatedSprite != null) {
             renderer.renderSprite(animatedSprite, xForSprite, yForSprite, xZoom, yZoom, false);
         } else if (sprite != null) {
@@ -164,6 +179,9 @@ public abstract class Animal implements GameObject {
             } else {
                 nextDirection = getRandomDirection();
                 movingTicks = getRandomMovingTicks();
+            }
+            if (isOutSideOfMap(game.getGameMap(getCurrentMap()))) {
+                moveAnimalToCenter(game.getGameMap(getCurrentMap()));
             }
         }
 
@@ -193,6 +211,26 @@ public abstract class Animal implements GameObject {
         } else {
             handleSleeping();
         }
+
+        if (BABY.equals(age)) {
+            updateAge();
+        }
+    }
+
+    protected void updateAge() {
+        incrementAge();
+        if (isTimeToGrowUp()) {
+            setAge(ADULT);
+            speed++;
+        }
+    }
+
+    protected boolean isTimeToGrowUp() {
+        return currentAge >= GROWING_UP_TIME;
+    }
+
+    protected void incrementAge() {
+        currentAge++;
     }
 
     private void handleSleeping() {
@@ -362,7 +400,7 @@ public abstract class Animal implements GameObject {
             if (animalRectangle.intersects(item.getRectangle())) {
                 logger.info(String.format("%s ate food", animalName));
                 currentHunger = MAX_HUNGER;
-                speed = 3;
+                resetSpeedToDefault();
                 game.getGameMap(currentMap).removeItem(item.getItemName(), item.getRectangle());
                 logger.debug(String.format("Hunger level for %s is 100 percent", animalName));
                 return true;
@@ -372,7 +410,7 @@ public abstract class Animal implements GameObject {
             if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
                 logger.info(String.format("%s ate food", animalName));
                 currentHunger = MAX_HUNGER;
-                speed = 3;
+                resetSpeedToDefault();
                 bowl.emptyBowl();
                 logger.debug(String.format("Hunger level for %s is 100 percent", animalName));
                 return true;
@@ -386,13 +424,21 @@ public abstract class Animal implements GameObject {
             if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
                 logger.info(String.format("%s drank water", animalName));
                 currentThirst = MAX_THIRST;
-                speed = 3;
+                resetSpeedToDefault();
                 bowl.emptyBowl();
                 logger.debug(String.format("Thirst level for %s is 100 percent", animalName));
                 return true;
             }
         }
         return false;
+    }
+
+    protected void resetSpeedToDefault() {
+        if (BABY.equals(age)) {
+            setSpeed(2);
+        } else {
+            setSpeed(3);
+        }
     }
 
     private void handleMoving(GameMap gameMap, Direction direction) {
@@ -590,6 +636,13 @@ public abstract class Animal implements GameObject {
         return false;
     }
 
+    private boolean isOutSideOfMap(GameMap gameMap) {
+        return animalRectangle.getX() < 0
+                || animalRectangle.getY() < 0
+                || animalRectangle.getX() > gameMap.getMapWidth() * (TILE_SIZE * ZOOM)
+                || animalRectangle.getY() > gameMap.getMapHeight() * (TILE_SIZE * ZOOM);
+    }
+
     private void moveAnimalToCenter(GameMap gameMap) {
         animalRectangle.setX(gameMap.getMapWidth() * TILE_SIZE * ZOOM / 2);
         animalRectangle.setY(gameMap.getMapHeight() * TILE_SIZE * ZOOM / 2);
@@ -693,5 +746,17 @@ public abstract class Animal implements GameObject {
 
     public void setSpeed(int speed) {
         this.speed = speed;
+    }
+
+    public void setAnimalName(String animalName) {
+        this.animalName = animalName;
+    }
+
+    public int getCurrentAge() {
+        return currentAge;
+    }
+
+    public void setCurrentAge(int currentAge) {
+        this.currentAge = currentAge;
     }
 }

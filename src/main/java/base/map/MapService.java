@@ -229,7 +229,7 @@ public class MapService {
             printWriter.println("//layer,tileId,xPos,yPos,regularTile,portalDirection");
             for (List<MapTile> layer : gameMap.getLayeredTiles().values()) {
                 for (MapTile tile : layer) {
-                    if (tile.getId() == BOWL_TILE_ID || tile.getId() == WATER_BOWL_TILE_ID) {
+                    if (tile.isRegularTile() && (tile.getId() == BOWL_TILE_ID || tile.getId() == WATER_BOWL_TILE_ID)) {
                         continue;
                     }
                     String isRegular = tile.isRegularTile() ? "y" : "n";
