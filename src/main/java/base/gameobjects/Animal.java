@@ -151,7 +151,7 @@ public abstract class Animal implements GameObject {
     public void render(RenderHandler renderer, int xZoom, int yZoom) {
         int xForSprite = animalRectangle.getX() - (tileSize - 32);
         int yForSprite = animalRectangle.getY() - ((tileSize - 32) + ((tileSize - 32) / 2));
-        if (BABY.equals(age)) {
+        if (BABY.equals(age) && !animalName.contains("baby")) {
             xZoom = 1;
             yZoom = 1;
         }
