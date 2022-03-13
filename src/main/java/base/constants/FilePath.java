@@ -1,5 +1,7 @@
 package base.constants;
 
+import static base.constants.Constants.LANGUAGE;
+
 public class FilePath {
 
     //images
@@ -31,7 +33,8 @@ public class FilePath {
 
     //config
     public static final String MAPS_LIST_PATH = "maps/MapList.txt";
-    public static final String TIPS_FILE_PATH = "config/tips.txt";
+    public static final String TIPS_FILE_PATH = "config/tips"+ "-" + LANGUAGE + ".txt";
+    public static final String TRANSLATION_FILE_PATH = "config/translation" + "-" + LANGUAGE;
 
     //other
     public static final String BACKPACK_FILE_NAME = "backpack.bag";

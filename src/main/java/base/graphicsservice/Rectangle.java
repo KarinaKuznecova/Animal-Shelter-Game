@@ -74,7 +74,7 @@ public class Rectangle implements Serializable {
         return new int[0];
     }
 
-    public void generateGraphics(int borderWidth, int color) {
+    public void generateBorder(int borderWidth, int color) {
         pixels = new int[width * height];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -83,6 +83,15 @@ public class Rectangle implements Serializable {
                 } else {
                     pixels[i * width + j] = ALPHA;
                 }
+            }
+        }
+    }
+
+    public void generateBackground(int color) {
+        pixels = new int[width * height];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                pixels[i + j * width] = color;
             }
         }
     }

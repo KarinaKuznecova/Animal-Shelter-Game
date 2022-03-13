@@ -1,0 +1,8 @@
+F5 - saglabāt
+
+1 - 9 pārslēgšanās starp paneļiem
+0 - jauni dzīvnieki
+P - augi
+Q - paslēpt/rādīt pogas
+H - teleportēties uz sākumu
+B - atvērt somu

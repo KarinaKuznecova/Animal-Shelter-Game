@@ -22,7 +22,7 @@ public class SDKButton extends GUIButton {
         super(tileSprite, rectangle, true);
         this.game = game;
         this.tileID = tileID;
-        rectangle.generateGraphics(3, YELLOW);
+        rectangle.generateBorder(3, YELLOW);
 
         checkIfContainsMultipleOptions(tileID);
     }
@@ -72,12 +72,12 @@ public class SDKButton extends GUIButton {
     public void update(Game game) {
         if (tileID == game.getSelectedTileId()) {
             if (!isGreen) {
-                region.generateGraphics(3, GREEN);
+                region.generateBorder(3, GREEN);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateGraphics(3, YELLOW);
+                region.generateBorder(3, YELLOW);
                 isGreen = false;
             }
         }

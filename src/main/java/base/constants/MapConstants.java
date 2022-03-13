@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static base.constants.VisibleText.*;
+
 public class MapConstants {
 
     public static final String MAIN_MAP = "MainMap";
@@ -25,16 +27,16 @@ public class MapConstants {
     public static final Map<String, String> PRETTIER_MAP_NAMES = new HashMap<>();
 
     static {
-        PRETTIER_MAP_NAMES.put(MAIN_MAP, "Starting Map");
-        PRETTIER_MAP_NAMES.put(SECOND_MAP, "Second Map");
-        PRETTIER_MAP_NAMES.put(WATER_MAP, "Island");
+        PRETTIER_MAP_NAMES.put(MAIN_MAP, startingMap);
+        PRETTIER_MAP_NAMES.put(SECOND_MAP, secondMap);
+        PRETTIER_MAP_NAMES.put(WATER_MAP, island);
 
-        PRETTIER_MAP_NAMES.put(TOP_LEFT_MAP, "Backyard");
-        PRETTIER_MAP_NAMES.put(TOP_CENTER_MAP, "Home");
-        PRETTIER_MAP_NAMES.put(TOP_RIGHT_MAP, "Home 2");
+        PRETTIER_MAP_NAMES.put(TOP_LEFT_MAP, backyard);
+        PRETTIER_MAP_NAMES.put(TOP_CENTER_MAP, home);
+        PRETTIER_MAP_NAMES.put(TOP_RIGHT_MAP, home2);
 
-        PRETTIER_MAP_NAMES.put(BOTTOM_LEFT_MAP, "Bottom Left Map");
-        PRETTIER_MAP_NAMES.put(BOTTOM_CENTER_MAP, "Bottom Center Map");
-        PRETTIER_MAP_NAMES.put(BOTTOM_RIGHT_MAP, "Bottom Right Map");
+        PRETTIER_MAP_NAMES.put(BOTTOM_LEFT_MAP, bottomLeftMap);
+        PRETTIER_MAP_NAMES.put(BOTTOM_CENTER_MAP, bottomCenterMap);
+        PRETTIER_MAP_NAMES.put(BOTTOM_RIGHT_MAP, bottomRightMap);
     }
 }

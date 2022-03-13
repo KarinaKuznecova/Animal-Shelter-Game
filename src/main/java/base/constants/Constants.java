@@ -10,6 +10,13 @@ public class Constants {
 
     public static final String CURRENT_GAME_VERSION = "1.2.2";
 
+    private static final String ENGLISH = "eng";
+    private static final String LATVIAN = "lv";
+    private static final String RUSSIAN = "ru";
+    private static final String SWEDEN = "se";
+
+    public static final String LANGUAGE = ENGLISH;
+
     public static final int BOWL_TILE_ID = 68;
     public static final int WATER_BOWL_TILE_ID = 73;
     public static final int PILLOW_TILE_ID = 74;
