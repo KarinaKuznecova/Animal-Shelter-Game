@@ -42,7 +42,8 @@ public abstract class Animal implements GameObject {
     private String homeMap;
     private int speed;
     private String color;
-    private String animalName;
+    private String animalType;
+    private String name;
 
     private AgeStage age;
     public static final int GROWING_UP_TIME = 200_000;
@@ -63,19 +64,19 @@ public abstract class Animal implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
-    protected Animal(String animalName, int startX, int startY, int speed, int tileSize, int currentHunger, int currentThirst, int currentEnergy, AgeStage age) {
-        this(animalName, startX, startY, speed, MapConstants.MAIN_MAP, tileSize, currentHunger, currentThirst, currentEnergy, age);
+    protected Animal(String animalType, int startX, int startY, int tileSize) {
+        this(animalType, startX, startY, 1, tileSize, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, ADULT, "");
     }
 
-    protected Animal(String animalName, int startX, int startY, int speed, String currentMap, int tileSize, int currentHunger, int currentThirst, int currentEnergy, AgeStage age) {
-        this.animalName = animalName;
+    protected Animal(String animalType, int startX, int startY, int speed, int tileSize, int currentHunger, int currentThirst, int currentEnergy, AgeStage age, String name) {
+        this.animalType = animalType;
         this.tileSize = tileSize;
-        this.currentMap = currentMap;
         this.speed = speed;
         this.currentHunger = currentHunger;
         this.currentThirst = currentThirst;
         this.currentEnergy = currentEnergy;
         this.age = age;
+        this.name = name;
         homeMap = MapConstants.TOP_CENTER_MAP;
 
         setSprite();
@@ -84,7 +85,7 @@ public abstract class Animal implements GameObject {
         direction = DOWN;
         updateDirection();
         animalRectangle = new Rectangle(startX, startY, 32, 32);
-        animalRectangle.generateGraphics(1, GREEN);
+        animalRectangle.generateBorder(1, GREEN);
 
         if (BABY.equals(age)) {
             this.speed--;
@@ -97,14 +98,14 @@ public abstract class Animal implements GameObject {
     }
 
     protected void setSprite() {
-        sprite = ImageLoader.getAnimatedSprite(IMAGES_PATH + animalName + ".png", tileSize);
+        sprite = ImageLoader.getAnimatedSprite(IMAGES_PATH + animalType + ".png", tileSize);
         if (sprite != null) {
             animatedSprite = (AnimatedSprite) sprite;
         }
     }
 
     protected void setPreviewSprite() {
-        previewSprite = ImageLoader.getPreviewSprite(IMAGES_PATH + animalName + "-preview.png");
+        previewSprite = ImageLoader.getPreviewSprite(IMAGES_PATH + animalType + "-preview.png");
     }
 
     private void updateDirection() {
@@ -151,7 +152,7 @@ public abstract class Animal implements GameObject {
     public void render(RenderHandler renderer, int xZoom, int yZoom) {
         int xForSprite = animalRectangle.getX() - (tileSize - 32);
         int yForSprite = animalRectangle.getY() - ((tileSize - 32) + ((tileSize - 32) / 2));
-        if (BABY.equals(age) && !animalName.contains("baby")) {
+        if (BABY.equals(age) && !animalType.contains("baby")) {
             xZoom = 1;
             yZoom = 1;
         }
@@ -180,7 +181,7 @@ public abstract class Animal implements GameObject {
                 nextDirection = getRandomDirection();
                 movingTicks = getRandomMovingTicks();
             }
-            if (isOutSideOfMap(game.getGameMap(getCurrentMap()))) {
+            if (isOutsideOfMap(game.getGameMap(getCurrentMap()))) {
                 moveAnimalToCenter(game.getGameMap(getCurrentMap()));
             }
         }
@@ -292,7 +293,7 @@ public abstract class Animal implements GameObject {
     }
 
     private void sleep() {
-        logger.info(String.format("%s will sleep now", animalName));
+        logger.info(String.format("%s will sleep now", this));
         if (direction == UP || direction == LEFT) {
             direction = SLEEP_LEFT;
         } else {
@@ -319,7 +320,7 @@ public abstract class Animal implements GameObject {
             currentEnergy--;
         }
         if (currentEnergy != 0 && currentEnergy % (MAX_ENERGY / 10) == 0) {
-            logger.debug(String.format("Energy level for %s is %d percent", animalName, currentEnergy / (MAX_ENERGY / 100)));
+            logger.debug(String.format("Energy level for %s is %d percent", this, currentEnergy / (MAX_ENERGY / 100)));
         }
     }
 
@@ -376,7 +377,7 @@ public abstract class Animal implements GameObject {
             currentHunger--;
         }
         if (currentHunger != 0 && currentHunger % (MAX_HUNGER / 10) == 0) {
-            logger.debug(String.format("Hunger level for %s is %d percent", animalName, currentHunger / (MAX_HUNGER / 100)));
+            logger.debug(String.format("Hunger level for %s is %d percent", this, currentHunger / (MAX_HUNGER / 100)));
         }
         if (currentHunger < MAX_HUNGER / 100 * 10) {
             speed = 1;
@@ -388,7 +389,7 @@ public abstract class Animal implements GameObject {
             currentThirst--;
         }
         if (currentThirst != 0 && currentThirst % (MAX_THIRST / 10) == 0) {
-            logger.debug(String.format("Thirst level for %s is %d percent", animalName, currentThirst / (MAX_THIRST / 100)));
+            logger.debug(String.format("Thirst level for %s is %d percent", this, currentThirst / (MAX_THIRST / 100)));
         }
         if (currentThirst < MAX_THIRST / 100 * 10) {
             speed = 1;
@@ -398,21 +399,21 @@ public abstract class Animal implements GameObject {
     private boolean checkForFood(Game game) {
         for (Item item : game.getGameMap(currentMap).getItems()) {
             if (animalRectangle.intersects(item.getRectangle())) {
-                logger.info(String.format("%s ate food", animalName));
+                logger.info(String.format("%s ate food", this));
                 currentHunger = MAX_HUNGER;
                 resetSpeedToDefault();
                 game.getGameMap(currentMap).removeItem(item.getItemName(), item.getRectangle());
-                logger.debug(String.format("Hunger level for %s is 100 percent", animalName));
+                logger.debug(String.format("Hunger level for %s is 100 percent", this));
                 return true;
             }
         }
         for (FoodBowl bowl : game.getGameMap(currentMap).getFoodBowls()) {
             if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
-                logger.info(String.format("%s ate food", animalName));
+                logger.info(String.format("%s ate food", this));
                 currentHunger = MAX_HUNGER;
                 resetSpeedToDefault();
                 bowl.emptyBowl();
-                logger.debug(String.format("Hunger level for %s is 100 percent", animalName));
+                logger.debug(String.format("Hunger level for %s is 100 percent", this));
                 return true;
             }
         }
@@ -422,11 +423,11 @@ public abstract class Animal implements GameObject {
     private boolean checkForWater(Game game) {
         for (WaterBowl bowl : game.getGameMap(currentMap).getWaterBowls()) {
             if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
-                logger.info(String.format("%s drank water", animalName));
+                logger.info(String.format("%s drank water", this));
                 currentThirst = MAX_THIRST;
                 resetSpeedToDefault();
                 bowl.emptyBowl();
-                logger.debug(String.format("Thirst level for %s is 100 percent", animalName));
+                logger.debug(String.format("Thirst level for %s is 100 percent", this));
                 return true;
             }
         }
@@ -636,11 +637,11 @@ public abstract class Animal implements GameObject {
         return false;
     }
 
-    private boolean isOutSideOfMap(GameMap gameMap) {
-        return animalRectangle.getX() < 0
-                || animalRectangle.getY() < 0
-                || animalRectangle.getX() > gameMap.getMapWidth() * (TILE_SIZE * ZOOM)
-                || animalRectangle.getY() > gameMap.getMapHeight() * (TILE_SIZE * ZOOM);
+    private boolean isOutsideOfMap(GameMap gameMap) {
+        return animalRectangle.getX() < -10
+                || animalRectangle.getY() < -10
+                || animalRectangle.getX() > gameMap.getMapWidth() * (TILE_SIZE * ZOOM) + 10
+                || animalRectangle.getY() > gameMap.getMapHeight() * (TILE_SIZE * ZOOM) + 10;
     }
 
     private void moveAnimalToCenter(GameMap gameMap) {
@@ -716,8 +717,8 @@ public abstract class Animal implements GameObject {
         return currentEnergy / (MAX_ENERGY / 100);
     }
 
-    public String getAnimalName() {
-        return animalName;
+    public String getAnimalType() {
+        return animalType;
     }
 
     public String getFileName() {
@@ -748,8 +749,8 @@ public abstract class Animal implements GameObject {
         this.speed = speed;
     }
 
-    public void setAnimalName(String animalName) {
-        this.animalName = animalName;
+    public void setAnimalType(String animalType) {
+        this.animalType = animalType;
     }
 
     public int getCurrentAge() {
@@ -758,5 +759,18 @@ public abstract class Animal implements GameObject {
 
     public void setCurrentAge(int currentAge) {
         this.currentAge = currentAge;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return animalType + " named " + name;
     }
 }

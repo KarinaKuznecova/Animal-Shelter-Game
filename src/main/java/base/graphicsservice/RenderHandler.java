@@ -5,12 +5,15 @@ import base.gameobjects.Animal;
 import base.gameobjects.GameObject;
 import base.gameobjects.Plant;
 import base.gameobjects.Player;
+import base.gui.EditIcon;
+import base.gui.GuiService;
 import base.map.GameMap;
 import base.map.MapTile;
 import base.map.bigobjects.Bookcase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -109,10 +112,10 @@ public class RenderHandler {
         if (bookcases.contains(game.getSelectedTileId()) && game.isRegularTiles()) {
             int xSmaller = xPosition / (TILE_SIZE * ZOOM);
             int ySmaller = yPosition / (TILE_SIZE * ZOOM);
-            Bookcase bookcase = new Bookcase(xSmaller, ySmaller, bookcases.indexOf(game.getSelectedTileId()));
+            Bookcase bookcase = new Bookcase(xPosition, yPosition, bookcases.indexOf(game.getSelectedTileId()), 64);
             for (MapTile mapTile : bookcase.getObjectParts()) {
-                int xForCurrentPart = mapTile.getX() * (TILE_SIZE * ZOOM);
-                int yForCurrentPart = mapTile.getY() * (TILE_SIZE * ZOOM);
+                int xForCurrentPart = mapTile.getX();
+                int yForCurrentPart = mapTile.getY();
 
                 drawPreview(game, xForCurrentPart, yForCurrentPart, mapTile);
             }
@@ -298,6 +301,16 @@ public class RenderHandler {
 
     public void renderText(String text, Position textPosition) {
         textToDraw.put(textPosition, text);
+    }
+
+    public void renderCustomizableText(String text, String customizable, Position textPosition, EditIcon editIcon) {
+        textToDraw.put(textPosition, text);
+
+        Position customTextPosition = new Position(textPosition.getXPosition() + text.length() * 10, textPosition.getYPosition());
+        textToDraw.put(customTextPosition, customizable);
+
+        Position editIconPosition = new Position(textPosition.getXPosition() - 20, textPosition.getYPosition() - 15);
+        editIcon.changePosition(editIconPosition);
     }
 
     public void clearRenderedText() {

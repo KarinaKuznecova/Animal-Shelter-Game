@@ -2,6 +2,7 @@ package base;
 
 import base.constants.FilePath;
 import base.constants.MapConstants;
+import base.constants.VisibleText;
 import base.events.EventService;
 import base.gameobjects.*;
 import base.graphicsservice.Rectangle;
@@ -17,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
@@ -53,6 +56,7 @@ public class Game extends JFrame implements Runnable {
     private transient RouteCalculator routeCalculator;
     private transient MapService mapService;
     private transient EventService eventService;
+    private transient VisibleText visibleText;
 
     private transient GUI[] tileButtonsArray = new GUI[10];
     private transient GUI[] terrainButtonsArray;
@@ -69,6 +73,8 @@ public class Game extends JFrame implements Runnable {
     private String selectedPlant = "";
     private int selectedPanel = 1;
     private String selectedItem = "";
+
+    private boolean paused;
 
     private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
     private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
@@ -101,6 +107,7 @@ public class Game extends JFrame implements Runnable {
         animalsOnMaps = new HashMap<>();
         gameMaps = new HashMap<>();
         eventService = new EventService();
+        visibleText = new VisibleText();
     }
 
     private void loadUI() {
@@ -353,7 +360,9 @@ public class Game extends JFrame implements Runnable {
 
             changeInSeconds += (now - lastTime) / nanoSecondConversion;
             while (changeInSeconds >= 1) {
-                update();
+                if (!paused) {
+                    update();
+                }
                 changeInSeconds--;
             }
 
@@ -419,7 +428,7 @@ public class Game extends JFrame implements Runnable {
         if (animal == null) {
             logger.info("changing your selected animal to null");
         } else {
-            logger.info(String.format("changing your selected animal to : %s", animal.getAnimalName()));
+            logger.info(String.format("changing your selected animal to : %s", animal));
         }
         selectedYourAnimal = animal;
     }
@@ -465,9 +474,11 @@ public class Game extends JFrame implements Runnable {
 
         for (GameObject gameObject : guiList) {
             if (!stoppedChecking) {
-                deselectAnimal();
                 stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
             }
+        }
+        if (!stoppedChecking) {
+            deselectAnimal();
         }
         for (GameObject gameObject : gameMap.getPlants()) {
             if (!stoppedChecking) {
@@ -626,8 +637,7 @@ public class Game extends JFrame implements Runnable {
         if (selectedTileId == BOWL_TILE_ID) {
             FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
             getGameMap().removeObject(foodBowl);
-        }
-        else if (selectedTileId == WATER_BOWL_TILE_ID) {
+        } else if (selectedTileId == WATER_BOWL_TILE_ID) {
             WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned);
             getGameMap().removeObject(waterBowl);
         } else {
@@ -828,12 +838,29 @@ public class Game extends JFrame implements Runnable {
     }
 
     public Route calculateRouteToMap(Animal animal, String destination) {
-        logger.debug(String.format("Looking how to get to %s for %s", destination, animal.getAnimalName()));
+        logger.debug(String.format("Looking how to get to %s for %s", destination, animal));
         return routeCalculator.calculateRouteToPortal(getGameMap(animal.getCurrentMap()), animal, destination);
     }
 
     public Route calculateRouteToPillow(Animal animal) {
         return routeCalculator.calculateRouteToPillow(getGameMap(animal.getCurrentMap()), animal);
+    }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void unpause() {
+        paused = false;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void editAnimalName(Animal animal) {
+        ChangeAnimalNameWindow changeAnimalNameWindow = new ChangeAnimalNameWindow(getWidth() / 5 * 3, getHeight() / 3);
+        changeAnimalNameWindow.editAnimalName(this, animal);
     }
 
     public boolean isBackpackEmpty() {

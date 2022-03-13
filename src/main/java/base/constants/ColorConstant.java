@@ -7,4 +7,5 @@ public class ColorConstant {
     public static final int YELLOW = 0xFFDB3D;
     public static final int GREEN = 0x67FF3D;
     public static final int GRAY = 0x555555;
+    public static final int LIGHT_YELLOW = 0xF4FAB7;
 }

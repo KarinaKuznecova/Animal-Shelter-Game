@@ -19,7 +19,7 @@ public class PlantButton extends GUIButton {
         this.plantType = plantType;
         this.sprite = tileSprite;
         this.game = game;
-        rectangle.generateGraphics(3, YELLOW);
+        rectangle.generateBorder(3, YELLOW);
     }
 
     @Override
@@ -49,12 +49,12 @@ public class PlantButton extends GUIButton {
     public void update(Game game) {
         if (plantType.equals(game.getSelectedPlant())) {
             if (!isGreen) {
-                region.generateGraphics(3, GREEN);
+                region.generateBorder(3, GREEN);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateGraphics(3, YELLOW);
+                region.generateBorder(3, YELLOW);
                 isGreen = false;
             }
         }

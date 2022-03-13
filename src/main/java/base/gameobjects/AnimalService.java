@@ -20,14 +20,14 @@ import static base.gameobjects.Animal.*;
 
 public class AnimalService {
 
-    public static final List<String> ANIMAL_NAMES = Arrays.asList(Rat.NAME, Mouse.NAME, Chicken.NAME, Butterfly.NAME, Cat.NAME, Pig.NAME, Bunny.NAME);
+    public static final List<String> ANIMAL_TYPES = Arrays.asList(Rat.TYPE, Mouse.TYPE, Chicken.TYPE, Butterfly.TYPE, Cat.TYPE, Pig.TYPE, Bunny.TYPE);
 
     protected static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
 
     public Map<String, Sprite> getAnimalPreviewSprites() {
         Map<String, Sprite> previews = new HashMap<>();
-        for (String animalName : ANIMAL_NAMES) {
-            previews.put(animalName, createAnimal(animalName, 1, 1, "", null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, ADULT).getPreviewSprite());
+        for (String animalName : ANIMAL_TYPES) {
+            previews.put(animalName, createAnimal(animalName, 1, 1, "", null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, ADULT, "").getPreviewSprite());
         }
         return previews;
     }
@@ -37,37 +37,37 @@ public class AnimalService {
             String[] split = animalType.split("-");
             String name = split[0];
             String color = split[1];
-            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY);
+            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, "baby " + animalType);
         }
-        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY);
+        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, "baby " + animalType);
     }
 
-    public Animal createAnimal(String animalName, int startX, int startY, String mapName, String color, int hunger, int thirst, int energy, AgeStage age) {
+    public Animal createAnimal(String animalType, int startX, int startY, String mapName, String color, int hunger, int thirst, int energy, AgeStage age, String name) {
         Animal animal;
-        switch (animalName.toLowerCase()) {
-            case Rat.NAME:
-                animal = new Rat(startX, startY, 3, color, hunger, thirst, energy, age);
+        switch (animalType.toLowerCase()) {
+            case Rat.TYPE:
+                animal = new Rat(startX, startY, 3, color, hunger, thirst, energy, age, name);
                 break;
-            case Mouse.NAME:
-                animal = new Mouse(startX, startY, 3, hunger, thirst, energy, age);
+            case Mouse.TYPE:
+                animal = new Mouse(startX, startY, 3, hunger, thirst, energy, age, name);
                 break;
-            case Chicken.NAME:
-                animal = new Chicken(startX, startY, 3, hunger, thirst, energy, age);
+            case Chicken.TYPE:
+                animal = new Chicken(startX, startY, 3, hunger, thirst, energy, age, name);
                 break;
-            case Butterfly.NAME:
-                animal = new Butterfly(startX, startY, 1, hunger, thirst, energy, ADULT);
+            case Butterfly.TYPE:
+                animal = new Butterfly(startX, startY);
                 break;
-            case Cat.NAME:
-                animal = new Cat(startX, startY, 3, color, hunger, thirst, energy, age);
+            case Cat.TYPE:
+                animal = new Cat(startX, startY, 3, color, hunger, thirst, energy, age, name);
                 break;
-            case Pig.NAME:
-                animal = new Pig(startX, startY, 3, hunger, thirst, energy, age);
+            case Pig.TYPE:
+                animal = new Pig(startX, startY, 3, hunger, thirst, energy, age, name);
                 break;
-            case Bunny.NAME:
-                animal = new Bunny(startX, startY, 3, hunger, thirst, energy, age);
+            case Bunny.TYPE:
+                animal = new Bunny(startX, startY, 3, hunger, thirst, energy, age, name);
                 break;
             default:
-                logger.error(String.format("Unknown animal requested or animal not defined : %s", animalName));
+                logger.error(String.format("Unknown animal requested or animal not defined : %s", animalType));
                 throw new IllegalArgumentException();
         }
         animal.setCurrentMap(mapName);
@@ -75,18 +75,10 @@ public class AnimalService {
     }
 
     public String getAnimalType(Animal animal) {
-        if (animal.getAnimalName().contains("-")) {
-            return animal.getAnimalName().substring(0, animal.getAnimalName().indexOf("-"));
+        if (animal.getAnimalType().contains("-")) {
+            return animal.getAnimalType().substring(0, animal.getAnimalType().indexOf("-"));
         }
-        return animal.getAnimalName();
-    }
-
-    public void fixStuckAnimals(GameMap gameMap, List<Animal> animals) {
-        for (Animal animal : animals) {
-            if (animal.isAnimalStuck(gameMap)) {
-                animal.tryToMove(gameMap);
-            }
-        }
+        return animal.getAnimalType();
     }
 
     public void saveAllAnimals(List<Animal> animals) {
@@ -110,6 +102,7 @@ public class AnimalService {
             printWriter.println("Game version: " + CURRENT_GAME_VERSION);
 
             printWriter.println("Type:" + getAnimalType(animal));
+            printWriter.println("Name:" + animal.getName());
             printWriter.println("CurrentMap:" + animal.getCurrentMap());
             printWriter.println("Speed:" + animal.getSpeed());
             if (animal.getColor() != null) {
@@ -153,7 +146,7 @@ public class AnimalService {
             String mapName = "";
             String animalType = null;
             String color = null;
-            int speed;
+            String name = "";
             int hunger = MAX_HUNGER;
             int thirst = MAX_THIRST;
             int energy = MAX_ENERGY;
@@ -172,11 +165,6 @@ public class AnimalService {
                     if (line.startsWith("Type:")) {
                         String[] splitLine = line.split(":");
                         animalType = splitLine[1];
-                        continue;
-                    }
-                    if (line.startsWith("Speed:")) {
-                        String[] splitLine = line.split(":");
-                        speed = Integer.parseInt(splitLine[1]);
                         continue;
                     }
                     if (line.startsWith("Color:")) {
@@ -210,6 +198,13 @@ public class AnimalService {
                         currentAge = Integer.parseInt(splitLine[1]);
                         continue;
                     }
+                    if (line.startsWith("Name:")) {
+                        String[] splitLine = line.split(":");
+                        if (splitLine.length > 1) {
+                            name = splitLine[1];
+                        }
+                        continue;
+                    }
                     if (line.startsWith("X:")) {
                         String[] splitLine = line.split(":");
                         x = Integer.parseInt(splitLine[1]);
@@ -224,7 +219,7 @@ public class AnimalService {
                 e.printStackTrace();
             }
             if (animalType != null) {
-                Animal animal = createAnimal(animalType, x, y, mapName, color, hunger, thirst, energy, age);
+                Animal animal = createAnimal(animalType, x, y, mapName, color, hunger, thirst, energy, age, name);
                 animal.setCurrentAge(currentAge);
                 animal.setFileName(file.getName());
                 animalsOnMap.add(animal);
@@ -250,13 +245,13 @@ public class AnimalService {
     }
 
     public String getNextColor(String animalType) {
-        if (animalType.startsWith(Cat.NAME)) {
+        if (animalType.startsWith(Cat.TYPE)) {
             if (CAT_COLORS.size() == CAT_COLORS.indexOf(animalType) + 1) {
                 return CAT_COLORS.get(0);
             }
             return CAT_COLORS.get(CAT_COLORS.indexOf(animalType) + 1);
         }
-        if (animalType.startsWith(Rat.NAME)) {
+        if (animalType.startsWith(Rat.TYPE)) {
             if (RAT_COLORS.size() == RAT_COLORS.indexOf(animalType) + 1) {
                 return RAT_COLORS.get(0);
             }
@@ -271,10 +266,10 @@ public class AnimalService {
             String[] split = animalType.split("-");
             color = split[1];
         }
-        if (animalType.startsWith(Cat.NAME)) {
+        if (animalType.startsWith(Cat.TYPE)) {
             return new Cat(0, 0, 0, color).getPreviewSprite();
         }
-        if (animalType.startsWith(Rat.NAME)) {
+        if (animalType.startsWith(Rat.TYPE)) {
             return new Rat(0, 0, 0, color).getPreviewSprite();
         }
         return null;

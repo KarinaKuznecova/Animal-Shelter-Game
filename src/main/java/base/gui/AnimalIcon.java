@@ -2,19 +2,18 @@ package base.gui;
 
 import base.Game;
 import base.gameobjects.Animal;
-import base.graphicsservice.Position;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
 import static base.constants.ColorConstant.*;
-import static base.constants.MapConstants.PRETTIER_MAP_NAMES;
 
 public class AnimalIcon extends GUIButton {
 
     private final Game game;
     private boolean isGreen = false;
     private final Animal animal;
+    private final AnimalStats stats;
 
     public AnimalIcon(Game game, Animal animal, Sprite sprite, Rectangle rectangle) {
         super(sprite, rectangle, true);
@@ -22,10 +21,11 @@ public class AnimalIcon extends GUIButton {
         this.animal = animal;
         this.game = game;
         if (isAnimalOnActiveMap(game)) {
-            rectangle.generateGraphics(3, YELLOW);
+            rectangle.generateBorder(3, YELLOW);
         } else {
-            rectangle.generateGraphics(3, GRAY);
+            rectangle.generateBorder(3, GRAY);
         }
+        stats = new AnimalStats(animal, region);
     }
 
     private boolean isAnimalOnActiveMap(Game game) {
@@ -43,44 +43,49 @@ public class AnimalIcon extends GUIButton {
                     fixed);
         }
         renderer.renderRectangle(region, rectangle, 1, 1, fixed);
-        if (isGreen) {
-            renderStats(renderer, rectangle);
+        if (stats.isVisible()) {
+            stats.renderStats(renderer, rectangle);
         }
-    }
-
-    private void renderStats(RenderHandler renderer, Rectangle rectangle) {
-        Rectangle statsRectangle = new Rectangle(region.getX() - 250, region.getY(), 240, 100);
-        statsRectangle.generateGraphics(2, GRAY);
-        renderer.renderRectangle(statsRectangle, rectangle, 1, 1, fixed);
-        renderer.renderText("Hunger: " + animal.getCurrentHungerInPercent() + "%", new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 30));
-        renderer.renderText("Thirst: " + animal.getCurrentThirstInPercent() + "%", new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 50));
-        renderer.renderText("Energy: " + animal.getCurrentEnergyInPercent() + "%", new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 70));
-        renderer.renderText("Location: " + PRETTIER_MAP_NAMES.get(animal.getCurrentMap()), new Position(statsRectangle.getX() + 10, statsRectangle.getY() + 90));
     }
 
     @Override
     public void update(Game game) {
         if (animal == game.getYourSelectedAnimal()) {
             if (!isGreen) {
-                region.generateGraphics(3, GREEN);
+                region.generateBorder(3, GREEN);
                 isGreen = true;
+                stats.setVisible(true);
             }
         } else {
             if (isGreen) {
                 if (isAnimalOnActiveMap(game)) {
-                    region.generateGraphics(3, YELLOW);
+                    region.generateBorder(3, YELLOW);
                 } else {
-                    region.generateGraphics(3, GRAY);
+                    region.generateBorder(3, GRAY);
                 }
                 game.getRenderer().clearRenderedText();
                 isGreen = false;
+                stats.setVisible(false);
             }
         }
+        stats.update(game);
     }
 
     @Override
     public int getLayer() {
         return 5;
+    }
+
+    @Override
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+        if (mouseRectangle.intersects(region)) {
+            activate();
+            return true;
+        }
+        if (isGreen) {
+            return stats.handleMouseClick(mouseRectangle, game);
+        }
+        return false;
     }
 
     @Override

@@ -35,7 +35,7 @@ public class Player implements GameObject {
 
         updateDirection();
         playerRectangle = new Rectangle(startX, startY, TILE_SIZE, TILE_SIZE);
-        playerRectangle.generateGraphics(1, 123);
+        playerRectangle.generateBorder(1, 123);
     }
 
     @Override

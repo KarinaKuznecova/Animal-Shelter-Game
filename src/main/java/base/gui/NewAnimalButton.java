@@ -24,8 +24,8 @@ public class NewAnimalButton extends GUIButton {
         this.sprite = sprite;
         this.animalType = animalType;
         this.game = game;
-        rectangle.generateGraphics(3, YELLOW);
-        if (animalType.equalsIgnoreCase(Cat.NAME) || animalType.equalsIgnoreCase(Rat.NAME)) {
+        rectangle.generateBorder(3, YELLOW);
+        if (animalType.equalsIgnoreCase(Cat.TYPE) || animalType.equalsIgnoreCase(Rat.TYPE)) {
             multipleOptions = true;
         }
     }
@@ -56,12 +56,12 @@ public class NewAnimalButton extends GUIButton {
     public void update(Game game) {
         if (animalType.equals(game.getSelectedAnimal())) {
             if (!isGreen) {
-                region.generateGraphics(3, GREEN);
+                region.generateBorder(3, GREEN);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateGraphics(3, YELLOW);
+                region.generateBorder(3, YELLOW);
                 isGreen = false;
             }
         }
