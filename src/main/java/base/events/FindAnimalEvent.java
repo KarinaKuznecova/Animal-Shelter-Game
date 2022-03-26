@@ -59,9 +59,9 @@ public class FindAnimalEvent extends Event {
         if (map.isPlaceEmpty(2, bigX, bigY)) {
             logger.info("Place was empty, will put chest");
             AnimalService animalService = game.getAnimalService();
-            int animalId = random.nextInt(animalService.ANIMAL_NAMES.size() - 1);
-            String animalType = animalService.ANIMAL_NAMES.get(animalId);
-            if (animalId == animalService.ANIMAL_NAMES.indexOf(Cat.NAME)) {
+            int animalId = random.nextInt(animalService.ANIMAL_TYPES.size() - 1);
+            String animalType = animalService.ANIMAL_TYPES.get(animalId);
+            if (animalId == animalService.ANIMAL_TYPES.indexOf(Cat.TYPE)) {
                 int catType = random.nextInt(CAT_COLORS.size() - 1);
                 animalType = CAT_COLORS.get(catType);
             }

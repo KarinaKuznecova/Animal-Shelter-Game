@@ -1,16 +1,15 @@
 package base.gameobjects.animals;
 
-import base.gameobjects.AgeStage;
 import base.gameobjects.Animal;
 
 import static base.constants.MapConstants.MAIN_MAP;
 
 public class Butterfly extends Animal {
 
-    public static final String NAME = "butterfly";
+    public static final String TYPE = "butterfly";
 
-    public Butterfly(int startX, int startY, int speed, int hungerLevel, int currentThirst, int currentEnergy, AgeStage age) {
-        super(NAME, startX, startY, speed, 32, hungerLevel, currentThirst, currentEnergy, age);
+    public Butterfly(int startX, int startY) {
+        super(TYPE, startX, startY, 32);
         setHomeMap(MAIN_MAP);
     }
 

@@ -42,7 +42,7 @@ public class RouteCalculator {
 
     public Route calculateRoute(GameMap gameMap, Animal animal, String destination) {
         Route newRoute = new Route();
-        logger.debug(String.format("%s is looking for a way to : %s", animal.getAnimalName(), destination));
+        logger.debug(String.format("%s is looking for a way to : %s", animal, destination));
         MapTile portal = null;
         if (destination == null) {
             return newRoute;
@@ -79,7 +79,7 @@ public class RouteCalculator {
                     found = false;
                 }
                 if (found) {
-                    logger.info(String.format("%s found his way to %s!", animal.getAnimalName(), destination));
+                    logger.info(String.format("%s found his way to %s!", animal, destination));
                     return map.get(rectangleToCheck);
                 } else {
                     searched.add(rectangleToCheck);

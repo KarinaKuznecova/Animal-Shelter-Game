@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AnimalTest {
 
-    Mouse testSubject = new Mouse(0, 0, 3, 100, 100, 100, ADULT);
+    Mouse testSubject = new Mouse(0, 0, 3, 100, 100, 100, ADULT, "");
 
     @Test
     public void getMovingTickToAdjustPosition() {

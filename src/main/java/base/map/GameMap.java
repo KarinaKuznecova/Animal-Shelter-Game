@@ -99,7 +99,7 @@ public class GameMap {
 
         if (bookcases.contains(tileId) && regularTiles && !isThereAPortal(tileX, tileY)) {
 
-            Bookcase bookcase = new Bookcase(tileX, tileY, bookcases.indexOf(tileId));
+            Bookcase bookcase = new Bookcase(tileX, tileY, bookcases.indexOf(tileId), 1);
             if (placeIsTaken(tileX, tileY, layer, bookcase)) {
                 return;
             }
@@ -163,7 +163,7 @@ public class GameMap {
             return;
         }
         if (bookcases.contains(selectedTile) && regularTiles) {
-            for (MapTile tile : new Bookcase(tileX, tileY, bookcases.indexOf(selectedTile)).getObjectParts()) {
+            for (MapTile tile : new Bookcase(tileX, tileY, bookcases.indexOf(selectedTile), 1).getObjectParts()) {
                 removeTile(tile.getX(), tile.getY(), tile.getLayer(), false, tile.getId());
             }
             return;
