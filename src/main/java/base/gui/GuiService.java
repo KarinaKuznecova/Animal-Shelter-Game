@@ -6,6 +6,7 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.Sprite;
 import base.map.Tile;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
 import static base.constants.MultiOptionalObjects.MASTER_TILE_LIST;
 
-public class GuiService {
+public class GuiService implements Serializable {
 
     public GUI loadYourAnimals(Game game) {
         List<Animal> animalsOnAllMaps = new ArrayList<>();

@@ -34,7 +34,7 @@ public class BackpackService {
             ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
             return (GUI) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            logger.warn("No previous backpacks found, will load empty");
+            logger.warn("No previous backpacks found, will load empty", e);
         }
         return null;
     }

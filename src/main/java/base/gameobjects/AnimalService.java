@@ -2,7 +2,6 @@ package base.gameobjects;
 
 import base.gameobjects.animals.*;
 import base.graphicsservice.Sprite;
-import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,7 @@ import static base.gameobjects.Animal.*;
 
 public class AnimalService {
 
-    public static final List<String> ANIMAL_TYPES = Arrays.asList(Rat.TYPE, Mouse.TYPE, Chicken.TYPE, Butterfly.TYPE, Cat.TYPE, Pig.TYPE, Bunny.TYPE);
+    public static final List<String> ANIMAL_TYPES = Arrays.asList(Rat.TYPE, Mouse.TYPE, Chicken.TYPE, Butterfly.TYPE, Cat.TYPE, Pig.TYPE, Bunny.TYPE, Dog.TYPE);
 
     protected static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
 
@@ -65,6 +64,9 @@ public class AnimalService {
                 break;
             case Bunny.TYPE:
                 animal = new Bunny(startX, startY, 3, hunger, thirst, energy, age, name);
+                break;
+            case Dog.TYPE:
+                animal = new Dog(startX, startY, 3, hunger, thirst, energy, age, name);
                 break;
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalType));
