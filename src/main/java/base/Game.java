@@ -56,7 +56,6 @@ public class Game extends JFrame implements Runnable {
     private transient RouteCalculator routeCalculator;
     private transient MapService mapService;
     private transient EventService eventService;
-    private transient VisibleText visibleText;
 
     private transient GUI[] tileButtonsArray = new GUI[10];
     private transient GUI[] terrainButtonsArray;
@@ -107,7 +106,7 @@ public class Game extends JFrame implements Runnable {
         animalsOnMaps = new HashMap<>();
         gameMaps = new HashMap<>();
         eventService = new EventService();
-        visibleText = new VisibleText();
+        VisibleText.initializeTranslations();
     }
 
     private void loadUI() {

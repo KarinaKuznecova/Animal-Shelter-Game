@@ -30,11 +30,7 @@ public class VisibleText {
     public static String startingMap = "Starting map";
     public static String thirst = "Thirst";
 
-    public VisibleText() {
-        initializeTranslations();
-    }
-
-    public void initializeTranslations() {
+    public static void initializeTranslations() {
         logger.debug("Reading translations from file");
 
         File translationFile = new File(TRANSLATION_FILE_PATH);
