@@ -1,9 +1,6 @@
 package base.navigationservice;
 
-import base.gameobjects.Animal;
-import base.gameobjects.FoodBowl;
-import base.gameobjects.Item;
-import base.gameobjects.WaterBowl;
+import base.gameobjects.*;
 import base.graphicsservice.Rectangle;
 import base.map.GameMap;
 import base.map.MapTile;
@@ -14,6 +11,7 @@ import java.util.*;
 
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
+import static base.constants.MapConstants.MAIN_MAP;
 import static base.navigationservice.Direction.*;
 
 public class RouteCalculator {
@@ -40,6 +38,10 @@ public class RouteCalculator {
         return calculateRoute(gameMap, animal, destination);
     }
 
+    public Route calculateRouteToPortal(GameMap gameMap, Npc npc, String destination) {
+        return calculateRoute(gameMap, npc, destination);
+    }
+
     public Route calculateRoute(GameMap gameMap, Animal animal, String destination) {
         Route newRoute = new Route();
         logger.debug(String.format("%s is looking for a way to : %s", animal, destination));
@@ -55,7 +57,7 @@ public class RouteCalculator {
         }
         List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
 
-        fillInitialRoutes(gameMap, searchQueue, animal);
+        fillInitialRoutes(gameMap, searchQueue, animal.getRectangle());
 
         List<Rectangle> searched = new ArrayList<>();
         while (!searchQueue.isEmpty()) {
@@ -96,8 +98,64 @@ public class RouteCalculator {
         return newRoute;
     }
 
-    private void fillInitialRoutes(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Animal animal) {
-        Rectangle initialRectangle = new Rectangle(animal.getCurrentX(), animal.getCurrentY(), TILE_SIZE, TILE_SIZE);
+    public Route calculateRoute(GameMap gameMap, Npc npc, String destination) {
+        Route newRoute = new Route();
+        logger.debug(String.format("%s is looking for a way to : %s", npc, destination));
+        MapTile portal = null;
+        if (destination == null) {
+            return newRoute;
+        }
+        if (isAnotherMap(destination) && getPortal(gameMap, destination) != null) {
+            portal = getPortal(gameMap, destination);
+        }
+        if (isAnotherMap(destination) && portal == null) {
+            return newRoute;
+        }
+        List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
+
+        fillInitialRoutes(gameMap, searchQueue, npc.getRectangle());
+
+        List<Rectangle> searched = new ArrayList<>();
+        while (!searchQueue.isEmpty()) {
+            Map<Rectangle, Route> map = searchQueue.get(0);
+            Rectangle rectangleToCheck = null;
+            for (Rectangle rectangle : map.keySet()) {
+                rectangleToCheck = rectangle;
+            }
+            if (!searched.contains(rectangleToCheck)) {
+                searchQueue.remove(0);
+                boolean found;
+                if (isAnotherMap(destination)) {
+                    found = isTherePortal(portal, rectangleToCheck);
+                } else if (FOOD.equals(destination)) {
+                    found = isThereFood(gameMap, rectangleToCheck);
+                } else if (WATER.equals(destination)) {
+                    found = isThereWater(gameMap, rectangleToCheck);
+                } else if (PILLOW.equals(destination)) {
+                    found = isTherePillow(gameMap, rectangleToCheck);
+                } else {
+                    found = false;
+                }
+                if (found) {
+                    logger.info(String.format("%s found his way to %s!", npc, destination));
+                    return map.get(rectangleToCheck);
+                } else {
+                    searched.add(rectangleToCheck);
+                    fillSearchQueue(gameMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
+                }
+
+            } else {
+                searchQueue.remove(0);
+            }
+        }
+        if (!isAnotherMap(destination) && newRoute.isEmpty() && !npc.getCurrentMap().equals(MAIN_MAP)) {
+            newRoute = calculateRouteToPortal(gameMap, npc, NavigationService.getNextPortalTo(npc.getCurrentMap(), MAIN_MAP));
+        }
+        return newRoute;
+    }
+
+    private void fillInitialRoutes(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangle) {
+        Rectangle initialRectangle = new Rectangle(rectangle.getX(), rectangle.getY(), TILE_SIZE, TILE_SIZE);
 
         Route potentialRoute = new Route();
         if (tryDown(gameMap, initialRectangle) != null) {

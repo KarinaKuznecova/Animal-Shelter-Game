@@ -9,6 +9,10 @@ public class FilePath {
     public static final String FOOD_BOWL_PATH = "img/bowl.png";
     public static final String WATER_BOWL_PATH = "img/water-bowl.png";
 
+    //npc
+    public static final String NPC_SHEET_PATH_LADY = "img/npc-lady.png";
+    public static final String NPC_SHEET_PATH_MAN = "img/npc-man.png";
+
     //plants
     public static final String CARROT_IMG = "img/carrot.png";
     public static final String CARROT_PREVIEW = "img/carrot-preview.png";

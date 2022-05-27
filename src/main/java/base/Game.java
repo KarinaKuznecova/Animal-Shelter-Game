@@ -18,18 +18,18 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
+import static base.constants.MapConstants.BOTTOM_RIGHT_MAP;
 
 public class Game extends JFrame implements Runnable {
 
@@ -43,6 +43,7 @@ public class Game extends JFrame implements Runnable {
     private transient List<GameObject> guiList;
     private transient Map<String, List<Plant>> plantsOnMaps;
     private transient Map<String, List<Animal>> animalsOnMaps;
+    private transient List<Npc> npcs;
     private transient Map<String, GameMap> gameMaps;
 
     private transient Player player;
@@ -104,6 +105,7 @@ public class Game extends JFrame implements Runnable {
         mapService = new MapService();
         plantsOnMaps = new HashMap<>();
         animalsOnMaps = new HashMap<>();
+        npcs = new ArrayList<>();
         gameMaps = new HashMap<>();
         eventService = new EventService();
         VisibleText.initializeTranslations();
@@ -199,11 +201,16 @@ public class Game extends JFrame implements Runnable {
     public void loadSecondaryMap(String mapName) {
         logger.info("Game map loading started");
         saveMap();
+        refreshCurrentMapCache();
 
         String previousMapName = gameMap.getMapName();
         logger.debug(String.format("Previous map name: %s", previousMapName));
 
-        gameMap = mapService.loadGameMap(mapName, tileService);
+        if (getGameMap(mapName) == null) {
+            gameMap = mapService.loadGameMap(mapName, tileService);
+        } else {
+            gameMap = getGameMap(mapName);
+        }
 
         if (plantsOnMaps.containsKey(gameMap.getMapName())) {
             gameMap.setPlants(plantsOnMaps.get(gameMap.getMapName()));
@@ -817,6 +824,27 @@ public class Game extends JFrame implements Runnable {
         refreshGuiPanels();
     }
 
+    public void moveNpcToAnotherMap(Npc npc, MapTile portal) {
+        String destination = portal.getPortalDirection();
+
+        String previousMap = npc.getCurrentMap();
+        if (getGameMap().getMapName().equals(destination)) {
+            getGameMap().addObject(npc);
+        } else {
+            getGameMap(destination).addObject(npc);
+        }
+        if (getGameMap().getMapName().equals(previousMap)) {
+            getGameMap().removeObject(npc);
+        } else {
+            getGameMap(previousMap).removeObject(npc);
+        }
+
+        npc.setCurrentMap(destination);
+        adjustNpcPosition(npc, previousMap);
+
+        refreshCurrentMapCache();
+    }
+
     private void adjustAnimalPosition(Animal animal, String previousMap) {
         MapTile portalToPrevious = gameMaps.get(animal.getCurrentMap()).getPortalTo(previousMap);
         if (portalToPrevious != null) {
@@ -826,6 +854,17 @@ public class Game extends JFrame implements Runnable {
         } else {
             animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
         }
+    }
+
+    private void adjustNpcPosition(Npc npc, String previousMap) {
+        MapTile portalToPrevious = gameMaps.get(npc.getCurrentMap()).getPortalTo(previousMap);
+//        if (portalToPrevious != null) {
+//            int previousMapPortalX = gameMaps.get(npc.getCurrentMap()).getSpawnPoint(portalToPrevious, true);
+//            int previousMapPortalY = gameMaps.get(npc.getCurrentMap()).getSpawnPoint(portalToPrevious, false);
+//            npc.teleportTo(npc.getRectangle(), previousMapPortalX, previousMapPortalY);
+//        } else {
+            npc.teleportTo(npc.getRectangle(), getWidth() / 2, getHeight() / 2);
+//        }
     }
 
     public Route calculateRouteToFood(Animal animal) {
@@ -839,6 +878,11 @@ public class Game extends JFrame implements Runnable {
     public Route calculateRouteToMap(Animal animal, String destination) {
         logger.debug(String.format("Looking how to get to %s for %s", destination, animal));
         return routeCalculator.calculateRouteToPortal(getGameMap(animal.getCurrentMap()), animal, destination);
+    }
+
+    public Route calculateRouteToMap(Npc npc, String destination) {
+        logger.info(String.format("Looking how to get to %s for %s", destination, npc));
+        return routeCalculator.calculateRouteToPortal(getGameMap(npc.getCurrentMap()), npc, destination);
     }
 
     public Route calculateRouteToPillow(Animal animal) {
@@ -868,6 +912,21 @@ public class Game extends JFrame implements Runnable {
 
     public void refreshCurrentMapCache() {
         gameMaps.put(gameMap.getMapName(), gameMap);
+    }
+
+    public void spawnNpc() {
+        logger.info("Spawning npc");
+        Npc npc = new Npc(320,320);
+        npc.setCurrentMap(BOTTOM_RIGHT_MAP);
+
+        if (getGameMap().getMapName().equals(BOTTOM_RIGHT_MAP)) {
+            getGameMap().addObject(npc);
+        } else {
+            getGameMap(BOTTOM_RIGHT_MAP).addObject(npc);
+        }
+        refreshCurrentMapCache();
+        gameObjectsList.add(npc);
+        npcs.add(npc);
     }
 
     public int getSelectedTileId() {
@@ -928,5 +987,9 @@ public class Game extends JFrame implements Runnable {
 
     public AnimalService getAnimalService() {
         return animalService;
+    }
+
+    public List<Npc> getNpcs() {
+        return npcs;
     }
 }

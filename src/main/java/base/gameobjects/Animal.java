@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Random;
 
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.*;
@@ -25,13 +24,12 @@ import static base.gameobjects.AgeStage.ADULT;
 import static base.gameobjects.AgeStage.BABY;
 import static base.navigationservice.Direction.*;
 
-public abstract class Animal implements GameObject {
+public abstract class Animal implements GameObject, Walking {
 
     private Sprite previewSprite;
     private Sprite sprite;
     private AnimatedSprite animatedSprite = null;
     private final Rectangle animalRectangle;
-    private final Random random;
     private final int tileSize;
     private String fileName;
 
@@ -94,7 +92,6 @@ public abstract class Animal implements GameObject {
         }
 
         route = new Route();
-        random = new Random();
     }
 
     protected void setSprite() {
@@ -152,7 +149,7 @@ public abstract class Animal implements GameObject {
     public void render(RenderHandler renderer, int xZoom, int yZoom) {
         int xForSprite = animalRectangle.getX() - (tileSize - 32);
         int yForSprite = animalRectangle.getY() - ((tileSize - 32) + ((tileSize - 32) / 2));
-        if (BABY.equals(age) && !animalType.contains("baby")) {
+        if (BABY.equals(age) && !animalType.contains("baby") || animalType.equals("chicken-baby")) {
             xZoom = 1;
             yZoom = 1;
         }
@@ -203,7 +200,7 @@ public abstract class Animal implements GameObject {
             }
         }
 
-        checkPortals(game);
+        checkPortal(game);
 
         movingTicks--;
         if (!isSleeping()) {
@@ -215,6 +212,13 @@ public abstract class Animal implements GameObject {
 
         if (BABY.equals(age)) {
             updateAge();
+        }
+    }
+
+    private void checkPortal(Game game) {
+        MapTile tile = getPortalTile(game, currentMap, animalRectangle);
+        if (tile != null){
+            game.moveAnimalToAnotherMap(this, tile);
         }
     }
 
@@ -445,70 +449,33 @@ public abstract class Animal implements GameObject {
     private void handleMoving(GameMap gameMap, Direction direction) {
         if (unwalkableInThisDirection(gameMap, direction)) {
             route = new Route();
-            handleUnwalkable(direction);
+            movingTicks = 0;
+            handleUnwalkable(animalRectangle, direction, speed);
             return;
         }
 
         switch (direction) {
             case LEFT:
-                if (animalRectangle.getX() > 0 || nearPortal(gameMap.getPortals())) {
+                if (animalRectangle.getX() > 0 || nearPortal(gameMap.getPortals(), animalRectangle)) {
                     animalRectangle.setX(animalRectangle.getX() - speed);
                 }
                 break;
             case RIGHT:
-                if (animalRectangle.getX() < (gameMap.getMapWidth() * TILE_SIZE - animalRectangle.getWidth()) * ZOOM || nearPortal(gameMap.getPortals())) {
+                if (animalRectangle.getX() < (gameMap.getMapWidth() * TILE_SIZE - animalRectangle.getWidth()) * ZOOM || nearPortal(gameMap.getPortals(), animalRectangle)) {
                     animalRectangle.setX(animalRectangle.getX() + speed);
                 }
                 break;
             case UP:
-                if (animalRectangle.getY() > 0 || nearPortal(gameMap.getPortals())) {
+                if (animalRectangle.getY() > 0 || nearPortal(gameMap.getPortals(), animalRectangle)) {
                     animalRectangle.setY(animalRectangle.getY() - speed);
                 }
                 break;
             case DOWN:
-                if (animalRectangle.getY() < (gameMap.getMapHeight() * TILE_SIZE - animalRectangle.getHeight()) * ZOOM || nearPortal(gameMap.getPortals())) {
+                if (animalRectangle.getY() < (gameMap.getMapHeight() * TILE_SIZE - animalRectangle.getHeight()) * ZOOM || nearPortal(gameMap.getPortals(), animalRectangle)) {
                     animalRectangle.setY(animalRectangle.getY() + speed);
                 }
                 break;
         }
-    }
-
-    private void handleUnwalkable(Direction direction) {
-        movingTicks = 0;
-        switch (direction) {
-            case LEFT:
-                animalRectangle.setX(animalRectangle.getX() + speed);
-                break;
-            case RIGHT:
-                animalRectangle.setX(animalRectangle.getX() - speed);
-                break;
-            case UP:
-                animalRectangle.setY(animalRectangle.getY() + speed);
-                break;
-            case DOWN:
-                animalRectangle.setY(animalRectangle.getY() - speed);
-                break;
-        }
-    }
-
-    Direction getRandomDirection() {
-        int result = random.nextInt(5);
-        switch (result) {
-            case 0:
-                return DOWN;
-            case 1:
-                return LEFT;
-            case 2:
-                return UP;
-            case 3:
-                return RIGHT;
-            default:
-                return STAY;
-        }
-    }
-
-    private int getRandomMovingTicks() {
-        return random.nextInt(20) + 64;
     }
 
     protected int getMovingTickToAdjustPosition(Direction direction) {
@@ -518,30 +485,6 @@ public abstract class Animal implements GameObject {
     private boolean unwalkableInThisDirection(GameMap gameMap, Direction direction) {
         int xPosition = animalRectangle.getX();
         int yPosition = animalRectangle.getY();
-
-        List<MapTile> tilesOnLayer = gameMap.getTilesOnLayer(getLayer());
-
-        switch (direction) {
-            case LEFT:
-                xPosition = xPosition - (speed + 1);
-                break;
-            case RIGHT:
-                xPosition = xPosition + (speed + 1);
-                break;
-            case UP:
-                yPosition = yPosition - (speed + 1);
-                break;
-            case DOWN:
-                yPosition = yPosition + (speed + 1);
-                break;
-        }
-        if (tilesOnLayer != null) {
-            for (MapTile tile : tilesOnLayer) {
-                if (animalRectangle.potentialIntersects(tile, xPosition, yPosition)) {
-                    return true;
-                }
-            }
-        }
 
         List<MapTile> portals = gameMap.getPortals();
         if (portals != null) {
@@ -554,31 +497,7 @@ public abstract class Animal implements GameObject {
                 }
             }
         }
-        return false;
-    }
-
-    private boolean nearPortal(List<MapTile> portals) {
-        for (MapTile portal : portals) {
-            logger.debug(String.format("Portal X: %d player X: %d", portal.getX() * (TILE_SIZE * ZOOM), animalRectangle.getX()));
-            int diffX = portal.getX() * (TILE_SIZE * ZOOM) - animalRectangle.getX();
-            logger.debug(String.format("diff x: %d", diffX));
-            int diffY = portal.getY() * (TILE_SIZE * ZOOM) - animalRectangle.getY();
-            logger.debug(String.format("diff y: %d", diffY));
-            if (Math.abs(diffX) <= TILE_SIZE * ZOOM && Math.abs(diffY) <= TILE_SIZE * ZOOM) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void checkPortals(Game game) {
-        if (game.getGameMap(currentMap).getPortals() != null) {
-            for (MapTile tile : game.getGameMap(currentMap).getPortals()) {
-                if (animalRectangle.intersects(tile)) {
-                    game.moveAnimalToAnotherMap(this, tile);
-                }
-            }
-        }
+        return unwalkableInThisDirection(gameMap, direction, animalRectangle, speed, getLayer());
     }
 
     public boolean isAnimalStuck(GameMap gameMap) {
@@ -767,6 +686,10 @@ public abstract class Animal implements GameObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Rectangle getRectangle() {
+        return animalRectangle;
     }
 
     @Override
