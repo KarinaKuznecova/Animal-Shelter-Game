@@ -19,9 +19,9 @@ import static base.constants.FilePath.MAPS_LIST_PATH;
 
 public class MapService {
 
-    private File mapListFile = new File(MAPS_LIST_PATH);
-    private Map<String, String> mapFiles = new HashMap<>();
-    private PlantService plantService = new PlantService();
+    private final File mapListFile = new File(MAPS_LIST_PATH);
+    private final Map<String, String> mapFiles = new HashMap<>();
+    private final PlantService plantService = new PlantService();
 
     protected static final Logger logger = LoggerFactory.getLogger(MapService.class);
 

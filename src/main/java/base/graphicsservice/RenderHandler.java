@@ -6,24 +6,22 @@ import base.gameobjects.GameObject;
 import base.gameobjects.Plant;
 import base.gameobjects.Player;
 import base.gui.EditIcon;
-import base.gui.GuiService;
 import base.map.GameMap;
 import base.map.MapTile;
 import base.map.bigobjects.Bookcase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.List;
 import java.util.*;
 
-import static base.constants.MultiOptionalObjects.bookcases;
 import static base.constants.ColorConstant.ALPHA;
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
+import static base.constants.MultiOptionalObjects.bookcases;
 
 public class RenderHandler {
 

@@ -42,6 +42,8 @@ public class RouteCalculator {
         return calculateRoute(gameMap, npc, destination);
     }
 
+    // TODO: refactor this and second into one
+    // TODO: reduce complexity
     public Route calculateRoute(GameMap gameMap, Animal animal, String destination) {
         Route newRoute = new Route();
         logger.debug(String.format("%s is looking for a way to : %s", animal, destination));

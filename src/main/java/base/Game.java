@@ -858,13 +858,13 @@ public class Game extends JFrame implements Runnable {
 
     private void adjustNpcPosition(Npc npc, String previousMap) {
         MapTile portalToPrevious = gameMaps.get(npc.getCurrentMap()).getPortalTo(previousMap);
-//        if (portalToPrevious != null) {
-//            int previousMapPortalX = gameMaps.get(npc.getCurrentMap()).getSpawnPoint(portalToPrevious, true);
-//            int previousMapPortalY = gameMaps.get(npc.getCurrentMap()).getSpawnPoint(portalToPrevious, false);
-//            npc.teleportTo(npc.getRectangle(), previousMapPortalX, previousMapPortalY);
-//        } else {
+        if (portalToPrevious != null) {
+            int previousMapPortalX = gameMaps.get(npc.getCurrentMap()).getSpawnPoint(portalToPrevious, true);
+            int previousMapPortalY = gameMaps.get(npc.getCurrentMap()).getSpawnPoint(portalToPrevious, false);
+            npc.teleportTo(npc.getRectangle(), previousMapPortalX, previousMapPortalY);
+        } else {
             npc.teleportTo(npc.getRectangle(), getWidth() / 2, getHeight() / 2);
-//        }
+        }
     }
 
     public Route calculateRouteToFood(Animal animal) {

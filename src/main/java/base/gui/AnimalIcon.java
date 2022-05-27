@@ -7,6 +7,7 @@ import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
 import static base.constants.ColorConstant.*;
+import static base.gameobjects.AgeStage.BABY;
 
 public class AnimalIcon extends GUIButton {
 
@@ -20,11 +21,8 @@ public class AnimalIcon extends GUIButton {
         this.sprite = sprite;
         this.animal = animal;
         this.game = game;
-        if (isAnimalOnActiveMap(game)) {
-            rectangle.generateBorder(3, YELLOW);
-        } else {
-            rectangle.generateBorder(3, GRAY);
-        }
+
+        rectangle.generateBorder(3, getBorderColor());
         stats = new AnimalStats(animal, region);
     }
 
@@ -58,11 +56,7 @@ public class AnimalIcon extends GUIButton {
             }
         } else {
             if (isGreen) {
-                if (isAnimalOnActiveMap(game)) {
-                    region.generateBorder(3, YELLOW);
-                } else {
-                    region.generateBorder(3, GRAY);
-                }
+                region.generateBorder(3, getBorderColor());
                 game.getRenderer().clearRenderedText();
                 isGreen = false;
                 stats.setVisible(false);
@@ -96,4 +90,21 @@ public class AnimalIcon extends GUIButton {
     public Animal getAnimal() {
         return animal;
     }
+
+    public int getBorderColor() {
+        if (isAnimalOnActiveMap(game)) {
+            if (BABY.equals(animal.getAge())) {
+                return LIGHT_YELLOW;
+            } else {
+                return YELLOW;
+            }
+        } else {
+            if (BABY.equals(animal.getAge())) {
+                return LIGHT_GRAY;
+            } else {
+                return GRAY;
+            }
+        }
+    }
+
 }

@@ -108,12 +108,6 @@ public class Npc implements GameObject, Walking {
     }
 
     private void handleMoving(GameMap gameMap, Direction direction) {
-        if (unwalkableInThisDirection(gameMap, direction, rectangle, speed, getLayer())) {
-            route = new Route();
-            movingTicks = 0;
-            handleUnwalkable(rectangle, direction, speed);
-            return;
-        }
 
         switch (direction) {
             case LEFT:
