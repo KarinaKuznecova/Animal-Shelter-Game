@@ -1,4 +1,4 @@
-package base.gameobjects;
+package base.gameobjects.services;
 
 import base.Game;
 import base.gui.GUI;

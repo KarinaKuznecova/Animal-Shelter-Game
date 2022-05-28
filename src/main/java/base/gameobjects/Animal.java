@@ -48,15 +48,15 @@ public abstract class Animal implements GameObject, Walking {
     public static final int GROWING_UP_TIME = 200_000;
     private int currentAge;
 
-    protected static final int MAX_HUNGER = 30_000;
-    protected static final int MIN_HUNGER = 1;
+    public static final int MAX_HUNGER = 30_000;
+    public static final int MIN_HUNGER = 1;
     private int currentHunger;
 
-    protected static final int MAX_THIRST = 25_000;
+    public static final int MAX_THIRST = 25_000;
     protected static final int MIN_THIRST = 1;
     private int currentThirst;
 
-    protected static final int MAX_ENERGY = 40_000;
+    public static final int MAX_ENERGY = 40_000;
     protected static final int MIN_ENERGY = 1;
     protected static final int SLEEPING_SPEED = 15;
     private int currentEnergy;

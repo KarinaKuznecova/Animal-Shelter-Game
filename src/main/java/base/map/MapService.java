@@ -2,6 +2,7 @@ package base.map;
 
 import base.gameobjects.*;
 import base.gameobjects.plants.Corn;
+import base.gameobjects.services.PlantService;
 import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

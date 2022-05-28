@@ -3,7 +3,7 @@ package base.events;
 import base.Game;
 import base.constants.MapConstants;
 import base.gameobjects.Animal;
-import base.gameobjects.AnimalService;
+import base.gameobjects.services.AnimalService;
 import base.gameobjects.Chest;
 import base.gameobjects.animals.Cat;
 import base.map.GameMap;

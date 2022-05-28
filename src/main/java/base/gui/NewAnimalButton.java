@@ -1,7 +1,7 @@
 package base.gui;
 
 import base.Game;
-import base.gameobjects.AnimalService;
+import base.gameobjects.services.AnimalService;
 import base.gameobjects.animals.Cat;
 import base.gameobjects.animals.Rat;
 import base.graphicsservice.Rectangle;

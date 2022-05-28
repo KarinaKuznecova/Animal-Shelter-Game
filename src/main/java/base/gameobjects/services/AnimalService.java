@@ -1,5 +1,7 @@
-package base.gameobjects;
+package base.gameobjects.services;
 
+import base.gameobjects.AgeStage;
+import base.gameobjects.Animal;
 import base.gameobjects.animals.*;
 import base.graphicsservice.Sprite;
 import org.slf4j.Logger;

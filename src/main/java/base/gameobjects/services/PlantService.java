@@ -1,5 +1,7 @@
-package base.gameobjects;
+package base.gameobjects.services;
 
+import base.gameobjects.AnimatedSprite;
+import base.gameobjects.Plant;
 import base.gameobjects.plants.*;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Sprite;
