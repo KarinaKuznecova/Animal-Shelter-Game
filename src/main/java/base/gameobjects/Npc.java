@@ -17,8 +17,7 @@ import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
 import static base.constants.FilePath.NPC_SHEET_PATH_LADY;
 import static base.constants.MapConstants.MAIN_MAP;
-import static base.navigationservice.Direction.DOWN;
-import static base.navigationservice.Direction.STAY;
+import static base.navigationservice.Direction.*;
 
 public class Npc implements GameObject, Walking {
 
@@ -32,6 +31,8 @@ public class Npc implements GameObject, Walking {
     private transient Route route;
     private String currentMap;
     private final int speed;
+
+    private boolean arrived;
 
     public Npc(int startX, int startY) {
         animatedSprite = ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64);
@@ -50,7 +51,7 @@ public class Npc implements GameObject, Walking {
         int yForSprite = rectangle.getY() - 48;
         if (animatedSprite != null) {
             renderer.renderSprite(animatedSprite, xForSprite, yForSprite, xZoom, yZoom, false);
-//        } else {
+        } else {
             renderer.renderRectangle(rectangle, xZoom, yZoom, false);
         }
     }
@@ -63,6 +64,10 @@ public class Npc implements GameObject, Walking {
         if (route.isEmpty() && !getCurrentMap().equals(MAIN_MAP)) {
             route = game.calculateRouteToMap(this, NavigationService.getNextPortalToGetToCenter(getCurrentMap()));
             movingTicks = 16;
+        }
+        if (getCurrentMap().equals(MAIN_MAP) && route.isEmpty() && !arrived) {
+            goUpAndLeft();
+            arrived = true;
         }
 
         if (movingTicks < 1 && !route.isEmpty()) {
@@ -95,6 +100,20 @@ public class Npc implements GameObject, Walking {
         checkPortal(game);
 
         movingTicks--;
+    }
+
+    private void goUpAndLeft() {
+        route = new Route();
+        route.addStep(UP);
+        route.addStep(UP);
+        route.addStep(UP);
+        route.addStep(UP);
+        route.addStep(UP);
+        route.addStep(UP);
+        route.addStep(LEFT);
+        route.addStep(LEFT);
+        route.addStep(LEFT);
+        route.addStep(LEFT);
     }
 
     @Override

@@ -17,7 +17,7 @@ public class NPCEvent extends Event {
 
     @Override
     void calculateChance(Game game) {
-        chance = -3;
+        chance = -1;
 
         if ((!repeatable && happened) || isThereNpcAlready(game)) {
             chance = 0;
@@ -27,7 +27,11 @@ public class NPCEvent extends Event {
             chance--;
         }
         for (List<Animal> animalList : game.getAnimalsOnMaps().values()) {
-            chance += animalList.size();
+            for (Animal animal : animalList) {
+                if (!animal.isFavorite()) {
+                    chance++;
+                }
+            }
         }
         if (game.isBackpackEmpty()) {
             chance++;
