@@ -13,12 +13,14 @@ public class VisibleText {
 
     protected static final Logger logger = LoggerFactory.getLogger(VisibleText.class);
 
+    // keep in alphabetical order
     public static String age = "Age";
     public static String backyard = "Backyard";
     public static String bottomCenterMap = "Bottom Center Map";
     public static String bottomLeftMap = "Bottom Left Map";
     public static String bottomRightMap = "Bottom Right Map";
     public static String energy = "Energy";
+    public static String favorite = "Favorite";
     public static String home = "Home";
     public static String home2 = "Home 2";
     public static String hunger = "Hunger";
@@ -58,70 +60,77 @@ public class VisibleText {
                 if (line.startsWith("Bottom Center Map")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    bottomCenterMap = splitLine[1];
+                        bottomCenterMap = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Bottom Left Map")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    bottomLeftMap = splitLine[1];
+                        bottomLeftMap = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Bottom Right Map")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    bottomRightMap = splitLine[1];
+                        bottomRightMap = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Energy")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    energy = splitLine[1];
+                        energy = splitLine[1];
+                    }
+                    continue;
+                }
+                if (line.startsWith("Favorite")) {
+                    String[] splitLine = line.split(":");
+                    if (splitLine.length > 1) {
+                        favorite = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Home")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    home = splitLine[1];
+                        home = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Home 2")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    home2 = splitLine[1];
+                        home2 = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Hunger")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    hunger = splitLine[1];
+                        hunger = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Island")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    island = splitLine[1];
+                        island = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Location")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    location = splitLine[1];
+                        location = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Name")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    name = splitLine[1];
+                        name = splitLine[1];
                     }
                     continue;
                 }
@@ -135,21 +144,21 @@ public class VisibleText {
                 if (line.startsWith("Second map")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    secondMap = splitLine[1];
+                        secondMap = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Starting map")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    startingMap = splitLine[1];
+                        startingMap = splitLine[1];
                     }
                     continue;
                 }
                 if (line.startsWith("Thirst")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
-                    thirst = splitLine[1];
+                        thirst = splitLine[1];
                     }
                     continue;
                 }
