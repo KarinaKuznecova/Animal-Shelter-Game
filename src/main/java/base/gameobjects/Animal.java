@@ -42,6 +42,7 @@ public abstract class Animal implements GameObject, Walking {
     private String color;
     private String animalType;
     private String name;
+    private boolean favorite;
 
     private AgeStage age;
     public static final int GROWING_UP_TIME = 200_000;
@@ -690,6 +691,14 @@ public abstract class Animal implements GameObject, Walking {
 
     public Rectangle getRectangle() {
         return animalRectangle;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 
     @Override

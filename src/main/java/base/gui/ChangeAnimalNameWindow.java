@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import static base.constants.VisibleText.favorite;
 import static base.constants.VisibleText.newName;
 
 public class ChangeAnimalNameWindow {
@@ -18,6 +19,7 @@ public class ChangeAnimalNameWindow {
     JPanel panel;
     JButton button;
     JTextField field;
+    JCheckBox checkBox;
 
     String buttonText = "Ok";
 
@@ -31,9 +33,15 @@ public class ChangeAnimalNameWindow {
         panel = new JPanel();
         field = new JTextField(animal.getName(), 10);
         button = new JButton(buttonText);
+        checkBox = new JCheckBox(favorite);
+
+        if (animal.isFavorite()) {
+            checkBox.setSelected(true);
+        }
 
         panel.add(field);
         panel.add(button);
+        panel.add(checkBox);
 
         frame.setLocation(width, height);
         frame.add(panel);
@@ -51,6 +59,8 @@ public class ChangeAnimalNameWindow {
                 game.unpause();
             }
         });
+
+        checkBox.addActionListener(e -> animal.setFavorite(checkBox.isSelected()));
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
