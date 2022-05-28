@@ -56,7 +56,7 @@ public class NewAnimalButton extends GUIButton {
     public void update(Game game) {
         if (animalType.equals(game.getSelectedAnimal())) {
             if (!isGreen) {
-                region.generateBorder(3, GREEN);
+                region.generateBorder(5, GREEN);
                 isGreen = true;
             }
         } else {

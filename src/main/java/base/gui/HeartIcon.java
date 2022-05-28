@@ -1,11 +1,10 @@
 package base.gui;
 
-import base.graphicsservice.Position;
-import base.graphicsservice.Rectangle;
-import base.graphicsservice.RenderHandler;
-import base.graphicsservice.Sprite;
+import base.graphicsservice.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static base.constants.FilePath.HEART_ICON_PATH;
 
 public class HeartIcon {
 
@@ -14,8 +13,8 @@ public class HeartIcon {
 
     protected static final Logger logger = LoggerFactory.getLogger(HeartIcon.class);
 
-    public HeartIcon(Sprite sprite) {
-        this.sprite = sprite;
+    public HeartIcon() {
+        sprite = new Sprite(ImageLoader.loadImage(HEART_ICON_PATH));
         rectangle = new Rectangle();
     }
 

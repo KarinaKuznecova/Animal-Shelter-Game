@@ -6,7 +6,7 @@ import base.graphicsservice.*;
 
 import static base.constants.ColorConstant.GRAY;
 import static base.constants.FilePath.EDIT_ICON_PATH;
-import static base.constants.FilePath.SMALL_HEART_ICON_PATH;
+import static base.constants.FilePath.HEART_ICON_PATH;
 import static base.constants.MapConstants.PRETTIER_MAP_NAMES;
 import static base.constants.VisibleText.*;
 
@@ -21,8 +21,8 @@ public class AnimalStats {
     public AnimalStats(Animal animal, Rectangle region) {
         this.animal = animal;
         this.region = region;
-        editIcon = new EditIcon(new Sprite(ImageLoader.loadImage(EDIT_ICON_PATH)));
-        heartIcon = new HeartIcon(new Sprite(ImageLoader.loadImage(SMALL_HEART_ICON_PATH)));
+        editIcon = new EditIcon();
+        heartIcon = new HeartIcon();
     }
 
     void renderStats(RenderHandler renderer, Rectangle rectangle) {

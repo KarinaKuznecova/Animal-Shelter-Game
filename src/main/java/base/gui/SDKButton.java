@@ -72,7 +72,7 @@ public class SDKButton extends GUIButton {
     public void update(Game game) {
         if (tileID == game.getSelectedTileId()) {
             if (!isGreen) {
-                region.generateBorder(3, GREEN);
+                region.generateBorder(5, GREEN);
                 isGreen = true;
             }
         } else {

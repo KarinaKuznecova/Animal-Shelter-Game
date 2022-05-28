@@ -53,7 +53,7 @@ public class BackpackButton extends GUIButton implements Serializable {
     public void update(Game game) {
         if (item.equals(game.getSelectedItem())) {
             if (!isGreen) {
-                region.generateBorder(3, GREEN);
+                region.generateBorder(5, GREEN);
                 isGreen = true;
             }
         } else {

@@ -49,7 +49,7 @@ public class PlantButton extends GUIButton {
     public void update(Game game) {
         if (plantType.equals(game.getSelectedPlant())) {
             if (!isGreen) {
-                region.generateBorder(3, GREEN);
+                region.generateBorder(5, GREEN);
                 isGreen = true;
             }
         } else {

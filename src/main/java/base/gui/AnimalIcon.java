@@ -50,7 +50,7 @@ public class AnimalIcon extends GUIButton {
     public void update(Game game) {
         if (animal == game.getYourSelectedAnimal()) {
             if (!isGreen) {
-                region.generateBorder(3, GREEN);
+                region.generateBorder(5, GREEN);
                 isGreen = true;
                 stats.setVisible(true);
             }

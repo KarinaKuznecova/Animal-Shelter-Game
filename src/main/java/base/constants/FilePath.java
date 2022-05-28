@@ -43,7 +43,7 @@ public class FilePath {
     //other
     public static final String BACKPACK_FILE_NAME = "backpack.bag";
     public static final String EDIT_ICON_PATH = "img/edit.png";
-    public static final String SMALL_HEART_ICON_PATH = "img/heart.png";
+    public static final String HEART_ICON_PATH = "img/heart.png";
 
     //tiles
     public static final String SPRITES_PATH = "img/tiles-new.png";

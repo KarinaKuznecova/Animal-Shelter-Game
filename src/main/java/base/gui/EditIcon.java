@@ -2,12 +2,11 @@ package base.gui;
 
 import base.Game;
 import base.gameobjects.Animal;
-import base.graphicsservice.Position;
-import base.graphicsservice.Rectangle;
-import base.graphicsservice.RenderHandler;
-import base.graphicsservice.Sprite;
+import base.graphicsservice.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static base.constants.FilePath.EDIT_ICON_PATH;
 
 public class EditIcon {
 
@@ -16,8 +15,8 @@ public class EditIcon {
 
     protected static final Logger logger = LoggerFactory.getLogger(EditIcon.class);
 
-    public EditIcon(Sprite sprite) {
-        this.sprite = sprite;
+    public EditIcon() {
+        sprite = new Sprite(ImageLoader.loadImage(EDIT_ICON_PATH));
         rectangle = new Rectangle();
     }
 

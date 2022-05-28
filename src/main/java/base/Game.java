@@ -272,11 +272,10 @@ public class Game extends JFrame implements Runnable {
 
     void loadBackpack() {
         backpackGui = backpackService.loadBackpackFromFile();
-        if (backpackGui != null) {
-            backpackGui.setGame(this);
-        } else {
+        if (backpackGui == null) {
             backpackGui = guiService.loadEmptyBackpack(this);
         }
+        backpackGui.setGame(this);
     }
 
     private void enableDefaultGui() {
