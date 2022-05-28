@@ -2,11 +2,14 @@ package base.events;
 
 import base.Game;
 import base.constants.MapConstants;
+import base.gameobjects.Flower;
+import base.graphicsservice.Sprite;
 import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static base.constants.Constants.*;
+import static base.constants.Constants.TILE_SIZE;
+import static base.constants.Constants.ZOOM;
 import static base.constants.MultiOptionalObjects.flowerIds;
 
 public class GrowFlowerEvent extends Event{
@@ -47,7 +50,8 @@ public class GrowFlowerEvent extends Event{
         if (map.isThereGrassOrDirt(bigX, bigY) && map.isPlaceEmpty(1, bigX, bigY)) {
             int flowerId = random.nextInt(flowerIds.size());
             logger.info(String.format("Place was empty, will add flower with id %d", flowerId));
-            map.setTile(x, y, flowerIds.get(flowerId), true);
+            Sprite sprite = game.getTileService().getTiles().get(flowerId).getSprite();
+            game.getGameMap().addObject(new Flower(sprite, bigX, bigY, map.getMapName()));
             happened = true;
         }
     }

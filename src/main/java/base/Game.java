@@ -412,6 +412,11 @@ public class Game extends JFrame implements Runnable {
                 plant.update(this);
             }
         }
+        for (GameMap map : gameMaps.values()) {
+            for (GameObject object : map.getInteractiveObjects()) {
+                object.update(this);
+            }
+        }
         eventService.update(this);
     }
 

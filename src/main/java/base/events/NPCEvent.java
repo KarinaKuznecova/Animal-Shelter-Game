@@ -17,9 +17,9 @@ public class NPCEvent extends Event {
 
     @Override
     void calculateChance(Game game) {
-        chance = -1;
+        chance = -3;
 
-        if ((!repeatable && happened) || !game.getNpcs().isEmpty()) {
+        if ((!repeatable && happened) || isThereNpcAlready(game)) {
             chance = 0;
             return;
         }
@@ -35,6 +35,10 @@ public class NPCEvent extends Event {
             chance--;
         }
         logger.info(String.format("Event 'NPC comes to adopt' chance is %d", chance));
+    }
+
+    private boolean isThereNpcAlready(Game game) {
+        return !game.getNpcs().isEmpty();
     }
 
     @Override
