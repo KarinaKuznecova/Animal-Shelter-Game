@@ -31,25 +31,23 @@ public class NewAnimalButton extends GUIButton {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle rectangle) {
+    public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
         if (sprite != null) {
             if (multipleOptions) {
                 renderer.renderSprite(sprite,
                         region.getX() + rectangle.getX(),
                         region.getY() + rectangle.getY(),
-                        xZoom,
-                        yZoom,
+                        zoom,
                         fixed, "<      >");
             } else {
                 renderer.renderSprite(sprite,
                         region.getX() + rectangle.getX(),
                         region.getY() + rectangle.getY(),
-                        xZoom,
-                        yZoom,
+                        zoom,
                         fixed);
             }
         }
-        renderer.renderRectangle(region, rectangle, 1, 1, fixed);
+        renderer.renderRectangle(region, rectangle, 1, fixed);
     }
 
     @Override

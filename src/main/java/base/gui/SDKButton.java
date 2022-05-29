@@ -37,26 +37,25 @@ public class SDKButton extends GUIButton {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle interfaceRect) {
+    public void render(RenderHandler renderer, int zoom, Rectangle interfaceRect) {
         if (sprite != null) {
             if (multipleOptions) {
                 renderer.renderSprite(sprite,
                         region.getX() + interfaceRect.getX(),
-                        region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, "<      >");
+                        region.getY() + interfaceRect.getY(), zoom, fixed, "<      >");
             } else if (objectCount > 1) {
                 renderer.renderSprite(sprite,
                         region.getX() + interfaceRect.getX(),
-                        region.getY() + interfaceRect.getY(), xZoom, yZoom, fixed, objectCount);
+                        region.getY() + interfaceRect.getY(), zoom, fixed, objectCount);
             } else {
                 renderer.renderSprite(sprite,
                         region.getX() + interfaceRect.getX(),
                         region.getY() + interfaceRect.getY(),
-                        xZoom,
-                        yZoom,
+                        zoom,
                         fixed);
             }
         }
-        renderer.renderRectangle(region, interfaceRect, 1, 1, fixed);
+        renderer.renderRectangle(region, interfaceRect, 1, fixed);
     }
 
     public void activate() {

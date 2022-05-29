@@ -26,7 +26,7 @@ public class AnimatedSprite extends Sprite implements GameObject {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
+    public void render(RenderHandler renderer, int zoom) {
         // as often as possible
         // render is dealt specifically with the Layer class
     }
@@ -84,7 +84,7 @@ public class AnimatedSprite extends Sprite implements GameObject {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         return false;
     }
 

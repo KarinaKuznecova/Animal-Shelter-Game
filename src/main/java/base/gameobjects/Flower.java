@@ -25,8 +25,8 @@ public class Flower implements GameObject{
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
-        renderer.renderSprite(sprite, xPosition, yPosition, ZOOM, ZOOM, false);
+    public void render(RenderHandler renderer, int zoom) {
+        renderer.renderSprite(sprite, xPosition, yPosition, ZOOM, false);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class Flower implements GameObject{
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         return false;
     }
 }

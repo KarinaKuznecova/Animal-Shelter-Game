@@ -28,7 +28,7 @@ public class AnimalStats {
     void renderStats(RenderHandler renderer, Rectangle rectangle) {
         Rectangle statsRectangle = new Rectangle(region.getX() - 280, region.getY(), 270, 140);
         statsRectangle.generateBorder(2, GRAY);
-        renderer.renderRectangle(statsRectangle, rectangle, 1, 1, true);
+        renderer.renderRectangle(statsRectangle, rectangle, 1, true);
         renderer.renderCustomizableText(name + ": ", animal.getName(), new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 30), editIcon);
         renderer.renderText(hunger + ": " + animal.getCurrentHungerInPercent() + "%", new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 50));
         renderer.renderText(thirst + ": " + animal.getCurrentThirstInPercent() + "%", new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 70));
@@ -36,10 +36,10 @@ public class AnimalStats {
         renderer.renderText(location + ": " + PRETTIER_MAP_NAMES.get(animal.getCurrentMap()), new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 110));
         renderer.renderText(age + ": " + animal.getAge().toString().toLowerCase(), new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 130));
 
-        editIcon.render(renderer, 1, 1);
+        editIcon.render(renderer, 1);
         if (animal.isFavorite()) {
             heartIcon.changePosition(new Position(statsRectangle.getX() + 230, statsRectangle.getY() + 16));
-            heartIcon.render(renderer, 1, 1);
+            heartIcon.render(renderer, 1);
         }
     }
 

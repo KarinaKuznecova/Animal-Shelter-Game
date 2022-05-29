@@ -31,16 +31,15 @@ public class AnimalIcon extends GUIButton {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle rectangle) {
+    public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
         if (sprite != null) {
             renderer.renderSprite(sprite,
                     region.getX() + rectangle.getX(),
                     region.getY() + rectangle.getY(),
-                    xZoom,
-                    yZoom,
+                    zoom,
                     fixed);
         }
-        renderer.renderRectangle(region, rectangle, 1, 1, fixed);
+        renderer.renderRectangle(region, rectangle, 1, fixed);
         if (stats.isVisible()) {
             stats.renderStats(renderer, rectangle);
         }
@@ -71,7 +70,7 @@ public class AnimalIcon extends GUIButton {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(region)) {
             activate();
             return true;

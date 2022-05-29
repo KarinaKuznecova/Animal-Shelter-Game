@@ -147,19 +147,18 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
+    public void render(RenderHandler renderer, int zoom) {
         int xForSprite = animalRectangle.getX() - (tileSize - 32);
         int yForSprite = animalRectangle.getY() - ((tileSize - 32) + ((tileSize - 32) / 2));
         if (BABY.equals(age) && !animalType.contains("baby") || animalType.equals("chicken-baby")) {
-            xZoom = 1;
-            yZoom = 1;
+            zoom = 1;
         }
         if (animatedSprite != null) {
-            renderer.renderSprite(animatedSprite, xForSprite, yForSprite, xZoom, yZoom, false);
+            renderer.renderSprite(animatedSprite, xForSprite, yForSprite, zoom, false);
         } else if (sprite != null) {
-            renderer.renderSprite(sprite, animalRectangle.getX(), animalRectangle.getY(), xZoom, yZoom, false);
+            renderer.renderSprite(sprite, animalRectangle.getX(), animalRectangle.getY(), zoom, false);
         } else {
-            renderer.renderRectangle(animalRectangle, xZoom, yZoom, false);
+            renderer.renderRectangle(animalRectangle, zoom, false);
         }
     }
 
@@ -548,7 +547,7 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(animalRectangle)) {
             logger.info("Click on Animal: ");
             moveAnimalToCenter(game.getGameMap());

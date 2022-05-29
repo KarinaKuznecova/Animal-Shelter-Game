@@ -1,6 +1,7 @@
 package base.gameobjects;
 
 import base.Game;
+import base.gameobjects.interactionzones.InteractionZoneAdoptionNpc;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
@@ -34,26 +35,31 @@ public class Npc implements GameObject, Walking {
 
     private boolean arrived;
 
+    private final InteractionZoneAdoptionNpc interactionZone;
+
     public Npc(int startX, int startY) {
         animatedSprite = ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64);
-        logger.info("Loaded sprite");
+        logger.info("Loaded npc sprite");
         speed = 2;
         route = new Route();
         direction = DOWN;
 
         rectangle = new Rectangle(startX, startY, 32, 32);
         rectangle.generateBorder(1, GREEN);
+
+        interactionZone = new InteractionZoneAdoptionNpc(rectangle.getX() + 32, rectangle.getY() + 32, 100);
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
+    public void render(RenderHandler renderer, int zoom) {
         int xForSprite = rectangle.getX() - 32;
         int yForSprite = rectangle.getY() - 48;
         if (animatedSprite != null) {
-            renderer.renderSprite(animatedSprite, xForSprite, yForSprite, xZoom, yZoom, false);
+            renderer.renderSprite(animatedSprite, xForSprite, yForSprite, zoom, false);
         } else {
-            renderer.renderRectangle(rectangle, xZoom, yZoom, false);
+            renderer.renderRectangle(rectangle, zoom, false);
         }
+        interactionZone.render(renderer, zoom);
     }
 
     @Override
@@ -73,7 +79,7 @@ public class Npc implements GameObject, Walking {
         if (movingTicks < 1 && !route.isEmpty()) {
             nextDirection = route.getNextStep();
             movingTicks = 16;
-            logger.info(String.format("Direction: %s, moving ticks: %d", direction.name(), movingTicks));
+            logger.debug(String.format("Direction: %s, moving ticks: %d", direction.name(), movingTicks));
         }
 
         if (route.isEmpty() && getCurrentMap().equals(MAIN_MAP)) {
@@ -92,11 +98,13 @@ public class Npc implements GameObject, Walking {
         if (animatedSprite != null) {
             if (isMoving) {
                 animatedSprite.update(game);
+                interactionZone.changePosition(rectangle.getX() + 32, rectangle.getY() + 32);
             } else {
                 animatedSprite.reset();
             }
         }
 
+        interactionZone.update(game);
         checkPortal(game);
 
         movingTicks--;
@@ -122,7 +130,7 @@ public class Npc implements GameObject, Walking {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         return false;
     }
 
@@ -179,5 +187,9 @@ public class Npc implements GameObject, Walking {
 
     public Rectangle getRectangle() {
         return rectangle;
+    }
+
+    public InteractionZoneAdoptionNpc getInteractionZone() {
+        return interactionZone;
     }
 }

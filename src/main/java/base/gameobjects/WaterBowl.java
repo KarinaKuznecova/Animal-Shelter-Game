@@ -18,7 +18,7 @@ public class WaterBowl extends Bowl {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
             logger.info("Water bowl is clicked");
             if (!isFull) {

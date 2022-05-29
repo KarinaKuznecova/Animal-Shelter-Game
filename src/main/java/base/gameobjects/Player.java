@@ -39,13 +39,13 @@ public class Player implements GameObject {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
+    public void render(RenderHandler renderer, int zoom) {
         if (animatedSprite != null) {
-            renderer.renderSprite(animatedSprite, playerRectangle.getX(), playerRectangle.getY(), xZoom, yZoom, false);
+            renderer.renderSprite(animatedSprite, playerRectangle.getX(), playerRectangle.getY(), zoom, false);
         } else if (sprite != null) {
-            renderer.renderSprite(sprite, playerRectangle.getX(), playerRectangle.getY(), xZoom, yZoom, false);
+            renderer.renderSprite(sprite, playerRectangle.getX(), playerRectangle.getY(), zoom, false);
         } else {
-            renderer.renderRectangle(playerRectangle, xZoom, yZoom, false);
+            renderer.renderRectangle(playerRectangle, zoom, false);
         }
     }
 
@@ -249,7 +249,7 @@ public class Player implements GameObject {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         return false;
     }
 

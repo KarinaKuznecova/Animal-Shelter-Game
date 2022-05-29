@@ -37,6 +37,9 @@ public class KeyboardListener implements KeyListener, FocusListener {
                 game.unpause();
             }
         }
+        if (keys[KeyEvent.VK_SPACE]) {
+            game.interact();
+        }
         if (keys[KeyEvent.VK_B]) {
             game.showBackpack();
         }

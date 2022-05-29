@@ -35,9 +35,9 @@ public class Plant implements GameObject {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
+    public void render(RenderHandler renderer, int zoom) {
         if (animatedSprite != null) {
-            renderer.renderSprite(animatedSprite, rectangle.getX(), rectangle.getY(), xZoom, yZoom, false);
+            renderer.renderSprite(animatedSprite, rectangle.getX(), rectangle.getY(), zoom, false);
         }
     }
 
@@ -59,7 +59,7 @@ public class Plant implements GameObject {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
             logger.info("Plant is clicked");
             if (growingStage == animatedSprite.getSpritesSize() - 1) {

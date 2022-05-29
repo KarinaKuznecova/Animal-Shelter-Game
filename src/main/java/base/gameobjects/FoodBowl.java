@@ -18,7 +18,7 @@ public class FoodBowl extends Bowl {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
             logger.info("Food bowl is clicked");
             if (!isFull && game.getSelectedItem().length() > 2) {

@@ -28,9 +28,9 @@ public abstract class Bowl implements GameObject {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
+    public void render(RenderHandler renderer, int zoom) {
         if (sprite != null) {
-            renderer.renderSprite(sprite, x, y, xZoom, yZoom, false);
+            renderer.renderSprite(sprite, x, y, zoom, false);
         }
     }
 

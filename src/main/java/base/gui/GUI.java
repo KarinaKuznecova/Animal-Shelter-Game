@@ -36,12 +36,12 @@ public class GUI implements GameObject, Serializable {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
+    public void render(RenderHandler renderer, int zoom) {
         if (backgroundSprite != null) {
-            renderer.renderSprite(backgroundSprite, rectangle.getX(), rectangle.getY(), xZoom, yZoom, fixedOnScreen);
+            renderer.renderSprite(backgroundSprite, rectangle.getX(), rectangle.getY(), zoom, fixedOnScreen);
         }
         for (GUIButton button : buttons) {
-            button.render(renderer, xZoom, yZoom, rectangle);
+            button.render(renderer, zoom, rectangle);
         }
 
     }
@@ -59,7 +59,7 @@ public class GUI implements GameObject, Serializable {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         boolean stopChecking = false;
 
         if (!fixedOnScreen) {
@@ -72,7 +72,7 @@ public class GUI implements GameObject, Serializable {
             mouseRectangle.setX(mouseRectangle.getX() - rectangle.getX());
             mouseRectangle.setY(mouseRectangle.getY() - rectangle.getY());
             for (GUIButton button : buttons) {
-                boolean result = button.handleMouseClick(mouseRectangle, camera, xZoom, yZoom, game);
+                boolean result = button.handleMouseClick(mouseRectangle, camera, zoom, game);
                 if (!stopChecking) {
                     stopChecking = result;
                 }

@@ -28,9 +28,9 @@ public class Chest implements GameObject {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
+    public void render(RenderHandler renderer, int zoom) {
         if (sprite != null) {
-            renderer.renderSprite(sprite, x, y, xZoom, yZoom, false);
+            renderer.renderSprite(sprite, x, y, zoom, false);
         }
     }
 
@@ -45,7 +45,7 @@ public class Chest implements GameObject {
     }
 
     @Override
-    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int xZoom, int yZoom, Game game) {
+    public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle) && !isOpen) {
             sprite = game.getTileService().getTiles().get(37).getSprite();
             isOpen = true;

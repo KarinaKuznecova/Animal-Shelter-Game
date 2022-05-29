@@ -5,6 +5,7 @@ import base.constants.MapConstants;
 import base.constants.VisibleText;
 import base.events.EventService;
 import base.gameobjects.*;
+import base.gameobjects.interactionzones.InteractionZone;
 import base.gameobjects.services.AnimalService;
 import base.gameobjects.services.BackpackService;
 import base.gameobjects.services.PlantService;
@@ -47,6 +48,7 @@ public class Game extends JFrame implements Runnable {
     private transient Map<String, List<Plant>> plantsOnMaps;
     private transient Map<String, List<Animal>> animalsOnMaps;
     private transient List<Npc> npcs;
+    private transient List<InteractionZone> interactionZones;
     private transient Map<String, GameMap> gameMaps;
 
     private transient Player player;
@@ -109,6 +111,7 @@ public class Game extends JFrame implements Runnable {
         plantsOnMaps = new HashMap<>();
         animalsOnMaps = new HashMap<>();
         npcs = new ArrayList<>();
+        interactionZones = new ArrayList<>();
         gameMaps = new HashMap<>();
         eventService = new EventService();
         VisibleText.initializeTranslations();
@@ -387,7 +390,7 @@ public class Game extends JFrame implements Runnable {
         renderer.renderMap(this, gameMap);
 
         for (GameObject gameObject : guiList) {
-            gameObject.render(renderer, ZOOM, ZOOM);
+            gameObject.render(renderer, ZOOM);
         }
 
         renderer.render(this, graphics);
@@ -487,7 +490,7 @@ public class Game extends JFrame implements Runnable {
 
         for (GameObject gameObject : guiList) {
             if (!stoppedChecking) {
-                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
+                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
         if (!stoppedChecking) {
@@ -496,25 +499,25 @@ public class Game extends JFrame implements Runnable {
         for (GameObject gameObject : gameMap.getPlants()) {
             if (!stoppedChecking) {
                 mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
+                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
         for (GameObject gameObject : getGameMap().getInteractiveObjects()) {
             if (!stoppedChecking) {
                 mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
+                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
         for (Item item : gameMap.getItems()) {
             if (!stoppedChecking) {
                 mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = item.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
+                stoppedChecking = item.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
         for (Animal animal : animalsOnMaps.get(gameMap.getMapName())) {
             if (!stoppedChecking) {
                 mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = animal.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, ZOOM, this);
+                stoppedChecking = animal.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
         if (!stoppedChecking) {
@@ -934,6 +937,15 @@ public class Game extends JFrame implements Runnable {
         refreshCurrentMapCache();
         gameObjectsList.add(npc);
         npcs.add(npc);
+        interactionZones.add(npc.getInteractionZone());
+    }
+
+    public void interact() {
+        for (InteractionZone zone : interactionZones) {
+            if (zone.isPlayerInRange()) {
+                zone.action(this);
+            }
+        }
     }
 
     public int getSelectedTileId() {

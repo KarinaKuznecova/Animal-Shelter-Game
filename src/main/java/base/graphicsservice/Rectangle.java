@@ -106,16 +106,16 @@ public class Rectangle implements Serializable {
         return intersectsByX && intersectsByY;
     }
 
+    public boolean intersects(MapTile tile) {
+        return (intersectsByX(tile) && intersectsByY(tile));
+    }
+
     private boolean intersectsByY(Rectangle otherRectangle) {
         return !(y > otherRectangle.getY() + otherRectangle.getHeight() || otherRectangle.getY() > y + height);
     }
 
     private boolean intersectsByX(Rectangle otherRectangle) {
         return !(x > otherRectangle.getX() + otherRectangle.getWidth() || otherRectangle.getX() > x + width);
-    }
-
-    public boolean intersects(MapTile tile) {
-        return (intersectsByX(tile) && intersectsByY(tile));
     }
 
     private boolean intersectsByY(MapTile tile) {
@@ -127,27 +127,15 @@ public class Rectangle implements Serializable {
     }
 
     public boolean potentialIntersects(MapTile tile, int xPos, int yPos) {
-        return (intersectsByX(tile, xPos) && intersectsByY(tile, yPos));
+        return (potentialIntersectsByX(tile, xPos) && potentialIntersectsByY(tile, yPos));
     }
 
-    private boolean intersectsByY(MapTile tile, int yPos) {
+    private boolean potentialIntersectsByY(MapTile tile, int yPos) {
         return !(yPos > tile.getY() * (TILE_SIZE * ZOOM) + TILE_SIZE || tile.getY() * (TILE_SIZE * ZOOM) > yPos + ((TILE_SIZE * ZOOM) - (TILE_SIZE / 2)));     //48 = 32 + 32/2
     }
 
-    private boolean intersectsByX(MapTile tile, int xPos) {
+    private boolean potentialIntersectsByX(MapTile tile, int xPos) {
         return !(xPos > tile.getX() * (TILE_SIZE * ZOOM) + TILE_SIZE || tile.getX() * (TILE_SIZE * ZOOM) > xPos + width);
-    }
-
-    public boolean potentialIntersects(Rectangle rectangle, int xPos, int yPos) {
-        return (intersectsByX(rectangle, xPos) && intersectsByY(rectangle, yPos));
-    }
-
-    private boolean intersectsByY(Rectangle rectangle, int yPos) {
-        return !(yPos > rectangle.getY() * (TILE_SIZE * ZOOM) + TILE_SIZE || rectangle.getY() * (TILE_SIZE * ZOOM) > yPos + ((TILE_SIZE * ZOOM) - (TILE_SIZE / 2)));     //48 = 32 + 32/2
-    }
-
-    private boolean intersectsByX(Rectangle rectangle, int xPos) {
-        return !(xPos > rectangle.getX() * (TILE_SIZE * ZOOM) + TILE_SIZE || rectangle.getX() * (TILE_SIZE * ZOOM) > xPos + width);
     }
 
     @Override

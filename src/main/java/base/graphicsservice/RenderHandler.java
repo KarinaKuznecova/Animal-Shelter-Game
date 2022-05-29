@@ -9,6 +9,7 @@ import base.gui.EditIcon;
 import base.map.GameMap;
 import base.map.MapTile;
 import base.map.bigobjects.Bookcase;
+import javafx.scene.shape.Circle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,8 +109,6 @@ public class RenderHandler {
         MapTile potentialTile = new MapTile(5, game.getSelectedTileId(), 0, 0, game.isRegularTiles());
 
         if (bookcases.contains(game.getSelectedTileId()) && game.isRegularTiles()) {
-            int xSmaller = xPosition / (TILE_SIZE * ZOOM);
-            int ySmaller = yPosition / (TILE_SIZE * ZOOM);
             Bookcase bookcase = new Bookcase(xPosition, yPosition, bookcases.indexOf(game.getSelectedTileId()), 64);
             for (MapTile mapTile : bookcase.getObjectParts()) {
                 int xForCurrentPart = mapTile.getX();
@@ -194,7 +193,7 @@ public class RenderHandler {
         if (backGroundTileId >= 0) {
             for (int i = 0; i < gameMap.getMapHeight() * TILE_SIZE * ZOOM; i += TILE_SIZE * ZOOM) {
                 for (int j = 0; j < gameMap.getMapWidth() * TILE_SIZE * ZOOM; j += TILE_SIZE * ZOOM) {
-                    renderSprite(gameMap.getTileService().getTerrainTiles().get(backGroundTileId).getSprite(), i, j, ZOOM, ZOOM, false);
+                    renderSprite(gameMap.getTileService().getTerrainTiles().get(backGroundTileId).getSprite(), i, j, ZOOM, false);
                 }
             }
         }
@@ -205,36 +204,36 @@ public class RenderHandler {
         int yPosition = mappedTile.getY() * TILE_SIZE * ZOOM;
         if (xPosition <= gameMap.getMapWidth() * TILE_SIZE * ZOOM && yPosition <= gameMap.getMapHeight() * TILE_SIZE * ZOOM) {
             if (mappedTile.isRegularTile()) {
-                renderSprite(gameMap.getTileService().getTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, ZOOM, false);
+                renderSprite(gameMap.getTileService().getTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, false);
             } else {
-                renderSprite(gameMap.getTileService().getTerrainTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, ZOOM, false);
+                renderSprite(gameMap.getTileService().getTerrainTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, false);
             }
         }
     }
 
     private void renderGameObjects(Game game, GameMap gameMap, int layer) {
         if (game.getPlayer().getLayer() == layer) {
-            game.getPlayer().render(this, ZOOM, ZOOM);
+            game.getPlayer().render(this, ZOOM);
         }
         List<Animal> animalsOnCurrentMap = game.getAnimalsOnMaps().get(gameMap.getMapName());
         for (Animal animal : animalsOnCurrentMap) {
             if (animal.getLayer() == layer) {
-                animal.render(this, ZOOM, ZOOM);
+                animal.render(this, ZOOM);
             }
         }
         for (GameObject gameObject : gameMap.getItems()) {
             if (gameObject.getLayer() == layer) {
-                gameObject.render(this, ZOOM, ZOOM);
+                gameObject.render(this, ZOOM);
             }
         }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject.getLayer() == layer) {
-                gameObject.render(this, ZOOM, ZOOM);
+                gameObject.render(this, ZOOM);
             }
         }
         for (Plant plant : gameMap.getPlants()) {
             if (plant.getLayer() == layer) {
-                plant.render(this, ZOOM, ZOOM);
+                plant.render(this, ZOOM);
             }
         }
     }
@@ -253,39 +252,43 @@ public class RenderHandler {
         graphics.drawString(line, x, y);
     }
 
-    public void renderRectangle(Rectangle rectangle, int xZoom, int yZoom, boolean fixed) {
+    public void renderRectangle(Rectangle rectangle, int xZoom, boolean fixed) {
         int[] rectanglePixels = rectangle.getPixels();
         if (rectanglePixels != null) {
-            renderPixelsArrays(rectanglePixels, rectangle.getWidth(), rectangle.getHeight(), rectangle.getX(), rectangle.getY(), xZoom, yZoom, fixed);
+            renderPixelsArrays(rectanglePixels, rectangle.getWidth(), rectangle.getHeight(), rectangle.getX(), rectangle.getY(), xZoom, fixed);
         }
     }
 
-    public void renderRectangle(Rectangle rectangle, Rectangle rectangleOffset, int xZoom, int yZoom, boolean fixed) {
+    public void renderRectangle(Rectangle rectangle, Rectangle rectangleOffset, int zoom, boolean fixed) {
         int[] rectanglePixels = rectangle.getPixels();
         if (rectanglePixels != null) {
-            renderPixelsArrays(rectanglePixels, rectangle.getWidth(), rectangle.getHeight(), rectangle.getX() + rectangleOffset.getX(), rectangle.getY() + rectangleOffset.getY(), xZoom, yZoom, fixed);
+            renderPixelsArrays(rectanglePixels, rectangle.getWidth(), rectangle.getHeight(), rectangle.getX() + rectangleOffset.getX(), rectangle.getY() + rectangleOffset.getY(), zoom, fixed);
         }
     }
 
-    public Rectangle getCamera() {
-        return camera;
+    public void renderCircle(Circle circle) {
+        int x = (int) (circle.getCenterX() - circle.getRadius() - getCamera().getX());
+        int y = (int) (circle.getCenterY() - circle.getRadius() - getCamera().getY());
+        int radius = (int) circle.getRadius();
+        Graphics graphics = view.getGraphics();
+        graphics.drawOval(x, y, radius * 2, radius * 2);
     }
 
-    public void renderSprite(Sprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed) {
-        renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, xZoom, yZoom, fixed);
+    public void renderSprite(Sprite sprite, int xPosition, int yPosition, int zoom, boolean fixed) {
+        renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, zoom, fixed);
     }
 
-    public void renderSprite(Sprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed, String line) {
-        renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, xZoom, yZoom, fixed);
-        Position position = new Position(xPosition + (sprite.getWidth() * xZoom - 62), yPosition + (sprite.getHeight() * yZoom - 6));
+    public void renderSprite(Sprite sprite, int xPosition, int yPosition, int zoom, boolean fixed, String line) {
+        renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, zoom, fixed);
+        Position position = new Position(xPosition + (sprite.getWidth() * zoom - 62), yPosition + (sprite.getHeight() * zoom - 6));
         if (line != null) {
             textToDraw.put(position, line);
         }
     }
 
-    public void renderSprite(Sprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed, Integer count) {
-        renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, xZoom, yZoom, fixed);
-        Position numberPosition = new Position(xPosition + (sprite.getWidth() * xZoom - 25), yPosition + (sprite.getHeight() * yZoom - 5));
+    public void renderSprite(Sprite sprite, int xPosition, int yPosition, int zoom, boolean fixed, Integer count) {
+        renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, zoom, fixed);
+        Position numberPosition = new Position(xPosition + (sprite.getWidth() * zoom - 25), yPosition + (sprite.getHeight() * zoom - 5));
         if (count != null && count != 0) {
             renderNumber(count, numberPosition);
         } else {
@@ -315,14 +318,14 @@ public class RenderHandler {
         textToDraw.clear();
     }
 
-    public void renderPixelsArrays(int[] renderPixels, int renderWidth, int renderHeight, int xPosition, int yPosition, int xZoom, int yZoom, boolean fixed) {
+    public void renderPixelsArrays(int[] renderPixels, int renderWidth, int renderHeight, int xPosition, int yPosition, int zoom, boolean fixed) {
         for (int y = 0; y < renderHeight; y++) {
             for (int x = 0; x < renderWidth; x++) {
-                for (int yZ = 0; yZ < yZoom; yZ++) {
-                    for (int xZ = 0; xZ < xZoom; xZ++) {
+                for (int yZ = 0; yZ < zoom; yZ++) {
+                    for (int xZ = 0; xZ < zoom; xZ++) {
                         int pixel = renderPixels[renderWidth * y + x];
-                        int xPos = (x * xZoom + xZ + xPosition);
-                        int yPos = (y * yZoom + yZ + yPosition);
+                        int xPos = (x * zoom + xZ + xPosition);
+                        int yPos = (y * zoom + yZ + yPosition);
                         setPixel(pixel, xPos, yPos, fixed);
                     }
                 }
@@ -425,5 +428,9 @@ public class RenderHandler {
 
     public List<String> getTextToDrawInCenter() {
         return textToDrawInCenter;
+    }
+
+    public Rectangle getCamera() {
+        return camera;
     }
 }

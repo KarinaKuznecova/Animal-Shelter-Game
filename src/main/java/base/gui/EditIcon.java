@@ -24,8 +24,8 @@ public class EditIcon {
         rectangle = new Rectangle(position.getXPosition() - 3, position.getYPosition() - 3, 20, 20);
     }
 
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
-        renderer.renderSprite(sprite, rectangle.getX() + 2, rectangle.getY() + 2, xZoom, yZoom, true);
+    public void render(RenderHandler renderer, int zoom) {
+        renderer.renderSprite(sprite, rectangle.getX() + 2, rectangle.getY() + 2, zoom, true);
     }
 
     public boolean handleMouseClick(Rectangle mouseRectangle, Game game, Animal animal) {

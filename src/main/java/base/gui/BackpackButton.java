@@ -32,21 +32,21 @@ public class BackpackButton extends GUIButton implements Serializable {
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom, Rectangle rectangle) {
+    public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
         if (sprite != null) {
             if (objectCount > 1) {
                 renderer.renderSprite(sprite,
                         region.getX() + rectangle.getX(),
                         region.getY() + rectangle.getY(),
-                        xZoom, yZoom, fixed, objectCount);
+                        zoom, fixed, objectCount);
             } else {
                 renderer.renderSprite(sprite,
                         region.getX() + rectangle.getX(),
                         region.getY() + rectangle.getY(),
-                        xZoom, yZoom, fixed, 0);
+                        zoom, fixed, 0);
             }
         }
-        renderer.renderRectangle(region, rectangle, 1, 1, fixed);
+        renderer.renderRectangle(region, rectangle, 1, fixed);
     }
 
     @Override
