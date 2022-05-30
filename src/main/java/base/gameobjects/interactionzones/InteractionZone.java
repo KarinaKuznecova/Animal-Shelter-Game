@@ -12,7 +12,7 @@ public abstract class InteractionZone implements GameObject {
 
     private static final Logger logger = LoggerFactory.getLogger(InteractionZone.class);
 
-    private final Circle circle;
+    protected final Circle circle;
 
     private boolean playerInRange;
 

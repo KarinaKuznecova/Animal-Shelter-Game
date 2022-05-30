@@ -14,8 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static base.constants.ColorConstant.GREEN;
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.constants.FilePath.NPC_SHEET_PATH_LADY;
 import static base.constants.MapConstants.MAIN_MAP;
 import static base.navigationservice.Direction.*;
@@ -56,10 +55,11 @@ public class Npc implements GameObject, Walking {
         int yForSprite = rectangle.getY() - 48;
         if (animatedSprite != null) {
             renderer.renderSprite(animatedSprite, xForSprite, yForSprite, zoom, false);
-        } else {
-            renderer.renderRectangle(rectangle, zoom, false);
         }
-        interactionZone.render(renderer, zoom);
+        if (DEBUG_MODE) {
+            renderer.renderRectangle(rectangle, zoom, false);
+            interactionZone.render(renderer, zoom);
+        }
     }
 
     @Override

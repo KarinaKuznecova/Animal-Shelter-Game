@@ -3,10 +3,9 @@ package base.gameobjects;
 import base.Game;
 import base.constants.MapConstants;
 import base.gameobjects.animals.Butterfly;
-import base.graphicsservice.ImageLoader;
-import base.graphicsservice.Rectangle;
-import base.graphicsservice.RenderHandler;
-import base.graphicsservice.Sprite;
+import base.gameobjects.interactionzones.InteractionZonePetHeart;
+import base.graphicsservice.*;
+import base.gui.HeartIcon;
 import base.map.GameMap;
 import base.map.MapTile;
 import base.navigationservice.Direction;
@@ -18,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static base.constants.ColorConstant.GREEN;
+import static base.constants.ColorConstant.YELLOW;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.IMAGES_PATH;
 import static base.gameobjects.AgeStage.ADULT;
@@ -61,6 +61,9 @@ public abstract class Animal implements GameObject, Walking {
     protected static final int SLEEPING_SPEED = 15;
     private int currentEnergy;
 
+    private final InteractionZonePetHeart interactionZone;
+    private final HeartIcon heartIcon;
+
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
     protected Animal(String animalType, int startX, int startY, int tileSize) {
@@ -93,6 +96,8 @@ public abstract class Animal implements GameObject, Walking {
         }
 
         route = new Route();
+        interactionZone = new InteractionZonePetHeart(animalRectangle.getX() + 32, animalRectangle.getY() + 32, 50);
+        heartIcon = new HeartIcon();
     }
 
     protected void setSprite() {
@@ -148,17 +153,28 @@ public abstract class Animal implements GameObject, Walking {
 
     @Override
     public void render(RenderHandler renderer, int zoom) {
-        int xForSprite = animalRectangle.getX() - (tileSize - 32);
-        int yForSprite = animalRectangle.getY() - ((tileSize - 32) + ((tileSize - 32) / 2));
+        int xForSprite = animalRectangle.getX();
+        int yForSprite = animalRectangle.getY();
         if (BABY.equals(age) && !animalType.contains("baby") || animalType.equals("chicken-baby")) {
             zoom = 1;
+            xForSprite = animalRectangle.getX() + animalRectangle.getWidth() / 2;
+            yForSprite = animalRectangle.getY() + animalRectangle.getHeight() / 2;
         }
         if (animatedSprite != null) {
             renderer.renderSprite(animatedSprite, xForSprite, yForSprite, zoom, false);
-        } else if (sprite != null) {
-            renderer.renderSprite(sprite, animalRectangle.getX(), animalRectangle.getY(), zoom, false);
-        } else {
-            renderer.renderRectangle(animalRectangle, zoom, false);
+        }
+        if (DEBUG_MODE) {
+            Rectangle rectangle = new Rectangle(xForSprite, yForSprite, animalRectangle.getWidth(), animalRectangle.getHeight());
+            if (interactionZone.isPlayerInRange()) {
+                rectangle.generateBorder(2, GREEN);
+            } else {
+                rectangle.generateBorder(1, YELLOW);
+            }
+            renderer.renderRectangle(rectangle, zoom, false);
+            interactionZone.render(renderer, zoom);
+        }
+        if (interactionZone.isPlayerInRange()) {
+            heartIcon.render(renderer, 1);
         }
     }
 
@@ -195,6 +211,7 @@ public abstract class Animal implements GameObject, Walking {
         if (animatedSprite != null) {
             if (isMoving && (isFallingAsleep() || isWakingUp() || notRelatedToSleeping())) {
                 animatedSprite.update(game);
+                interactionZone.changePosition(animalRectangle.getX() + 32, animalRectangle.getY() + 32);
             } else if (!isSleeping()) {
                 animatedSprite.reset();
             }
@@ -213,6 +230,17 @@ public abstract class Animal implements GameObject, Walking {
         if (BABY.equals(age)) {
             updateAge();
         }
+        interactionZone.update(game);
+        if (interactionZone.isPlayerInRange()) {
+            updateHeart(game);
+        }
+    }
+
+    private void updateHeart(Game game) {
+        int xPosition = animalRectangle.getX() - game.getRenderer().getCamera().getX() + 16;
+        int yPosition = animalRectangle.getY() - game.getRenderer().getCamera().getY() - 16;
+        Position heartPosition = new Position(xPosition, yPosition);
+        heartIcon.changePosition(heartPosition);
     }
 
     private void checkPortal(Game game) {

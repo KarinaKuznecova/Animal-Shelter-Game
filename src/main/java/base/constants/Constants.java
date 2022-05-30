@@ -8,7 +8,9 @@ public class Constants {
     public static final int TILE_SIZE = 32;
     public static final int ZOOM = 2;
 
-    public static final String CURRENT_GAME_VERSION = "1.2.2";
+    public static final boolean DEBUG_MODE = false;
+
+    public static final String CURRENT_GAME_VERSION = "1.2.3";
 
     private static final String ENGLISH = "eng";
     private static final String LATVIAN = "lv";
