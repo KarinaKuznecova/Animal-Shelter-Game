@@ -1,6 +1,7 @@
 package base.gameobjects;
 
 import base.gameobjects.animals.Mouse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static base.gameobjects.AgeStage.ADULT;
@@ -9,7 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AnimalTest {
 
-    Mouse testSubject = new Mouse(0, 0, 3, 100, 100, 100, ADULT, "");
+    Mouse testSubject;
+
+    @BeforeEach
+    public void before() {
+        testSubject = new Mouse(0, 0, 3, 100, 100, 100, ADULT, "");
+    }
 
     @Test
     public void getMovingTickToAdjustPosition() {
