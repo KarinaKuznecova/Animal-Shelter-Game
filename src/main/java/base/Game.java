@@ -13,10 +13,7 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
 import base.gui.*;
 import base.map.*;
-import base.navigationservice.KeyboardListener;
-import base.navigationservice.MouseEventListener;
-import base.navigationservice.Route;
-import base.navigationservice.RouteCalculator;
+import base.navigationservice.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +66,7 @@ public class Game extends JFrame implements Runnable {
     private transient GUI possibleAnimalButtons;
     private transient GUI plantsGui;
     private transient GUI backpackGui;
+    private transient DialogBox dialogBox;
 
     private boolean regularTiles = true;
 
@@ -92,6 +90,7 @@ public class Game extends JFrame implements Runnable {
         loadGuiElements();
         enableDefaultGui();
         loadGameObjects(getWidth() / 2, getHeight() / 2);
+        dialogBox = guiService.loadDialogBox();
     }
 
     public static void main(String[] args) {
@@ -298,10 +297,14 @@ public class Game extends JFrame implements Runnable {
 
     void refreshGuiPanels() {
         boolean backpackOpen = guiList.contains(backpackGui);
+        boolean dialogBoxOpen = guiList.contains(dialogBox);
         guiList.clear();
         switchTopPanel(selectedPanel);
         if (backpackOpen) {
             guiList.add(backpackGui);
+        }
+        if (dialogBoxOpen) {
+            guiList.add(dialogBox);
         }
     }
 
@@ -924,9 +927,9 @@ public class Game extends JFrame implements Runnable {
         gameMaps.put(gameMap.getMapName(), gameMap);
     }
 
-    public void spawnNpc() {
+    public void spawnNpc(Animal wantedAnimal) {
         logger.info("Spawning npc");
-        Npc npc = new Npc(320,320);
+        Npc npc = new Npc(320,320, wantedAnimal);
         npc.setCurrentMap(BOTTOM_RIGHT_MAP);
 
         if (getGameMap().getMapName().equals(BOTTOM_RIGHT_MAP)) {
@@ -946,6 +949,33 @@ public class Game extends JFrame implements Runnable {
                 zone.action(this);
             }
         }
+    }
+
+    public void switchDialogBox() {
+        if (!guiList.contains(dialogBox)) {
+            showDialogBox();
+        } else {
+            hideDialogBox();
+        }
+    }
+
+    private void showDialogBox() {
+        guiList.add(dialogBox);
+    }
+
+    public void hideDialogBox() {
+        guiList.remove(dialogBox);
+        renderer.clearRenderedText();
+    }
+
+    public void setDialogText(String text) {
+        dialogBox.setDialogText(text);
+    }
+
+    public void sendNpcAway() {
+        Npc npc = npcs.get(0);
+        Route route = calculateRouteToMap(npc, NavigationService.getNextPortalTo(npc.getCurrentMap(), BOTTOM_RIGHT_MAP));
+        npc.goAway(route);
     }
 
     public int getSelectedTileId() {

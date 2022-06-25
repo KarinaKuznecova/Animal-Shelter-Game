@@ -5,7 +5,9 @@ import base.gameobjects.Animal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class NPCEvent extends Event {
 
@@ -47,6 +49,18 @@ public class NPCEvent extends Event {
 
     @Override
     void startEvent(Game game) {
-        game.spawnNpc();
+        game.spawnNpc(pickAnimal(game));
+    }
+
+    public Animal pickAnimal(Game game) {
+        List<Animal> availableAnimals = new ArrayList<>();
+        for (List<Animal> animalList : game.getAnimalsOnMaps().values()) {
+            for (Animal animal : animalList) {
+                if (!animal.isFavorite()) {
+                    availableAnimals.add(animal);
+                }
+            }
+        }
+        return availableAnimals.get(new Random().nextInt(availableAnimals.size()));
     }
 }

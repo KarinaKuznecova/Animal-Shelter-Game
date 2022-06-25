@@ -33,10 +33,11 @@ public class Npc implements GameObject, Walking {
     private final int speed;
 
     private boolean arrived;
+    private boolean goingAway;
 
     private final InteractionZoneAdoptionNpc interactionZone;
 
-    public Npc(int startX, int startY) {
+    public Npc(int startX, int startY, Animal wantedAnimal) {
         animatedSprite = ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64);
         logger.info("Loaded npc sprite");
         speed = 2;
@@ -46,7 +47,7 @@ public class Npc implements GameObject, Walking {
         rectangle = new Rectangle(startX, startY, 32, 32);
         rectangle.generateBorder(1, GREEN);
 
-        interactionZone = new InteractionZoneAdoptionNpc(rectangle.getX() + 32, rectangle.getY() + 32, 100);
+        interactionZone = new InteractionZoneAdoptionNpc(rectangle.getX() + 32, rectangle.getY() + 32, 100, wantedAnimal);
     }
 
     @Override
@@ -82,7 +83,7 @@ public class Npc implements GameObject, Walking {
             logger.debug(String.format("Direction: %s, moving ticks: %d", direction.name(), movingTicks));
         }
 
-        if (route.isEmpty() && getCurrentMap().equals(MAIN_MAP)) {
+        if (route.isEmpty() && getCurrentMap().equals(MAIN_MAP) && !goingAway) {
             nextDirection = STAY;
         }
 
@@ -191,5 +192,16 @@ public class Npc implements GameObject, Walking {
 
     public InteractionZoneAdoptionNpc getInteractionZone() {
         return interactionZone;
+    }
+
+    public void goAway(Route route) {
+        goingAway = true;
+        this.route = route;
+        logger.info("SENDING NPC AWAY");
+    }
+
+    @Override
+    public String toString() {
+        return "Npc";
     }
 }

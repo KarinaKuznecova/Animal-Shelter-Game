@@ -2,6 +2,7 @@ package base.gui;
 
 import base.Game;
 import base.gameobjects.Animal;
+import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.Sprite;
 import base.map.Tile;
@@ -12,8 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
+import static base.constants.FilePath.CANCEL_BUTTON_PATH;
+import static base.constants.FilePath.OK_BUTTON_PATH;
 import static base.constants.MultiOptionalObjects.MASTER_TILE_LIST;
 
 public class GuiService implements Serializable {
@@ -129,6 +131,32 @@ public class GuiService implements Serializable {
             }
         }
         return id;
+    }
+
+    public DialogBox loadDialogBox() {
+        Sprite okSprite = ImageLoader.getPreviewSprite(OK_BUTTON_PATH);
+        Sprite cancelSprite = ImageLoader.getPreviewSprite(CANCEL_BUTTON_PATH);
+        Rectangle rectangle = new Rectangle();
+        defineDialogBoxSize(rectangle);
+        OkButton okButton = new OkButton(okSprite, rectangle);
+        CancelButton cancelButton = new CancelButton(cancelSprite, rectangle);
+        List<GUIButton> buttons = new ArrayList<>();
+        buttons.add(okButton);
+        buttons.add(cancelButton);
+        return new DialogBox(buttons, rectangle);
+    }
+
+    // TODO: not perfect, test on different screens
+    private void defineDialogBoxSize(Rectangle rectangle) {
+        int width = 300;
+        int height = 60;
+        int x = MAX_SCREEN_WIDTH / 2 - (width / 2 * ZOOM);
+        int y = MAX_SCREEN_HEIGHT - (180 + height);
+
+        rectangle.setX(x);
+        rectangle.setY(y);
+        rectangle.setWidth(width);
+        rectangle.setHeight(height);
     }
 
 }

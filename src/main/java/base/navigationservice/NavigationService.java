@@ -68,10 +68,10 @@ public class NavigationService {
             if (MAPS_NEAR_MAIN_MAP.contains(destination)) {
                 return destination;
             }
-            if (destination.startsWith("TOP")) {
+            if (destination.startsWith("Top")) {
                 return TOP_CENTER_MAP;
             }
-            if (destination.startsWith("BOTTOM")) {
+            if (destination.startsWith("Bottom")) {
                 return BOTTOM_CENTER_MAP;
             }
         }

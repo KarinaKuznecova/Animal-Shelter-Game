@@ -14,8 +14,8 @@ public class GUI implements GameObject, Serializable {
     private static final long serialVersionUID = 1L;
 
     private final Sprite backgroundSprite;
-    private final List<GUIButton> buttons;
-    private final Rectangle rectangle = new Rectangle();
+    protected final List<GUIButton> buttons;
+    protected Rectangle rectangle;
     private final boolean fixedOnScreen;
 
     public GUI(Sprite backgroundSprite, List<GUIButton> buttons, int xPosition, int yPosition, boolean fixedOnScreen) {
@@ -23,6 +23,7 @@ public class GUI implements GameObject, Serializable {
         this.buttons = buttons;
         this.fixedOnScreen = fixedOnScreen;
 
+        rectangle = new Rectangle();
         rectangle.setX(xPosition);
         rectangle.setY(yPosition);
         if (backgroundSprite != null) {
