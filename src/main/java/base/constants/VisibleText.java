@@ -1,5 +1,6 @@
 package base.constants;
 
+import base.gameobjects.Animal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,7 @@ public class VisibleText {
     protected static final Logger logger = LoggerFactory.getLogger(VisibleText.class);
 
     // keep in alphabetical order
+    public static String adoptionDialogPattern = "I want to adopt %s, is it ok?";
     public static String age = "Age";
     public static String backyard = "Backyard";
     public static String bottomCenterMap = "Bottom Center Map";
@@ -32,6 +34,10 @@ public class VisibleText {
     public static String startingMap = "Starting map";
     public static String thirst = "Thirst";
 
+    public static String getAdoptionDialog(Animal wantedAnimal) {
+        return String.format(adoptionDialogPattern, wantedAnimal);
+    }
+
     public static void initializeTranslations() {
         logger.debug("Reading translations from file");
 
@@ -43,6 +49,13 @@ public class VisibleText {
         try (Scanner scanner = new Scanner(translationFile)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
+                if (line.startsWith("Adoption")) {
+                    String[] splitLine = line.split(":");
+                    if (splitLine.length > 1) {
+                        adoptionDialogPattern = splitLine[1];
+                    }
+                    continue;
+                }
                 if (line.startsWith("Age")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {

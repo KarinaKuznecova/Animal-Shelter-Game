@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static base.constants.ColorConstant.ALPHA;
@@ -74,14 +75,18 @@ public class Rectangle implements Serializable {
         return new int[0];
     }
 
-    public void generateBorder(int borderWidth, int color) {
+    public void generateBorder(int borderWidth, int borderColor) {
+        generateBorder(borderWidth, borderColor, ALPHA);
+    }
+
+    public void generateBorder(int borderWidth, int borderColor, int backGroundColor) {
         pixels = new int[width * height];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (i < borderWidth || i >= height - borderWidth || j < borderWidth || j >= width - borderWidth) {
-                    pixels[i * width + j] = color;
+                    pixels[i * width + j] = borderColor;
                 } else {
-                    pixels[i * width + j] = ALPHA;
+                    pixels[i * width + j] = backGroundColor;
                 }
             }
         }
@@ -89,11 +94,7 @@ public class Rectangle implements Serializable {
 
     public void generateBackground(int color) {
         pixels = new int[width * height];
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                pixels[i + j * width] = color;
-            }
-        }
+        Arrays.fill(pixels, color);
     }
 
     public boolean intersects(Rectangle otherRectangle) {

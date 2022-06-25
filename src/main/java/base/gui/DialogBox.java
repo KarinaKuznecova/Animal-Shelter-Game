@@ -7,7 +7,7 @@ import base.graphicsservice.RenderHandler;
 
 import java.util.List;
 
-import static base.constants.ColorConstant.GREEN;
+import static base.constants.ColorConstant.*;
 import static base.constants.Constants.ZOOM;
 
 public class DialogBox extends GUI {
@@ -21,7 +21,7 @@ public class DialogBox extends GUI {
 
     @Override
     public void render(RenderHandler renderer, int zoom) {
-        rectangle.generateBorder(3, GREEN);
+        rectangle.generateBorder(3, YELLOW, LIGHT_GRAY);
         renderer.renderRectangle(rectangle, ZOOM, true);
 
         for (GUIButton button : buttons) {

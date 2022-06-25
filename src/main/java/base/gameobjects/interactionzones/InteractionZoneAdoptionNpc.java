@@ -3,6 +3,8 @@ package base.gameobjects.interactionzones;
 import base.Game;
 import base.gameobjects.Animal;
 
+import static base.constants.VisibleText.getAdoptionDialog;
+
 public class InteractionZoneAdoptionNpc extends InteractionZone {
 
     Animal wantedAnimal;
@@ -23,7 +25,7 @@ public class InteractionZoneAdoptionNpc extends InteractionZone {
     @Override
     public void action(Game game) {
         game.switchDialogBox();
-        game.setDialogText("I want to adopt " + wantedAnimal + ", is it ok?");
+        game.setDialogText(getAdoptionDialog(wantedAnimal));
     }
 
 }
