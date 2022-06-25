@@ -978,6 +978,15 @@ public class Game extends JFrame implements Runnable {
         npc.goAway(route);
     }
 
+    public void removeNpc(Npc npc) {
+        logger.info("Removing npc");
+        npcs.remove(npc);
+        gameObjectsList.remove(npc);
+        for (GameMap map : gameMaps.values()) {
+            map.removeObject(npc);
+        }
+    }
+
     public int getSelectedTileId() {
         return selectedTileId;
     }

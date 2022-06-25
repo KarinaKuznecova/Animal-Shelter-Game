@@ -33,7 +33,7 @@ public class Npc implements GameObject, Walking {
     private final int speed;
 
     private boolean arrived;
-    private boolean goingAway;
+    private boolean isGoingAway;
 
     private final InteractionZoneAdoptionNpc interactionZone;
 
@@ -83,7 +83,7 @@ public class Npc implements GameObject, Walking {
             logger.debug(String.format("Direction: %s, moving ticks: %d", direction.name(), movingTicks));
         }
 
-        if (route.isEmpty() && getCurrentMap().equals(MAIN_MAP) && !goingAway) {
+        if (route.isEmpty() && getCurrentMap().equals(MAIN_MAP) && !isGoingAway) {
             nextDirection = STAY;
         }
 
@@ -109,6 +109,10 @@ public class Npc implements GameObject, Walking {
         checkPortal(game);
 
         movingTicks--;
+
+        if (isGoingAway && route.isEmpty()) {
+            game.removeNpc(this);
+        }
     }
 
     private void goUpAndLeft() {
@@ -195,7 +199,7 @@ public class Npc implements GameObject, Walking {
     }
 
     public void goAway(Route route) {
-        goingAway = true;
+        isGoingAway = true;
         this.route = route;
         logger.info("SENDING NPC AWAY");
     }

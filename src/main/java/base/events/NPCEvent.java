@@ -50,6 +50,7 @@ public class NPCEvent extends Event {
     @Override
     void startEvent(Game game) {
         game.spawnNpc(pickAnimal(game));
+        happened = true;
     }
 
     public Animal pickAnimal(Game game) {
