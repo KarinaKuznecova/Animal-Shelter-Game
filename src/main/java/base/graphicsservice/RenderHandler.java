@@ -179,7 +179,7 @@ public class RenderHandler {
                 // with for-each loop there is ConcurrentModificationException often, but with this loop everything works fine
                 for (int j = 0; j < tiles.size(); j++) {
                     MapTile mappedTile = tiles.get(j);
-                    if (mappedTile.getLayer() == i) {
+                    if (mappedTile.getLayer() == i && isInRangeOfCamera(mappedTile)) {
                         renderTile(gameMap, mappedTile);
                     }
                 }
@@ -188,11 +188,22 @@ public class RenderHandler {
         }
     }
 
+    private boolean isInRangeOfCamera(MapTile mappedTile) {
+        return mappedTile.getX() * (TILE_SIZE * ZOOM) > camera.getX() - (TILE_SIZE * ZOOM)
+                && mappedTile.getX() * (TILE_SIZE * ZOOM) < camera.getX() + camera.getWidth() + (TILE_SIZE * ZOOM)
+                && mappedTile.getY() * (TILE_SIZE * ZOOM) > camera.getY() - (TILE_SIZE * ZOOM)
+                && mappedTile.getY() * (TILE_SIZE * ZOOM) < camera.getY() + camera.getHeight() + (TILE_SIZE * ZOOM);
+    }
+
     private void renderBackground(GameMap gameMap) {
         int backGroundTileId = gameMap.getBackGroundTileId();
         if (backGroundTileId >= 0) {
-            for (int i = 0; i < gameMap.getMapHeight() * TILE_SIZE * ZOOM; i += TILE_SIZE * ZOOM) {
-                for (int j = 0; j < gameMap.getMapWidth() * TILE_SIZE * ZOOM; j += TILE_SIZE * ZOOM) {
+            for (int i = (camera.getX() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) - 1;
+                 i < (camera.getX() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) + camera.getWidth() + (TILE_SIZE * ZOOM);
+                 i += TILE_SIZE * ZOOM) {
+                for (int j = (camera.getY() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) - 1;
+                     j < (camera.getY() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) + camera.getHeight() + (TILE_SIZE * ZOOM);
+                     j += TILE_SIZE * ZOOM) {
                     renderSprite(gameMap.getTileService().getTerrainTiles().get(backGroundTileId).getSprite(), i, j, ZOOM, false);
                 }
             }
