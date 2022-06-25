@@ -13,10 +13,7 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
 import base.gui.*;
 import base.map.*;
-import base.navigationservice.KeyboardListener;
-import base.navigationservice.MouseEventListener;
-import base.navigationservice.Route;
-import base.navigationservice.RouteCalculator;
+import base.navigationservice.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,13 +23,12 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
+import static base.constants.MapConstants.BOTTOM_CENTER_MAP;
 import static base.constants.MapConstants.BOTTOM_RIGHT_MAP;
 
 public class Game extends JFrame implements Runnable {
@@ -69,6 +65,7 @@ public class Game extends JFrame implements Runnable {
     private transient GUI possibleAnimalButtons;
     private transient GUI plantsGui;
     private transient GUI backpackGui;
+    private transient DialogBox dialogBox;
 
     private boolean regularTiles = true;
 
@@ -92,6 +89,7 @@ public class Game extends JFrame implements Runnable {
         loadGuiElements();
         enableDefaultGui();
         loadGameObjects(getWidth() / 2, getHeight() / 2);
+        dialogBox = guiService.loadDialogBox();
     }
 
     public static void main(String[] args) {
@@ -298,10 +296,14 @@ public class Game extends JFrame implements Runnable {
 
     void refreshGuiPanels() {
         boolean backpackOpen = guiList.contains(backpackGui);
+        boolean dialogBoxOpen = guiList.contains(dialogBox);
         guiList.clear();
         switchTopPanel(selectedPanel);
         if (backpackOpen) {
             guiList.add(backpackGui);
+        }
+        if (dialogBoxOpen) {
+            guiList.add(dialogBox);
         }
     }
 
@@ -899,6 +901,10 @@ public class Game extends JFrame implements Runnable {
         return routeCalculator.calculateRouteToPillow(getGameMap(animal.getCurrentMap()), animal);
     }
 
+    public Route calculateRouteToNpc(Animal animal) {
+        return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, "NPC");
+    }
+
     public void pause() {
         paused = true;
     }
@@ -924,9 +930,9 @@ public class Game extends JFrame implements Runnable {
         gameMaps.put(gameMap.getMapName(), gameMap);
     }
 
-    public void spawnNpc() {
+    public void spawnNpc(Animal wantedAnimal) {
         logger.info("Spawning npc");
-        Npc npc = new Npc(320,320);
+        Npc npc = new Npc(320,320, wantedAnimal);
         npc.setCurrentMap(BOTTOM_RIGHT_MAP);
 
         if (getGameMap().getMapName().equals(BOTTOM_RIGHT_MAP)) {
@@ -946,6 +952,73 @@ public class Game extends JFrame implements Runnable {
                 zone.action(this);
             }
         }
+    }
+
+    public void switchDialogBox() {
+        if (!guiList.contains(dialogBox)) {
+            showDialogBox();
+        } else {
+            hideDialogBox();
+        }
+    }
+
+    private void showDialogBox() {
+        guiList.add(dialogBox);
+    }
+
+    public void hideDialogBox() {
+        guiList.remove(dialogBox);
+        renderer.clearRenderedText();
+    }
+
+    public void setDialogText(String text) {
+        dialogBox.setDialogText(text);
+    }
+
+    public void sendNpcAway() {
+        Npc npc = npcs.get(0);
+        Route route = calculateRouteToMap(npc, NavigationService.getNextPortalTo(npc.getCurrentMap(), BOTTOM_CENTER_MAP));
+        npc.goAway(route);
+    }
+
+    public void removeNpc(Npc npc) {
+        logger.info("Removing npc");
+        npcs.remove(npc);
+        gameObjectsList.remove(npc);
+        for (GameMap map : gameMaps.values()) {
+            map.removeObject(npc);
+        }
+    }
+
+    public void dropRandomFood() {
+        int xPosition = npcs.get(0).getRectangle().getX();
+        int yPosition = npcs.get(0).getRectangle().getY();
+        String plantType = plantService.plantTypes.get(new Random().nextInt(plantService.plantTypes.size()));
+        Sprite sprite = plantService.getPlantSprite(plantType);
+        Item item = new Item(xPosition, yPosition, plantType, sprite);
+        gameMap.addItem(item);
+    }
+
+    public void giveAnimal() {
+        Animal adoptedAnimal = npcs.get(0).getWantedAnimal();
+        Route route = calculateRouteToNpc(adoptedAnimal);
+        adoptedAnimal.sendToNpc(route);
+    }
+
+    public void sendAnimalAway(Animal adoptedAnimal) {
+        Route route = calculateRouteToMap(adoptedAnimal, NavigationService.getNextPortalTo(adoptedAnimal.getCurrentMap(), BOTTOM_CENTER_MAP));
+        adoptedAnimal.goAway(route);
+        sendNpcAway();
+        dropRandomFood();
+    }
+
+    public void removeAnimal(Animal animal) {
+        logger.info("Removing animal");
+        String map = animal.getCurrentMap();
+        animalService.deleteAnimalFiles(animalsOnMaps.get(map));
+        animalsOnMaps.get(map).remove(animal);
+        animalService.saveAllAnimals(animalsOnMaps.get(map));
+        refreshGuiPanels();
     }
 
     public int getSelectedTileId() {

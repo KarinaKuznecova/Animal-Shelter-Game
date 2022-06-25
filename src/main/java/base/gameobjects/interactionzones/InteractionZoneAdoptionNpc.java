@@ -1,19 +1,29 @@
 package base.gameobjects.interactionzones;
 
 import base.Game;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import base.gameobjects.Animal;
 
 public class InteractionZoneAdoptionNpc extends InteractionZone {
 
-    private static final Logger logger = LoggerFactory.getLogger(InteractionZoneAdoptionNpc.class);
+    Animal wantedAnimal;
 
-    public InteractionZoneAdoptionNpc(int centerPointX, int centerPointY, int radius) {
+    public InteractionZoneAdoptionNpc(int centerPointX, int centerPointY, int radius, Animal wantedAnimal) {
         super(centerPointX, centerPointY, radius);
+        this.wantedAnimal = wantedAnimal;
+    }
+
+    @Override
+    public void update(Game game) {
+        super.update(game);
+        if (!isInRange(game.getPlayer().getPlayerRectangle())) {
+            game.hideDialogBox();
+        }
     }
 
     @Override
     public void action(Game game) {
-        logger.info("adoption Npc interaction coming soon");
+        game.switchDialogBox();
+        game.setDialogText("I want to adopt " + wantedAnimal + ", is it ok?");
     }
+
 }

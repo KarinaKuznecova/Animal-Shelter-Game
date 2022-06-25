@@ -20,7 +20,7 @@ public abstract class InteractionZone implements GameObject {
         circle = new Circle(centerPointX, centerPointY, radius);
     }
 
-    private boolean isInRange(Rectangle rectangle) {
+    boolean isInRange(Rectangle rectangle) {
         return circle.intersects(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
     }
 
