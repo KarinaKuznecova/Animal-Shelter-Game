@@ -23,10 +23,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
@@ -979,7 +977,7 @@ public class Game extends JFrame implements Runnable {
 
     public void sendNpcAway() {
         Npc npc = npcs.get(0);
-        Route route = calculateRouteToMap(npc, NavigationService.getNextPortalTo(npc.getCurrentMap(), BOTTOM_RIGHT_MAP));
+        Route route = calculateRouteToMap(npc, NavigationService.getNextPortalTo(npc.getCurrentMap(), BOTTOM_CENTER_MAP));
         npc.goAway(route);
     }
 
@@ -992,6 +990,15 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
+    public void dropRandomFood() {
+        int xPosition = npcs.get(0).getRectangle().getX();
+        int yPosition = npcs.get(0).getRectangle().getY();
+        String plantType = plantService.plantTypes.get(new Random().nextInt(plantService.plantTypes.size()));
+        Sprite sprite = plantService.getPlantSprite(plantType);
+        Item item = new Item(xPosition, yPosition, plantType, sprite);
+        gameMap.addItem(item);
+    }
+
     public void giveAnimal() {
         Animal adoptedAnimal = npcs.get(0).getWantedAnimal();
         Route route = calculateRouteToNpc(adoptedAnimal);
@@ -1002,6 +1009,7 @@ public class Game extends JFrame implements Runnable {
         Route route = calculateRouteToMap(adoptedAnimal, NavigationService.getNextPortalTo(adoptedAnimal.getCurrentMap(), BOTTOM_CENTER_MAP));
         adoptedAnimal.goAway(route);
         sendNpcAway();
+        dropRandomFood();
     }
 
     public void removeAnimal(Animal animal) {

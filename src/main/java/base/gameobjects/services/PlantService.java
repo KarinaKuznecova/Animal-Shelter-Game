@@ -22,7 +22,7 @@ public class PlantService {
     Map<String, String> plantAnimations;
     Map<String, String> plantMapping;
 
-    List<String> plantTypes = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME, Corn.NAME);
+    public List<String> plantTypes = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME, Corn.NAME);
 
     public PlantService() {
         plantAnimations = new HashMap<>();
