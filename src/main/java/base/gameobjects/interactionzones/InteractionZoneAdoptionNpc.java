@@ -2,8 +2,6 @@ package base.gameobjects.interactionzones;
 
 import base.Game;
 import base.gameobjects.Animal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class InteractionZoneAdoptionNpc extends InteractionZone {
 

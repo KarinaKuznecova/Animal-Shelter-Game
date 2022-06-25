@@ -39,6 +39,7 @@ public class OkButton extends GUIButton {
         if (mouseRectangle.intersects(buttonRegion)) {
             activate();
             game.hideDialogBox();
+            game.giveAnimal();
             return true;
         }
         return false;

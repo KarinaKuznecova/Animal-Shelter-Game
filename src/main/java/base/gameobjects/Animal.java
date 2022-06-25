@@ -36,6 +36,9 @@ public abstract class Animal implements GameObject, Walking {
     private Direction direction;
     private int movingTicks = 0;
     private transient Route route;
+    private boolean isGoingToNpc;
+    private boolean isGoingAway;
+
     private String currentMap;
     private String homeMap;
     private int speed;
@@ -234,6 +237,23 @@ public abstract class Animal implements GameObject, Walking {
         if (interactionZone.isPlayerInRange()) {
             updateHeart(game);
         }
+
+        if (isGoingToNpc && route.isEmpty() && isArrivedToNpc(game)) {
+            isGoingToNpc = false;
+            game.sendAnimalAway(this);
+        }
+        if (isGoingAway && route.isEmpty()) {
+            game.removeAnimal(this);
+        }
+    }
+
+    private boolean isArrivedToNpc(Game game) {
+        if (!animalRectangle.intersects(game.getNpcs().get(0).getRectangle())) {
+            route = game.calculateRouteToNpc(this);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void updateHeart(Game game) {
@@ -245,7 +265,7 @@ public abstract class Animal implements GameObject, Walking {
 
     private void checkPortal(Game game) {
         MapTile tile = getPortalTile(game, currentMap, animalRectangle);
-        if (tile != null){
+        if (tile != null) {
             game.moveAnimalToAnotherMap(this, tile);
         }
     }
@@ -618,6 +638,18 @@ public abstract class Animal implements GameObject, Walking {
     public void teleportAnimalTo(int x, int y) {
         animalRectangle.setX(x);
         animalRectangle.setY(y);
+    }
+
+    public void sendToNpc(Route route) {
+        isGoingToNpc = true;
+        this.route = route;
+        logger.info("Animal is going to NPC");
+    }
+
+    public void goAway(Route route) {
+        isGoingAway = true;
+        this.route = route;
+        logger.info("SENDING Animal AWAY");
     }
 
     public int getSpeed() {

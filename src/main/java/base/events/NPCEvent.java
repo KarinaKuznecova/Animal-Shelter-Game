@@ -19,7 +19,7 @@ public class NPCEvent extends Event {
 
     @Override
     void calculateChance(Game game) {
-        chance = -1;
+        chance = 1;
 
         if ((!repeatable && happened) || isThereNpcAlready(game)) {
             chance = 0;
@@ -28,17 +28,21 @@ public class NPCEvent extends Event {
         if (happened) {
             chance--;
         }
+        boolean isAvailableAnimal = false;
         for (List<Animal> animalList : game.getAnimalsOnMaps().values()) {
             for (Animal animal : animalList) {
                 if (!animal.isFavorite()) {
                     chance++;
+                    isAvailableAnimal = true;
                 }
             }
         }
+        if (!isAvailableAnimal) {
+            chance = 0;
+            return;
+        }
         if (game.isBackpackEmpty()) {
             chance++;
-        } else {
-            chance--;
         }
         logger.info(String.format("Event 'NPC comes to adopt' chance is %d", chance));
     }

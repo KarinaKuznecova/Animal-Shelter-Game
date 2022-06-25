@@ -44,22 +44,22 @@ public class RouteCalculator {
 
     // TODO: refactor this and second into one
     // TODO: reduce complexity
-    public Route calculateRoute(GameMap gameMap, Animal animal, String destination) {
+    public Route calculateRoute(GameMap currentMap, Animal animal, String destination) {
         Route newRoute = new Route();
         logger.debug(String.format("%s is looking for a way to : %s", animal, destination));
         MapTile portal = null;
         if (destination == null) {
             return newRoute;
         }
-        if (isAnotherMap(destination) && getPortal(gameMap, destination) != null) {
-            portal = getPortal(gameMap, destination);
+        if (isAnotherMap(destination) && getPortal(currentMap, destination) != null) {
+            portal = getPortal(currentMap, destination);
         }
         if (isAnotherMap(destination) && portal == null) {
             return newRoute;
         }
         List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
 
-        fillInitialRoutes(gameMap, searchQueue, animal.getRectangle());
+        fillInitialRoutes(currentMap, searchQueue, animal.getRectangle());
 
         List<Rectangle> searched = new ArrayList<>();
         while (!searchQueue.isEmpty()) {
@@ -74,11 +74,13 @@ public class RouteCalculator {
                 if (isAnotherMap(destination)) {
                     found = isTherePortal(portal, rectangleToCheck);
                 } else if (FOOD.equals(destination)) {
-                    found = isThereFood(gameMap, rectangleToCheck);
+                    found = isThereFood(currentMap, rectangleToCheck);
                 } else if (WATER.equals(destination)) {
-                    found = isThereWater(gameMap, rectangleToCheck);
+                    found = isThereWater(currentMap, rectangleToCheck);
                 } else if (PILLOW.equals(destination)) {
-                    found = isTherePillow(gameMap, rectangleToCheck);
+                    found = isTherePillow(currentMap, rectangleToCheck);
+                } else if ("NPC".equals(destination)) {
+                    found = isThereNpc(currentMap, rectangleToCheck);
                 } else {
                     found = false;
                 }
@@ -87,7 +89,7 @@ public class RouteCalculator {
                     return map.get(rectangleToCheck);
                 } else {
                     searched.add(rectangleToCheck);
-                    fillSearchQueue(gameMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
+                    fillSearchQueue(currentMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
                 }
 
             } else {
@@ -95,7 +97,7 @@ public class RouteCalculator {
             }
         }
         if (!isAnotherMap(destination) && newRoute.isEmpty() && !animal.getCurrentMap().equals(animal.getHomeMap())) {
-            newRoute = calculateRouteToPortal(gameMap, animal, NavigationService.getNextPortalTo(animal.getCurrentMap(), animal.getHomeMap()));
+            newRoute = calculateRouteToPortal(currentMap, animal, NavigationService.getNextPortalTo(animal.getCurrentMap(), animal.getHomeMap()));
         }
         return newRoute;
     }
@@ -193,7 +195,7 @@ public class RouteCalculator {
     }
 
     private boolean isAnotherMap(String destination) {
-        return !(WATER.equals(destination) || FOOD.equals(destination) || PILLOW.equals(destination));
+        return !(WATER.equals(destination) || FOOD.equals(destination) || PILLOW.equals(destination) || "NPC".equals(destination));
     }
 
     public void fillSearchQueue(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangleChecked, Route potentialRoute, List<Rectangle> searched) {
@@ -309,6 +311,15 @@ public class RouteCalculator {
         for (MapTile pillow : gameMap.getPillows()) {
             if (rectangle.intersects(pillow)) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isThereNpc(GameMap gameMap, Rectangle rectangle) {
+        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
+            if (gameObject instanceof Npc) {
+                return rectangle.intersects(((Npc) gameObject).getRectangle());
             }
         }
         return false;

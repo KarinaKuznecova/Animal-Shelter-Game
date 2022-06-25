@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
+import static base.constants.MapConstants.BOTTOM_CENTER_MAP;
 import static base.constants.MapConstants.BOTTOM_RIGHT_MAP;
 
 public class Game extends JFrame implements Runnable {
@@ -902,6 +903,10 @@ public class Game extends JFrame implements Runnable {
         return routeCalculator.calculateRouteToPillow(getGameMap(animal.getCurrentMap()), animal);
     }
 
+    public Route calculateRouteToNpc(Animal animal) {
+        return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, "NPC");
+    }
+
     public void pause() {
         paused = true;
     }
@@ -985,6 +990,27 @@ public class Game extends JFrame implements Runnable {
         for (GameMap map : gameMaps.values()) {
             map.removeObject(npc);
         }
+    }
+
+    public void giveAnimal() {
+        Animal adoptedAnimal = npcs.get(0).getWantedAnimal();
+        Route route = calculateRouteToNpc(adoptedAnimal);
+        adoptedAnimal.sendToNpc(route);
+    }
+
+    public void sendAnimalAway(Animal adoptedAnimal) {
+        Route route = calculateRouteToMap(adoptedAnimal, NavigationService.getNextPortalTo(adoptedAnimal.getCurrentMap(), BOTTOM_CENTER_MAP));
+        adoptedAnimal.goAway(route);
+        sendNpcAway();
+    }
+
+    public void removeAnimal(Animal animal) {
+        logger.info("Removing animal");
+        String map = animal.getCurrentMap();
+        animalService.deleteAnimalFiles(animalsOnMaps.get(map));
+        animalsOnMaps.get(map).remove(animal);
+        animalService.saveAllAnimals(animalsOnMaps.get(map));
+        refreshGuiPanels();
     }
 
     public int getSelectedTileId() {
