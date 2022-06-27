@@ -1,0 +1,8 @@
+F5 - speichere momentane Karte
+
+1 - 9 wechsel zwischen Kachelfeldern
+0 - Bedienfeld zum Hinzufügen von Tieren 
+P - Bedienfeld mit anbaubaren Pflanzen
+Q - zeige/verstecke Bedienfeld mit Kachelfeldern
+H - Teleportiere zur Mitte der Heimatkarte
+B - öffne Rucksack
