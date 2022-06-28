@@ -17,6 +17,7 @@ public class Constants {
     private static final String RUSSIAN = "ru";
     private static final String SWEDEN = "se";
     private static final String INDIAN = "hin";
+    private static final String GERMAN = "ger";
 
     public static final String LANGUAGE = ENGLISH;
 
