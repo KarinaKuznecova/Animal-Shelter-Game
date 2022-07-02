@@ -20,6 +20,7 @@ public class EventService {
         eventList.add(new GrowFlowerEvent());
         eventList.add(new FindAnimalEvent());
         eventList.add(new NPCEvent());
+        eventList.add(new GrowRandomPlantEvent());
     }
 
     public void update(Game game) {

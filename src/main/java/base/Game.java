@@ -1035,7 +1035,7 @@ public class Game extends JFrame implements Runnable {
         String plantType = plantService.plantTypes.get(new Random().nextInt(plantService.plantTypes.size()));
         Sprite sprite = plantService.getPlantSprite(plantType);
         Item item = new Item(xPosition, yPosition, plantType, sprite);
-        gameMap.addItem(item);
+        getGameMap(MAIN_MAP).addItem(item);
     }
 
     public void giveAnimal() {
@@ -1128,6 +1128,10 @@ public class Game extends JFrame implements Runnable {
 
     public AnimalService getAnimalService() {
         return animalService;
+    }
+
+    public PlantService getPlantService() {
+        return plantService;
     }
 
     public boolean isThereNpc() {
