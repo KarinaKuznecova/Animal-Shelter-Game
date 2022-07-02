@@ -24,7 +24,7 @@ public class MapConstants {
 
     public static final List<String> HOME_MAPS = Arrays.asList(TOP_CENTER_MAP, TOP_RIGHT_MAP, HOME_MAP);
     public static final List<String> BOTTOM_MAPS = Arrays.asList(BOTTOM_LEFT_MAP, BOTTOM_CENTER_MAP, BOTTOM_RIGHT_MAP);
-    public static final List<String> OUTSIDE_MAPS = Arrays.asList(TOP_LEFT_MAP, SECOND_MAP, MAIN_MAP, WATER_MAP, BOTTOM_LEFT_MAP, BOTTOM_CENTER_MAP, BOTTOM_RIGHT_MAP, FOREST_MAP, CITY_MAP);
+    public static final List<String> OUTSIDE_MAPS = Arrays.asList(TOP_LEFT_MAP, MAIN_MAP, FOREST_MAP, CITY_MAP);
 
     public static final Map<String, String> PRETTIER_MAP_NAMES = new HashMap<>();
 
