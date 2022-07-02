@@ -13,6 +13,8 @@ import java.util.Random;
 
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
+import static base.constants.MapConstants.CITY_MAP;
+import static base.constants.MapConstants.FOREST_MAP;
 import static base.navigationservice.Direction.*;
 
 public interface Walking {
@@ -20,12 +22,16 @@ public interface Walking {
     Random random = new Random();
     Logger logger = LoggerFactory.getLogger(Walking.class);
 
-    default boolean nearPortal(List<MapTile> portals, Rectangle rectangle) {
-        for (MapTile portal : portals) {
-            logger.debug(String.format("Portal X: %d gameobject X: %d", portal.getX() * (TILE_SIZE * ZOOM), rectangle.getX()));
-            int diffX = portal.getX() * (TILE_SIZE * ZOOM) - rectangle.getX();
+    default boolean nearPortal(List<Portal> portals, Rectangle rectangle) {
+        for (Portal portal : portals) {
+            if (this instanceof Animal && (portal.getDirection().equalsIgnoreCase(FOREST_MAP) || portal.getDirection().equalsIgnoreCase(CITY_MAP))) {
+                // don't check this portal, animal should not use it
+                continue;
+            }
+            logger.debug(String.format("Portal X: %d gameobject X: %d", portal.getRectangle().getX(), rectangle.getX()));
+            int diffX = portal.getRectangle().getX() - rectangle.getX();
             logger.debug(String.format("diff x: %d", diffX));
-            int diffY = portal.getY() * (TILE_SIZE * ZOOM) - rectangle.getY();
+            int diffY = portal.getRectangle().getY() - rectangle.getY();
             logger.debug(String.format("diff y: %d", diffY));
             if (Math.abs(diffX) <= TILE_SIZE * ZOOM && Math.abs(diffY) <= TILE_SIZE * ZOOM) {
                 return true;
@@ -102,11 +108,11 @@ public interface Walking {
         return random.nextInt(20) + 64;
     }
 
-    default MapTile getPortalTile(Game game, String currentMap, Rectangle rectangle) {
+    default Portal getPortalTile(Game game, String currentMap, Rectangle rectangle) {
         if (game.getGameMap(currentMap).getPortals() != null) {
-            for (MapTile tile : game.getGameMap(currentMap).getPortals()) {
-                if (rectangle.intersects(tile)) {
-                    return tile;
+            for (Portal portal : game.getGameMap(currentMap).getPortals()) {
+                if (rectangle.intersects(portal.getRectangle())) {
+                    return portal;
                 }
             }
         }

@@ -15,6 +15,7 @@ import java.util.*;
 
 import static base.constants.Constants.*;
 import static base.constants.FilePath.ANIMALS_DIR_PATH;
+import static base.constants.MapConstants.*;
 import static base.gameobjects.AgeStage.ADULT;
 import static base.gameobjects.AgeStage.BABY;
 import static base.gameobjects.Animal.*;
@@ -74,8 +75,16 @@ public class AnimalService {
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalType));
                 throw new IllegalArgumentException();
         }
-        animal.setCurrentMap(mapName);
+        setCurrentMapName(mapName, animal);
         return animal;
+    }
+
+    private void setCurrentMapName(String mapName, Animal animal) {
+        if (MAIN_MAP.equalsIgnoreCase(mapName) || HOME_MAP.equalsIgnoreCase(mapName) || TOP_LEFT_MAP.equalsIgnoreCase(mapName)) {
+            animal.setCurrentMap(mapName);
+        } else {
+            animal.setCurrentMap(MAIN_MAP);
+        }
     }
 
     public String getAnimalType(Animal animal) {

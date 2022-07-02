@@ -22,10 +22,11 @@ public class GameMap {
 
     private final TileService tileService;
     private final Map<Integer, List<MapTile>> layeredTiles = new ConcurrentHashMap<>();
-    private final List<MapTile> portals = new ArrayList<>();
+    private final List<MapTile> portalsOldWay = new ArrayList<>();
     private List<Plant> plants = new CopyOnWriteArrayList<>();
     private final List<Item> items = new CopyOnWriteArrayList<>();
     private final List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
+    private final List<Portal> portals = new ArrayList<>();
     private final List<BigObject> bigObjects = new CopyOnWriteArrayList<>();
 
     int backGroundTileId = -1;
@@ -74,11 +75,21 @@ public class GameMap {
         return tileService;
     }
 
-    public void addPortal(MapTile tile) {
-        portals.add(tile);
+    @Deprecated
+    public void addPortalOldWay(MapTile tile) {
+        portalsOldWay.add(tile);
     }
 
-    public List<MapTile> getPortals() {
+    @Deprecated
+    public List<MapTile> getPortalsOldWay() {
+        return portalsOldWay;
+    }
+
+    private void addPortal(Portal portal) {
+        portals.add(portal);
+    }
+
+    public List<Portal> getPortals() {
         return portals;
     }
 
@@ -174,29 +185,31 @@ public class GameMap {
     }
 
     boolean isThereAPortal(int x, int y) {
-        for (MapTile tile : getPortals()) {
-            if (tile.getX() == x && tile.getY() == y) {
+        for (Portal portal : getPortals()) {
+            int portalX = portal.getRectangle().getX() / (TILE_SIZE * ZOOM);
+            int portalY = portal.getRectangle().getY() / (TILE_SIZE * ZOOM);
+            if (portalX == x && portalY == y) {
                 return true;
             }
         }
         return false;
     }
 
-    public MapTile getPortalTo(String destination) {
-        for (MapTile tile : getPortals()) {
-            if (tile.getPortalDirection().equals(destination)) {
-                return tile;
+    public Portal getPortalTo(String destination) {
+        for (Portal portal : getPortals()) {
+            if (portal.getDirection().equals(destination)) {
+                return portal;
             }
         }
         return null;
     }
 
-    public int getSpawnPoint(MapTile portalToPrevious, boolean getX) {
+    public int getSpawnPoint(Portal portalToPrevious, boolean getX) {
         int previousMapPortal;
         if (getX) {
-            previousMapPortal = portalToPrevious.getX() * (TILE_SIZE * ZOOM);
+            previousMapPortal = portalToPrevious.getRectangle().getX();
         } else {
-            previousMapPortal = portalToPrevious.getY() * (TILE_SIZE * ZOOM);
+            previousMapPortal = portalToPrevious.getRectangle().getY();
         }
 
         int mapSize;
@@ -298,8 +311,8 @@ public class GameMap {
     }
 
     public boolean isTherePortal(Rectangle rectangle) {
-        for (MapTile portal : getPortals()) {
-            if (rectangle.intersects(portal)) {
+        for (Portal portal : getPortals()) {
+            if (rectangle.intersects(portal.getRectangle())) {
                 return true;
             }
         }
@@ -321,6 +334,9 @@ public class GameMap {
 
     public void addObject(GameObject object) {
         interactiveObjects.add(object);
+        if (object instanceof Portal) {
+            addPortal((Portal) object);
+        }
     }
 
     public void removeObject(GameObject object) {
@@ -374,5 +390,14 @@ public class GameMap {
 
     public void removeBigObject(BigObject bigObject) {
         bigObjects.remove(bigObject);
+    }
+
+    public NpcSpot getNpcSpot() {
+        for (GameObject gameObject : getInteractiveObjects()) {
+            if (gameObject instanceof NpcSpot) {
+                return (NpcSpot) gameObject;
+            }
+        }
+        return new NpcSpot(new Rectangle(100, 100, 32, 32));
     }
 }

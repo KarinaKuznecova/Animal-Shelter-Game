@@ -9,8 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
-import static base.constants.ColorConstant.GREEN;
-import static base.constants.ColorConstant.YELLOW;
+import static base.constants.ColorConstant.*;
 
 public class BackpackButton extends GUIButton implements Serializable {
 
@@ -28,11 +27,12 @@ public class BackpackButton extends GUIButton implements Serializable {
         this.item = item;
         this.sprite = tileSprite;
         this.defaultId = defaultId;
-        rectangle.generateBorder(3, YELLOW);
+        rectangle.generateBorder(3, BROWN, BLUE);
     }
 
     @Override
     public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
+        renderer.renderRectangle(region, rectangle, 1, fixed);
         if (sprite != null) {
             if (objectCount > 1) {
                 renderer.renderSprite(sprite,
@@ -46,19 +46,18 @@ public class BackpackButton extends GUIButton implements Serializable {
                         zoom, fixed, 0);
             }
         }
-        renderer.renderRectangle(region, rectangle, 1, fixed);
     }
 
     @Override
     public void update(Game game) {
         if (item.equals(game.getSelectedItem())) {
             if (!isGreen) {
-                region.generateBorder(5, GREEN);
+                region.generateBorder(5, GREEN, BLUE);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateBorder(3, YELLOW);
+                region.generateBorder(3, BROWN, BLUE);
                 isGreen = false;
             }
         }

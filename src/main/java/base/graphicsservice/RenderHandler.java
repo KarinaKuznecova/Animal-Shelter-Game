@@ -71,8 +71,8 @@ public class RenderHandler {
         if (game.getSelectedTileId() != -1 && game.getMousePosition() != null) {
             try {
                 renderTilePreview(game);
-            } catch (NullPointerException e) {
-                // Sometimes there is NPE when mouse is outside the game window. Will catch it and ignore.
+            } catch (Exception e) {
+                // Sometimes there is NPE or other exception when mouse is outside the game window. Will catch it and ignore so game continues.
                 logger.error("Exception with preview", e);
             }
         }
@@ -198,10 +198,10 @@ public class RenderHandler {
     private void renderBackground(GameMap gameMap) {
         int backGroundTileId = gameMap.getBackGroundTileId();
         if (backGroundTileId >= 0) {
-            for (int i = (camera.getX() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) - 1;
+            for (int i = (camera.getX() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) - 64;
                  i < (camera.getX() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) + camera.getWidth() + (TILE_SIZE * ZOOM);
                  i += TILE_SIZE * ZOOM) {
-                for (int j = (camera.getY() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) - 1;
+                for (int j = (camera.getY() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) - 64;
                      j < (camera.getY() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) + camera.getHeight() + (TILE_SIZE * ZOOM);
                      j += TILE_SIZE * ZOOM) {
                     renderSprite(gameMap.getTileService().getTerrainTiles().get(backGroundTileId).getSprite(), i, j, ZOOM, false);
@@ -259,7 +259,7 @@ public class RenderHandler {
 
     private void renderText(Graphics graphics, String line, int x, int y) {
         graphics.setColor(Color.black);
-        graphics.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        graphics.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
         graphics.drawString(line, x, y);
     }
 

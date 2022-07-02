@@ -22,7 +22,7 @@ public class AnimalIcon extends GUIButton {
         this.animal = animal;
         this.game = game;
 
-        rectangle.generateBorder(3, getBorderColor());
+        rectangle.generateBorder(3, getBorderColor(), getBackgroundColor());
         stats = new AnimalStats(animal, region);
     }
 
@@ -32,6 +32,7 @@ public class AnimalIcon extends GUIButton {
 
     @Override
     public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
+        renderer.renderRectangle(region, rectangle, 1, fixed);
         if (sprite != null) {
             renderer.renderSprite(sprite,
                     region.getX() + rectangle.getX(),
@@ -39,7 +40,6 @@ public class AnimalIcon extends GUIButton {
                     zoom,
                     fixed);
         }
-        renderer.renderRectangle(region, rectangle, 1, fixed);
         if (stats.isVisible()) {
             stats.renderStats(renderer, rectangle);
         }
@@ -49,13 +49,13 @@ public class AnimalIcon extends GUIButton {
     public void update(Game game) {
         if (animal == game.getYourSelectedAnimal()) {
             if (!isGreen) {
-                region.generateBorder(5, GREEN);
+                region.generateBorder(5, GREEN, getBackgroundColor());
                 isGreen = true;
                 stats.setVisible(true);
             }
         } else {
             if (isGreen) {
-                region.generateBorder(3, getBorderColor());
+                region.generateBorder(3, getBorderColor(), getBackgroundColor());
                 game.getRenderer().clearRenderedText();
                 isGreen = false;
                 stats.setVisible(false);
@@ -93,15 +93,31 @@ public class AnimalIcon extends GUIButton {
     public int getBorderColor() {
         if (isAnimalOnActiveMap(game)) {
             if (BABY.equals(animal.getAge())) {
-                return LIGHT_YELLOW;
+                return BROWN;
             } else {
-                return YELLOW;
+                return BROWN;
+            }
+        } else {
+            if (BABY.equals(animal.getAge())) {
+                return BROWN;
+            } else {
+                return BROWN;
+            }
+        }
+    }
+
+    public int getBackgroundColor() {
+        if (isAnimalOnActiveMap(game)) {
+            if (BABY.equals(animal.getAge())) {
+                return LIGHT_PURPLE;
+            } else {
+                return LIGHT_BLUE;
             }
         } else {
             if (BABY.equals(animal.getAge())) {
                 return LIGHT_GRAY;
             } else {
-                return GRAY;
+                return LIGHT_GRAY;
             }
         }
     }

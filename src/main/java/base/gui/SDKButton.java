@@ -8,9 +8,8 @@ import base.map.TileService;
 
 import java.util.List;
 
+import static base.constants.ColorConstant.*;
 import static base.constants.MultiOptionalObjects.MASTER_TILE_LIST;
-import static base.constants.ColorConstant.GREEN;
-import static base.constants.ColorConstant.YELLOW;
 
 public class SDKButton extends GUIButton {
 
@@ -22,7 +21,7 @@ public class SDKButton extends GUIButton {
         super(tileSprite, rectangle, true);
         this.game = game;
         this.tileID = tileID;
-        rectangle.generateBorder(3, YELLOW);
+        rectangle.generateBorder(3, BROWN, BLUE);
 
         checkIfContainsMultipleOptions(tileID);
     }
@@ -38,6 +37,7 @@ public class SDKButton extends GUIButton {
 
     @Override
     public void render(RenderHandler renderer, int zoom, Rectangle interfaceRect) {
+        renderer.renderRectangle(region, interfaceRect, 1, fixed);
         if (sprite != null) {
             if (multipleOptions) {
                 renderer.renderSprite(sprite,
@@ -55,7 +55,6 @@ public class SDKButton extends GUIButton {
                         fixed);
             }
         }
-        renderer.renderRectangle(region, interfaceRect, 1, fixed);
     }
 
     public void activate() {
@@ -71,12 +70,12 @@ public class SDKButton extends GUIButton {
     public void update(Game game) {
         if (tileID == game.getSelectedTileId()) {
             if (!isGreen) {
-                region.generateBorder(5, GREEN);
+                region.generateBorder(5, GREEN, BLUE);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateBorder(3, YELLOW);
+                region.generateBorder(3, BROWN, BLUE);
                 isGreen = false;
             }
         }

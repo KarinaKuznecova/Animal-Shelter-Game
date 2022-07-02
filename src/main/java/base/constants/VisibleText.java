@@ -21,8 +21,10 @@ public class VisibleText {
     public static String bottomCenterMap = "Bottom Center Map";
     public static String bottomLeftMap = "Bottom Left Map";
     public static String bottomRightMap = "Bottom Right Map";
+    public static String city = "City";
     public static String energy = "Energy";
     public static String favorite = "Favorite";
+    public static String forest = "Forest";
     public static String home = "Home";
     public static String home2 = "Home 2";
     public static String hunger = "Hunger";
@@ -91,6 +93,13 @@ public class VisibleText {
                     }
                     continue;
                 }
+                if (line.startsWith("City")) {
+                    String[] splitLine = line.split(":");
+                    if (splitLine.length > 1) {
+                        city = splitLine[1];
+                    }
+                    continue;
+                }
                 if (line.startsWith("Energy")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
@@ -105,7 +114,14 @@ public class VisibleText {
                     }
                     continue;
                 }
-                if (line.startsWith("Home")) {
+                if (line.startsWith("Forest")) {
+                    String[] splitLine = line.split(":");
+                    if (splitLine.length > 1) {
+                        forest = splitLine[1];
+                    }
+                    continue;
+                }
+                if (line.startsWith("Home 1")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
                         home = splitLine[1];

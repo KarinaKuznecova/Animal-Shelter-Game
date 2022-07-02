@@ -6,9 +6,7 @@ import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.map.GameMap;
-import base.map.MapTile;
 import base.navigationservice.Direction;
-import base.navigationservice.NavigationService;
 import base.navigationservice.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,7 @@ public class Npc implements GameObject, Walking {
     private int movingTicks = 0;
     private transient Route route;
     private String currentMap;
-    private final int speed;
+    private int speed;
 
     private boolean arrived;
     private boolean isGoingAway;
@@ -70,26 +68,26 @@ public class Npc implements GameObject, Walking {
         boolean isMoving = false;
         Direction nextDirection = direction;
 
-        if (route.isEmpty() && !getCurrentMap().equals(MAIN_MAP)) {
-            route = game.calculateRouteToMap(this, NavigationService.getNextPortalToGetToCenter(getCurrentMap()));
-            movingTicks = 16;
-        }
-        if (getCurrentMap().equals(MAIN_MAP) && route.isEmpty() && !arrived) {
-            goUpAndLeft();
-            arrived = true;
+        if (route.isEmpty() && !arrived) {
+            if (rectangle.intersects(game.getNpcSpot().getRectangle())) {
+                arrived = true;
+            } else {
+                route = game.calculateRouteToNpcSpot(this);
+                route.addStep(LEFT);
+            }
         }
 
         if (movingTicks < 1 && !route.isEmpty()) {
             nextDirection = route.getNextStep();
-            movingTicks = 16;
+            movingTicks = 64 / speed;
             logger.debug(String.format("Direction: %s, moving ticks: %d", direction.name(), movingTicks));
         }
 
-        if (route.isEmpty() && getCurrentMap().equals(MAIN_MAP) && !isGoingAway) {
+        if (route.isEmpty() && !isGoingAway) {
             nextDirection = STAY;
         }
 
-        handleMoving(game.getGameMap(currentMap), nextDirection);
+        handleMoving(game.getGameMap(MAIN_MAP), nextDirection);
         if (nextDirection != STAY) {
             isMoving = true;
         }
@@ -108,27 +106,11 @@ public class Npc implements GameObject, Walking {
         }
 
         interactionZone.update(game);
-        checkPortal(game);
-
         movingTicks--;
 
         if (isGoingAway && route.isEmpty()) {
             game.removeNpc(this);
         }
-    }
-
-    private void goUpAndLeft() {
-        route = new Route();
-        route.addStep(UP);
-        route.addStep(UP);
-        route.addStep(UP);
-        route.addStep(UP);
-        route.addStep(UP);
-        route.addStep(UP);
-        route.addStep(LEFT);
-        route.addStep(LEFT);
-        route.addStep(LEFT);
-        route.addStep(LEFT);
     }
 
     @Override
@@ -177,18 +159,15 @@ public class Npc implements GameObject, Walking {
         }
     }
 
-    private void checkPortal(Game game) {
-        MapTile tile = getPortalTile(game, currentMap, rectangle);
-        if (tile != null) {
-            game.moveNpcToAnotherMap(this, tile);
-        }
-    }
-
     public void goAway(Route route) {
         isGoingAway = true;
         this.route = route;
         logger.info("SENDING NPC AWAY");
     }
+
+    /**
+     * =================================== GETTERS ======================================
+     */
 
     public String getCurrentMap() {
         return currentMap;
@@ -213,5 +192,14 @@ public class Npc implements GameObject, Walking {
     @Override
     public String toString() {
         return "Npc";
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        logger.info(String.format("changing npc speed from %d to %d", this.speed, speed));
+        this.speed = speed;
     }
 }

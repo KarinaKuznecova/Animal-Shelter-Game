@@ -1,7 +1,6 @@
 package base.gameobjects;
 
 import base.Game;
-import base.constants.MapConstants;
 import base.gameobjects.animals.Butterfly;
 import base.gameobjects.interactionzones.InteractionZonePetHeart;
 import base.graphicsservice.*;
@@ -14,12 +13,12 @@ import base.navigationservice.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.ColorConstant.YELLOW;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.IMAGES_PATH;
+import static base.constants.MapConstants.CITY_MAP;
+import static base.constants.MapConstants.FOREST_MAP;
 import static base.gameobjects.AgeStage.ADULT;
 import static base.gameobjects.AgeStage.BABY;
 import static base.navigationservice.Direction.*;
@@ -27,8 +26,7 @@ import static base.navigationservice.Direction.*;
 public abstract class Animal implements GameObject, Walking {
 
     private Sprite previewSprite;
-    private Sprite sprite;
-    private AnimatedSprite animatedSprite = null;
+    private AnimatedSprite animatedSprite;
     private final Rectangle animalRectangle;
     private final int tileSize;
     private String fileName;
@@ -40,7 +38,6 @@ public abstract class Animal implements GameObject, Walking {
     private boolean isGoingAway;
 
     private String currentMap;
-    private String homeMap;
     private int speed;
     private String color;
     private String animalType;
@@ -52,17 +49,18 @@ public abstract class Animal implements GameObject, Walking {
     private int currentAge;
 
     public static final int MAX_HUNGER = 30_000;
-    public static final int MIN_HUNGER = 1;
     private int currentHunger;
 
     public static final int MAX_THIRST = 25_000;
-    protected static final int MIN_THIRST = 1;
     private int currentThirst;
 
     public static final int MAX_ENERGY = 40_000;
     protected static final int MIN_ENERGY = 1;
     protected static final int SLEEPING_SPEED = 15;
     private int currentEnergy;
+
+    private final int MAX_WAITING_TICKS = 500;
+    private int currentWaitingTicks;
 
     private final InteractionZonePetHeart interactionZone;
     private final HeartIcon heartIcon;
@@ -82,9 +80,8 @@ public abstract class Animal implements GameObject, Walking {
         this.currentEnergy = currentEnergy;
         this.age = age;
         this.name = name;
-        homeMap = MapConstants.TOP_CENTER_MAP;
 
-        setSprite();
+        loadAnimatedSprite();
         setPreviewSprite();
 
         direction = DOWN;
@@ -103,11 +100,8 @@ public abstract class Animal implements GameObject, Walking {
         heartIcon = new HeartIcon();
     }
 
-    protected void setSprite() {
-        sprite = ImageLoader.getAnimatedSprite(IMAGES_PATH + animalType + ".png", tileSize);
-        if (sprite != null) {
-            animatedSprite = (AnimatedSprite) sprite;
-        }
+    protected void loadAnimatedSprite() {
+        animatedSprite = ImageLoader.getAnimatedSprite(IMAGES_PATH + animalType + ".png", tileSize);
     }
 
     protected void setPreviewSprite() {
@@ -186,9 +180,10 @@ public abstract class Animal implements GameObject, Walking {
         boolean isMoving = false;
         Direction nextDirection = direction;
 
-        checkIfNeedToGoToDifferentLocation(game);
-
-        if (movingTicks < 1) {
+        if (currentWaitingTicks > 0) {
+            logger.debug(String.format("%s is waiting for %d", this, currentWaitingTicks));
+            currentWaitingTicks--;
+        } else if (movingTicks < 1) {
             if (!route.isEmpty()) {
                 nextDirection = route.getNextStep();
                 movingTicks = getMovingTickToAdjustPosition(nextDirection);
@@ -224,7 +219,9 @@ public abstract class Animal implements GameObject, Walking {
 
         movingTicks--;
         if (!isSleeping()) {
-            eatAndDrinkIfNeeded(game);
+            if (currentWaitingTicks < 1) {
+                eatAndDrinkIfNeeded(game);
+            }
             sleepIfNeeded(game);
         } else {
             handleSleeping();
@@ -248,7 +245,7 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     private boolean isArrivedToNpc(Game game) {
-        if (!animalRectangle.intersects(game.getNpcs().get(0).getRectangle())) {
+        if (!animalRectangle.intersects(game.getNpc().getRectangle())) {
             route = game.calculateRouteToNpc(this);
             return false;
         } else {
@@ -264,9 +261,9 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     private void checkPortal(Game game) {
-        MapTile tile = getPortalTile(game, currentMap, animalRectangle);
-        if (tile != null) {
-            game.moveAnimalToAnotherMap(this, tile);
+        Portal portal = getPortalTile(game, currentMap, animalRectangle);
+        if (portal != null && (!portal.getDirection().equalsIgnoreCase(FOREST_MAP) || !portal.getDirection().equalsIgnoreCase(CITY_MAP))) {
+            game.moveAnimalToAnotherMap(this, portal);
         }
     }
 
@@ -290,15 +287,6 @@ public abstract class Animal implements GameObject, Walking {
         currentEnergy += SLEEPING_SPEED;
         if (currentEnergy >= MAX_ENERGY) {
             wakeUp();
-        }
-    }
-
-    private void checkIfNeedToGoToDifferentLocation(Game game) {
-        if (route.isEmpty() && getCurrentMap().startsWith("Bottom")) {
-            route = game.calculateRouteToMap(this, NavigationService.getNextPortalToGetToCenter(getCurrentMap()));
-        }
-        if (route.isEmpty() && this instanceof Butterfly && MapConstants.HOME_MAPS.contains(getCurrentMap())) {
-            route = game.calculateRouteToMap(this, NavigationService.getNextPortalToOutside(getCurrentMap()));
         }
     }
 
@@ -384,11 +372,17 @@ public abstract class Animal implements GameObject, Walking {
         decreaseHungerLevel();
         if (!(this instanceof Butterfly) && currentHunger < MAX_HUNGER / 100 * 25 && route.isEmpty()) {
             route = game.calculateRouteToFood(this);
+            if (route.isEmpty() && currentWaitingTicks <= 1) {
+                currentWaitingTicks = MAX_WAITING_TICKS;
+            }
         }
 
         decreaseThirstLevel();
         if (!(this instanceof Butterfly) && currentThirst < MAX_THIRST / 100 * 25 && route.isEmpty()) {
             route = game.calculateRouteToWater(this);
+            if (route.isEmpty() && currentWaitingTicks <= 1) {
+                currentWaitingTicks = MAX_WAITING_TICKS;
+            }
         }
 
         if (!(this instanceof Butterfly) && (isHungerLow() && checkForFood(game)) || (isThirstLow() && checkForWater(game))) {
@@ -425,7 +419,7 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     private void decreaseHungerLevel() {
-        if (currentHunger > MIN_HUNGER) {
+        if (currentHunger > 0) {
             currentHunger--;
         }
         if (currentHunger != 0 && currentHunger % (MAX_HUNGER / 10) == 0) {
@@ -437,7 +431,7 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     private void decreaseThirstLevel() {
-        if (currentThirst > MIN_THIRST) {
+        if (currentThirst > 0) {
             currentThirst--;
         }
         if (currentThirst != 0 && currentThirst % (MAX_THIRST / 10) == 0) {
@@ -495,7 +489,7 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     private void handleMoving(GameMap gameMap, Direction direction) {
-        if (unwalkableInThisDirection(gameMap, direction)) {
+        if (unwalkableInThisDirection(gameMap, direction, animalRectangle, speed, getLayer())) {
             route = new Route();
             movingTicks = 0;
             handleUnwalkable(animalRectangle, direction, speed);
@@ -530,36 +524,18 @@ public abstract class Animal implements GameObject, Walking {
         return Math.abs(NavigationService.getPixelsToAdjustPosition(direction, getCurrentX(), getCurrentY())) / speed;
     }
 
-    private boolean unwalkableInThisDirection(GameMap gameMap, Direction direction) {
-        int xPosition = animalRectangle.getX();
-        int yPosition = animalRectangle.getY();
-
-        List<MapTile> portals = gameMap.getPortals();
-        if (portals != null) {
-            for (MapTile portal : portals) {
-                if (this instanceof Butterfly && MapConstants.HOME_MAPS.contains(portal.getPortalDirection()) && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
-                    return true;
-                }
-                if (MapConstants.MAIN_MAP.equals(getCurrentMap()) && portal.getPortalDirection().startsWith("Bottom") && animalRectangle.potentialIntersects(portal, xPosition, yPosition)) {
-                    return true;
-                }
-            }
-        }
-        return unwalkableInThisDirection(gameMap, direction, animalRectangle, speed, getLayer());
-    }
-
     public boolean isAnimalStuck(GameMap gameMap) {
-        return unwalkableInThisDirection(gameMap, LEFT)
-                && unwalkableInThisDirection(gameMap, RIGHT)
-                && unwalkableInThisDirection(gameMap, UP)
-                && unwalkableInThisDirection(gameMap, DOWN);
+        return unwalkableInThisDirection(gameMap, LEFT, animalRectangle, speed, getLayer())
+                && unwalkableInThisDirection(gameMap, RIGHT, animalRectangle, speed, getLayer())
+                && unwalkableInThisDirection(gameMap, UP, animalRectangle, speed, getLayer())
+                && unwalkableInThisDirection(gameMap, DOWN, animalRectangle, speed, getLayer());
     }
 
     public void tryToMove(GameMap gameMap) {
         logger.info(String.format("Animal %s is stuck, will try to move to nearest directions", this));
         route = new Route();
         for (Direction potentialDirection : Direction.values()) {
-            if (!unwalkableInThisDirection(gameMap, potentialDirection)) {
+            if (!unwalkableInThisDirection(gameMap, potentialDirection, animalRectangle, speed, getLayer())) {
                 moveAnimalTo(potentialDirection);
             }
         }
@@ -652,6 +628,15 @@ public abstract class Animal implements GameObject, Walking {
         logger.info("SENDING Animal AWAY");
     }
 
+    @Override
+    public String toString() {
+        return animalType + " named " + name;
+    }
+
+    /**
+     * =================================== GETTERS & SETTERS ======================================
+     */
+
     public int getSpeed() {
         return speed;
     }
@@ -708,14 +693,6 @@ public abstract class Animal implements GameObject, Walking {
         this.fileName = fileName;
     }
 
-    public String getHomeMap() {
-        return homeMap;
-    }
-
-    public void setHomeMap(String homeMap) {
-        this.homeMap = homeMap;
-    }
-
     public AgeStage getAge() {
         return age;
     }
@@ -758,10 +735,5 @@ public abstract class Animal implements GameObject, Walking {
 
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
-    }
-
-    @Override
-    public String toString() {
-        return animalType + " named " + name;
     }
 }

@@ -7,3 +7,6 @@ TopRightMap:maps/TopRightMap.txt
 BottomLeftMap:maps/BottomLeftMap.txt
 BottomCenterMap:maps/BottomCenterMap.txt
 BottomRightMap:maps/BottomRightMap.txt
+City:maps/City.txt
+Forest:maps/Forest.txt
+Home:maps/Home.txt

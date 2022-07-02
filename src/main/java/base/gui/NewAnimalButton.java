@@ -8,8 +8,7 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
-import static base.constants.ColorConstant.GREEN;
-import static base.constants.ColorConstant.YELLOW;
+import static base.constants.ColorConstant.*;
 
 public class NewAnimalButton extends GUIButton {
 
@@ -24,7 +23,7 @@ public class NewAnimalButton extends GUIButton {
         this.sprite = sprite;
         this.animalType = animalType;
         this.game = game;
-        rectangle.generateBorder(3, YELLOW);
+        rectangle.generateBorder(3, BROWN, BLUE);
         if (animalType.equalsIgnoreCase(Cat.TYPE) || animalType.equalsIgnoreCase(Rat.TYPE)) {
             multipleOptions = true;
         }
@@ -32,6 +31,7 @@ public class NewAnimalButton extends GUIButton {
 
     @Override
     public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
+        renderer.renderRectangle(region, rectangle, 1, fixed);
         if (sprite != null) {
             if (multipleOptions) {
                 renderer.renderSprite(sprite,
@@ -47,19 +47,18 @@ public class NewAnimalButton extends GUIButton {
                         fixed);
             }
         }
-        renderer.renderRectangle(region, rectangle, 1, fixed);
     }
 
     @Override
     public void update(Game game) {
         if (animalType.equals(game.getSelectedAnimal())) {
             if (!isGreen) {
-                region.generateBorder(5, GREEN);
+                region.generateBorder(5, GREEN, BLUE);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateBorder(3, YELLOW);
+                region.generateBorder(3, BROWN, BLUE);
                 isGreen = false;
             }
         }

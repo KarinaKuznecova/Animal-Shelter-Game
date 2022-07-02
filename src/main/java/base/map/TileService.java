@@ -50,8 +50,7 @@ public class TileService {
     public List<Tile> getTilesFromFile(String tilesFile, SpriteSheet spriteSheet) {
         List<Tile> tiles = new ArrayList<>();
         File file = new File(tilesFile);
-        try {
-            Scanner scanner = new Scanner(file);
+        try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (!line.startsWith("//")) {
