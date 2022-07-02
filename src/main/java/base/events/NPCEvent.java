@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class NPCEvent extends Event {
 
@@ -19,7 +18,7 @@ public class NPCEvent extends Event {
 
     @Override
     void calculateChance(Game game) {
-        chance = 1;
+        chance = random.nextInt(2);
 
         if ((!repeatable && happened) || isThereNpcAlready(game)) {
             chance = 0;
@@ -66,6 +65,6 @@ public class NPCEvent extends Event {
                 }
             }
         }
-        return availableAnimals.get(new Random().nextInt(availableAnimals.size()));
+        return availableAnimals.get(random.nextInt(availableAnimals.size()));
     }
 }

@@ -1,18 +1,16 @@
 package base.navigationservice;
 
-import base.constants.MapConstants;
-
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
-import static base.constants.MapConstants.HOME_MAP;
+import static base.constants.MapConstants.*;
 
 public class NavigationService {
 
     public static String getNextPortalToGetToCenter(String mapName) {
-        if (MapConstants.HOME_MAP.equalsIgnoreCase(mapName)) {
-            return MapConstants.MAIN_MAP;
+        if (TOP_LEFT_MAP.equalsIgnoreCase(mapName)) {
+            return HOME_MAP;
         }
-        return HOME_MAP;
+        return MAIN_MAP;
     }
 
     public static int getPixelsToAdjustPosition(Direction direction, int x, int y) {
