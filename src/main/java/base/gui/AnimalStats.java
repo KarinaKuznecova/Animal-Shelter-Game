@@ -2,11 +2,11 @@ package base.gui;
 
 import base.Game;
 import base.gameobjects.Animal;
-import base.graphicsservice.*;
+import base.graphicsservice.Position;
+import base.graphicsservice.Rectangle;
+import base.graphicsservice.RenderHandler;
 
-import static base.constants.ColorConstant.GRAY;
-import static base.constants.FilePath.EDIT_ICON_PATH;
-import static base.constants.FilePath.HEART_ICON_PATH;
+import static base.constants.ColorConstant.*;
 import static base.constants.MapConstants.PRETTIER_MAP_NAMES;
 import static base.constants.VisibleText.*;
 
@@ -27,7 +27,7 @@ public class AnimalStats {
 
     void renderStats(RenderHandler renderer, Rectangle rectangle) {
         Rectangle statsRectangle = new Rectangle(region.getX() - 280, region.getY(), 270, 140);
-        statsRectangle.generateBorder(2, GRAY);
+        statsRectangle.generateBorder(2, BROWN, LIGHT_BLUE);
         renderer.renderRectangle(statsRectangle, rectangle, 1, true);
         renderer.renderCustomizableText(name + ": ", animal.getName(), new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 30), editIcon);
         renderer.renderText(hunger + ": " + animal.getCurrentHungerInPercent() + "%", new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 50));

@@ -11,7 +11,6 @@ import java.util.*;
 
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
-import static base.constants.MapConstants.MAIN_MAP;
 import static base.navigationservice.Direction.*;
 
 public class RouteCalculator {
@@ -21,41 +20,23 @@ public class RouteCalculator {
     public static final String WATER = "water";
     public static final String FOOD = "food";
     public static final String PILLOW = "pillow";
+    public static final String NPC_SPOT = "npc-spot";
+    public static final String NPC = "npc";
+    public static final String CITY = "city";
 
-    public Route calculateRouteToFood(GameMap gameMap, Animal animal) {
-        return calculateRoute(gameMap, animal, FOOD);
-    }
-
-    public Route calculateRouteToWater(GameMap gameMap, Animal animal) {
-        return calculateRoute(gameMap, animal, WATER);
-    }
-
-    public Route calculateRouteToPillow(GameMap gameMap, Animal animal) {
-        return calculateRoute(gameMap, animal, PILLOW);
-    }
-
-    public Route calculateRouteToPortal(GameMap gameMap, Animal animal, String destination) {
-        return calculateRoute(gameMap, animal, destination);
-    }
-
-    public Route calculateRouteToPortal(GameMap gameMap, Npc npc, String destination) {
-        return calculateRoute(gameMap, npc, destination);
-    }
-
-    // TODO: refactor this and second into one
-    // TODO: reduce complexity
+    // TODO: refactor and reduce complexity
     public Route calculateRoute(GameMap currentMap, Animal animal, String destination) {
         Route newRoute = new Route();
         logger.debug(String.format("%s is looking for a way to : %s", animal, destination));
-        MapTile portal = null;
+        Portal portal = null;
         if (destination == null) {
             return newRoute;
         }
-        if (isAnotherMap(destination) && getPortal(currentMap, destination) != null) {
+        if (isAnotherMap(destination)) {
             portal = getPortal(currentMap, destination);
-        }
-        if (isAnotherMap(destination) && portal == null) {
-            return newRoute;
+            if (portal == null) {
+                return newRoute;
+            }
         }
         List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
 
@@ -68,7 +49,7 @@ public class RouteCalculator {
             for (Rectangle rectangle : map.keySet()) {
                 rectangleToCheck = rectangle;
             }
-            if (!searched.contains(rectangleToCheck)) {
+            if (rectangleToCheck != null && !searched.contains(rectangleToCheck)) {
                 searchQueue.remove(0);
                 boolean found;
                 if (isAnotherMap(destination)) {
@@ -79,7 +60,7 @@ public class RouteCalculator {
                     found = isThereWater(currentMap, rectangleToCheck);
                 } else if (PILLOW.equals(destination)) {
                     found = isTherePillow(currentMap, rectangleToCheck);
-                } else if ("NPC".equals(destination)) {
+                } else if (NPC.equals(destination)) {
                     found = isThereNpc(currentMap, rectangleToCheck);
                 } else {
                     found = false;
@@ -96,28 +77,25 @@ public class RouteCalculator {
                 searchQueue.remove(0);
             }
         }
-        if (!isAnotherMap(destination) && newRoute.isEmpty() && !animal.getCurrentMap().equals(animal.getHomeMap())) {
-            newRoute = calculateRouteToPortal(currentMap, animal, NavigationService.getNextPortalTo(animal.getCurrentMap(), animal.getHomeMap()));
-        }
         return newRoute;
     }
 
-    public Route calculateRoute(GameMap gameMap, Npc npc, String destination) {
+    public Route calculateRoute(GameMap currentMap, Npc npc, String destination) {
         Route newRoute = new Route();
         logger.debug(String.format("%s is looking for a way to : %s", npc, destination));
-        MapTile portal = null;
+        Portal portal = null;
         if (destination == null) {
             return newRoute;
         }
-        if (isAnotherMap(destination) && getPortal(gameMap, destination) != null) {
-            portal = getPortal(gameMap, destination);
-        }
-        if (isAnotherMap(destination) && portal == null) {
-            return newRoute;
+        if (isAnotherMap(destination)) {
+            portal = getPortal(currentMap, destination);
+            if (portal == null) {
+                return newRoute;
+            }
         }
         List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
 
-        fillInitialRoutes(gameMap, searchQueue, npc.getRectangle());
+        fillInitialRoutes(currentMap, searchQueue, npc.getRectangle());
 
         List<Rectangle> searched = new ArrayList<>();
         while (!searchQueue.isEmpty()) {
@@ -126,17 +104,17 @@ public class RouteCalculator {
             for (Rectangle rectangle : map.keySet()) {
                 rectangleToCheck = rectangle;
             }
-            if (!searched.contains(rectangleToCheck)) {
+            if (rectangleToCheck != null && !searched.contains(rectangleToCheck)) {
                 searchQueue.remove(0);
                 boolean found;
                 if (isAnotherMap(destination)) {
                     found = isTherePortal(portal, rectangleToCheck);
                 } else if (FOOD.equals(destination)) {
-                    found = isThereFood(gameMap, rectangleToCheck);
+                    found = isThereFood(currentMap, rectangleToCheck);
                 } else if (WATER.equals(destination)) {
-                    found = isThereWater(gameMap, rectangleToCheck);
-                } else if (PILLOW.equals(destination)) {
-                    found = isTherePillow(gameMap, rectangleToCheck);
+                    found = isThereWater(currentMap, rectangleToCheck);
+                } else if (NPC_SPOT.equals(destination)) {
+                    found = isThereNpcSpot(currentMap, rectangleToCheck);
                 } else {
                     found = false;
                 }
@@ -145,15 +123,12 @@ public class RouteCalculator {
                     return map.get(rectangleToCheck);
                 } else {
                     searched.add(rectangleToCheck);
-                    fillSearchQueue(gameMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
+                    fillSearchQueue(currentMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
                 }
 
             } else {
                 searchQueue.remove(0);
             }
-        }
-        if (!isAnotherMap(destination) && newRoute.isEmpty() && !npc.getCurrentMap().equals(MAIN_MAP)) {
-            newRoute = calculateRouteToPortal(gameMap, npc, NavigationService.getNextPortalTo(npc.getCurrentMap(), MAIN_MAP));
         }
         return newRoute;
     }
@@ -195,7 +170,7 @@ public class RouteCalculator {
     }
 
     private boolean isAnotherMap(String destination) {
-        return !(WATER.equals(destination) || FOOD.equals(destination) || PILLOW.equals(destination) || "NPC".equals(destination));
+        return !(WATER.equals(destination) || FOOD.equals(destination) || PILLOW.equals(destination) || NPC.equals(destination) || NPC_SPOT.equals(destination));
     }
 
     public void fillSearchQueue(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangleChecked, Route potentialRoute, List<Rectangle> searched) {
@@ -325,6 +300,15 @@ public class RouteCalculator {
         return false;
     }
 
+    private boolean isThereNpcSpot(GameMap gameMap, Rectangle rectangle) {
+        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
+            if (gameObject instanceof NpcSpot) {
+                return rectangle.intersects(((NpcSpot) gameObject).getRectangle());
+            }
+        }
+        return false;
+    }
+
     private boolean canWalkThisDirection(GameMap gameMap, Direction direction, int xPosition, int yPosition) {
         switch (direction) {
             case LEFT:
@@ -365,19 +349,19 @@ public class RouteCalculator {
         return true;
     }
 
-    private MapTile getPortal(GameMap gameMap, String destination) {
+    private Portal getPortal(GameMap gameMap, String destination) {
         if (destination == null) {
             return null;
         }
-        for (MapTile portal : gameMap.getPortals()) {
-            if (destination.equalsIgnoreCase(portal.getPortalDirection())) {
-                return portal;
+        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
+            if (gameObject instanceof Portal && destination.equalsIgnoreCase(((Portal) gameObject).getDirection())) {
+                return (Portal) gameObject;
             }
         }
         return null;
     }
 
-    private boolean isTherePortal(MapTile portal, Rectangle rectangle) {
-        return rectangle.intersects(portal);
+    private boolean isTherePortal(Portal portal, Rectangle rectangle) {
+        return rectangle.intersects(portal.getRectangle());
     }
 }

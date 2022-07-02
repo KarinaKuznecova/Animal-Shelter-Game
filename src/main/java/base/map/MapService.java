@@ -3,6 +3,7 @@ package base.map;
 import base.gameobjects.*;
 import base.gameobjects.plants.Corn;
 import base.gameobjects.services.PlantService;
+import base.graphicsservice.Rectangle;
 import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
 import static base.constants.FilePath.MAPS_LIST_PATH;
+import static base.constants.MapConstants.MAIN_MAP;
+import static base.constants.MapConstants.TOP_CENTER_MAP;
 
 public class MapService {
 
@@ -31,9 +34,12 @@ public class MapService {
         loadMapList();
     }
 
+    /**
+     * =================================== Load Map Config ======================================
+     */
+
     private void loadMapList() {
-        try {
-            Scanner scanner = new Scanner(mapListFile);
+        try (Scanner scanner = new Scanner(mapListFile)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] splitLine = line.split(":");
@@ -54,11 +60,26 @@ public class MapService {
         return new ArrayList<>(mapFiles.keySet());
     }
 
+    /**
+     * =================================== Load Map ======================================
+     */
+
     public GameMap loadGameMap(String mapName, TileService tileService) {
         GameMap gameMap = new GameMap(mapName, tileService);
-        try (Scanner scanner = new Scanner(new File(getMapConfig(mapName)))) {
+        boolean migrationChecked = false;
+        boolean migrationNeeded = false;
+        File mapFile = new File(getMapConfig(mapName));
+        try (Scanner scanner = new Scanner(mapFile)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
+
+                if (!migrationChecked) {
+                    if ((MAIN_MAP.equalsIgnoreCase(mapName) || TOP_CENTER_MAP.equalsIgnoreCase(mapName)) && isMigrationNeeded(line, mapName)) {
+                        migrationNeeded = true;
+                        break;
+                    }
+                    migrationChecked = true;
+                }
 
                 if (handleConfigLines(gameMap, line)) {
                     continue;
@@ -93,12 +114,20 @@ public class MapService {
                         }
                     }
                     MapTile tile = new MapTile(layer, tileId, xPosition, yPosition, isRegular);
-                    checkIfPortal(gameMap, splitLine, tile);
-                    tiles.add(tile);
+                    if (isPortal(splitLine, tile)) {
+                        migratePortal(gameMap, tile);
+                    } else {
+                        tiles.add(tile);
+                    }
                 }
             }
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        }
+        if (migrationNeeded) {
+            migrate(gameMap);
+            return loadGameMap(mapName, tileService);
         }
         return gameMap;
     }
@@ -184,26 +213,46 @@ public class MapService {
             gameMap.addObject(waterBowl);
             return true;
         }
+        if (line.startsWith("npc-spot")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            gameMap.addObject(new NpcSpot(new Rectangle(x, y, TILE_SIZE, TILE_SIZE)));
+            return true;
+        }
+        if (line.startsWith("portal")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            String direction = splitLine[3];
+            gameMap.addObject(new Portal(new Rectangle(x, y, TILE_SIZE, TILE_SIZE), direction));
+            return true;
+        }
 
         return false;
     }
 
-    private void checkIfPortal(GameMap gameMap, String[] splitLine, MapTile tile) {
+    private boolean isPortal(String[] splitLine, MapTile tile) {
         if (splitLine.length == 5) {
             String lastPiece = splitLine[4];
             if (lastPiece.length() > 1) {
-                logger.debug("Found portal as in old map config");
+                logger.info("Found portal as in old map config");
                 tile.setPortal(true);
                 tile.setPortalDirection(splitLine[4]);
-                gameMap.addPortal(tile);
+                return true;
             }
         } else if (splitLine.length >= 6) {
-            logger.debug("Found portal");
+            logger.info("Found portal");
             tile.setPortal(true);
             tile.setPortalDirection(splitLine[5]);
-            gameMap.addPortal(tile);
+            return true;
         }
+        return false;
     }
+
+    /**
+     * =================================== Save Map ======================================
+     */
 
     public void saveMap(GameMap gameMap) {
         logger.info("Saving map");
@@ -219,7 +268,7 @@ public class MapService {
 
             PrintWriter printWriter = new PrintWriter(mapFile);
 
-            printWriter.println("Game version: " + CURRENT_GAME_VERSION);
+            printWriter.println("Game version:" + CURRENT_GAME_VERSION);
 
             printWriter.println("Size:" + gameMap.getMapWidth() + ":" + gameMap.getMapHeight());
             if (gameMap.getBackGroundTileId() >= 0) {
@@ -282,7 +331,19 @@ public class MapService {
         for (WaterBowl waterBowl : gameMap.getWaterBowls()) {
             printWriter.println("water-bowl," + waterBowl.getRectangle().getX() + "," + waterBowl.getRectangle().getY() + "," + waterBowl.isFull());
         }
+        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
+            if (gameObject instanceof NpcSpot) {
+                printWriter.println("npc-spot," + ((NpcSpot) gameObject).getRectangle().getX() + "," + ((NpcSpot) gameObject).getRectangle().getY());
+            }
+            if (gameObject instanceof Portal) {
+                printWriter.println("portal," + ((Portal) gameObject).getRectangle().getX() + "," + ((Portal) gameObject).getRectangle().getY() + "," + ((Portal) gameObject).getDirection());
+            }
+        }
     }
+
+    /**
+     * =================================== Other ======================================
+     */
 
     public List<Plant> getOnlyPlantsFromMap(String mapName) {
         List<Plant> plants = new CopyOnWriteArrayList<>();
@@ -306,6 +367,70 @@ public class MapService {
             e.printStackTrace();
         }
         return plants;
+    }
+
+    /**
+     * =================================== Migration ======================================
+     */
+
+    private void migratePortal(GameMap gameMap, MapTile tile) {
+        logger.info("Migrating old portal");
+        int portalX = tile.getX() * (TILE_SIZE * ZOOM);
+        int portalY = tile.getY() * (TILE_SIZE * ZOOM);
+        String direction = tile.getPortalDirection();
+        if ("TopCenterMap".equals(direction)) {
+            direction = "Home";
+        }
+        Portal portal = new Portal(new Rectangle(portalX, portalY, 32, 32), direction);
+        gameMap.addObject(portal);
+    }
+
+    private boolean isMigrationNeeded(String line, String mapName) {
+        if (MAIN_MAP.equalsIgnoreCase(mapName)) {
+            String version = getGameVersionLine(line);
+            if (migrationNeeded(version)) {
+                logger.info(String.format("old map version was : %s, should be %s", version, CURRENT_GAME_VERSION));
+                return true;
+            }
+        } else if (TOP_CENTER_MAP.equalsIgnoreCase(mapName)) {
+            File homeFile = new File("maps/Home.txt");
+            return !homeFile.exists();
+        }
+        logger.info("Migration not needed");
+        return false;
+    }
+
+    private String getGameVersionLine(String line) {
+        if (line.startsWith("Game version")) {
+            String[] splitLine = line.split(":");
+            return splitLine[1];
+        }
+        return null;
+    }
+
+    private boolean migrationNeeded(String version) {
+        if (version != null) {
+            version = version.trim();
+        }
+        return !CURRENT_GAME_VERSION.equalsIgnoreCase(version);
+    }
+
+    private void migrate(GameMap gameMap) {
+        logger.info("Migrating game map");
+        MapMigrator mapMigrator = new MapMigrator();
+        if (MAIN_MAP.equalsIgnoreCase(gameMap.getMapName())) {
+            logger.info("Migrating Main Map");
+            String mapPath = getMapConfig(gameMap.getMapName());
+            logger.info("Migrating Main Map - Renaming old map file");
+            mapMigrator.renameFile(mapPath, "maps/GameMap-backup.txt");
+            logger.info("Migrating Main Map - Renaming new map file");
+            mapMigrator.renameFile("maps/MainMap.txt", mapPath);
+            logger.info("Migrating Main Map - DONE");
+        }
+        if (TOP_CENTER_MAP.equalsIgnoreCase(gameMap.getMapName())) {
+            mapMigrator.migrate("TopCenterMap", "maps/TopCenterMap.txt", "TopRightMap", "maps/TopRightMap.txt", "maps/Home.txt");
+            // reload
+        }
     }
 
 }

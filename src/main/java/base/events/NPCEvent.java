@@ -48,7 +48,7 @@ public class NPCEvent extends Event {
     }
 
     private boolean isThereNpcAlready(Game game) {
-        return !game.getNpcs().isEmpty();
+        return game.isThereNpc();
     }
 
     @Override

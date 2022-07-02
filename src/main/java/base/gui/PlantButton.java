@@ -5,8 +5,7 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
-import static base.constants.ColorConstant.GREEN;
-import static base.constants.ColorConstant.YELLOW;
+import static base.constants.ColorConstant.*;
 
 public class PlantButton extends GUIButton {
 
@@ -19,11 +18,12 @@ public class PlantButton extends GUIButton {
         this.plantType = plantType;
         this.sprite = tileSprite;
         this.game = game;
-        rectangle.generateBorder(3, YELLOW);
+        rectangle.generateBorder(3, BROWN, BLUE);
     }
 
     @Override
     public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
+        renderer.renderRectangle(region, rectangle, 1, fixed);
         if (sprite != null) {
             if (objectCount > 1) {
                 renderer.renderSprite(sprite,
@@ -37,7 +37,6 @@ public class PlantButton extends GUIButton {
                         zoom, fixed);
             }
         }
-        renderer.renderRectangle(region, rectangle, 1, fixed);
     }
 
     @Override
@@ -49,12 +48,12 @@ public class PlantButton extends GUIButton {
     public void update(Game game) {
         if (plantType.equals(game.getSelectedPlant())) {
             if (!isGreen) {
-                region.generateBorder(5, GREEN);
+                region.generateBorder(5, GREEN, BLUE);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateBorder(3, YELLOW);
+                region.generateBorder(3, BROWN, BLUE);
                 isGreen = false;
             }
         }

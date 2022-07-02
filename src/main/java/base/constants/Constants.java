@@ -8,16 +8,21 @@ public class Constants {
     public static final int TILE_SIZE = 32;
     public static final int ZOOM = 2;
 
-    public static final boolean DEBUG_MODE = false;
+    public static final String DEBUG_MODE_PROPERTY = "debug-mode";
+    public static boolean DEBUG_MODE;
 
-    public static final String CURRENT_GAME_VERSION = "1.2.3";
+    public static final String CHEATS_MODE_PROPERTY = "cheats";
+    public static boolean CHEATS_MODE;
+
+    public static final String CURRENT_GAME_VERSION = "1.3.0";
 
     private static final String ENGLISH = "eng";
     private static final String LATVIAN = "lv";
     private static final String RUSSIAN = "ru";
     private static final String SWEDEN = "se";
 
-    public static final String LANGUAGE = ENGLISH;
+    public static final String LANGUAGE_PROPERTY = "language";
+    public static String LANGUAGE;
 
     public static final int BOWL_TILE_ID = 68;
     public static final int WATER_BOWL_TILE_ID = 73;
