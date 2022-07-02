@@ -121,7 +121,7 @@ public class VisibleText {
                     }
                     continue;
                 }
-                if (line.startsWith("Home")) {
+                if (line.startsWith("Home 1")) {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
                         home = splitLine[1];

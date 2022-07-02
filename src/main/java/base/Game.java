@@ -34,6 +34,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
 import static base.constants.MapConstants.MAIN_MAP;
+import static base.navigationservice.NavigationService.getNextPortalToGetToCenter;
 import static base.navigationservice.RouteCalculator.*;
 
 public class Game extends JFrame implements Runnable {
@@ -293,7 +294,6 @@ public class Game extends JFrame implements Runnable {
     /** =================================== Defaults ====================================== */
 
     // TODO: only one item per all buttons should be selected
-
     private void enableDefaultGui() {
         deselectEverything();
 
@@ -840,7 +840,9 @@ public class Game extends JFrame implements Runnable {
         guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButtonByItemName(itemName));
     }
 
-    /** =================================== Right Mouse Click ====================================== */
+    /**
+     * =================================== Right Mouse Click ======================================
+     */
 
     public void rightClick(int x, int y) {
         int xAdjusted = (int) Math.floor((x + renderer.getCamera().getX()) / (32.0 * ZOOM));
@@ -866,7 +868,9 @@ public class Game extends JFrame implements Runnable {
         refreshCurrentMapCache();
     }
 
-    /** =================================== Other features ====================================== */
+    /**
+     * =================================== Other features ======================================
+     */
 
     public void teleportToStarterMap() {
         logger.info("Starting game map loading started");
@@ -942,7 +946,14 @@ public class Game extends JFrame implements Runnable {
     }
 
     public Route calculateRouteToNpc(Animal animal) {
-        return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, NPC);
+        if (animal.getCurrentMap().equalsIgnoreCase(npc.getCurrentMap())) {
+            return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, NPC);
+        }
+        return calculateRouteToOtherMap(animal, getNextPortalToGetToCenter(animal.getCurrentMap()));
+    }
+
+    public Route calculateRouteToOtherMap(Animal animal, String destination) {
+        return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, destination);
     }
 
     public Route calculateRouteToNpcSpot(Npc npc) {
@@ -966,6 +977,7 @@ public class Game extends JFrame implements Runnable {
         } else {
             getGameMap(MAIN_MAP).addObject(npc);
         }
+        npc.setCurrentMap(MAIN_MAP);
         refreshCurrentMapCache();
         gameObjectsList.add(npc);
         interactionZones.add(npc.getInteractionZone());
