@@ -80,7 +80,7 @@ public class AnimalService {
     }
 
     private void setCurrentMapName(String mapName, Animal animal) {
-        if (MAIN_MAP.equalsIgnoreCase(mapName) || HOME_MAP.equalsIgnoreCase(mapName) || TOP_LEFT_MAP.equalsIgnoreCase(mapName)) {
+        if (MAIN_MAP.equalsIgnoreCase(mapName) || HOME_MAP.equalsIgnoreCase(mapName) || TOP_LEFT_MAP.equalsIgnoreCase(mapName) || FOREST_MAP.equalsIgnoreCase(mapName) || CITY_MAP.equalsIgnoreCase(mapName)) {
             animal.setCurrentMap(mapName);
         } else {
             animal.setCurrentMap(MAIN_MAP);
@@ -294,5 +294,15 @@ public class AnimalService {
             return new Rat(0, 0, 0, color).getPreviewSprite();
         }
         return null;
+    }
+
+    public String getRandomAnimalType() {
+        int animalId = random.nextInt(ANIMAL_TYPES.size() - 1);
+        String animalType = ANIMAL_TYPES.get(animalId);
+        if (animalId == ANIMAL_TYPES.indexOf(Cat.TYPE)) {
+            int catType = random.nextInt(CAT_COLORS.size() - 1);
+            animalType = CAT_COLORS.get(catType);
+        }
+        return animalType;
     }
 }

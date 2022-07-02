@@ -228,6 +228,13 @@ public class MapService {
             gameMap.addObject(new Portal(new Rectangle(x, y, TILE_SIZE, TILE_SIZE), direction));
             return true;
         }
+        if (line.startsWith("bush")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            gameMap.addObject(new Bush(x, y, gameMap.getMapName()));
+            return true;
+        }
 
         return false;
     }
@@ -337,6 +344,9 @@ public class MapService {
             }
             if (gameObject instanceof Portal) {
                 printWriter.println("portal," + ((Portal) gameObject).getRectangle().getX() + "," + ((Portal) gameObject).getRectangle().getY() + "," + ((Portal) gameObject).getDirection());
+            }
+            if (gameObject instanceof Bush) {
+                printWriter.println("bush," + ((Bush) gameObject).getX() + "," + ((Bush) gameObject).getY());
             }
         }
     }

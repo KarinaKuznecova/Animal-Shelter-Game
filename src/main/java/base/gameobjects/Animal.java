@@ -214,7 +214,7 @@ public abstract class Animal implements GameObject, Walking {
                 animatedSprite.reset();
             }
         }
-
+        checkIfNeedToGoToDifferentLocation(game);
         checkPortal(game);
 
         movingTicks--;
@@ -258,6 +258,12 @@ public abstract class Animal implements GameObject, Walking {
         int yPosition = animalRectangle.getY() - game.getRenderer().getCamera().getY() - 16;
         Position heartPosition = new Position(xPosition, yPosition);
         heartIcon.changePosition(heartPosition);
+    }
+
+    private void checkIfNeedToGoToDifferentLocation(Game game) {
+        if (route.isEmpty() && (getCurrentMap().equalsIgnoreCase(FOREST_MAP) || getCurrentMap().equalsIgnoreCase(CITY_MAP))) {
+            route = game.calculateRouteToOtherMap(this, NavigationService.getNextPortalToGetToCenter(getCurrentMap()));
+        }
     }
 
     private void checkPortal(Game game) {
