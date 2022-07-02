@@ -109,6 +109,8 @@ npc-spot,768,512
 portal,1408,1600,City
 portal,3520,704,Forest
 portal,640,-64,Home
+bush,1536,1280
+bush,1472,704
 //layer,tileId,xPos,yPos,regularTile,portalDirection
 0,109,10,0,n
 0,109,10,1,n
