@@ -29,6 +29,7 @@ public class Bush implements GameObject {
     private final Rectangle rectangle;
     private final String mapName;
     private final boolean canContainAnimal;
+    private final Random random = new Random();
 
     private boolean isAnimalInside;
     private String animalType;
@@ -45,7 +46,7 @@ public class Bush implements GameObject {
         this.x = x;
         this.y = y;
         this.mapName = mapName;
-        this.canContainAnimal = new Random().nextBoolean();
+        this.canContainAnimal = random.nextBoolean();
         sprite = getPreviewSprite(BUSH_IMG);
         rectangle = new Rectangle(x, y, 96, 82);
         rectangle.generateBorder(1, GREEN);
@@ -54,7 +55,7 @@ public class Bush implements GameObject {
         contextClue = new ContextClue();
 
         isAnimalInside = false;
-        maxInterval = 3500 + new Random().nextInt(4000);
+        maxInterval = 5000 + random.nextInt(6000);
         currentInterval = maxInterval;
     }
 
@@ -105,6 +106,10 @@ public class Bush implements GameObject {
             isAnimalInside = false;
             Animal animal = animalService.createAnimal(rectangle.getX(), rectangle.getY(), animalType, mapName);
             animal.setCurrentMap(game.getGameMap().getMapName());
+            animal.setHunger(random.nextInt(100));
+            animal.setThirst(random.nextInt(100));
+            animal.setEnergy(random.nextInt(100));
+            animal.setCurrentAge(random.nextInt(Animal.GROWING_UP_TIME));
             game.getAnimalsOnMaps().get(game.getGameMap().getMapName()).add(animal);
             game.addAnimalToPanel(animal);
             game.saveMap();

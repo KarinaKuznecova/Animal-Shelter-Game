@@ -8,8 +8,6 @@ import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
-
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
 import static base.constants.MultiOptionalObjects.flowerIds;
@@ -24,7 +22,7 @@ public class GrowFlowerEvent extends Event{
 
     @Override
     void calculateChance(Game game) {
-        chance = random.nextInt(3);
+        chance = random.nextInt(6);
         if (!repeatable && happened) {
             chance = 0;
             return;
