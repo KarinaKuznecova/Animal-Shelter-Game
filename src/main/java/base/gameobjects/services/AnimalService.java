@@ -299,9 +299,17 @@ public class AnimalService {
     public String getRandomAnimalType() {
         int animalId = random.nextInt(ANIMAL_TYPES.size() - 1);
         String animalType = ANIMAL_TYPES.get(animalId);
+        if (animalType.equalsIgnoreCase(Butterfly.TYPE)) {
+            logger.debug("Skipping butterfly");
+            return getRandomAnimalType();
+        }
         if (animalId == ANIMAL_TYPES.indexOf(Cat.TYPE)) {
             int catType = random.nextInt(CAT_COLORS.size() - 1);
             animalType = CAT_COLORS.get(catType);
+        }
+        if (animalId == ANIMAL_TYPES.indexOf(Rat.TYPE)) {
+            int ratType = random.nextInt(RAT_COLORS.size() - 1);
+            animalType = RAT_COLORS.get(ratType);
         }
         return animalType;
     }

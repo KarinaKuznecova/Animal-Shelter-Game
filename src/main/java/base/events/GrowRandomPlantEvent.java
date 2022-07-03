@@ -21,7 +21,7 @@ public class GrowRandomPlantEvent extends Event {
 
     @Override
     void calculateChance(Game game) {
-        chance = random.nextInt(3);
+        chance = random.nextInt(5);
         if (!repeatable && happened) {
             chance = 0;
             return;
@@ -29,7 +29,7 @@ public class GrowRandomPlantEvent extends Event {
         if (happened) {
             chance--;
         }
-        logger.info(String.format("Event 'Grow Random Flower' chance is %d", chance));
+        logger.info(String.format("Event 'Grow Random Plant' chance is %d", chance));
     }
 
     @Override

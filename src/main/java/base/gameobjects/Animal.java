@@ -675,6 +675,21 @@ public abstract class Animal implements GameObject, Walking {
         return currentEnergy;
     }
 
+    public void setEnergy(int energy) {
+        logger.debug(String.format("Setting current energy to %d percent", energy));
+        this.currentEnergy = MAX_ENERGY / 100 * energy;
+    }
+
+    public void setThirst(int thirst) {
+        logger.debug(String.format("Setting current thirst to %d percent", thirst));
+        this.currentThirst = MAX_THIRST / 100 * thirst;
+    }
+
+    public void setHunger(int hunger) {
+        logger.debug(String.format("Setting current hunger to %d percent", hunger));
+        this.currentHunger = MAX_HUNGER / 100 * hunger;
+    }
+
     public int getCurrentHungerInPercent() {
         return currentHunger / (MAX_HUNGER / 100);
     }

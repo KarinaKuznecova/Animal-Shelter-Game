@@ -590,7 +590,9 @@ public class Game extends JFrame implements Runnable {
 
         renderer.clearRenderedText();
         if (isNewAnimalsPanel(panelId)) {
-            showNewAnimalsPanel();
+            if (CHEATS_MODE) {
+                showNewAnimalsPanel();
+            }
         } else if (isPlantsPanel(panelId)) {
             showNewPlantsPanel();
         } else if (regularTiles) {
@@ -643,6 +645,9 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void openTerrainMenu() {
+        if (!CHEATS_MODE) {
+            return;
+        }
         guiList.clear();
 
         if (regularTiles) {
@@ -885,6 +890,9 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void deleteAnimal() {
+        if (!CHEATS_MODE) {
+            return;
+        }
         if (selectedYourAnimal == null) {
             logger.debug("Nothing to delete - no animal is selected");
             return;

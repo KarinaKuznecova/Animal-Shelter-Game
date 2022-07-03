@@ -6,6 +6,5 @@
 /.classpath
 /.project
 /.settings/
-# Everyone will have their own animals and maps, no need to push it to master branch
+# Everyone will have their own animals, no need to push it to master branch
 /animals/
-/maps/

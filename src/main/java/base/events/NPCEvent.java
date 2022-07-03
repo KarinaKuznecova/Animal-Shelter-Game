@@ -18,7 +18,7 @@ public class NPCEvent extends Event {
 
     @Override
     void calculateChance(Game game) {
-        chance = random.nextInt(2);
+        chance = random.nextInt(4);
 
         if ((!repeatable && happened) || isThereNpcAlready(game)) {
             chance = 0;
