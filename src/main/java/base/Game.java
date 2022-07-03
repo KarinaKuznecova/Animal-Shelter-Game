@@ -12,7 +12,10 @@ import base.gameobjects.services.PlantService;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
 import base.gui.*;
-import base.map.*;
+import base.map.GameMap;
+import base.map.MapService;
+import base.map.Tile;
+import base.map.TileService;
 import base.navigationservice.KeyboardListener;
 import base.navigationservice.MouseEventListener;
 import base.navigationservice.Route;
@@ -111,11 +114,9 @@ public class Game extends JFrame implements Runnable {
 
     private void loadGameProperties() {
         gameProperties = new Properties();
-        String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        String appConfigPath = rootPath + "application.properties";
 
         try {
-            gameProperties.load(new FileInputStream(appConfigPath));
+            gameProperties.load(new FileInputStream("config/application.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }
