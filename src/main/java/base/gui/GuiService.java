@@ -20,6 +20,9 @@ import static base.constants.MultiOptionalObjects.MASTER_TILE_LIST;
 
 public class GuiService implements Serializable {
 
+    public static final int BACKPACK_ROWS = 5;
+    public static final int BACKPACK_COLUMNS = 5;
+
     public GUI loadYourAnimals(Game game) {
         List<Animal> animalsOnAllMaps = new ArrayList<>();
         for (List<Animal> animalsOnMaps : game.getAnimalsOnMaps().values()) {
@@ -103,18 +106,18 @@ public class GuiService implements Serializable {
 
     public GUI loadEmptyBackpack(Game game) {
         List<GUIButton> buttons = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < BACKPACK_ROWS; i++) {
+            for (int j = 0; j < BACKPACK_COLUMNS; j++) {
                 Rectangle buttonRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
                 buttons.add(new BackpackButton(String.valueOf(i) + j, null, buttonRectangle, String.valueOf(i) + j));
             }
         }
-        return new GUI(buttons, 5, game.getHeight() - (4 * (TILE_SIZE * ZOOM + 2)), true);
+        return new GUI(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (TILE_SIZE * ZOOM + 2)), true);
     }
 
     public void decreaseNumberOnButton(Game game, BackpackButton button) {
         button.setObjectCount(button.getObjectCount() - 1);
-        if (button.getObjectCount() == 0) {
+        if (button.getObjectCount() <= 0) {
             button.makeEmpty();
             game.changeSelectedItem(button.getDefaultId());
         }

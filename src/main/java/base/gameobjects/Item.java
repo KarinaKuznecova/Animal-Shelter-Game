@@ -61,4 +61,8 @@ public class Item implements GameObject {
     public Rectangle getRectangle() {
         return rectangle;
     }
+
+    public Sprite getSprite() {
+        return sprite;
+    }
 }

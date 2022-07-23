@@ -10,6 +10,8 @@ public abstract class Event {
     int chance;
     boolean happened;
     boolean repeatable;
+    int coolDown;
+    int currentCoolDown;
 
     abstract void calculateChance(Game game);
 

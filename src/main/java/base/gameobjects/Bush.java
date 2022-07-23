@@ -55,7 +55,7 @@ public class Bush implements GameObject {
         contextClue = new ContextClue();
 
         isAnimalInside = false;
-        maxInterval = 5000 + random.nextInt(6000);
+        maxInterval = 7000 + random.nextInt(7000);
         currentInterval = maxInterval;
     }
 
