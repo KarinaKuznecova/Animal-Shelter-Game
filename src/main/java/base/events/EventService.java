@@ -12,7 +12,7 @@ public class EventService {
     protected static final Logger logger = LoggerFactory.getLogger(EventService.class);
 
     int ticks;
-    int eventTime = 3000;
+    int eventTime = 1000;
 
     List<Event> eventList = new ArrayList<>();
 

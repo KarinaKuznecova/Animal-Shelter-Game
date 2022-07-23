@@ -6,8 +6,10 @@ import base.constants.VisibleText;
 import base.events.EventService;
 import base.gameobjects.*;
 import base.gameobjects.interactionzones.InteractionZone;
+import base.gameobjects.plants.Seed;
 import base.gameobjects.services.AnimalService;
 import base.gameobjects.services.BackpackService;
+import base.gameobjects.services.ItemService;
 import base.gameobjects.services.PlantService;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
@@ -45,6 +47,7 @@ public class Game extends JFrame implements Runnable {
     private final Canvas canvas = new Canvas();
 
     protected static final Logger logger = LoggerFactory.getLogger(Game.class);
+    private final Random random = new Random();
 
     private transient GameMap gameMap;
     private transient Map<String, GameMap> gameMaps;
@@ -65,6 +68,7 @@ public class Game extends JFrame implements Runnable {
     private transient TileService tileService;
     private transient AnimalService animalService;
     private transient PlantService plantService;
+    private transient ItemService itemService;
     private transient GuiService guiService;
     private transient BackpackService backpackService;
     private transient RouteCalculator routeCalculator;
@@ -130,6 +134,7 @@ public class Game extends JFrame implements Runnable {
         tileService = new TileService();
         animalService = new AnimalService();
         plantService = new PlantService();
+        itemService = new ItemService(plantService);
         guiService = new GuiService();
         backpackService = new BackpackService();
         routeCalculator = new RouteCalculator();
@@ -211,7 +216,9 @@ public class Game extends JFrame implements Runnable {
         canvas.addMouseMotionListener(mouseEventListener);
     }
 
-    /** =================================== Load Map ====================================== */
+    /**
+     * =================================== Load Map ======================================
+     */
 
     private void loadMap() {
         logger.info("Game map loading started");
@@ -248,7 +255,9 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    /** =================================== GUI Elements ====================================== */
+    /**
+     * =================================== GUI Elements ======================================
+     */
 
     private void loadGuiElements() {
         loadSDKGUI();
@@ -292,7 +301,9 @@ public class Game extends JFrame implements Runnable {
         backpackGui.setGame(this);
     }
 
-    /** =================================== Defaults ====================================== */
+    /**
+     * =================================== Defaults ======================================
+     */
 
     // TODO: only one item per all buttons should be selected
     private void enableDefaultGui() {
@@ -358,7 +369,9 @@ public class Game extends JFrame implements Runnable {
         selectedPlant = "";
     }
 
-    /** =================================== Game Objects ====================================== */
+    /**
+     * =================================== Game Objects ======================================
+     */
 
     private void loadGameObjects(int startX, int startY) {
         gameObjectsList = new CopyOnWriteArrayList<>();
@@ -395,7 +408,9 @@ public class Game extends JFrame implements Runnable {
         logger.info("Caching plants finished");
     }
 
-    /** =================================== RUN && RENDER && UPDATE ====================================== */
+    /**
+     * =================================== RUN && RENDER && UPDATE ======================================
+     */
 
     public void run() {
         long lastTime = System.nanoTime(); //long 2^63
@@ -463,7 +478,9 @@ public class Game extends JFrame implements Runnable {
 
     /** =================================== In Game Activities ====================================== */
 
-    /** =================================== Load another map ====================================== */
+    /**
+     * =================================== Load another map ======================================
+     */
 
     public void loadSecondaryMap(String mapName) {
         logger.info("Game map loading started");
@@ -571,7 +588,9 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    /** =================================== Interact with Gui panels ====================================== */
+    /**
+     * =================================== Interact with Gui panels ======================================
+     */
 
     public void hideGuiPanels() {
         if (guiList.isEmpty()) {
@@ -595,7 +614,9 @@ public class Game extends JFrame implements Runnable {
                 showNewAnimalsPanel();
             }
         } else if (isPlantsPanel(panelId)) {
-            showNewPlantsPanel();
+            if (CHEATS_MODE) {
+                showNewPlantsPanel();
+            }
         } else if (regularTiles) {
             showNewTilesPanel(panelId, tileButtonsArray);
         } else {
@@ -683,7 +704,9 @@ public class Game extends JFrame implements Runnable {
         selectedAnimal = animalType;
     }
 
-    /** =================================== Left Mouse Click ====================================== */
+    /**
+     * =================================== Left Mouse Click ======================================
+     */
 
     public void leftClick(int xScreenRelated, int yScreenRelated) {
         int xMapRelated = xScreenRelated + renderer.getCamera().getX();
@@ -735,7 +758,7 @@ public class Game extends JFrame implements Runnable {
                 createNewAnimal(smallerX, smallerY);
             }
             if (guiList.contains(plantsGui)) {
-                createNewPlant(smallerX, smallerY);
+                createNewPlant(selectedPlant, smallerX, smallerY);
             }
         }
         refreshCurrentMapCache();
@@ -768,9 +791,15 @@ public class Game extends JFrame implements Runnable {
     private void putItemOnTheGround(int xAdjusted, int yAdjusted) {
         int xAlligned = xAdjusted - (xAdjusted % (TILE_SIZE * ZOOM));
         int yAlligned = yAdjusted - (yAdjusted % (TILE_SIZE * ZOOM));
-        Sprite sprite = plantService.getPlantSprite(selectedItem);
-        Item item = new Item(xAlligned, yAlligned, selectedItem, sprite);
-        gameMap.addItem(item);
+        Sprite sprite = itemService.getItemSprite(selectedItem);
+        Item item = itemService.creteNewItem(selectedItem, xAlligned, yAlligned);
+        if (item instanceof Seed) {
+            if (!createNewPlant(((Seed) item).getPlantType(), xAlligned / 64, yAlligned / 64)) {
+                gameMap.addItem(item);
+            }
+        } else {
+            gameMap.addItem(item);
+        }
         guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButtonBySprite(sprite));
     }
 
@@ -797,23 +826,32 @@ public class Game extends JFrame implements Runnable {
         yourAnimalButtons.addButton(animalIcon);
     }
 
-    private void createNewPlant(int x, int y) {
-        if (selectedPlant.isEmpty()) {
-            return;
+    private boolean createNewPlant(String plantType, int x, int y) {
+        if (plantType.isEmpty()) {
+            return false;
         }
         int tileX = x * (TILE_SIZE * ZOOM);
         int tileY = y * (TILE_SIZE * ZOOM);
         if (gameMap.isThereGrassOrDirt(tileX, tileY) && gameMap.isPlaceEmpty(1, tileX, tileY) && gameMap.isInsideOfMap(x, y)) {
-            Plant plant = plantService.createPlant(selectedPlant, tileX, tileY);
+            Plant plant = plantService.createPlant(plantType, tileX, tileY);
             gameMap.addPlant(plant);
             List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
             plantList.add(plant);
+            return true;
         }
+        return false;
     }
 
     public void pickUpPlant(Plant plant) {
         GUIButton button = backpackGui.getButtonBySprite(plant.getPreviewSprite());
-        pickUp(plant.getPlantType(), plant.getPreviewSprite(), button);
+        int amount = random.nextInt(3);
+        pickUp(plant.getPlantType(), plant.getPreviewSprite(), button, amount);
+
+        int seedAmount = random.nextInt(3);
+        Sprite seedSprite = plantService.getSeedSprite(plant.getPlantType());
+        GUIButton buttonForSeed = backpackGui.getButtonBySprite(seedSprite);
+        pickUp("seed" + plant.getPlantType(), seedSprite, buttonForSeed, seedAmount);
+
         gameMap.removePlant(plant);
         List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
         plantList.remove(plant);
@@ -821,21 +859,21 @@ public class Game extends JFrame implements Runnable {
 
     public void pickUpItem(String itemName, Sprite sprite, Rectangle rectangle) {
         GUIButton button = backpackGui.getButtonBySprite(sprite);
-        pickUp(itemName, sprite, button);
+        pickUp(itemName, sprite, button, 1);
         gameMap.removeItem(itemName, rectangle);
     }
 
-    private void pickUp(String itemName, Sprite sprite, GUIButton button) {
+    private void pickUp(String itemName, Sprite sprite, GUIButton button, int amount) {
         if (button instanceof BackpackButton) {
             logger.info("found a slot in backpack");
             if (button.getSprite() == null) {
                 logger.info("slot was empty, will put plant");
                 button.setSprite(sprite);
-                button.setObjectCount(1);
+                button.setObjectCount(amount);
                 ((BackpackButton) button).setItem(itemName);
             } else {
-                logger.info("plant is already in backpack, will increment");
-                button.setObjectCount(button.getObjectCount() + 1);
+                logger.info("item is already in backpack, will increment");
+                button.setObjectCount(button.getObjectCount() + amount);
             }
         } else {
             logger.info("No empty slots in backpack");
@@ -1041,7 +1079,7 @@ public class Game extends JFrame implements Runnable {
     public void dropRandomFood() {
         int xPosition = npc.getRectangle().getX();
         int yPosition = npc.getRectangle().getY();
-        String plantType = plantService.plantTypes.get(new Random().nextInt(plantService.plantTypes.size()));
+        String plantType = plantService.plantTypes.get(random.nextInt(plantService.plantTypes.size()));
         Sprite sprite = plantService.getPlantSprite(plantType);
         Item item = new Item(xPosition, yPosition, plantType, sprite);
         getGameMap(MAIN_MAP).addItem(item);

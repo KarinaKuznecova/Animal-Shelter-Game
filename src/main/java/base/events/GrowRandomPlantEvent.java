@@ -21,7 +21,7 @@ public class GrowRandomPlantEvent extends Event {
 
     @Override
     void calculateChance(Game game) {
-        chance = random.nextInt(5);
+        chance = 1 + random.nextInt(5);
         if (!repeatable && happened) {
             chance = 0;
             return;

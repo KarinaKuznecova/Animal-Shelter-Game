@@ -14,13 +14,15 @@ public class NPCEvent extends Event {
 
     public NPCEvent() {
         repeatable = true;
+        coolDown = 3;
     }
 
     @Override
     void calculateChance(Game game) {
+        currentCoolDown--;
         chance = random.nextInt(4);
 
-        if ((!repeatable && happened) || isThereNpcAlready(game)) {
+        if ((!repeatable && happened) || isThereNpcAlready(game) || currentCoolDown > 0) {
             chance = 0;
             return;
         }
@@ -54,6 +56,7 @@ public class NPCEvent extends Event {
     void startEvent(Game game) {
         game.spawnNpc(pickAnimal(game));
         happened = true;
+        currentCoolDown = coolDown;
     }
 
     public Animal pickAnimal(Game game) {

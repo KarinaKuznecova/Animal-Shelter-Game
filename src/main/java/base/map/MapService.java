@@ -2,6 +2,7 @@ package base.map;
 
 import base.gameobjects.*;
 import base.gameobjects.plants.Corn;
+import base.gameobjects.services.ItemService;
 import base.gameobjects.services.PlantService;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.Sprite;
@@ -26,6 +27,7 @@ public class MapService {
     private final File mapListFile = new File(MAPS_LIST_PATH);
     private final Map<String, String> mapFiles = new HashMap<>();
     private final PlantService plantService = new PlantService();
+    private final ItemService itemService = new ItemService(plantService);
 
     protected static final Logger logger = LoggerFactory.getLogger(MapService.class);
 
@@ -185,7 +187,7 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             Sprite sprite = plantService.getPreviews().get(itemName);
-            Item item = new Item(x, y, itemName, sprite);
+            Item item = itemService.creteNewItem(itemName, x, y);
             gameMap.addItem(item);
             return true;
         }

@@ -16,21 +16,27 @@ public class FilePath {
     //plants
     public static final String CARROT_IMG = "img/carrot.png";
     public static final String CARROT_PREVIEW = "img/carrot-preview.png";
+    public static final String CARROT_SEEDS = "img/carrot-seeds.png";
 
     public static final String BEET_IMG = "img/beet.png";
     public static final String BEET_PREVIEW = "img/beet-preview.png";
+    public static final String BEET_SEEDS = "img/beet-seeds.png";
 
     public static final String TOMATO_IMG = "img/tomato.png";
     public static final String TOMATO_PREVIEW = "img/tomato-preview.png";
+    public static final String TOMATO_SEEDS = "img/tomato-seeds.png";
 
     public static final String STRAWBERRY_IMG = "img/strawberry.png";
     public static final String STRAWBERRY_PREVIEW = "img/strawberry-preview.png";
+    public static final String STRAWBERRY_SEEDS = "img/strawberry-seeds.png";
 
     public static final String BELLPEPPER_IMG = "img/bellpepper.png";
     public static final String BELLPEPPER_PREVIEW = "img/bellpepper-preview.png";
+    public static final String BELLPEPPER_SEEDS = "img/bellpepper-seeds.png";
 
     public static final String CORN_IMG = "img/corn.png";
     public static final String CORN_PREVIEW = "img/corn-preview.png";
+    public static final String CORN_SEEDS = "img/corn-seeds.png";
 
     public static final String BUSH_IMG = "img/bush.png";
     public static final String TREE_IMG = "img/tree.png";
