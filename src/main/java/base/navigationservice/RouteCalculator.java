@@ -266,7 +266,7 @@ public class RouteCalculator {
             }
         }
         for (Item item : gameMap.getItems()) {
-            if (item.getRectangle().intersects(rectangle)) {
+            if (item != null && item.getRectangle().intersects(rectangle)) {
                 return true;
             }
         }
