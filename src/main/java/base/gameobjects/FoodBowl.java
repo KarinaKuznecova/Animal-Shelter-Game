@@ -21,7 +21,7 @@ public class FoodBowl extends Bowl {
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
             logger.info("Food bowl is clicked");
-            if (!isFull && game.getSelectedItem().length() > 2) {
+            if (!isFull && game.isFoodSelected()) {
                 logger.debug("Will fill food bowl");
                 fillBowl();
                 game.removeItemFromInventory(game.getSelectedItem());

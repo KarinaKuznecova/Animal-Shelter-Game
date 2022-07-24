@@ -912,7 +912,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void removeItemFromInventory(String itemName) {
-        guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButtonByItemName(itemName));
+        guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.findButtonByDefaultId(itemName));
     }
 
     /**
@@ -1166,6 +1166,15 @@ public class Game extends JFrame implements Runnable {
 
     public String getSelectedItem() {
         return selectedItem;
+    }
+
+    public boolean isFoodSelected() {
+        GUIButton button = backpackGui.findButtonByDefaultId(selectedItem);
+        if (button instanceof BackpackButton) {
+            String itemName = ((BackpackButton) button).getItemName();
+            return itemName.length() > 2;
+        }
+        return false;
     }
 
     public KeyboardListener getKeyboardListener() {
