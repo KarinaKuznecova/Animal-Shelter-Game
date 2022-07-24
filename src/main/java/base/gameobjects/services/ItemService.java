@@ -1,12 +1,18 @@
 package base.gameobjects.services;
 
 import base.gameobjects.Item;
-import base.gameobjects.plants.Seed;
+import base.gameobjects.plants.*;
 import base.graphicsservice.Sprite;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ItemService {
 
     PlantService plantService;
+
+    public static final List<String> STACKABLE_ITEMS = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME, Corn.NAME,
+            "seed" + Carrot.NAME, "seed" + Beet.NAME, "seed" + Tomato.NAME, "seed" + Strawberry.NAME, "seed" + Bellpepper.NAME, "seed" + Corn.NAME);
 
     public ItemService(PlantService plantService) {
         this.plantService = plantService;

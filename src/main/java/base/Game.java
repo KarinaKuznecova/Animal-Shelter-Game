@@ -39,6 +39,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
 import static base.constants.MapConstants.MAIN_MAP;
+import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 import static base.navigationservice.NavigationService.getNextPortalToGetToCenter;
 import static base.navigationservice.RouteCalculator.*;
 
@@ -294,7 +295,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     void loadBackpack() {
-        backpackGui = backpackService.loadBackpackFromFile();
+        backpackGui = backpackService.loadBackpackFromFile(this);
         if (backpackGui == null) {
             backpackGui = guiService.loadEmptyBackpack(this);
         }
@@ -525,7 +526,7 @@ public class Game extends JFrame implements Runnable {
             logger.info("Saving animals to file");
             animalService.saveAllAnimals(animals);
         }
-        backpackService.saveBackpack(backpackGui);
+        backpackService.saveBackpackToFile(backpackGui);
     }
 
     public void refreshCurrentMapCache() {
@@ -782,25 +783,29 @@ public class Game extends JFrame implements Runnable {
                 }
             }
         }
-        if (selectedItem.length() > 2) {
-            logger.info("Will put item on the ground");
-            putItemOnTheGround(xMapRelated, yMapRelated);
+        String selectedItemInInventory = backpackService.getItemNameByButtonId(backpackGui, selectedItem);
+        if (selectedItemInInventory != null) {
+            logger.info(String.format("Will put item on the ground - %s", selectedItemInInventory));
+            putItemOnTheGround(xMapRelated, yMapRelated, selectedItemInInventory);
         }
     }
 
-    private void putItemOnTheGround(int xAdjusted, int yAdjusted) {
+    private void putItemOnTheGround(int xAdjusted, int yAdjusted, String selectedItem) {
+        putItemOnTheGround(xAdjusted, yAdjusted, selectedItem, false);
+    }
+
+    private void putItemOnTheGround(int xAdjusted, int yAdjusted, String itemType, boolean justDrop) {
         int xAlligned = xAdjusted - (xAdjusted % (TILE_SIZE * ZOOM));
         int yAlligned = yAdjusted - (yAdjusted % (TILE_SIZE * ZOOM));
-        Sprite sprite = itemService.getItemSprite(selectedItem);
-        Item item = itemService.creteNewItem(selectedItem, xAlligned, yAlligned);
+        Item item = itemService.creteNewItem(itemType, xAlligned, yAlligned);
         if (item instanceof Seed) {
-            if (!createNewPlant(((Seed) item).getPlantType(), xAlligned / 64, yAlligned / 64)) {
+            if (justDrop || !createNewPlant(((Seed) item).getPlantType(), xAlligned / 64, yAlligned / 64)) {
                 gameMap.addItem(item);
             }
         } else {
             gameMap.addItem(item);
         }
-        guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.getButtonBySprite(sprite));
+        guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.findButtonByDefaultId(selectedItem));
     }
 
     public void createNewAnimal(int x, int y) {
@@ -844,13 +849,21 @@ public class Game extends JFrame implements Runnable {
 
     public void pickUpPlant(Plant plant) {
         GUIButton button = backpackGui.getButtonBySprite(plant.getPreviewSprite());
-        int amount = random.nextInt(3);
-        pickUp(plant.getPlantType(), plant.getPreviewSprite(), button, amount);
+        if (button == null) {
+            putItemOnTheGround(plant.getRectangle().getX(), plant.getRectangle().getY(), plant.getPlantType(), true);
+        } else {
+            int amount = random.nextInt(3);
+            pickUp(plant.getPlantType(), plant.getPreviewSprite(), button, amount);
+        }
 
         int seedAmount = random.nextInt(3);
         Sprite seedSprite = plantService.getSeedSprite(plant.getPlantType());
         GUIButton buttonForSeed = backpackGui.getButtonBySprite(seedSprite);
-        pickUp("seed" + plant.getPlantType(), seedSprite, buttonForSeed, seedAmount);
+        if (buttonForSeed == null) {
+            putItemOnTheGround(plant.getRectangle().getX() + (ZOOM * TILE_SIZE), plant.getRectangle().getY(), "seed" + plant.getPlantType(), true);
+        } else {
+            pickUp("seed" + plant.getPlantType(), seedSprite, buttonForSeed, seedAmount);
+        }
 
         gameMap.removePlant(plant);
         List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
@@ -859,25 +872,43 @@ public class Game extends JFrame implements Runnable {
 
     public void pickUpItem(String itemName, Sprite sprite, Rectangle rectangle) {
         GUIButton button = backpackGui.getButtonBySprite(sprite);
-        pickUp(itemName, sprite, button, 1);
-        gameMap.removeItem(itemName, rectangle);
+        if (pickUp(itemName, sprite, button, 1)) {
+            gameMap.removeItem(itemName, rectangle);
+        }
     }
 
-    private void pickUp(String itemName, Sprite sprite, GUIButton button, int amount) {
+    private boolean pickUp(String itemName, Sprite sprite, GUIButton button, int amount) {
+        int limit = STACKABLE_ITEMS.contains(itemName) ? INVENTORY_LIMIT : 1;
+        if (limit == 1) {
+            button = backpackGui.getEmptyButton();
+        }
         if (button instanceof BackpackButton) {
             logger.info("found a slot in backpack");
             if (button.getSprite() == null) {
                 logger.info("slot was empty, will put plant");
                 button.setSprite(sprite);
-                button.setObjectCount(amount);
+                if (amount <= limit) {
+                    button.setObjectCount(amount);
+                } else {
+                    button.setObjectCount(limit);
+                    pickUp(itemName, sprite, backpackGui.getButtonBySprite(sprite), amount - limit);
+                }
                 ((BackpackButton) button).setItem(itemName);
             } else {
                 logger.info("item is already in backpack, will increment");
-                button.setObjectCount(button.getObjectCount() + amount);
+                int newAmount = button.getObjectCount() + amount;
+                if (newAmount <= limit) {
+                    button.setObjectCount(newAmount);
+                } else {
+                    button.setObjectCount(limit);
+                    pickUp(itemName, sprite, backpackGui.getButtonBySprite(sprite), newAmount - limit);
+                }
             }
         } else {
             logger.info("No empty slots in backpack");
+            return false;
         }
+        return true;
     }
 
     public void removeItemFromInventory(String itemName) {

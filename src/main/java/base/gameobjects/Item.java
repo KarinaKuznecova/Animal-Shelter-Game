@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static base.constants.Constants.TILE_SIZE;
+import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 
 public class Item implements GameObject {
 
@@ -17,12 +18,16 @@ public class Item implements GameObject {
     private final String itemName;
     private final Sprite sprite;
     private final Rectangle rectangle;
+    private boolean stackable;
 
     public Item(int x, int y, String itemName, Sprite sprite) {
         this.x = x;
         this.y = y;
         this.itemName = itemName;
         this.sprite = sprite;
+        if (STACKABLE_ITEMS.contains(itemName)) {
+            stackable = true;
+        }
 
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
     }
@@ -64,5 +69,13 @@ public class Item implements GameObject {
 
     public Sprite getSprite() {
         return sprite;
+    }
+
+    public boolean isStackable() {
+        return stackable;
+    }
+
+    public void setStackable(boolean stackable) {
+        this.stackable = stackable;
     }
 }

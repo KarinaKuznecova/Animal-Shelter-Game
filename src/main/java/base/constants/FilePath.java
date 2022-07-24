@@ -49,6 +49,7 @@ public class FilePath {
 
     //other
     public static final String BACKPACK_FILE_NAME = "backpack.bag";
+    public static final String BACKPACK_FILE_PATH = "backpack";
     public static final String EDIT_ICON_PATH = "img/edit.png";
     public static final String HEART_ICON_PATH = "img/heart.png";
     public static final String OK_BUTTON_PATH = "img/button-ok.png";

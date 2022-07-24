@@ -116,6 +116,9 @@ public class GuiService implements Serializable {
     }
 
     public void decreaseNumberOnButton(Game game, BackpackButton button) {
+        if (button == null) {
+            return;
+        }
         button.setObjectCount(button.getObjectCount() - 1);
         if (button.getObjectCount() <= 0) {
             button.makeEmpty();

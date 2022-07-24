@@ -9,6 +9,8 @@ import base.graphicsservice.Sprite;
 import java.io.Serializable;
 import java.util.List;
 
+import static base.constants.Constants.INVENTORY_LIMIT;
+
 public class GUI implements GameObject, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -92,11 +94,20 @@ public class GUI implements GameObject, Serializable {
 
     public GUIButton getButtonBySprite(Sprite sprite) {
         for (GUIButton button : buttons) {
-            if (sprite.equals(button.getSprite())) {
+            if (sprite.equals(button.getSprite()) && button.getObjectCount() < INVENTORY_LIMIT) {
                 return button;
             }
         }
         return getEmptyButton();
+    }
+
+    public GUIButton findButtonByDefaultId(String id) {
+        for (GUIButton button : buttons) {
+            if (button instanceof BackpackButton && ((BackpackButton) button).getDefaultId().equalsIgnoreCase(id)) {
+                return button;
+            }
+        }
+        return null;
     }
 
     public GUIButton getButtonByItemName(String itemName) {
