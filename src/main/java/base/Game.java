@@ -852,11 +852,11 @@ public class Game extends JFrame implements Runnable {
         if (button == null) {
             putItemOnTheGround(plant.getRectangle().getX(), plant.getRectangle().getY(), plant.getPlantType(), true);
         } else {
-            int amount = 1 + random.nextInt(2);
+            int amount = 1 + random.nextInt(3);
             pickUp(plant.getPlantType(), plant.getPreviewSprite(), button, amount);
         }
 
-        int seedAmount = 1 + random.nextInt(1);
+        int seedAmount = 1 + random.nextInt(2);
         Sprite seedSprite = plantService.getSeedSprite(plant.getPlantType());
         GUIButton buttonForSeed = backpackGui.getButtonBySprite(seedSprite);
         if (buttonForSeed == null) {

@@ -8,10 +8,7 @@ import base.map.bigobjects.Bush;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -329,6 +326,7 @@ public class GameMap {
     }
 
     public List<Item> getItems() {
+        items.removeIf(Objects::isNull);
         return items;
     }
 
