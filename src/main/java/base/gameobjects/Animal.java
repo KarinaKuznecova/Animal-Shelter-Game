@@ -450,7 +450,7 @@ public abstract class Animal implements GameObject, Walking {
 
     private boolean checkForFood(Game game) {
         for (Item item : game.getGameMap(currentMap).getItems()) {
-            if (animalRectangle.intersects(item.getRectangle())) {
+            if (item != null && animalRectangle.intersects(item.getRectangle())) {
                 logger.info(String.format("%s ate food", this));
                 currentHunger = MAX_HUNGER;
                 resetSpeedToDefault();

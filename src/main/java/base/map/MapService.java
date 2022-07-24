@@ -28,6 +28,7 @@ public class MapService {
     private final Map<String, String> mapFiles = new HashMap<>();
     private final PlantService plantService = new PlantService();
     private final ItemService itemService = new ItemService(plantService);
+    private final MapMigrator mapMigrator = new MapMigrator();
 
     protected static final Logger logger = LoggerFactory.getLogger(MapService.class);
 
@@ -72,6 +73,9 @@ public class MapService {
         boolean migrationNeeded = false;
         File mapFile = new File(getMapConfig(mapName));
         try (Scanner scanner = new Scanner(mapFile)) {
+            if (!scanner.hasNextLine()) {
+                useBackupFile(mapFile);
+            }
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
 
@@ -268,6 +272,11 @@ public class MapService {
         File mapFile = new File(getMapConfig(gameMap.getMapName()));
         try {
             if (mapFile.exists()) {
+                File mapFileBackup = new File(mapFile.getName() + "-backup");
+                if (mapFileBackup.exists()) {
+                    Files.deleteIfExists(mapFileBackup.toPath());
+                }
+                mapMigrator.renameFile(mapFile.getPath(), mapFile.getPath() + "-backup");
                 Files.deleteIfExists(mapFile.toPath());
             }
             if (!mapFile.createNewFile()) {
@@ -302,6 +311,24 @@ public class MapService {
             printWriter.close();
 
         } catch (IOException e) {
+            logger.error("Error while saving map, will use backup");
+            e.printStackTrace();
+
+            useBackupFile(mapFile);
+        }
+    }
+
+    private void useBackupFile(File mapFile) {
+        try {
+            if (mapFile.exists()) {
+                File mapFileBackup = new File(mapFile.getName() + "-backup");
+                if (mapFileBackup.exists()) {
+                    mapMigrator.renameFile(mapFile.getPath() + "-backup", mapFile.getPath());
+                }
+                Files.deleteIfExists(mapFile.toPath());
+            }
+        } catch (IOException e) {
+            logger.error("something went wrong while trying to use backup");
             e.printStackTrace();
         }
     }
@@ -332,7 +359,9 @@ public class MapService {
         printWriter.println("//Items");
         printWriter.println("//type, xPosition, yPosition");
         for (Item item : gameMap.getItems()) {
-            printWriter.println("item-" + item.getItemName() + "," + item.getRectangle().getX() + "," + item.getRectangle().getY());
+            if (item != null) {
+                printWriter.println("item-" + item.getItemName() + "," + item.getRectangle().getX() + "," + item.getRectangle().getY());
+            }
         }
         for (FoodBowl foodBowl : gameMap.getFoodBowls()) {
             printWriter.println("bowl," + foodBowl.getRectangle().getX() + "," + foodBowl.getRectangle().getY() + "," + foodBowl.isFull());
@@ -429,7 +458,7 @@ public class MapService {
 
     private void migrate(GameMap gameMap) {
         logger.info("Migrating game map");
-        MapMigrator mapMigrator = new MapMigrator();
+
         if (MAIN_MAP.equalsIgnoreCase(gameMap.getMapName())) {
             logger.info("Migrating Main Map");
             String mapPath = getMapConfig(gameMap.getMapName());

@@ -233,7 +233,7 @@ public class RenderHandler {
             }
         }
         for (GameObject gameObject : gameMap.getItems()) {
-            if (gameObject.getLayer() == layer) {
+            if (gameObject != null && gameObject.getLayer() == layer) {
                 gameObject.render(this, ZOOM);
             }
         }

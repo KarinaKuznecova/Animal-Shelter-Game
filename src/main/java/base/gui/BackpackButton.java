@@ -50,7 +50,7 @@ public class BackpackButton extends GUIButton implements Serializable {
 
     @Override
     public void update(Game game) {
-        if (item.equals(game.getSelectedItem())) {
+        if (defaultId.equals(game.getSelectedItem())) {
             if (!isGreen) {
                 region.generateBorder(5, GREEN, BLUE);
                 isGreen = true;
@@ -71,7 +71,7 @@ public class BackpackButton extends GUIButton implements Serializable {
     @Override
     public void activate() {
         logger.info("backpack button clicked");
-        game.changeSelectedItem(item);
+        game.changeSelectedItem(defaultId);
     }
 
     public void setItem(String item) {
