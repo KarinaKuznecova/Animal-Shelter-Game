@@ -674,6 +674,7 @@ public abstract class Animal implements GameObject, Walking {
         logger.info("SENDING Animal AWAY");
     }
 
+    // TODO: should be different for each language
     @Override
     public String toString() {
         return animalType + " named " + name;

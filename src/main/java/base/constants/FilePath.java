@@ -46,6 +46,8 @@ public class FilePath {
     public static final String MAPS_LIST_PATH = "maps/MapList.txt";
     public static final String TIPS_FILE_PATH = "config/tips"+ "-" + LANGUAGE + ".txt";
     public static final String TRANSLATION_FILE_PATH = "config/translation" + "-" + LANGUAGE;
+    public static final String FEMALE_NAMES_FILE_PATH = "config/names-f.txt";
+    public static final String MALE_NAMES_FILE_PATH = "config/names-m.txt";
 
     //other
     public static final String BACKPACK_FILE_NAME = "backpack.bag";
