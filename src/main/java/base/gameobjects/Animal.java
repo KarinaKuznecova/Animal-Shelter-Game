@@ -378,6 +378,13 @@ public abstract class Animal implements GameObject, Walking {
         decreaseHungerLevel();
         if (!(this instanceof Butterfly) && currentHunger < MAX_HUNGER / 100 * 25 && route.isEmpty()) {
             route = game.calculateRouteToFood(this);
+            if (route.isEmpty()) {
+                String mapWithFood = game.getNearestMapWithFood(currentMap);
+                if (!mapWithFood.equalsIgnoreCase(currentMap)) {
+                    logger.info(String.format("%s is going to %s to get food", this, mapWithFood));
+                    route = game.calculateRouteToOtherMap(this, mapWithFood);
+                }
+            }
             if (route.isEmpty() && currentWaitingTicks <= 1) {
                 currentWaitingTicks = MAX_WAITING_TICKS;
             }
@@ -386,12 +393,18 @@ public abstract class Animal implements GameObject, Walking {
         decreaseThirstLevel();
         if (!(this instanceof Butterfly) && currentThirst < MAX_THIRST / 100 * 25 && route.isEmpty()) {
             route = game.calculateRouteToWater(this);
+            if (route.isEmpty()) {
+                String mapWithWater = game.getNearestMapWithWater(currentMap);
+                if (!mapWithWater.equalsIgnoreCase(currentMap)) {
+                    logger.info(String.format("%s is going to %s to get food", this, mapWithWater));
+                    route = game.calculateRouteToOtherMap(this, mapWithWater);
+                }
+            }
             if (route.isEmpty() && currentWaitingTicks <= 1) {
                 currentWaitingTicks = MAX_WAITING_TICKS;
             }
         }
-
-        if (!(this instanceof Butterfly) && (isHungerLow() && checkForFood(game)) || (isThirstLow() && checkForWater(game))) {
+        if (!(this instanceof Butterfly) && (isHungerLow() && isEating(game)) || (isThirstLow() && isDrinking(game))) {
             updateEatingDirection();
             movingTicks = getRandomMovingTicks();
         }
@@ -448,42 +461,47 @@ public abstract class Animal implements GameObject, Walking {
         }
     }
 
-    private boolean checkForFood(Game game) {
+    private boolean isEating(Game game) {
         for (Item item : game.getGameMap(currentMap).getItems()) {
             if (item != null && animalRectangle.intersects(item.getRectangle())) {
-                logger.info(String.format("%s ate food", this));
-                currentHunger = MAX_HUNGER;
-                resetSpeedToDefault();
+                eatFood();
                 game.getGameMap(currentMap).removeItem(item.getItemName(), item.getRectangle());
-                logger.debug(String.format("Hunger level for %s is 100 percent", this));
                 return true;
             }
         }
         for (FoodBowl bowl : game.getGameMap(currentMap).getFoodBowls()) {
             if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
-                logger.info(String.format("%s ate food", this));
-                currentHunger = MAX_HUNGER;
-                resetSpeedToDefault();
+                eatFood();
                 bowl.emptyBowl();
-                logger.debug(String.format("Hunger level for %s is 100 percent", this));
                 return true;
             }
         }
         return false;
     }
 
-    private boolean checkForWater(Game game) {
+    private void eatFood() {
+        logger.info(String.format("%s ate food", this));
+        currentHunger = MAX_HUNGER;
+        resetSpeedToDefault();
+        logger.debug(String.format("Hunger level for %s is 100 percent", this));
+    }
+
+    private boolean isDrinking(Game game) {
         for (WaterBowl bowl : game.getGameMap(currentMap).getWaterBowls()) {
             if (bowl.isFull() && animalRectangle.intersects(bowl.getRectangle())) {
-                logger.info(String.format("%s drank water", this));
-                currentThirst = MAX_THIRST;
-                resetSpeedToDefault();
+                drink();
                 bowl.emptyBowl();
-                logger.debug(String.format("Thirst level for %s is 100 percent", this));
                 return true;
             }
         }
         return false;
+    }
+
+    private void drink() {
+        logger.info(String.format("%s drank water", this));
+        currentThirst = MAX_THIRST;
+        resetSpeedToDefault();
+        logger.debug(String.format("Thirst level for %s is 100 percent", this));
     }
 
     protected void resetSpeedToDefault() {
