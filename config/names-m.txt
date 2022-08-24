@@ -1,0 +1,2 @@
+ru:Том,Саймон,Макс,Чарли,Роки,Локи,Оливер,Симба,Джек,Джони
+eng:Max,Charlie,Milo,Buddy,Rocky,Bear,Leo,Duke,Teddy,Tucker,Oliver,Simba,Jack,Loki,Ollie,Jasper

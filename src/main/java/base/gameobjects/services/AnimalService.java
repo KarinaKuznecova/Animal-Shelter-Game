@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 import static base.constants.Constants.*;
-import static base.constants.FilePath.ANIMALS_DIR_PATH;
+import static base.constants.FilePath.*;
 import static base.constants.MapConstants.*;
 import static base.gameobjects.AgeStage.ADULT;
 import static base.gameobjects.AgeStage.BABY;
@@ -23,8 +23,43 @@ import static base.gameobjects.Animal.*;
 public class AnimalService {
 
     public static final List<String> ANIMAL_TYPES = Arrays.asList(Rat.TYPE, Mouse.TYPE, Chicken.TYPE, Butterfly.TYPE, Cat.TYPE, Pig.TYPE, Bunny.TYPE, Dog.TYPE);
+    private List<String> femaleNamesList = new ArrayList<>();
+    private List<String> maleNamesList = new ArrayList<>();
+
+    private Random random = new Random();
 
     protected static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
+
+    public AnimalService() {
+        cacheNames();
+    }
+
+    private void cacheNames() {
+        File femaleNames = new File(FEMALE_NAMES_FILE_PATH);
+        File maleNames = new File(MALE_NAMES_FILE_PATH);
+        readFromFile(femaleNames, true);
+        readFromFile(maleNames, false);
+    }
+
+    private void readFromFile(File file, boolean female) {
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] splitLine = line.split(":");
+                if (splitLine[0].equalsIgnoreCase(LANGUAGE)) {
+                    String[] names = splitLine[1].split(",");
+                    if (female) {
+                        femaleNamesList.addAll(Arrays.asList(names));
+                    } else {
+                        maleNamesList.addAll(Arrays.asList(names));
+                    }
+                    break;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public Map<String, Sprite> getAnimalPreviewSprites() {
         Map<String, Sprite> previews = new HashMap<>();
@@ -39,9 +74,9 @@ public class AnimalService {
             String[] split = animalType.split("-");
             String name = split[0];
             String color = split[1];
-            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, "baby " + animalType);
+            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, getRandomName(random.nextBoolean()));
         }
-        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, "baby " + animalType);
+        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, getRandomName(random.nextBoolean()));
     }
 
     public Animal createAnimal(String animalType, int startX, int startY, String mapName, String color, int hunger, int thirst, int energy, AgeStage age, String name) {
@@ -304,13 +339,21 @@ public class AnimalService {
             return getRandomAnimalType();
         }
         if (animalId == ANIMAL_TYPES.indexOf(Cat.TYPE)) {
-            int catType = random.nextInt(CAT_COLORS.size() - 1);
+            int catType = random.nextInt(CAT_COLORS.size());
             animalType = CAT_COLORS.get(catType);
         }
         if (animalId == ANIMAL_TYPES.indexOf(Rat.TYPE)) {
-            int ratType = random.nextInt(RAT_COLORS.size() - 1);
+            int ratType = random.nextInt(RAT_COLORS.size());
             animalType = RAT_COLORS.get(ratType);
         }
         return animalType;
+    }
+
+    private String getRandomName(boolean female) {
+        if (female) {
+            return femaleNamesList.get(random.nextInt(femaleNamesList.size()));
+        } else {
+            return maleNamesList.get(random.nextInt(maleNamesList.size()));
+        }
     }
 }
