@@ -18,6 +18,7 @@ public class RouteCalculator {
     protected static final Logger logger = LoggerFactory.getLogger(RouteCalculator.class);
 
     public static final String WATER = "water";
+    public static final String LAKE_WATER = "lake-water";
     public static final String FOOD = "food";
     public static final String PILLOW = "pillow";
     public static final String NPC_SPOT = "npc-spot";
@@ -40,7 +41,7 @@ public class RouteCalculator {
         }
         List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
 
-        fillInitialRoutes(currentMap, searchQueue, animal.getRectangle());
+        fillInitialRoutes(currentMap, searchQueue, animal.getRectangle(), destination);
 
         List<Rectangle> searched = new ArrayList<>();
         while (!searchQueue.isEmpty()) {
@@ -58,6 +59,8 @@ public class RouteCalculator {
                     found = isThereFood(currentMap, rectangleToCheck);
                 } else if (WATER.equals(destination)) {
                     found = isThereWater(currentMap, rectangleToCheck);
+                } else if (LAKE_WATER.equals(destination)) {
+                    found = isThereLakeWater(currentMap, rectangleToCheck);
                 } else if (PILLOW.equals(destination)) {
                     found = isTherePillow(currentMap, rectangleToCheck);
                 } else if (NPC.equals(destination)) {
@@ -70,7 +73,7 @@ public class RouteCalculator {
                     return map.get(rectangleToCheck);
                 } else {
                     searched.add(rectangleToCheck);
-                    fillSearchQueue(currentMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
+                    fillSearchQueue(currentMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched, destination);
                 }
 
             } else {
@@ -95,7 +98,7 @@ public class RouteCalculator {
         }
         List<Map<Rectangle, Route>> searchQueue = new LinkedList<>();
 
-        fillInitialRoutes(currentMap, searchQueue, npc.getRectangle());
+        fillInitialRoutes(currentMap, searchQueue, npc.getRectangle(), destination);
 
         List<Rectangle> searched = new ArrayList<>();
         while (!searchQueue.isEmpty()) {
@@ -123,7 +126,7 @@ public class RouteCalculator {
                     return map.get(rectangleToCheck);
                 } else {
                     searched.add(rectangleToCheck);
-                    fillSearchQueue(currentMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched);
+                    fillSearchQueue(currentMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched, destination);
                 }
 
             } else {
@@ -133,49 +136,49 @@ public class RouteCalculator {
         return newRoute;
     }
 
-    private void fillInitialRoutes(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangle) {
+    private void fillInitialRoutes(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangle, String destination) {
         Rectangle initialRectangle = new Rectangle(rectangle.getX(), rectangle.getY(), TILE_SIZE, TILE_SIZE);
 
         Route potentialRoute = new Route();
-        if (tryDown(gameMap, initialRectangle) != null) {
+        if (tryDown(gameMap, initialRectangle, destination) != null) {
             Map<Rectangle, Route> map = new HashMap<>();
-            map.put(tryDown(gameMap, initialRectangle), potentialRoute);
+            map.put(tryDown(gameMap, initialRectangle, destination), potentialRoute);
             potentialRoute.addStep(DOWN);
             searchQueue.add(map);
         }
 
         Route potentialRoute3 = new Route();
-        if (tryLeft(gameMap, initialRectangle) != null) {
+        if (tryLeft(gameMap, initialRectangle, destination) != null) {
             Map<Rectangle, Route> map = new HashMap<>();
-            map.put(tryLeft(gameMap, initialRectangle), potentialRoute3);
+            map.put(tryLeft(gameMap, initialRectangle, destination), potentialRoute3);
             potentialRoute3.addStep(LEFT);
             searchQueue.add(map);
         }
 
         Route potentialRoute2 = new Route();
-        if (tryUp(gameMap, initialRectangle) != null) {
+        if (tryUp(gameMap, initialRectangle, destination) != null) {
             Map<Rectangle, Route> map = new HashMap<>();
-            map.put(tryUp(gameMap, initialRectangle), potentialRoute2);
+            map.put(tryUp(gameMap, initialRectangle, destination), potentialRoute2);
             potentialRoute2.addStep(UP);
             searchQueue.add(map);
         }
 
         Route potentialRoute4 = new Route();
-        if (tryRight(gameMap, initialRectangle) != null) {
+        if (tryRight(gameMap, initialRectangle, destination) != null) {
             Map<Rectangle, Route> map = new HashMap<>();
-            map.put(tryRight(gameMap, initialRectangle), potentialRoute4);
+            map.put(tryRight(gameMap, initialRectangle, destination), potentialRoute4);
             potentialRoute4.addStep(RIGHT);
             searchQueue.add(map);
         }
     }
 
     private boolean isAnotherMap(String destination) {
-        return !(WATER.equals(destination) || FOOD.equals(destination) || PILLOW.equals(destination) || NPC.equals(destination) || NPC_SPOT.equals(destination));
+        return !(WATER.equals(destination) || LAKE_WATER.equals(destination) || FOOD.equals(destination) || PILLOW.equals(destination) || NPC.equals(destination) || NPC_SPOT.equals(destination));
     }
 
-    public void fillSearchQueue(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangleChecked, Route potentialRoute, List<Rectangle> searched) {
-        if (tryDown(gameMap, rectangleChecked) != null) {
-            Rectangle nextStep = tryDown(gameMap, rectangleChecked);
+    public void fillSearchQueue(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangleChecked, Route potentialRoute, List<Rectangle> searched, String destination) {
+        if (tryDown(gameMap, rectangleChecked, destination) != null) {
+            Rectangle nextStep = tryDown(gameMap, rectangleChecked, destination);
             if (!searched.contains(nextStep)) {
                 Map<Rectangle, Route> map = new HashMap<>();
                 Route newRoute = new Route();
@@ -188,8 +191,8 @@ public class RouteCalculator {
             }
         }
 
-        if (tryUp(gameMap, rectangleChecked) != null) {
-            Rectangle nextStep = tryUp(gameMap, rectangleChecked);
+        if (tryUp(gameMap, rectangleChecked, destination) != null) {
+            Rectangle nextStep = tryUp(gameMap, rectangleChecked, destination);
             if (!searched.contains(nextStep)) {
                 Map<Rectangle, Route> map = new HashMap<>();
                 Route newRoute = new Route();
@@ -202,8 +205,8 @@ public class RouteCalculator {
             }
         }
 
-        if (tryLeft(gameMap, rectangleChecked) != null) {
-            Rectangle nextStep = tryLeft(gameMap, rectangleChecked);
+        if (tryLeft(gameMap, rectangleChecked, destination) != null) {
+            Rectangle nextStep = tryLeft(gameMap, rectangleChecked, destination);
             if (!searched.contains(nextStep)) {
                 Map<Rectangle, Route> map = new HashMap<>();
                 Route newRoute = new Route();
@@ -216,8 +219,8 @@ public class RouteCalculator {
             }
         }
 
-        if (tryRight(gameMap, rectangleChecked) != null) {
-            Rectangle nextStep = tryRight(gameMap, rectangleChecked);
+        if (tryRight(gameMap, rectangleChecked, destination) != null) {
+            Rectangle nextStep = tryRight(gameMap, rectangleChecked, destination);
             if (!searched.contains(nextStep)) {
                 Map<Rectangle, Route> map = new HashMap<>();
                 Route newRoute = new Route();
@@ -231,29 +234,29 @@ public class RouteCalculator {
         }
     }
 
-    public Rectangle tryUp(GameMap gameMap, Rectangle rectangle) {
-        if (rectangle.getY() >= 0 && canWalkThisDirection(gameMap, UP, rectangle.getX(), rectangle.getY())) {
+    public Rectangle tryUp(GameMap gameMap, Rectangle rectangle, String destination) {
+        if (rectangle.getY() >= 0 && canWalkThisDirection(gameMap, UP, rectangle.getX(), rectangle.getY(), destination)) {
             return new Rectangle(rectangle.getX(), rectangle.getY() - NavigationService.getPixelsToAdjustPosition(UP, rectangle.getX(), rectangle.getY()), 32, 32);
         }
         return null;
     }
 
-    public Rectangle tryDown(GameMap gameMap, Rectangle rectangle) {
-        if (rectangle.getY() + (TILE_SIZE * ZOOM) <= gameMap.getMapHeight() * (TILE_SIZE * ZOOM) && canWalkThisDirection(gameMap, DOWN, rectangle.getX(), rectangle.getY())) {
+    public Rectangle tryDown(GameMap gameMap, Rectangle rectangle, String destination) {
+        if (rectangle.getY() + (TILE_SIZE * ZOOM) <= gameMap.getMapHeight() * (TILE_SIZE * ZOOM) && canWalkThisDirection(gameMap, DOWN, rectangle.getX(), rectangle.getY(), destination)) {
             return new Rectangle(rectangle.getX(), rectangle.getY() + NavigationService.getPixelsToAdjustPosition(DOWN, rectangle.getX(), rectangle.getY()), 32, 32);
         }
         return null;
     }
 
-    public Rectangle tryLeft(GameMap gameMap, Rectangle rectangle) {
-        if (rectangle.getX() >= 0 && canWalkThisDirection(gameMap, LEFT, rectangle.getX(), rectangle.getY())) {
+    public Rectangle tryLeft(GameMap gameMap, Rectangle rectangle, String destination) {
+        if (rectangle.getX() >= 0 && canWalkThisDirection(gameMap, LEFT, rectangle.getX(), rectangle.getY(), destination)) {
             return new Rectangle(rectangle.getX() - NavigationService.getPixelsToAdjustPosition(LEFT, rectangle.getX(), rectangle.getY()), rectangle.getY(), 32, 32);
         }
         return null;
     }
 
-    public Rectangle tryRight(GameMap gameMap, Rectangle rectangle) {
-        if (rectangle.getX() + (TILE_SIZE * ZOOM) <= gameMap.getMapWidth() * (TILE_SIZE * ZOOM) && canWalkThisDirection(gameMap, RIGHT, rectangle.getX(), rectangle.getY())) {
+    public Rectangle tryRight(GameMap gameMap, Rectangle rectangle, String destination) {
+        if (rectangle.getX() + (TILE_SIZE * ZOOM) <= gameMap.getMapWidth() * (TILE_SIZE * ZOOM) && canWalkThisDirection(gameMap, RIGHT, rectangle.getX(), rectangle.getY(), destination)) {
             return new Rectangle(rectangle.getX() + NavigationService.getPixelsToAdjustPosition(RIGHT, rectangle.getX(), rectangle.getY()), rectangle.getY(), 32, 32);
         }
         return null;
@@ -280,6 +283,10 @@ public class RouteCalculator {
             }
         }
         return false;
+    }
+
+    public boolean isThereLakeWater(GameMap gameMap, Rectangle rectangle) {
+        return gameMap.isThereWaterTile(rectangle);
     }
 
     public boolean isTherePillow(GameMap gameMap, Rectangle rectangle) {
@@ -309,7 +316,7 @@ public class RouteCalculator {
         return false;
     }
 
-    private boolean canWalkThisDirection(GameMap gameMap, Direction direction, int xPosition, int yPosition) {
+    private boolean canWalkThisDirection(GameMap gameMap, Direction direction, int xPosition, int yPosition, String destination) {
         switch (direction) {
             case LEFT:
                 xPosition = xPosition - Math.abs(NavigationService.getPixelsToAdjustPosition(direction, xPosition, yPosition));
@@ -324,10 +331,10 @@ public class RouteCalculator {
                 yPosition = yPosition + Math.abs(NavigationService.getPixelsToAdjustPosition(direction, xPosition, yPosition));
                 break;
         }
-        return isWalkable(gameMap, xPosition, yPosition);
+        return isWalkable(gameMap, xPosition, yPosition, destination);
     }
 
-    public boolean isWalkable(GameMap gameMap, int x, int y) {
+    public boolean isWalkable(GameMap gameMap, int x, int y, String destination) {
         Rectangle rectangle = new Rectangle(x, y, 32, 32);
 
         if (gameMap.isTherePortal(rectangle)) {
@@ -343,6 +350,9 @@ public class RouteCalculator {
         for (MapTile tile : tilesOnLayer) {
             Rectangle tileRectangle = new Rectangle(tile.getX() * (TILE_SIZE * ZOOM), tile.getY() * (TILE_SIZE * ZOOM), 32, 32);
             if (rectangle.intersects(tileRectangle)) {
+                if (LAKE_WATER.equals(destination) && gameMap.isThereWaterTile(rectangle)) {
+                    return true;
+                }
                 return false;
             }
         }

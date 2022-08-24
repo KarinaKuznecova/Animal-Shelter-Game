@@ -494,7 +494,29 @@ public abstract class Animal implements GameObject, Walking {
                 return true;
             }
         }
+        if (game.isNearWater(this)) {
+            moveTheSameWay();
+            drink();
+            return true;
+        }
         return false;
+    }
+
+    private void moveTheSameWay() {
+        switch (direction) {
+            case LEFT:
+                animalRectangle.setX(animalRectangle.getX() - (speed + 4));
+                break;
+            case RIGHT:
+                animalRectangle.setX(animalRectangle.getX() + (speed + 4));
+                break;
+            case UP:
+                animalRectangle.setY(animalRectangle.getY() - (speed + 4));
+                break;
+            case DOWN:
+                animalRectangle.setY(animalRectangle.getY() + (speed + 4));
+                break;
+        }
     }
 
     private void drink() {

@@ -316,6 +316,26 @@ public class GameMap {
         return false;
     }
 
+    public boolean isThereWaterTile(Rectangle rectangle) {
+        for (MapTile tile : layeredTiles.get(2)) {
+            if (tile.isRegularTile()) {
+                continue;
+            }
+            if (rectangle.intersects(tile)) {
+                return getWaterTileIds().contains(tile.getId());
+            }
+        }
+        return false;
+    }
+
+    private List<Integer> getWaterTileIds() {
+        return Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 71, 72);
+    }
+
+    public List<Integer> getWaterCornerTiles() {
+        return Arrays.asList(0, 2, 6, 8, 71, 72, 1, 3, 5, 7);
+    }
+
     public void addItem(Item item) {
         logger.debug("Adding item to the list");
         items.add(item);
