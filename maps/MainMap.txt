@@ -107,7 +107,7 @@ water-bowl,1408,64,false
 npc-spot,768,512
 portal,1408,1600,City
 portal,3520,704,Forest
-portal,640,-64,Home
+portal,640,-48,Home
 //layer,tileId,xPos,yPos,regularTile,portalDirection
 0,109,10,0,n
 0,109,10,1,n
