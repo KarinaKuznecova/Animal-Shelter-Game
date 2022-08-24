@@ -988,6 +988,10 @@ public class Game extends JFrame implements Runnable {
         changeAnimalNameWindow.editAnimalName(this, animal);
     }
 
+    public boolean isNearWater(Animal animal) {
+        return gameMap.isThereWaterTile(animal.getRectangle());
+    }
+
     /**
      * =================================== PAUSE ======================================
      */
@@ -1013,7 +1017,11 @@ public class Game extends JFrame implements Runnable {
     }
 
     public Route calculateRouteToWater(Animal animal) {
-        return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, WATER);
+        Route route = routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, WATER);
+        if (!route.isEmpty()) {
+            return route;
+        }
+        return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, LAKE_WATER);
     }
 
     public Route calculateRouteToPillow(Animal animal) {
