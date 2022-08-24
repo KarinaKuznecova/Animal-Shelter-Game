@@ -18,10 +18,7 @@ import base.map.GameMap;
 import base.map.MapService;
 import base.map.Tile;
 import base.map.TileService;
-import base.navigationservice.KeyboardListener;
-import base.navigationservice.MouseEventListener;
-import base.navigationservice.Route;
-import base.navigationservice.RouteCalculator;
+import base.navigationservice.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1040,6 +1037,35 @@ public class Game extends JFrame implements Runnable {
 
     public Route calculateRouteToCity(Npc npc) {
         return routeCalculator.calculateRoute(getGameMap(MAIN_MAP), npc, CITY);
+    }
+
+    public String getNearestMapWithFood(String currentMap) {
+        List<String> mapsToCheck = NavigationService.getNearestMaps(currentMap);
+        for (String mapName : mapsToCheck) {
+            GameMap map = getGameMap(mapName);
+            if (!map.getItems().isEmpty()) {
+                return mapName;
+            }
+            for (FoodBowl bowl : map.getFoodBowls()) {
+                if (bowl.isFull()) {
+                    return mapName;
+                }
+            }
+        }
+        return currentMap;
+    }
+
+    public String getNearestMapWithWater(String currentMap) {
+        List<String> mapsToCheck = NavigationService.getNearestMaps(currentMap);
+        for (String mapName : mapsToCheck) {
+            GameMap map = getGameMap(mapName);
+            for (WaterBowl bowl : map.getWaterBowls()) {
+                if (bowl.isFull()) {
+                    return mapName;
+                }
+            }
+        }
+        return MAIN_MAP;
     }
 
     /**
