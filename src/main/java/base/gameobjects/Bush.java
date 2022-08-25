@@ -106,9 +106,9 @@ public class Bush implements GameObject {
             isAnimalInside = false;
             Animal animal = animalService.createAnimal(rectangle.getX(), rectangle.getY(), animalType, mapName);
             animal.setCurrentMap(game.getGameMap().getMapName());
-            animal.setHunger(random.nextInt(100));
-            animal.setThirst(random.nextInt(100));
-            animal.setEnergy(random.nextInt(100));
+            animal.setHungerInPercent(random.nextInt(100));
+            animal.setThirstInPercent(random.nextInt(100));
+            animal.setEnergyInPercent(random.nextInt(100));
             animal.setCurrentAge(random.nextInt(Animal.GROWING_UP_TIME));
             game.getAnimalsOnMaps().get(game.getGameMap().getMapName()).add(animal);
             game.addAnimalToPanel(animal);

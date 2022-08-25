@@ -18,33 +18,6 @@ class AnimalTest {
     }
 
     @Test
-    public void getMovingTickToAdjustPosition() {
-        testSubject.teleportAnimalTo(66,66);
-        assertEquals(20, testSubject.getMovingTickToAdjustPosition(DOWN));
-        assertEquals(0, testSubject.getMovingTickToAdjustPosition(UP));
-        assertEquals(0, testSubject.getMovingTickToAdjustPosition(LEFT));
-        assertEquals(20, testSubject.getMovingTickToAdjustPosition(RIGHT));
-
-        testSubject.setSpeed(2);
-        assertEquals(31, testSubject.getMovingTickToAdjustPosition(DOWN));
-        assertEquals(1, testSubject.getMovingTickToAdjustPosition(UP));
-        assertEquals(1, testSubject.getMovingTickToAdjustPosition(LEFT));
-        assertEquals(31, testSubject.getMovingTickToAdjustPosition(RIGHT));
-
-        testSubject.setSpeed(1);
-        assertEquals(62, testSubject.getMovingTickToAdjustPosition(DOWN));
-        assertEquals(2, testSubject.getMovingTickToAdjustPosition(UP));
-        assertEquals(2, testSubject.getMovingTickToAdjustPosition(LEFT));
-        assertEquals(62, testSubject.getMovingTickToAdjustPosition(RIGHT));
-
-        testSubject.teleportAnimalTo(128,128);
-        assertEquals(64, testSubject.getMovingTickToAdjustPosition(DOWN));
-        assertEquals(64, testSubject.getMovingTickToAdjustPosition(UP));
-        assertEquals(64, testSubject.getMovingTickToAdjustPosition(LEFT));
-        assertEquals(64, testSubject.getMovingTickToAdjustPosition(RIGHT));
-    }
-
-    @Test
     public void getStartingSprite_DOWN() {
         assertEquals(0, testSubject.getStartingSprite(DOWN));
     }

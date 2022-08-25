@@ -15,6 +15,7 @@ public class NPCEvent extends Event {
     public NPCEvent() {
         repeatable = true;
         coolDown = 3;
+        currentCoolDown = 2;
     }
 
     @Override
