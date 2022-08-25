@@ -1021,7 +1021,11 @@ public class Game extends JFrame implements Runnable {
         if (!route.isEmpty()) {
             return route;
         }
-        return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, LAKE_WATER);
+        if (animal.getCurrentMap().equalsIgnoreCase(MAIN_MAP)) {
+            return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, LAKE_WATER);
+        } else {
+            return calculateRouteToOtherMap(animal, getNextPortalToGetToCenter(animal.getCurrentMap()));
+        }
     }
 
     public Route calculateRouteToPillow(Animal animal) {
