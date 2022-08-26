@@ -93,6 +93,7 @@ public class Game extends JFrame implements Runnable {
     private String selectedItem = "";
 
     private boolean paused;
+    private boolean done;
 
     private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
     private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
@@ -415,7 +416,7 @@ public class Game extends JFrame implements Runnable {
         double nanoSecondConversion = 1000000000.0 / 60; //60 frames per second
         double changeInSeconds = 0;
 
-        while (true) {
+        while (!done) {
             long now = System.nanoTime();
 
             changeInSeconds += (now - lastTime) / nanoSecondConversion;
