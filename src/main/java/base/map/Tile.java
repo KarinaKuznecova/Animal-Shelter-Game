@@ -7,13 +7,13 @@ public class Tile {
     public String tileName;
     private Sprite sprite;
     private int layer;
-    private boolean visible;
+    private boolean visibleInMenu;
 
     public Tile(String tileName, Sprite sprite, int layer) {
         this.tileName = tileName;
         this.sprite = sprite;
         this.layer = layer;
-        visible = true;
+        visibleInMenu = true;
     }
 
     public Sprite getSprite() {
@@ -24,11 +24,11 @@ public class Tile {
         return layer;
     }
 
-    public boolean isVisible() {
-        return visible;
+    public boolean isVisibleInMenu() {
+        return visibleInMenu;
     }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setVisibleInMenu(boolean visibleInMenu) {
+        this.visibleInMenu = visibleInMenu;
     }
 }

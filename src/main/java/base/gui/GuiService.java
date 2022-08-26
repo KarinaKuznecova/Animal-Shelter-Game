@@ -79,7 +79,7 @@ public class GuiService implements Serializable {
         List<GUIButton> buttons = new ArrayList<>();
         for (int i = 0, j = 0, k = 0; i < tiles.size(); i++) {
             Tile tile = tiles.get(i);
-            if (!tile.isVisible()) {
+            if (!tile.isVisibleInMenu()) {
                 continue;
             }
             Rectangle tileRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), 0, TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);

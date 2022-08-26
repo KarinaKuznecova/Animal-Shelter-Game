@@ -61,7 +61,7 @@ public class TileService {
                     int layer = Integer.parseInt(splitLine[3]);
                     Tile tile = new Tile(tileName, spriteSheet.getSprite(spriteXPosition, spriteYPosition), layer);
                     if (splitLine.length > 4) {
-                        tile.setVisible(false);
+                        tile.setVisibleInMenu(false);
                     }
                     tiles.add(tile);
                 }
