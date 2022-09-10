@@ -1,0 +1,8 @@
+F5 - salva la mappa attuale
+
+1 - 9 seleziona le varie icone
+0 - icona per aggiungere animali
+P - icona con piante coltivabili
+Q - mostra/nascondi pannello con le icone
+H - teletrasporto al centro della mappa 'casa'
+B - apri lo zaino
