@@ -1,0 +1,8 @@
+F5 - guardar mapa actual
+
+1 - 9 cambiar entre paneles de mosaicos
+0 - panel para agregar animales
+P - panel con plantas cultivables
+Q - mostrar/ocultar panel con mosaicos
+H - teletransportarse al centro del mapa de inicio
+B - mochila abierta
