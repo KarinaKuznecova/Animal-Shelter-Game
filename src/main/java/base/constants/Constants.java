@@ -24,6 +24,7 @@ public class Constants {
     private static final String SWEDEN = "se";
     private static final String INDIAN = "hin";
     private static final String GERMAN = "ger";
+    private static final String ITALIAN = "it";
 
     public static final String LANGUAGE_PROPERTY = "language";
     public static String LANGUAGE;
@@ -48,6 +49,7 @@ public class Constants {
     public static final String RAT_RED = "rat-red";
     public static final String RAT_WHITE = "rat-white";
     public static final String RAT_SILVER = "rat-silver";
-    public static final List<String> RAT_COLORS = Arrays.asList(RAT_BLACK_WHITE, RAT_RED, RAT_WHITE, RAT_SILVER, RAT_BLACK);
+    public static final List<String> RAT_COLORS = Arrays.asList(RAT_BLACK_WHITE, RAT_RED, RAT_WHITE, RAT_SILVER,
+            RAT_BLACK);
 
 }
