@@ -25,6 +25,7 @@ public class Constants {
     private static final String INDIAN = "hin";
     private static final String GERMAN = "ger";
     private static final String ITALIAN = "it";
+    private static final String SPANISH = "spn";
 
     public static final String LANGUAGE_PROPERTY = "language";
     public static String LANGUAGE;
