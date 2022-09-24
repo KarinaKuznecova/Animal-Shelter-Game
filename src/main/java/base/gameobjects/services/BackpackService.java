@@ -26,6 +26,8 @@ public class BackpackService {
 
     protected static final Logger logger = LoggerFactory.getLogger(BackpackService.class);
 
+    public BackpackButton inHand;
+
     @Deprecated
     public void saveBackpack(GUI backpackGui) {
         logger.info("Attempt to save backpack");
@@ -178,7 +180,7 @@ public class BackpackService {
 
     public String getItemNameByButtonId(GUI backpack, String buttonId) {
         for (GUIButton button : backpack.getButtons()) {
-            if (button instanceof BackpackButton && ((BackpackButton) button).getDefaultId().equalsIgnoreCase(buttonId)) {
+            if (button instanceof BackpackButton && ((BackpackButton) button).getDefaultId().equalsIgnoreCase(buttonId) && !buttonId.equals(((BackpackButton) button).getItemName())) {
                 return ((BackpackButton) button).getItemName();
             }
         }
@@ -193,5 +195,24 @@ public class BackpackService {
             }
         }
         return true;
+    }
+
+    public void removeAllItemsFromButton(BackpackButton button) {
+        if (button == null) {
+            return;
+        }
+        button.setObjectCount(0);
+        button.makeEmpty();
+    }
+
+    public BackpackButton getItemFromHand() {
+        return inHand;
+    }
+
+    public void putItemInHand(BackpackButton inHand) {
+        if (inHand != null) {
+            logger.info(String.format("%s is in hand", inHand.getItemName()));
+        }
+        this.inHand = inHand;
     }
 }

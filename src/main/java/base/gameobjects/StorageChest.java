@@ -1,28 +1,34 @@
 package base.gameobjects;
 
 import base.Game;
+import base.gameobjects.interactionzones.InteractionZoneStorageChest;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static base.constants.Constants.TILE_SIZE;
 
-public class Chest implements GameObject {
+public class StorageChest implements GameObject {
+
+    private static final Logger logger = LoggerFactory.getLogger(StorageChest.class);
 
     private final int x;
     private final int y;
+    private Rectangle rectangle;
     private Sprite sprite;
-    private final Rectangle rectangle;
-    private boolean isOpen;
-    private final Animal animal;
 
-    public Chest(int x, int y, Animal animal, Sprite sprite) {
+    public InteractionZoneStorageChest interactionZone;
+
+    private boolean isOpen;
+
+    public StorageChest(int x, int y, Sprite sprite) {
         this.x = x;
         this.y = y;
-        this.animal = animal;
-        this.sprite = sprite;
-
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
+        this.sprite = sprite;
+        interactionZone = new InteractionZoneStorageChest(x + 32, y + 32, 50);
 
         isOpen = false;
     }
@@ -47,13 +53,8 @@ public class Chest implements GameObject {
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle) && !isOpen) {
-            sprite = game.getTileService().getTiles().get(37).getSprite();
-            isOpen = true;
-            animal.setCurrentMap(game.getGameMap().getMapName());
-            game.getAnimalsOnMaps().get(game.getGameMap().getMapName()).add(animal);
-            game.addAnimalToPanel(animal);
-            game.saveMap();
-
+            logger.info("Storage chest clicked");
+            // will show another inventory
             return true;
         }
         return false;

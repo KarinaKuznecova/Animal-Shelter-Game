@@ -62,6 +62,8 @@ public abstract class Animal implements GameObject, Walking {
     private final InteractionZonePetHeart interactionZone;
     private final HeartIcon heartIcon;
 
+    private boolean isSelected;
+
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
     protected Animal(String animalType, int startX, int startY, int tileSize) {
@@ -168,6 +170,9 @@ public abstract class Animal implements GameObject, Walking {
             renderer.renderRectangle(rectangle, zoom, false);
             interactionZone.render(renderer, zoom);
         }
+        if (isSelected && !DEBUG_MODE) {
+            interactionZone.render(renderer, zoom);
+        }
         if (interactionZone.isPlayerInRange()) {
             heartIcon.render(renderer, 1);
         }
@@ -188,6 +193,8 @@ public abstract class Animal implements GameObject, Walking {
         if (interactionZone.isPlayerInRange()) {
             updateHeart(game);
         }
+
+        isSelected = this.equals(game.getYourSelectedAnimal());
     }
 
     private void updateHeart(Game game) {

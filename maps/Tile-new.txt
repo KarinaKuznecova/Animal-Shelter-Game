@@ -36,7 +36,7 @@ Bucket-8-0-2
 Bucket-8-1-2-nb
 TV-7-2-2
 Chest-3-2-2
-Chest-4-2-2-nn
+ChestOpen-4-2-2-nn
 Rock-1-2-2
 Rock-2-2-2-nr
 Rock-6-1-2-nr

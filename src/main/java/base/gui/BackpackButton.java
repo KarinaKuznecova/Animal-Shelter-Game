@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 
 import static base.constants.ColorConstant.*;
+import static base.constants.Constants.INVENTORY_LIMIT;
 
 public class BackpackButton extends GUIButton implements Serializable {
 
@@ -70,8 +71,36 @@ public class BackpackButton extends GUIButton implements Serializable {
 
     @Override
     public void activate() {
+        String selectedItem = game.getItemNameByButtonId();
+        if (selectedItem != null && !selectedItem.isEmpty()) {
+            BackpackButton currentlySelectedButton = game.getSelectedButton();
+            if (isButtonEmpty()) {
+                this.item = game.getBackpackService().getItemFromHand().getItemName();
+                this.objectCount = game.getBackpackService().getItemFromHand().getObjectCount();
+                this.sprite = game.getBackpackService().getItemFromHand().getSprite();
+
+                game.getBackpackService().removeAllItemsFromButton(currentlySelectedButton);
+                game.getRenderer().clearRenderedText();
+            } else if (selectedItem.equals(item) && !defaultId.equals(currentlySelectedButton.getDefaultId())) {
+                if (currentlySelectedButton.getObjectCount() == INVENTORY_LIMIT) {
+                    // do nothing
+                } else if (currentlySelectedButton.getObjectCount() + objectCount <= INVENTORY_LIMIT) {
+                    objectCount += currentlySelectedButton.getObjectCount();
+
+                    game.getBackpackService().removeAllItemsFromButton(currentlySelectedButton);
+                    game.getRenderer().clearRenderedText();
+                } else {
+                    currentlySelectedButton.setObjectCount(currentlySelectedButton.getObjectCount() - (INVENTORY_LIMIT - objectCount));
+                    objectCount = INVENTORY_LIMIT;
+                }
+            }
+        }
         logger.info("backpack button clicked");
-        game.changeSelectedItem(defaultId);
+        game.changeSelectedItem(defaultId, this);
+    }
+
+    private boolean isButtonEmpty() {
+        return defaultId.equals(item);
     }
 
     public void setItem(String item) {

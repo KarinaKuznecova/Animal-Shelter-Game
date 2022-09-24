@@ -1,10 +1,7 @@
 package base.graphicsservice;
 
 import base.Game;
-import base.gameobjects.Animal;
-import base.gameobjects.GameObject;
-import base.gameobjects.Plant;
-import base.gameobjects.Player;
+import base.gameobjects.*;
 import base.gui.EditIcon;
 import base.map.GameMap;
 import base.map.MapTile;
@@ -75,6 +72,13 @@ public class RenderHandler {
                 // Sometimes there is NPE or other exception when mouse is outside the game window. Will catch it and ignore so game continues.
                 logger.error("Exception with preview", e);
             }
+        } else if (game.getItemNameByButtonId() != null && !game.getItemNameByButtonId().isEmpty() && game.getMousePosition() != null) {
+            try {
+                renderItemPreview(game);
+            } catch (Exception e) {
+                // Sometimes there is NPE or other exception when mouse is outside the game window. Will catch it and ignore so game continues.
+                logger.error("Exception with preview", e);
+            }
         }
 
         graphics.drawImage(view.getSubimage(0, 0, camera.getWidth(), camera.getHeight()), 0, 0, camera.getWidth(), camera.getHeight(), null);
@@ -114,24 +118,43 @@ public class RenderHandler {
                 int xForCurrentPart = mapTile.getX();
                 int yForCurrentPart = mapTile.getY();
 
-                drawPreview(game, xForCurrentPart, yForCurrentPart, mapTile);
+                drawPreview(xForCurrentPart, yForCurrentPart, getTileSpriteForPreview(game, mapTile));
             }
         } else {
-            drawPreview(game, xPosition, yPosition, potentialTile);
+            drawPreview(xPosition, yPosition, getTileSpriteForPreview(game, potentialTile));
         }
+    }
+
+    private void renderItemPreview(Game game) {
+        if (game.getMousePosition() == null || game.getSelectedItem().isEmpty()) {
+            return;
+        }
+        int xScreenRelated = (int) game.getMousePosition().getX() - 10;
+        int yScreenRelated = (int) game.getMousePosition().getY() - 32;
+        int xPositionActual = xScreenRelated + getCamera().getX();
+        int yPositionActual = yScreenRelated + getCamera().getY();
+        int xPosition = xScreenRelated - (xPositionActual % (TILE_SIZE * ZOOM));
+        int yPosition = yScreenRelated - (yPositionActual % (TILE_SIZE * ZOOM));
+        Item itemToDraw = new Item(0, 0, game.getSelectedItem(), game.getItemService().getItemSprite(game.getItemNameByButtonId()));
+
+        drawPreview(xPosition, yPosition, itemToDraw.getSprite());
 
     }
 
-    private void drawPreview(Game game, int xPosition, int yPosition, MapTile potentialTile) {
-        BufferedImage subimage = view.getSubimage(0, 0, camera.getWidth(), camera.getHeight());
+    private Sprite getTileSpriteForPreview(Game game, MapTile potentialTile) {
         Sprite sprite;
         if (potentialTile.isRegularTile()) {
             sprite = game.getGameMap().getTileService().getTiles().get(potentialTile.getId()).getSprite();
         } else {
             sprite = game.getGameMap().getTileService().getTerrainTiles().get(potentialTile.getId()).getSprite();
         }
+        return sprite;
+    }
 
-        BufferedImage tmpImage = new BufferedImage(TILE_SIZE * ZOOM, TILE_SIZE * ZOOM, BufferedImage.TYPE_INT_ARGB);
+    private void drawPreview(int xPosition, int yPosition, Sprite sprite) {
+        BufferedImage subimage = view.getSubimage(0, 0, camera.getWidth(), camera.getHeight());
+
+        BufferedImage tmpImage = new BufferedImage(sprite.getWidth() * ZOOM, sprite.getHeight() * ZOOM, BufferedImage.TYPE_INT_ARGB);
 
         Graphics tGraphics = subimage.createGraphics();
         int[] result = fillTransparentArray(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), ZOOM, ZOOM);

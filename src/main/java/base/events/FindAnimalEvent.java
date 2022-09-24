@@ -3,7 +3,7 @@ package base.events;
 import base.Game;
 import base.constants.MapConstants;
 import base.gameobjects.Animal;
-import base.gameobjects.Chest;
+import base.gameobjects.ChestWithAnimal;
 import base.gameobjects.services.AnimalService;
 import base.map.GameMap;
 import org.slf4j.Logger;
@@ -62,7 +62,7 @@ public class FindAnimalEvent extends Event {
             String animalType = animalService.getRandomAnimalType();
             logger.info(String.format("Random animal is %s", animalType));
             Animal animal = animalService.createAnimal(bigX, bigY + 64, animalType, game.getGameMap().getMapName());
-            map.addObject(new Chest(bigX, bigY, animal, game.getTileService().getTiles().get(36).getSprite()));
+            map.addObject(new ChestWithAnimal(bigX, bigY, animal, game.getTileService().getTiles().get(36).getSprite()));
             game.saveMap();
         }
         happened = true;
