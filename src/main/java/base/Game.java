@@ -317,7 +317,7 @@ public class Game extends JFrame implements Runnable {
         changeTile(-1);
         changeYourAnimal(null);
         changeSelectedPlant("");
-        changeSelectedItem("");
+        deselectBagItem();
     }
 
     public void changeTile(int tileId) {
@@ -352,8 +352,18 @@ public class Game extends JFrame implements Runnable {
         selectedItem = item;
     }
 
+    public void changeSelectedItem(String item, BackpackButton button) {
+        deselectAnimal();
+        deselectTile();
+        deselectPlant();
+        logger.info(String.format("changing your selected item to : %s", item));
+        selectedItem = item;
+        backpackService.putItemInHand(button);
+    }
+
     private void deselectBagItem() {
         selectedItem = "";
+        backpackService.putItemInHand(null);
     }
 
     private void deselectTile() {
@@ -803,7 +813,7 @@ public class Game extends JFrame implements Runnable {
         } else {
             gameMap.addItem(item);
         }
-        guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.findButtonByDefaultId(selectedItem));
+        guiService.decreaseNumberOnButton(this, getSelectedButton());
     }
 
     public void createNewAnimal(int x, int y) {
@@ -1260,11 +1270,27 @@ public class Game extends JFrame implements Runnable {
         return plantService;
     }
 
+    public ItemService getItemService() {
+        return itemService;
+    }
+
+    public BackpackService getBackpackService() {
+        return backpackService;
+    }
+
     public boolean isThereNpc() {
         return gameObjectsList.contains(npc);
     }
 
     public Npc getNpc() {
         return npc;
+    }
+
+    public String getItemNameByButtonId() {
+        return backpackService.getItemNameByButtonId(backpackGui, selectedItem);
+    }
+
+    public BackpackButton getSelectedButton() {
+        return (BackpackButton) backpackGui.findButtonByDefaultId(selectedItem);
     }
 }
