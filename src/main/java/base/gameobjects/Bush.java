@@ -94,7 +94,7 @@ public class Bush implements GameObject {
 
     @Override
     public int getLayer() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -133,5 +133,10 @@ public class Bush implements GameObject {
 
     public int getY() {
         return rectangle.getY();
+    }
+
+    @Override
+    public Rectangle getRectangle() {
+        return rectangle;
     }
 }

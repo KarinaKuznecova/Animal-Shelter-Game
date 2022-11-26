@@ -139,4 +139,9 @@ public class GUI implements GameObject, Serializable {
     public List<GUIButton> getButtons() {
         return buttons;
     }
+
+    @Override
+    public Rectangle getRectangle() {
+        return rectangle;
+    }
 }

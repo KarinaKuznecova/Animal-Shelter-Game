@@ -41,7 +41,7 @@ public abstract class InteractionZone implements GameObject {
 
     @Override
     public void update(Game game) {
-        if (isInRange(game.getPlayer().getPlayerRectangle())) {
+        if (isInRange(game.getPlayer().getRectangle())) {
             logger.debug("player is in range of interaction zone");
             playerInRange = true;
         } else {
@@ -61,5 +61,10 @@ public abstract class InteractionZone implements GameObject {
 
     public boolean isPlayerInRange() {
         return playerInRange;
+    }
+
+    @Override
+    public Rectangle getRectangle() {
+        return null;
     }
 }

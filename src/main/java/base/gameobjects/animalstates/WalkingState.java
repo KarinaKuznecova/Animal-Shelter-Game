@@ -11,8 +11,7 @@ import base.navigationservice.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.constants.MapConstants.CITY_MAP;
 import static base.constants.MapConstants.FOREST_MAP;
 import static base.gameobjects.Animal.*;
@@ -105,14 +104,14 @@ public class WalkingState implements AnimalState {
     private boolean isOutsideOfMap(GameMap gameMap, Rectangle animalRectangle) {
         return animalRectangle.getX() < -10
                 || animalRectangle.getY() < -10
-                || animalRectangle.getX() > gameMap.getMapWidth() * (TILE_SIZE * ZOOM) + 10
-                || animalRectangle.getY() > gameMap.getMapHeight() * (TILE_SIZE * ZOOM) + 10;
+                || animalRectangle.getX() > gameMap.getMapWidth() * CELL_SIZE + 10
+                || animalRectangle.getY() > gameMap.getMapHeight() * CELL_SIZE + 10;
     }
 
     private void moveAnimalToCenter(GameMap gameMap, Animal animal) {
         Rectangle animalRectangle = animal.getRectangle();
-        animalRectangle.setX(gameMap.getMapWidth() * TILE_SIZE * ZOOM / 2);
-        animalRectangle.setY(gameMap.getMapHeight() * TILE_SIZE * ZOOM / 2);
+        animalRectangle.setX(gameMap.getMapWidth() * CELL_SIZE / 2);
+        animalRectangle.setY(gameMap.getMapHeight() * CELL_SIZE / 2);
 
         if (animal.isAnimalStuck(gameMap)) {
             animal.tryToMove(gameMap);

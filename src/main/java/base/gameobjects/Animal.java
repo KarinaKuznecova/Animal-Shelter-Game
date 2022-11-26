@@ -23,7 +23,7 @@ public abstract class Animal implements GameObject, Walking {
 
     private Sprite previewSprite;
     private AnimatedSprite animatedSprite;
-    private final Rectangle animalRectangle;
+    private final Rectangle rectangle;
     private final int tileSize;
     private String fileName;
 
@@ -85,8 +85,8 @@ public abstract class Animal implements GameObject, Walking {
 
         direction = DOWN;
         updateDirection();
-        animalRectangle = new Rectangle(startX, startY, 32, 32);
-        animalRectangle.generateBorder(1, GREEN);
+        rectangle = new Rectangle(startX, startY, 32, 32);
+        rectangle.generateBorder(1, GREEN);
 
         if (BABY.equals(age)) {
             this.speed--;
@@ -95,7 +95,7 @@ public abstract class Animal implements GameObject, Walking {
         }
 
         route = new Route();
-        interactionZone = new InteractionZonePetHeart(animalRectangle.getX() + 32, animalRectangle.getY() + 32, 50);
+        interactionZone = new InteractionZonePetHeart(rectangle.getX() + 32, rectangle.getY() + 32, 50);
         heartIcon = new HeartIcon();
         state = waitingState;
     }
@@ -150,18 +150,18 @@ public abstract class Animal implements GameObject, Walking {
 
     @Override
     public void render(RenderHandler renderer, int zoom) {
-        int xForSprite = animalRectangle.getX();
-        int yForSprite = animalRectangle.getY();
+        int xForSprite = rectangle.getX();
+        int yForSprite = rectangle.getY();
         if (BABY.equals(age) && !animalType.contains("baby") || animalType.equals("chicken-baby")) {
             zoom = 1;
-            xForSprite = animalRectangle.getX() + animalRectangle.getWidth() / 2;
-            yForSprite = animalRectangle.getY() + animalRectangle.getHeight() / 2;
+            xForSprite = rectangle.getX() + rectangle.getWidth() / 2;
+            yForSprite = rectangle.getY() + rectangle.getHeight() / 2;
         }
         if (animatedSprite != null) {
             renderer.renderSprite(animatedSprite, xForSprite, yForSprite, zoom, false);
         }
         if (DEBUG_MODE) {
-            Rectangle rectangle = new Rectangle(xForSprite, yForSprite, animalRectangle.getWidth(), animalRectangle.getHeight());
+            Rectangle rectangle = new Rectangle(xForSprite, yForSprite, this.rectangle.getWidth(), this.rectangle.getHeight());
             if (interactionZone.isPlayerInRange()) {
                 rectangle.generateBorder(2, GREEN);
             } else {
@@ -198,8 +198,8 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     private void updateHeart(Game game) {
-        int xPosition = animalRectangle.getX() - game.getRenderer().getCamera().getX() + 16;
-        int yPosition = animalRectangle.getY() - game.getRenderer().getCamera().getY() - 16;
+        int xPosition = rectangle.getX() - game.getRenderer().getCamera().getX() + 16;
+        int yPosition = rectangle.getY() - game.getRenderer().getCamera().getY() - 16;
         Position heartPosition = new Position(xPosition, yPosition);
         heartIcon.changePosition(heartPosition);
     }
@@ -274,17 +274,17 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     public boolean isAnimalStuck(GameMap gameMap) {
-        return unwalkableInThisDirection(gameMap, LEFT, animalRectangle, speed, getLayer())
-                && unwalkableInThisDirection(gameMap, RIGHT, animalRectangle, speed, getLayer())
-                && unwalkableInThisDirection(gameMap, UP, animalRectangle, speed, getLayer())
-                && unwalkableInThisDirection(gameMap, DOWN, animalRectangle, speed, getLayer());
+        return unwalkableInThisDirection(gameMap, LEFT, rectangle, speed, getLayer())
+                && unwalkableInThisDirection(gameMap, RIGHT, rectangle, speed, getLayer())
+                && unwalkableInThisDirection(gameMap, UP, rectangle, speed, getLayer())
+                && unwalkableInThisDirection(gameMap, DOWN, rectangle, speed, getLayer());
     }
 
     public void tryToMove(GameMap gameMap) {
         logger.info(String.format("Animal %s is stuck, will try to move to nearest directions", this));
         route = new Route();
         for (Direction potentialDirection : Direction.values()) {
-            if (!unwalkableInThisDirection(gameMap, potentialDirection, animalRectangle, speed, getLayer())) {
+            if (!unwalkableInThisDirection(gameMap, potentialDirection, rectangle, speed, getLayer())) {
                 moveAnimalTo(potentialDirection);
             }
         }
@@ -300,16 +300,16 @@ public abstract class Animal implements GameObject, Walking {
     public void moveAnimalTo(Direction direction) {
         switch (direction) {
             case LEFT:
-                animalRectangle.setX(animalRectangle.getX() - (TILE_SIZE * ZOOM));
+                rectangle.setX(rectangle.getX() - CELL_SIZE);
                 break;
             case RIGHT:
-                animalRectangle.setX(animalRectangle.getX() + (TILE_SIZE * ZOOM));
+                rectangle.setX(rectangle.getX() + CELL_SIZE);
                 break;
             case UP:
-                animalRectangle.setY(animalRectangle.getY() - (TILE_SIZE * ZOOM));
+                rectangle.setY(rectangle.getY() - CELL_SIZE);
                 break;
             case DOWN:
-                animalRectangle.setY(animalRectangle.getY() + (TILE_SIZE * ZOOM));
+                rectangle.setY(rectangle.getY() + CELL_SIZE);
                 break;
         }
     }
@@ -321,7 +321,7 @@ public abstract class Animal implements GameObject, Walking {
 
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
-        if (mouseRectangle.intersects(animalRectangle)) {
+        if (mouseRectangle.intersects(rectangle)) {
             logger.info("Click on Animal: ");
             moveAnimalToCenter(game.getGameMap());
             return true;
@@ -330,8 +330,8 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     private void moveAnimalToCenter(GameMap gameMap) {
-        animalRectangle.setX(gameMap.getMapWidth() * TILE_SIZE * ZOOM / 2);
-        animalRectangle.setY(gameMap.getMapHeight() * TILE_SIZE * ZOOM / 2);
+        rectangle.setX(gameMap.getMapWidth() * CELL_SIZE / 2);
+        rectangle.setY(gameMap.getMapHeight() * CELL_SIZE / 2);
 
         if (isAnimalStuck(gameMap)) {
             tryToMove(gameMap);
@@ -339,8 +339,8 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     public void teleportAnimalTo(int x, int y) {
-        animalRectangle.setX(x);
-        animalRectangle.setY(y);
+        rectangle.setX(x);
+        rectangle.setY(y);
     }
 
     public void sendToNpc(Route route) {
@@ -396,11 +396,11 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     public int getCurrentX() {
-        return animalRectangle.getX();
+        return rectangle.getX();
     }
 
     public int getCurrentY() {
-        return animalRectangle.getY();
+        return rectangle.getY();
     }
 
     public String getColor() {
@@ -507,7 +507,7 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     public Rectangle getRectangle() {
-        return animalRectangle;
+        return rectangle;
     }
 
     public boolean isFavorite() {

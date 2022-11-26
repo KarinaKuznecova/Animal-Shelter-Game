@@ -4,6 +4,7 @@ import base.gameobjects.*;
 import base.gameobjects.plants.Corn;
 import base.gameobjects.services.ItemService;
 import base.gameobjects.services.PlantService;
+import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
@@ -124,6 +125,10 @@ public class MapService {
                         migratePortal(gameMap, tile);
                     } else {
                         tiles.add(tile);
+                    }
+                    if (tileId == CHEST_TILE_ID) {
+                        StorageChest storageChest = new StorageChest(xPosition * CELL_SIZE, yPosition * CELL_SIZE, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite());
+                        gameMap.addObject(storageChest);
                     }
                 }
             }
@@ -346,7 +351,7 @@ public class MapService {
             int growingStage = plant.getGrowingStage();
             int growingTicks = plant.getGrowingTicks();
             if (Corn.NAME.equals(plant.getPlantType())) {
-                plantY += TILE_SIZE * ZOOM;
+                plantY += CELL_SIZE;
             }
             printWriter.println("plant-" + plantType + "," + plantX + "," + plantY + "," + growingStage + "," + growingTicks);
         }
@@ -416,8 +421,8 @@ public class MapService {
 
     private void migratePortal(GameMap gameMap, MapTile tile) {
         logger.info("Migrating old portal");
-        int portalX = tile.getX() * (TILE_SIZE * ZOOM);
-        int portalY = tile.getY() * (TILE_SIZE * ZOOM);
+        int portalX = tile.getX() * CELL_SIZE;
+        int portalY = tile.getY() * CELL_SIZE;
         String direction = tile.getPortalDirection();
         if ("TopCenterMap".equals(direction)) {
             direction = "Home";

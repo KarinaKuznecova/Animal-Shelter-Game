@@ -9,8 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.navigationservice.Direction.*;
 
 public class RouteCalculator {
@@ -242,7 +241,7 @@ public class RouteCalculator {
     }
 
     public Rectangle tryDown(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getY() + (TILE_SIZE * ZOOM) <= gameMap.getMapHeight() * (TILE_SIZE * ZOOM) && canWalkThisDirection(gameMap, DOWN, rectangle.getX(), rectangle.getY(), destination)) {
+        if (rectangle.getY() + CELL_SIZE <= gameMap.getMapHeight() * CELL_SIZE && canWalkThisDirection(gameMap, DOWN, rectangle.getX(), rectangle.getY(), destination)) {
             return new Rectangle(rectangle.getX(), rectangle.getY() + NavigationService.getPixelsToAdjustPosition(DOWN, rectangle.getX(), rectangle.getY()), 32, 32);
         }
         return null;
@@ -256,7 +255,7 @@ public class RouteCalculator {
     }
 
     public Rectangle tryRight(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getX() + (TILE_SIZE * ZOOM) <= gameMap.getMapWidth() * (TILE_SIZE * ZOOM) && canWalkThisDirection(gameMap, RIGHT, rectangle.getX(), rectangle.getY(), destination)) {
+        if (rectangle.getX() + CELL_SIZE <= gameMap.getMapWidth() * CELL_SIZE && canWalkThisDirection(gameMap, RIGHT, rectangle.getX(), rectangle.getY(), destination)) {
             return new Rectangle(rectangle.getX() + NavigationService.getPixelsToAdjustPosition(RIGHT, rectangle.getX(), rectangle.getY()), rectangle.getY(), 32, 32);
         }
         return null;
@@ -339,7 +338,7 @@ public class RouteCalculator {
 
         if (gameMap.isTherePortal(rectangle)) {
             return true;
-        } else if (x < 0 || y < 0 || x > gameMap.getMapWidth() * (TILE_SIZE * ZOOM) || y > gameMap.getMapHeight() * (TILE_SIZE * ZOOM)) {
+        } else if (x < 0 || y < 0 || x > gameMap.getMapWidth() * CELL_SIZE || y > gameMap.getMapHeight() * CELL_SIZE) {
             return false;
         }
 
@@ -348,7 +347,7 @@ public class RouteCalculator {
             return true;
         }
         for (MapTile tile : tilesOnLayer) {
-            Rectangle tileRectangle = new Rectangle(tile.getX() * (TILE_SIZE * ZOOM), tile.getY() * (TILE_SIZE * ZOOM), 32, 32);
+            Rectangle tileRectangle = new Rectangle(tile.getX() * CELL_SIZE, tile.getY() * CELL_SIZE, 32, 32);
             if (rectangle.intersects(tileRectangle)) {
                 if (LAKE_WATER.equals(destination) && gameMap.isThereWaterTile(rectangle)) {
                     return true;

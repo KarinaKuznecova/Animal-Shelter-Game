@@ -9,8 +9,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import static base.constants.ColorConstant.ALPHA;
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 
 public class Rectangle implements Serializable {
 
@@ -98,6 +97,9 @@ public class Rectangle implements Serializable {
     }
 
     public boolean intersects(Rectangle otherRectangle) {
+        if (otherRectangle == null) {
+            return false;
+        }
         return (intersectsByX(otherRectangle) && intersectsByY(otherRectangle));
     }
 
@@ -120,11 +122,11 @@ public class Rectangle implements Serializable {
     }
 
     private boolean intersectsByY(MapTile tile) {
-        return !(y > tile.getY() * (TILE_SIZE * ZOOM) + TILE_SIZE || tile.getY() * (TILE_SIZE * ZOOM) >= y + height);
+        return !(y > tile.getY() * CELL_SIZE + TILE_SIZE || tile.getY() * CELL_SIZE >= y + height);
     }
 
     private boolean intersectsByX(MapTile tile) {
-        return !(x > tile.getX() * (TILE_SIZE * ZOOM) + TILE_SIZE || tile.getX() * (TILE_SIZE * ZOOM) >= x + width);
+        return !(x > tile.getX() * CELL_SIZE + TILE_SIZE || tile.getX() * CELL_SIZE >= x + width);
     }
 
     public boolean potentialIntersects(MapTile tile, int xPos, int yPos) {
@@ -132,11 +134,11 @@ public class Rectangle implements Serializable {
     }
 
     private boolean potentialIntersectsByY(MapTile tile, int yPos) {
-        return !(yPos > tile.getY() * (TILE_SIZE * ZOOM) + TILE_SIZE || tile.getY() * (TILE_SIZE * ZOOM) > yPos + ((TILE_SIZE * ZOOM) - (TILE_SIZE / 2)));     //48 = 32 + 32/2
+        return !(yPos > tile.getY() * CELL_SIZE + TILE_SIZE || tile.getY() * CELL_SIZE > yPos + (CELL_SIZE - (TILE_SIZE / 2)));     //48 = 32 + 32/2
     }
 
     private boolean potentialIntersectsByX(MapTile tile, int xPos) {
-        return !(xPos > tile.getX() * (TILE_SIZE * ZOOM) + TILE_SIZE || tile.getX() * (TILE_SIZE * ZOOM) > xPos + width);
+        return !(xPos > tile.getX() * CELL_SIZE + TILE_SIZE || tile.getX() * CELL_SIZE > xPos + width);
     }
 
     @Override

@@ -11,6 +11,7 @@ import base.gameobjects.services.AnimalService;
 import base.gameobjects.services.BackpackService;
 import base.gameobjects.services.ItemService;
 import base.gameobjects.services.PlantService;
+import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
 import base.gui.*;
@@ -760,14 +761,14 @@ public class Game extends JFrame implements Runnable {
         if (!stoppedChecking) {
             int smallerX = (int) Math.floor(xMapRelated / (32.0 * ZOOM));
             int smallerY = (int) Math.floor(yMapRelated / (32.0 * ZOOM));
-            if (!guiList.contains(possibleAnimalButtons)) {
-                setNewTile(xMapRelated, yMapRelated, smallerX, smallerY);
-            }
-            if (guiList.contains(possibleAnimalButtons)) {
-                createNewAnimal(smallerX, smallerY);
-            }
             if (guiList.contains(plantsGui)) {
                 createNewPlant(selectedPlant, smallerX, smallerY);
+            }
+            else if (guiList.contains(possibleAnimalButtons)) {
+                createNewAnimal(smallerX, smallerY);
+            }
+            else {
+                setNewTile(xMapRelated, yMapRelated, smallerX, smallerY);
             }
         }
         refreshCurrentMapCache();
@@ -775,18 +776,23 @@ public class Game extends JFrame implements Runnable {
 
     private void setNewTile(int xMapRelated, int yMapRelated, int smallerX, int smallerY) {
         if (selectedTileId != -1) {
-            if (player.getPlayerRectangle().intersects(xMapRelated, yMapRelated, TILE_SIZE, TILE_SIZE)) {
+            if (player.getRectangle().intersects(xMapRelated, yMapRelated, TILE_SIZE, TILE_SIZE)) {
                 logger.warn("Can't place tile under player");
             } else {
-                int xAlligned = xMapRelated - (xMapRelated % (TILE_SIZE * ZOOM));
-                int yAlligned = yMapRelated - (yMapRelated % (TILE_SIZE * ZOOM));
+                int xAlligned = xMapRelated - (xMapRelated % CELL_SIZE);
+                int yAlligned = yMapRelated - (yMapRelated % CELL_SIZE);
                 if (selectedTileId == BOWL_TILE_ID) {
                     FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
                     getGameMap().addObject(foodBowl);
                 } else if (selectedTileId == WATER_BOWL_TILE_ID) {
                     WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned);
                     getGameMap().addObject(waterBowl);
-                } else {
+                } else if (selectedTileId == CHEST_TILE_ID) {
+                    StorageChest chest = new StorageChest(xAlligned, yAlligned, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite());
+                    getGameMap().addObject(chest);
+                    gameMap.setTile(smallerX, smallerY, CHEST_TILE_ID, regularTiles);
+                }
+                else {
                     gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
                 }
             }
@@ -803,8 +809,8 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void putItemOnTheGround(int xAdjusted, int yAdjusted, String itemType, boolean justDrop) {
-        int xAlligned = xAdjusted - (xAdjusted % (TILE_SIZE * ZOOM));
-        int yAlligned = yAdjusted - (yAdjusted % (TILE_SIZE * ZOOM));
+        int xAlligned = xAdjusted - (xAdjusted % CELL_SIZE);
+        int yAlligned = yAdjusted - (yAdjusted % CELL_SIZE);
         Item item = itemService.creteNewItem(itemType, xAlligned, yAlligned);
         if (item instanceof Seed) {
             if (justDrop || !createNewPlant(((Seed) item).getPlantType(), xAlligned / 64, yAlligned / 64)) {
@@ -824,8 +830,8 @@ public class Game extends JFrame implements Runnable {
             logger.warn("Too many animals, can't add new");
             return;
         }
-        int tileX = x * (TILE_SIZE * ZOOM);
-        int tileY = y * (TILE_SIZE * ZOOM);
+        int tileX = x * CELL_SIZE;
+        int tileY = y * CELL_SIZE;
         Animal newAnimal = animalService.createAnimal(tileX, tileY, selectedAnimal, gameMap.getMapName());
         animalsOnMaps.get(gameMap.getMapName()).add(newAnimal);
         addAnimalToPanel(newAnimal);
@@ -833,7 +839,7 @@ public class Game extends JFrame implements Runnable {
 
     public void addAnimalToPanel(Animal animal) {
         int i = yourAnimalButtons.getButtonCount();
-        Rectangle tileRectangle = new Rectangle(this.getWidth() - (TILE_SIZE * ZOOM + TILE_SIZE), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+        Rectangle tileRectangle = new Rectangle(this.getWidth() - (CELL_SIZE + TILE_SIZE), i * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
 
         AnimalIcon animalIcon = new AnimalIcon(this, animal, animal.getPreviewSprite(), tileRectangle);
         yourAnimalButtons.addButton(animalIcon);
@@ -843,8 +849,8 @@ public class Game extends JFrame implements Runnable {
         if (plantType.isEmpty()) {
             return false;
         }
-        int tileX = x * (TILE_SIZE * ZOOM);
-        int tileY = y * (TILE_SIZE * ZOOM);
+        int tileX = x * CELL_SIZE;
+        int tileY = y * CELL_SIZE;
         if (gameMap.isThereGrassOrDirt(tileX, tileY) && gameMap.isPlaceEmpty(1, tileX, tileY) && gameMap.isInsideOfMap(x, y)) {
             Plant plant = plantService.createPlant(plantType, tileX, tileY);
             gameMap.addPlant(plant);
@@ -933,8 +939,8 @@ public class Game extends JFrame implements Runnable {
 
         int xMapRelated = x + renderer.getCamera().getX();
         int yMapRelated = y + renderer.getCamera().getY();
-        int xAlligned = xMapRelated - (xMapRelated % (TILE_SIZE * ZOOM));
-        int yAlligned = yMapRelated - (yMapRelated % (TILE_SIZE * ZOOM));
+        int xAlligned = xMapRelated - (xMapRelated % CELL_SIZE);
+        int yAlligned = yMapRelated - (yMapRelated % CELL_SIZE);
         if (!selectedItem.isEmpty()) {
             deselectBagItem();
             return;

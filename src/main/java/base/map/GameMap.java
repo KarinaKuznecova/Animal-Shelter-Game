@@ -183,8 +183,8 @@ public class GameMap {
 
     boolean isThereAPortal(int x, int y) {
         for (Portal portal : getPortals()) {
-            int portalX = portal.getRectangle().getX() / (TILE_SIZE * ZOOM);
-            int portalY = portal.getRectangle().getY() / (TILE_SIZE * ZOOM);
+            int portalX = portal.getRectangle().getX() / CELL_SIZE;
+            int portalY = portal.getRectangle().getY() / CELL_SIZE;
             if (portalX == x && portalY == y) {
                 return true;
             }
@@ -216,8 +216,8 @@ public class GameMap {
             mapSize = mapHeight;
         }
 
-        if (previousMapPortal == mapSize * (TILE_SIZE * ZOOM)) {
-            previousMapPortal = previousMapPortal - (TILE_SIZE * ZOOM);
+        if (previousMapPortal == mapSize * CELL_SIZE) {
+            previousMapPortal = previousMapPortal - CELL_SIZE;
         }
 
         if (previousMapPortal < 0) {
@@ -255,8 +255,8 @@ public class GameMap {
     }
 
     public boolean isThereGrassOrDirt(int x, int y) {
-        x = x / (TILE_SIZE * ZOOM);
-        y = y / (TILE_SIZE * ZOOM);
+        x = x / CELL_SIZE;
+        y = y / CELL_SIZE;
         for (MapTile tile : layeredTiles.get(0)) {
             if (tile.getX() == x && tile.getY() == y) {
                 return getGrassTileIds().contains(tile.getId());

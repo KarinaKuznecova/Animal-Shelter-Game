@@ -172,6 +172,15 @@ public class Player implements GameObject {
                 }
             }
         }
+        List<GameObject> gameObjects = game.getGameMap().getInteractiveObjects();
+        if (gameObjects != null) {
+            Rectangle potentialRectangle = new Rectangle(xPosition, yPosition, playerRectangle.getWidth(), playerRectangle.getHeight());
+            for (GameObject gameObject : gameObjects) {
+                if (gameObject.getLayer() == getLayer() && potentialRectangle.intersects(gameObject.getRectangle())) {
+                    return true;
+                }
+            }
+        }
         return false;
 
     }
@@ -183,7 +192,7 @@ public class Player implements GameObject {
             logger.debug(String.format("diff x: %d", diffX));
             int diffY = portal.getRectangle().getY() - playerRectangle.getY();
             logger.debug(String.format("diff y: %d", diffY));
-            if (Math.abs(diffX) <= TILE_SIZE * ZOOM && Math.abs(diffY) <= TILE_SIZE * ZOOM) {
+            if (Math.abs(diffX) <= CELL_SIZE && Math.abs(diffY) <= CELL_SIZE) {
                 return true;
             }
         }
@@ -194,17 +203,17 @@ public class Player implements GameObject {
     private boolean shouldUpdateYCamera(Game game) {
         int screenHeight = game.getHeight();
         int halfHeight = screenHeight / 2;
-        int mapEnd = game.getGameMap().getMapHeight() * (TILE_SIZE * ZOOM);
+        int mapEnd = game.getGameMap().getMapHeight() * CELL_SIZE;
         int diffToEnd = mapEnd - playerRectangle.getY();
-        return diffToEnd + 96 > halfHeight && playerRectangle.getY() + (TILE_SIZE * ZOOM) > halfHeight;
+        return diffToEnd + 96 > halfHeight && playerRectangle.getY() + CELL_SIZE > halfHeight;
     }
 
     private boolean shouldUpdateXCamera(Game game) {
         int screenWidth = game.getWidth();
         int halfWidth = screenWidth / 2;
-        int mapEnd = game.getGameMap().getMapWidth() * (TILE_SIZE * ZOOM);
+        int mapEnd = game.getGameMap().getMapWidth() * CELL_SIZE;
         int diffToEnd = mapEnd - playerRectangle.getX();
-        return diffToEnd + (TILE_SIZE * ZOOM) > halfWidth && playerRectangle.getX() + (TILE_SIZE * ZOOM) > halfWidth;
+        return diffToEnd + CELL_SIZE > halfWidth && playerRectangle.getX() + CELL_SIZE > halfWidth;
     }
 
     public void updateCamera(Game game) {
@@ -231,7 +240,7 @@ public class Player implements GameObject {
         }
     }
 
-    public Rectangle getPlayerRectangle() {
+    public Rectangle getRectangle() {
         return playerRectangle;
     }
 
