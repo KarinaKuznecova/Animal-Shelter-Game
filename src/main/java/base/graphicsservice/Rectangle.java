@@ -98,6 +98,9 @@ public class Rectangle implements Serializable {
     }
 
     public boolean intersects(Rectangle otherRectangle) {
+        if (otherRectangle == null) {
+            return false;
+        }
         return (intersectsByX(otherRectangle) && intersectsByY(otherRectangle));
     }
 

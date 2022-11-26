@@ -8,7 +8,7 @@ import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static base.constants.Constants.TILE_SIZE;
+import static base.constants.Constants.*;
 
 public class StorageChest implements GameObject {
 
@@ -17,32 +17,43 @@ public class StorageChest implements GameObject {
     private final int x;
     private final int y;
     private Rectangle rectangle;
-    private Sprite sprite;
+    private Sprite spriteClosed;
+    private Sprite spriteOpen;
 
     public InteractionZoneStorageChest interactionZone;
 
     private boolean isOpen;
 
-    public StorageChest(int x, int y, Sprite sprite) {
+    public StorageChest(int x, int y, Sprite spriteClosed, Sprite spriteOpen) {
         this.x = x;
         this.y = y;
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
-        this.sprite = sprite;
-        interactionZone = new InteractionZoneStorageChest(x + 32, y + 32, 50);
+        this.spriteClosed = spriteClosed;
+        this.spriteOpen = spriteOpen;
+        interactionZone = new InteractionZoneStorageChest(x + 32, y + 32, 90);
 
         isOpen = false;
     }
 
     @Override
     public void render(RenderHandler renderer, int zoom) {
-        if (sprite != null) {
-            renderer.renderSprite(sprite, x, y, zoom, false);
+        if (!isOpen && spriteClosed != null) {
+            renderer.renderSprite(spriteClosed, x, y, zoom, false);
+        } else if (isOpen && spriteOpen != null) {
+            renderer.renderSprite(spriteOpen, x, y, zoom, false);
+        }
+        if (DEBUG_MODE) {
+            interactionZone.render(renderer, zoom);
+
         }
     }
 
     @Override
     public void update(Game game) {
-
+        interactionZone.update(game);
+        if (!interactionZone.isPlayerInRange() && isOpen) {
+            isOpen = false;
+        }
     }
 
     @Override
@@ -52,11 +63,21 @@ public class StorageChest implements GameObject {
 
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
-        if (mouseRectangle.intersects(rectangle) && !isOpen) {
-            logger.info("Storage chest clicked");
-            // will show another inventory
+        if (mouseRectangle.intersects(rectangle) && interactionZone.isPlayerInRange()) {
+            if (!isOpen) {
+                isOpen = true;
+                logger.info("Storage chest opened");
+            } else {
+                isOpen = false;
+                logger.info("Storage chest closed");
+            }
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Rectangle getRectangle() {
+        return rectangle;
     }
 }

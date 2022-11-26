@@ -33,6 +33,7 @@ public class Constants {
     public static final int BOWL_TILE_ID = 68;
     public static final int WATER_BOWL_TILE_ID = 73;
     public static final int PILLOW_TILE_ID = 74;
+    public static final int CHEST_TILE_ID = 36;
 
     public static final int DEFAULT_PLANT_GROWING_TIME = 3000;
 

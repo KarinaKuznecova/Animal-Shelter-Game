@@ -172,6 +172,15 @@ public class Player implements GameObject {
                 }
             }
         }
+        List<GameObject> gameObjects = game.getGameMap().getInteractiveObjects();
+        if (gameObjects != null) {
+            Rectangle potentialRectangle = new Rectangle(xPosition, yPosition, playerRectangle.getWidth(), playerRectangle.getHeight());
+            for (GameObject gameObject : gameObjects) {
+                if (gameObject.getLayer() == getLayer() && potentialRectangle.intersects(gameObject.getRectangle())) {
+                    return true;
+                }
+            }
+        }
         return false;
 
     }
@@ -231,7 +240,7 @@ public class Player implements GameObject {
         }
     }
 
-    public Rectangle getPlayerRectangle() {
+    public Rectangle getRectangle() {
         return playerRectangle;
     }
 

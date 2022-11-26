@@ -46,4 +46,9 @@ public class Flower implements GameObject{
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         return false;
     }
+
+    @Override
+    public Rectangle getRectangle() {
+        return null;
+    }
 }

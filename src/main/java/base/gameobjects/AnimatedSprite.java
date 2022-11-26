@@ -111,4 +111,10 @@ public class AnimatedSprite extends Sprite implements GameObject {
     public int getSpeed() {
         return speed;
     }
+
+    @Override
+    public Rectangle getRectangle() {
+        return null;
+    }
+
 }

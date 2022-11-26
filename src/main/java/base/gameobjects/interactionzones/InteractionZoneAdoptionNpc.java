@@ -17,7 +17,7 @@ public class InteractionZoneAdoptionNpc extends InteractionZone {
     @Override
     public void update(Game game) {
         super.update(game);
-        if (!isInRange(game.getPlayer().getPlayerRectangle())) {
+        if (!isInRange(game.getPlayer().getRectangle())) {
             game.hideDialogBox();
         }
     }

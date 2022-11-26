@@ -58,4 +58,9 @@ public class ChestWithAnimal implements GameObject {
         }
         return false;
     }
+
+    @Override
+    public Rectangle getRectangle() {
+        return rectangle;
+    }
 }

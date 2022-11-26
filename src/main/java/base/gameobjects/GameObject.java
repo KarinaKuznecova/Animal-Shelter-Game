@@ -17,4 +17,6 @@ public interface GameObject extends Serializable {
     int getLayer();
 
     boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game);
+
+    Rectangle getRectangle();
 }

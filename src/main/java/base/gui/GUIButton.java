@@ -69,4 +69,9 @@ public abstract class GUIButton implements GameObject, Serializable {
     public void setObjectCount(int objectCount) {
         this.objectCount = objectCount;
     }
+
+    @Override
+    public Rectangle getRectangle() {
+        return region;
+    }
 }

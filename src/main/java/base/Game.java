@@ -760,14 +760,14 @@ public class Game extends JFrame implements Runnable {
         if (!stoppedChecking) {
             int smallerX = (int) Math.floor(xMapRelated / (32.0 * ZOOM));
             int smallerY = (int) Math.floor(yMapRelated / (32.0 * ZOOM));
-            if (!guiList.contains(possibleAnimalButtons)) {
-                setNewTile(xMapRelated, yMapRelated, smallerX, smallerY);
-            }
-            if (guiList.contains(possibleAnimalButtons)) {
-                createNewAnimal(smallerX, smallerY);
-            }
             if (guiList.contains(plantsGui)) {
                 createNewPlant(selectedPlant, smallerX, smallerY);
+            }
+            else if (guiList.contains(possibleAnimalButtons)) {
+                createNewAnimal(smallerX, smallerY);
+            }
+            else {
+                setNewTile(xMapRelated, yMapRelated, smallerX, smallerY);
             }
         }
         refreshCurrentMapCache();
@@ -775,7 +775,7 @@ public class Game extends JFrame implements Runnable {
 
     private void setNewTile(int xMapRelated, int yMapRelated, int smallerX, int smallerY) {
         if (selectedTileId != -1) {
-            if (player.getPlayerRectangle().intersects(xMapRelated, yMapRelated, TILE_SIZE, TILE_SIZE)) {
+            if (player.getRectangle().intersects(xMapRelated, yMapRelated, TILE_SIZE, TILE_SIZE)) {
                 logger.warn("Can't place tile under player");
             } else {
                 int xAlligned = xMapRelated - (xMapRelated % (TILE_SIZE * ZOOM));
@@ -786,7 +786,12 @@ public class Game extends JFrame implements Runnable {
                 } else if (selectedTileId == WATER_BOWL_TILE_ID) {
                     WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned);
                     getGameMap().addObject(waterBowl);
-                } else {
+                } else if (selectedTileId == CHEST_TILE_ID) {
+                    StorageChest chest = new StorageChest(xAlligned, yAlligned, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite());
+                    getGameMap().addObject(chest);
+                    gameMap.setTile(smallerX, smallerY, CHEST_TILE_ID, regularTiles);
+                }
+                else {
                     gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
                 }
             }

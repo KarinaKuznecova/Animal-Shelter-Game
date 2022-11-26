@@ -246,9 +246,6 @@ public class RenderHandler {
     }
 
     private void renderGameObjects(Game game, GameMap gameMap, int layer) {
-        if (game.getPlayer().getLayer() == layer) {
-            game.getPlayer().render(this, ZOOM);
-        }
         List<Animal> animalsOnCurrentMap = game.getAnimalsOnMaps().get(gameMap.getMapName());
         for (Animal animal : animalsOnCurrentMap) {
             if (animal.getLayer() == layer) {
@@ -269,6 +266,9 @@ public class RenderHandler {
             if (plant.getLayer() == layer) {
                 plant.render(this, ZOOM);
             }
+        }
+        if (game.getPlayer().getLayer() == layer) {
+            game.getPlayer().render(this, ZOOM);
         }
     }
 
@@ -409,7 +409,7 @@ public class RenderHandler {
 
     public void adjustCamera(Game game, Player player) {
         logger.info("Adjusting camera");
-        Rectangle playerRect = player.getPlayerRectangle();
+        Rectangle playerRect = player.getRectangle();
 
         logger.info("Adjusting X");
         int mapEnd = game.getGameMap().getMapWidth() * (TILE_SIZE * ZOOM);

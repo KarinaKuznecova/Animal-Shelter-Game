@@ -125,6 +125,10 @@ public class MapService {
                     } else {
                         tiles.add(tile);
                     }
+                    if (tileId == CHEST_TILE_ID) {
+                        StorageChest storageChest = new StorageChest(xPosition * (TILE_SIZE * ZOOM), yPosition * (TILE_SIZE * ZOOM), tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite());
+                        gameMap.addObject(storageChest);
+                    }
                 }
             }
 
