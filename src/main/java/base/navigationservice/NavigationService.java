@@ -3,8 +3,7 @@ package base.navigationservice;
 import java.util.Arrays;
 import java.util.List;
 
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.constants.MapConstants.*;
 
 public class NavigationService {
@@ -29,27 +28,27 @@ public class NavigationService {
     public static int getPixelsToAdjustPosition(Direction direction, int x, int y) {
         switch (direction) {
             case DOWN:
-                if (y % (TILE_SIZE * ZOOM) == 0) {
+                if (y % CELL_SIZE == 0) {
                     return 64;
                 }
-                return (TILE_SIZE * ZOOM) - (y % (TILE_SIZE * ZOOM));
+                return CELL_SIZE - (y % CELL_SIZE);
             case UP:
-                if (y % (TILE_SIZE * ZOOM) == 0) {
+                if (y % CELL_SIZE == 0) {
                     return 64;
                 }
-                return y % (TILE_SIZE * ZOOM);
+                return y % CELL_SIZE;
             case RIGHT:
-                if (x % (TILE_SIZE * ZOOM) == 0) {
+                if (x % CELL_SIZE == 0) {
                     return 64;
                 }
-                return (TILE_SIZE * ZOOM) - (x % (TILE_SIZE * ZOOM));
+                return CELL_SIZE - (x % CELL_SIZE);
             case LEFT:
-                if (x % (TILE_SIZE * ZOOM) == 0) {
+                if (x % CELL_SIZE == 0) {
                     return 64;
                 }
-                return x % (TILE_SIZE * ZOOM);
+                return x % CELL_SIZE;
             default:
-                return (TILE_SIZE * ZOOM);
+                return CELL_SIZE;
         }
     }
 }

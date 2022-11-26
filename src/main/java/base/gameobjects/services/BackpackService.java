@@ -117,7 +117,7 @@ public class BackpackService {
                     int row = Integer.parseInt(String.valueOf(id.charAt(0)));
                     int column = Integer.parseInt(String.valueOf(id.charAt(1)));
 
-                    Rectangle buttonRectangle = new Rectangle(column * (TILE_SIZE * ZOOM + 2), row * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+                    Rectangle buttonRectangle = new Rectangle(column * (CELL_SIZE + 2), row * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
                     BackpackButton button = new BackpackButton(itemName, itemService.getItemSprite(itemName), buttonRectangle, id);
                     button.setObjectCount(count);
                     buttons.add(button);
@@ -126,7 +126,7 @@ public class BackpackService {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return new GUI(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (TILE_SIZE * ZOOM + 2)), true);
+        return new GUI(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (CELL_SIZE + 2)), true);
     }
 
     public GUI getMigratedBackpack(Game game) {
@@ -144,7 +144,7 @@ public class BackpackService {
                     int row = Integer.parseInt(String.valueOf(defaultId.charAt(0)));
                     int column = Integer.parseInt(String.valueOf(defaultId.charAt(1)));
 
-                    Rectangle buttonRectangle = new Rectangle(column * (TILE_SIZE * ZOOM + 2), row * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+                    Rectangle buttonRectangle = new Rectangle(column * (CELL_SIZE + 2), row * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
 
                     boolean buttonExists = false;
                     for (GUIButton emptyButton : newEmpty.getButtons()) {
@@ -171,11 +171,11 @@ public class BackpackService {
     public GUI getEmptyBackpack(Game game, List<GUIButton> buttons) {
         for (int i = 0; i < BACKPACK_ROWS; i++) {
             for (int j = 0; j < BACKPACK_COLUMNS; j++) {
-                Rectangle buttonRectangle = new Rectangle(j * (TILE_SIZE * ZOOM + 2), i * (TILE_SIZE * ZOOM + 2), TILE_SIZE * ZOOM, TILE_SIZE * ZOOM);
+                Rectangle buttonRectangle = new Rectangle(j * (CELL_SIZE + 2), i * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
                 buttons.add(new BackpackButton(String.valueOf(i) + j, null, buttonRectangle, String.valueOf(i) + j));
             }
         }
-        return new GUI(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (TILE_SIZE * ZOOM + 2)), true);
+        return new GUI(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (CELL_SIZE + 2)), true);
     }
 
     public String getItemNameByButtonId(GUI backpack, String buttonId) {

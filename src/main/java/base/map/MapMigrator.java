@@ -192,7 +192,7 @@ public class MapMigrator {
             }
 
             if (second) {
-                x = x + (firstMapWidth * TILE_SIZE * ZOOM);
+                x = x + (firstMapWidth * CELL_SIZE);
             }
             Plant plant = plantService.createPlant(plantType, x, y);
             plant.setGrowingStage(growingStage);
@@ -208,7 +208,7 @@ public class MapMigrator {
             int y = Integer.parseInt(splitLine[2]);
             Sprite sprite = plantService.getPreviews().get(itemName);
             if (second) {
-                x = x + (firstMapWidth * TILE_SIZE * ZOOM);
+                x = x + (firstMapWidth * CELL_SIZE);
             }
             Item item = new Item(x, y, itemName, sprite);
             items.add(item);
@@ -220,7 +220,7 @@ public class MapMigrator {
             int y = Integer.parseInt(splitLine[2]);
             boolean shouldBeFull = Boolean.parseBoolean(splitLine[3]);
             if (second) {
-                x = x + (firstMapWidth * TILE_SIZE * ZOOM);
+                x = x + (firstMapWidth * CELL_SIZE);
             }
             FoodBowl foodBowl = new FoodBowl(x, y);
             if (shouldBeFull) {
@@ -235,7 +235,7 @@ public class MapMigrator {
             int y = Integer.parseInt(splitLine[2]);
             boolean shouldBeFull = Boolean.parseBoolean(splitLine[3]);
             if (second) {
-                x = x + (firstMapWidth * TILE_SIZE * ZOOM);
+                x = x + (firstMapWidth * CELL_SIZE);
             }
             WaterBowl waterBowl = new WaterBowl(x, y);
             if (shouldBeFull) {
@@ -249,7 +249,7 @@ public class MapMigrator {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             if (second) {
-                x = x + (firstMapWidth * TILE_SIZE * ZOOM);
+                x = x + (firstMapWidth * CELL_SIZE);
             }
             npcSpots.add(new NpcSpot(new Rectangle(x, y, TILE_SIZE, TILE_SIZE)));
             return true;
@@ -260,7 +260,7 @@ public class MapMigrator {
             int y = Integer.parseInt(splitLine[2]);
             String direction = splitLine[3];
             if (second) {
-                x = x + (firstMapWidth * TILE_SIZE * ZOOM);
+                x = x + (firstMapWidth * CELL_SIZE);
             }
             if (direction.equalsIgnoreCase(firstMapName) || direction.equalsIgnoreCase(secondMapName) || direction.equalsIgnoreCase("Home")) {
                 return true;
@@ -297,8 +297,8 @@ public class MapMigrator {
             logger.info(String.format("Skipping portal to %s", tilePortalDirection));
             return;
         }
-        int portalX = tile.getX() * (TILE_SIZE * ZOOM);
-        int portalY = tile.getY() * (TILE_SIZE * ZOOM);
+        int portalX = tile.getX() * CELL_SIZE;
+        int portalY = tile.getY() * CELL_SIZE;
         Portal portal = new Portal(new Rectangle(portalX, portalY, 32, 32), tilePortalDirection);
         portals.add(portal);
     }
@@ -367,7 +367,7 @@ public class MapMigrator {
             int growingStage = plant.getGrowingStage();
             int growingTicks = plant.getGrowingTicks();
             if (Corn.NAME.equals(plant.getPlantType())) {
-                plantY += TILE_SIZE * ZOOM;
+                plantY += CELL_SIZE;
             }
             printWriter.println("plant-" + plantType + "," + plantX + "," + plantY + "," + growingStage + "," + growingTicks);
         }

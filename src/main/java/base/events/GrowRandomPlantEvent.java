@@ -6,8 +6,7 @@ import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.constants.MapConstants.FOREST_MAP;
 import static base.constants.MapConstants.MAIN_MAP;
 
@@ -44,8 +43,8 @@ public class GrowRandomPlantEvent extends Event {
 
         int x = random.nextInt(map.getMapWidth());
         int y = random.nextInt(map.getMapHeight());
-        int bigX = x  * (TILE_SIZE * ZOOM);
-        int bigY = y  * (TILE_SIZE * ZOOM);
+        int bigX = x  * CELL_SIZE;
+        int bigY = y  * CELL_SIZE;
         logger.info(String.format("Random plant will appear at %d and %d", x, y));
         if (map.isThereGrassOrDirt(bigX, bigY) && map.isPlaceEmpty(1, bigX, bigY)) {
             PlantService plantService = game.getPlantService();

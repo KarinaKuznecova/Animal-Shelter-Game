@@ -8,8 +8,7 @@ import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.constants.MultiOptionalObjects.flowerIds;
 
 public class GrowFlowerEvent extends Event{
@@ -44,8 +43,8 @@ public class GrowFlowerEvent extends Event{
         GameMap map = game.getGameMap();
         int x = random.nextInt(map.getMapWidth());
         int y = random.nextInt(map.getMapHeight());
-        int bigX = x  * (TILE_SIZE * ZOOM);
-        int bigY = y  * (TILE_SIZE * ZOOM);
+        int bigX = x  * CELL_SIZE;
+        int bigY = y  * CELL_SIZE;
         logger.info(String.format("Random flower will appear at %d and %d", x, y));
         if (map.isThereGrassOrDirt(bigX, bigY) && map.isPlaceEmpty(1, bigX, bigY)) {
             int flowerId = random.nextInt(flowerIds.size());

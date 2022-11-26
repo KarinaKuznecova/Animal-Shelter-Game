@@ -11,8 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Random;
 
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.constants.MapConstants.CITY_MAP;
 import static base.constants.MapConstants.FOREST_MAP;
 import static base.navigationservice.Direction.*;
@@ -33,7 +32,7 @@ public interface Walking {
             logger.debug(String.format("diff x: %d", diffX));
             int diffY = portal.getRectangle().getY() - rectangle.getY();
             logger.debug(String.format("diff y: %d", diffY));
-            if (Math.abs(diffX) <= TILE_SIZE * ZOOM && Math.abs(diffY) <= TILE_SIZE * ZOOM) {
+            if (Math.abs(diffX) <= CELL_SIZE && Math.abs(diffY) <= CELL_SIZE) {
                 return true;
             }
         }

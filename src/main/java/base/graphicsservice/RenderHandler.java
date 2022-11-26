@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.*;
 
 import static base.constants.ColorConstant.ALPHA;
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.constants.MultiOptionalObjects.bookcases;
 
 public class RenderHandler {
@@ -108,8 +107,8 @@ public class RenderHandler {
         int yScreenRelated = (int) game.getMousePosition().getY() - 32;
         int xPositionActual = xScreenRelated + getCamera().getX();
         int yPositionActual = yScreenRelated + getCamera().getY();
-        int xPosition = xScreenRelated - (xPositionActual % (TILE_SIZE * ZOOM));
-        int yPosition = yScreenRelated - (yPositionActual % (TILE_SIZE * ZOOM));
+        int xPosition = xScreenRelated - (xPositionActual % CELL_SIZE);
+        int yPosition = yScreenRelated - (yPositionActual % CELL_SIZE);
         MapTile potentialTile = new MapTile(5, game.getSelectedTileId(), 0, 0, game.isRegularTiles());
 
         if (bookcases.contains(game.getSelectedTileId()) && game.isRegularTiles()) {
@@ -133,8 +132,8 @@ public class RenderHandler {
         int yScreenRelated = (int) game.getMousePosition().getY() - 32;
         int xPositionActual = xScreenRelated + getCamera().getX();
         int yPositionActual = yScreenRelated + getCamera().getY();
-        int xPosition = xScreenRelated - (xPositionActual % (TILE_SIZE * ZOOM));
-        int yPosition = yScreenRelated - (yPositionActual % (TILE_SIZE * ZOOM));
+        int xPosition = xScreenRelated - (xPositionActual % CELL_SIZE);
+        int yPosition = yScreenRelated - (yPositionActual % CELL_SIZE);
         Item itemToDraw = new Item(0, 0, game.getSelectedItem(), game.getItemService().getItemSprite(game.getItemNameByButtonId()));
 
         drawPreview(xPosition, yPosition, itemToDraw.getSprite());
@@ -212,21 +211,21 @@ public class RenderHandler {
     }
 
     private boolean isInRangeOfCamera(MapTile mappedTile) {
-        return mappedTile.getX() * (TILE_SIZE * ZOOM) > camera.getX() - (TILE_SIZE * ZOOM)
-                && mappedTile.getX() * (TILE_SIZE * ZOOM) < camera.getX() + camera.getWidth() + (TILE_SIZE * ZOOM)
-                && mappedTile.getY() * (TILE_SIZE * ZOOM) > camera.getY() - (TILE_SIZE * ZOOM)
-                && mappedTile.getY() * (TILE_SIZE * ZOOM) < camera.getY() + camera.getHeight() + (TILE_SIZE * ZOOM);
+        return mappedTile.getX() * CELL_SIZE > camera.getX() - CELL_SIZE
+                && mappedTile.getX() * CELL_SIZE < camera.getX() + camera.getWidth() + CELL_SIZE
+                && mappedTile.getY() * CELL_SIZE > camera.getY() - CELL_SIZE
+                && mappedTile.getY() * CELL_SIZE < camera.getY() + camera.getHeight() + CELL_SIZE;
     }
 
     private void renderBackground(GameMap gameMap) {
         int backGroundTileId = gameMap.getBackGroundTileId();
         if (backGroundTileId >= 0) {
-            for (int i = (camera.getX() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) - 64;
-                 i < (camera.getX() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) + camera.getWidth() + (TILE_SIZE * ZOOM);
-                 i += TILE_SIZE * ZOOM) {
-                for (int j = (camera.getY() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) - 64;
-                     j < (camera.getY() / (TILE_SIZE * ZOOM)) * (TILE_SIZE * ZOOM) + camera.getHeight() + (TILE_SIZE * ZOOM);
-                     j += TILE_SIZE * ZOOM) {
+            for (int i = (camera.getX() / CELL_SIZE) * CELL_SIZE - 64;
+                 i < (camera.getX() / CELL_SIZE) * CELL_SIZE + camera.getWidth() + CELL_SIZE;
+                 i += CELL_SIZE) {
+                for (int j = (camera.getY() / CELL_SIZE) * CELL_SIZE - 64;
+                     j < (camera.getY() / CELL_SIZE) * CELL_SIZE + camera.getHeight() + CELL_SIZE;
+                     j += CELL_SIZE) {
                     renderSprite(gameMap.getTileService().getTerrainTiles().get(backGroundTileId).getSprite(), i, j, ZOOM, false);
                 }
             }
@@ -234,9 +233,9 @@ public class RenderHandler {
     }
 
     private void renderTile(GameMap gameMap, MapTile mappedTile) {
-        int xPosition = mappedTile.getX() * TILE_SIZE * ZOOM;
-        int yPosition = mappedTile.getY() * TILE_SIZE * ZOOM;
-        if (xPosition <= gameMap.getMapWidth() * TILE_SIZE * ZOOM && yPosition <= gameMap.getMapHeight() * TILE_SIZE * ZOOM) {
+        int xPosition = mappedTile.getX() * CELL_SIZE;
+        int yPosition = mappedTile.getY() * CELL_SIZE;
+        if (xPosition <= gameMap.getMapWidth() * CELL_SIZE && yPosition <= gameMap.getMapHeight() * CELL_SIZE) {
             if (mappedTile.isRegularTile()) {
                 renderSprite(gameMap.getTileService().getTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, false);
             } else {
@@ -412,30 +411,30 @@ public class RenderHandler {
         Rectangle playerRect = player.getRectangle();
 
         logger.info("Adjusting X");
-        int mapEnd = game.getGameMap().getMapWidth() * (TILE_SIZE * ZOOM);
+        int mapEnd = game.getGameMap().getMapWidth() * CELL_SIZE;
         int diffToEnd = mapEnd - playerRect.getX();
         if (diffToEnd < 96) {
             logger.info("Adjustment will be on the right side");
-            camera.setX(mapEnd + (TILE_SIZE * ZOOM) - game.getWidth());
+            camera.setX(mapEnd + CELL_SIZE - game.getWidth());
         }
 
-        if (playerRect.getX() < (TILE_SIZE * ZOOM) + TILE_SIZE) {
+        if (playerRect.getX() < CELL_SIZE + TILE_SIZE) {
             logger.info("Adjustment will be on the left side");
-            camera.setX(-(TILE_SIZE * ZOOM));
+            camera.setX(-CELL_SIZE);
         }
 
         logger.info("Adjusting Y");
-        mapEnd = game.getGameMap().getMapHeight() * (TILE_SIZE * ZOOM);
+        mapEnd = game.getGameMap().getMapHeight() * CELL_SIZE;
         diffToEnd = mapEnd - playerRect.getY();
 
-        if (diffToEnd < (TILE_SIZE * ZOOM) + TILE_SIZE) {
+        if (diffToEnd < CELL_SIZE + TILE_SIZE) {
             logger.info("Adjustment will be on the bottom side");
-            camera.setY(mapEnd + (TILE_SIZE * ZOOM) + TILE_SIZE - game.getHeight());
+            camera.setY(mapEnd + CELL_SIZE + TILE_SIZE - game.getHeight());
         }
 
         if (playerRect.getY() < 96) {
             logger.info("Adjustment will be on the top side");
-            camera.setY(-(TILE_SIZE * ZOOM));
+            camera.setY(-CELL_SIZE);
         }
     }
 

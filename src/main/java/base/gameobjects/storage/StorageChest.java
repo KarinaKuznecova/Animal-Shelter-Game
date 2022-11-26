@@ -1,6 +1,7 @@
-package base.gameobjects;
+package base.gameobjects.storage;
 
 import base.Game;
+import base.gameobjects.GameObject;
 import base.gameobjects.interactionzones.InteractionZoneStorageChest;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
@@ -8,6 +9,8 @@ import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static base.constants.ColorConstant.BROWN;
+import static base.constants.ColorConstant.YELLOW;
 import static base.constants.Constants.*;
 
 public class StorageChest implements GameObject {
@@ -19,6 +22,7 @@ public class StorageChest implements GameObject {
     private Rectangle rectangle;
     private Sprite spriteClosed;
     private Sprite spriteOpen;
+    private Storage storage;
 
     public InteractionZoneStorageChest interactionZone;
 
@@ -31,6 +35,7 @@ public class StorageChest implements GameObject {
         this.spriteClosed = spriteClosed;
         this.spriteOpen = spriteOpen;
         interactionZone = new InteractionZoneStorageChest(x + 32, y + 32, 90);
+        storage = new Storage(6, rectangle);
 
         isOpen = false;
     }
@@ -41,10 +46,12 @@ public class StorageChest implements GameObject {
             renderer.renderSprite(spriteClosed, x, y, zoom, false);
         } else if (isOpen && spriteOpen != null) {
             renderer.renderSprite(spriteOpen, x, y, zoom, false);
+            storage.render(renderer, zoom);
         }
         if (DEBUG_MODE) {
+            rectangle.generateBorder(1, YELLOW);
+            renderer.renderRectangle(rectangle, zoom, false);
             interactionZone.render(renderer, zoom);
-
         }
     }
 
@@ -66,9 +73,11 @@ public class StorageChest implements GameObject {
         if (mouseRectangle.intersects(rectangle) && interactionZone.isPlayerInRange()) {
             if (!isOpen) {
                 isOpen = true;
+                storage.setVisible(true);
                 logger.info("Storage chest opened");
             } else {
                 isOpen = false;
+                storage.setVisible(false);
                 logger.info("Storage chest closed");
             }
             return true;

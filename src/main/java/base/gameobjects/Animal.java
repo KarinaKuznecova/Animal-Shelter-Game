@@ -300,16 +300,16 @@ public abstract class Animal implements GameObject, Walking {
     public void moveAnimalTo(Direction direction) {
         switch (direction) {
             case LEFT:
-                rectangle.setX(rectangle.getX() - (TILE_SIZE * ZOOM));
+                rectangle.setX(rectangle.getX() - CELL_SIZE);
                 break;
             case RIGHT:
-                rectangle.setX(rectangle.getX() + (TILE_SIZE * ZOOM));
+                rectangle.setX(rectangle.getX() + CELL_SIZE);
                 break;
             case UP:
-                rectangle.setY(rectangle.getY() - (TILE_SIZE * ZOOM));
+                rectangle.setY(rectangle.getY() - CELL_SIZE);
                 break;
             case DOWN:
-                rectangle.setY(rectangle.getY() + (TILE_SIZE * ZOOM));
+                rectangle.setY(rectangle.getY() + CELL_SIZE);
                 break;
         }
     }
@@ -330,8 +330,8 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     private void moveAnimalToCenter(GameMap gameMap) {
-        rectangle.setX(gameMap.getMapWidth() * TILE_SIZE * ZOOM / 2);
-        rectangle.setY(gameMap.getMapHeight() * TILE_SIZE * ZOOM / 2);
+        rectangle.setX(gameMap.getMapWidth() * CELL_SIZE / 2);
+        rectangle.setY(gameMap.getMapHeight() * CELL_SIZE / 2);
 
         if (isAnimalStuck(gameMap)) {
             tryToMove(gameMap);
