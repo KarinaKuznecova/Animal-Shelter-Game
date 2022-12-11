@@ -81,7 +81,7 @@ public class Game extends JFrame implements Runnable {
     private transient GUI yourAnimalButtons;
     private transient GUI possibleAnimalButtons;
     private transient GUI plantsGui;
-    private transient GUI backpackGui;
+    private transient Backpack backpackGui;
     private transient DialogBox dialogBox;
 
     // Selected items
