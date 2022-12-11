@@ -1,6 +1,7 @@
 package base.events;
 
 import base.Game;
+import base.gameobjects.Plant;
 import base.gameobjects.services.PlantService;
 import base.map.GameMap;
 import org.slf4j.Logger;
@@ -40,7 +41,10 @@ public class GrowRandomPlantEvent extends Event {
         } else {
             map = game.getGameMap(FOREST_MAP);
         }
-
+        if (map.getWildPlants().size() > 5) {
+            logger.info(String.format("There are more than 5 plants on %s map", map.getMapName()));
+            return;
+        }
         int x = random.nextInt(map.getMapWidth());
         int y = random.nextInt(map.getMapHeight());
         int bigX = x  * CELL_SIZE;
@@ -50,7 +54,9 @@ public class GrowRandomPlantEvent extends Event {
             PlantService plantService = game.getPlantService();
             int plantId = random.nextInt(plantService.plantTypes.size());
             logger.info(String.format("Place was empty, will add plant with id %d", plantId));
-            map.addPlant(plantService.createPlant(plantService.plantTypes.get(plantId), bigX, bigY));
+            Plant plant = plantService.createPlant(plantService.plantTypes.get(plantId), bigX, bigY);
+            plant.setWild(true);
+            map.addPlant(plant);
             happened = true;
         }
     }
