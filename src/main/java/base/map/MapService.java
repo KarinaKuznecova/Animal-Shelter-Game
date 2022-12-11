@@ -140,6 +140,7 @@ public class MapService {
             migrate(gameMap);
             return loadGameMap(mapName, tileService);
         }
+        gameMap.sortInteractiveObjects();
         return gameMap;
     }
 
@@ -235,7 +236,7 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             String direction = splitLine[3];
-            gameMap.addObject(new Portal(new Rectangle(x, y, TILE_SIZE, TILE_SIZE), direction));
+            gameMap.addObject(new Portal(new Rectangle(x, y, CELL_SIZE, CELL_SIZE), direction));
             return true;
         }
         if (line.startsWith("bush")) {
@@ -243,6 +244,20 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             gameMap.addObject(new Bush(x, y, gameMap.getMapName()));
+            return true;
+        }
+        if (line.startsWith("oak")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            gameMap.addObject(new Oak(x, y));
+            return true;
+        }
+        if (line.startsWith("spruce")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            gameMap.addObject(new Spruce(x, y));
             return true;
         }
         if (line.startsWith("storagechest")) {
@@ -391,6 +406,12 @@ public class MapService {
             if (gameObject instanceof Bush) {
                 printWriter.println("bush," + ((Bush) gameObject).getX() + "," + ((Bush) gameObject).getY());
             }
+            if (gameObject instanceof Oak) {
+                printWriter.println("oak," + ((Oak) gameObject).getOriginalRectangle().getX() + "," + ((Oak) gameObject).getOriginalRectangle().getY());
+            }
+            if (gameObject instanceof Spruce) {
+                printWriter.println("spruce," + ((Spruce) gameObject).getOriginalRectangle().getX() + "," + ((Spruce) gameObject).getOriginalRectangle().getY());
+            }
             if (gameObject instanceof StorageChest) {
                 printWriter.println(("storagechest," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY() + "," + ((StorageChest) gameObject).getFileName()));
                 saveStorageChest((StorageChest) gameObject);
@@ -462,7 +483,7 @@ public class MapService {
         if ("TopCenterMap".equals(direction)) {
             direction = "Home";
         }
-        Portal portal = new Portal(new Rectangle(portalX, portalY, 32, 32), direction);
+        Portal portal = new Portal(new Rectangle(portalX, portalY, 64, 64), direction);
         gameMap.addObject(portal);
     }
 

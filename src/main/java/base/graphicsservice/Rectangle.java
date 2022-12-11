@@ -126,7 +126,7 @@ public class Rectangle implements Serializable {
     }
 
     private boolean intersectsByX(MapTile tile) {
-        return !(x > tile.getX() * CELL_SIZE + TILE_SIZE || tile.getX() * CELL_SIZE >= x + width);
+        return !(x > tile.getX() * CELL_SIZE + CELL_SIZE || tile.getX() * CELL_SIZE >= x + width);
     }
 
     public boolean potentialIntersects(MapTile tile, int xPos, int yPos) {
@@ -138,7 +138,7 @@ public class Rectangle implements Serializable {
     }
 
     private boolean potentialIntersectsByX(MapTile tile, int xPos) {
-        return !(xPos > tile.getX() * CELL_SIZE + TILE_SIZE || tile.getX() * CELL_SIZE > xPos + width);
+        return !(xPos > tile.getX() * CELL_SIZE + CELL_SIZE || tile.getX() * CELL_SIZE > xPos + width);
     }
 
     @Override

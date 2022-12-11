@@ -269,11 +269,6 @@ public class RenderHandler {
                 gameObject.render(this, ZOOM);
             }
         }
-        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
-            if (gameObject.getLayer() == layer) {
-                gameObject.render(this, ZOOM);
-            }
-        }
         for (Plant plant : gameMap.getPlants()) {
             if (plant.getLayer() == layer) {
                 plant.render(this, ZOOM);
@@ -281,6 +276,11 @@ public class RenderHandler {
         }
         if (game.getPlayer().getLayer() == layer) {
             game.getPlayer().render(this, ZOOM);
+        }
+        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
+            if (gameObject.getLayer() == layer) {
+                gameObject.render(this, ZOOM);
+            }
         }
     }
 

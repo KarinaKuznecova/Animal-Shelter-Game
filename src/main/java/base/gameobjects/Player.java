@@ -34,9 +34,10 @@ public class Player implements GameObject {
     @Override
     public void render(RenderHandler renderer, int zoom) {
         if (animatedSprite != null) {
-            renderer.renderSprite(animatedSprite, playerRectangle.getX(), playerRectangle.getY(), zoom, false);
-        } else if (DEBUG_MODE) {
-            renderer.renderRectangle(playerRectangle, zoom, false);
+            renderer.renderSprite(animatedSprite, playerRectangle.getX() - 16, playerRectangle.getY() - 18, zoom, false);
+        }
+        if (DEBUG_MODE) {
+            renderer.renderRectangle(playerRectangle, 1, false);
         }
     }
 
@@ -261,5 +262,9 @@ public class Player implements GameObject {
     public void teleportTo(int x, int y) {
         playerRectangle.setX(x);
         playerRectangle.setY(y);
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 }

@@ -6,6 +6,7 @@ import base.graphicsservice.Rectangle;
 import base.map.bigobjects.BigObject;
 import base.map.bigobjects.Bookcase;
 import base.map.bigobjects.Bush;
+import base.navigationservice.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static base.constants.Constants.*;
+import static base.constants.Constants.CELL_SIZE;
+import static base.constants.Constants.PILLOW_TILE_ID;
 import static base.constants.MultiOptionalObjects.bookcases;
 
 public class GameMap {
@@ -202,7 +204,7 @@ public class GameMap {
         return null;
     }
 
-    public int getSpawnPoint(Portal portalToPrevious, boolean getX) {
+    public int getSpawnPoint(Portal portalToPrevious, boolean getX, Direction direction) {
         int previousMapPortal;
         if (getX) {
             previousMapPortal = portalToPrevious.getRectangle().getX();
@@ -223,6 +225,21 @@ public class GameMap {
 
         if (previousMapPortal < 0) {
             previousMapPortal = 0;
+        }
+        if (getX){
+            if (direction == Direction.LEFT) {
+                return previousMapPortal - 3;
+            }
+            if (direction == Direction.RIGHT) {
+                return previousMapPortal + 3;
+            }
+        } else {
+            if (direction == Direction.UP) {
+                return previousMapPortal - 3;
+            }
+            if (direction == Direction.DOWN) {
+                return previousMapPortal + 3;
+            }
         }
         return previousMapPortal;
     }
@@ -271,7 +288,7 @@ public class GameMap {
     }
 
     private List<Integer> getGrassTileIds() {
-        return Arrays.asList(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24);
+        return Arrays.asList(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 158, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173);
     }
 
     public boolean isPlaceEmpty(int layer, int x, int y) {
@@ -356,6 +373,10 @@ public class GameMap {
         if (object instanceof Portal) {
             addPortal((Portal) object);
         }
+    }
+
+    public void sortInteractiveObjects() {
+        interactiveObjects.sort(Comparator.comparingInt(o -> o.getRectangle().getY()));
     }
 
     public void removeObject(GameObject object) {
