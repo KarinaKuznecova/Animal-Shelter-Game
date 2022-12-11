@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import static base.constants.Constants.CELL_SIZE;
 import static base.constants.Constants.PILLOW_TILE_ID;
@@ -266,6 +267,10 @@ public class GameMap {
 
     public List<Plant> getPlants() {
         return plants;
+    }
+
+    public List<Plant> getWildPlants() {
+        return plants.stream().filter(Plant::isWild).collect(Collectors.toList());
     }
 
     public void setPlants(List<Plant> plants) {

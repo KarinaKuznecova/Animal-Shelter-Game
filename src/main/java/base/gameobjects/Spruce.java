@@ -27,15 +27,15 @@ public class Spruce implements GameObject {
         this.y = y;
 
         sprite = getPreviewSprite(SPRUCE_IMG);
-        originalRectangle = new Rectangle(x, y, 140, 42);
-        rectangle = new Rectangle(x + 8, y + 68, 140, 42);
+        originalRectangle = new Rectangle(x, y, 140, 64);
+        rectangle = new Rectangle(x + 8, y + 96, 140, 64);
         rectangle.generateBorder(1, GREEN);
     }
 
     @Override
     public void render(RenderHandler renderer, int zoom) {
         if (sprite != null) {
-            renderer.renderSprite(sprite, x - 8, y - 68, zoom, false);
+            renderer.renderSprite(sprite, x, y, zoom, false);
         }
         if (DEBUG_MODE) {
             renderer.renderRectangle(rectangle, 1, false);

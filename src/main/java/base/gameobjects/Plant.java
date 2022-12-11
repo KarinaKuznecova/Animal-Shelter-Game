@@ -26,6 +26,8 @@ public class Plant implements GameObject {
 
     String plantType;
 
+    private boolean isWild;
+
     public Plant(Sprite previewSprite, AnimatedSprite animatedSprite, int x, int y, String plantType) {
         this.previewSprite = previewSprite;
         this.animatedSprite = animatedSprite;
@@ -122,5 +124,13 @@ public class Plant implements GameObject {
 
     public void setGrowingTicks(int growingTicks) {
         this.growingTicks = growingTicks;
+    }
+
+    public boolean isWild() {
+        return isWild;
+    }
+
+    public void setWild(boolean wild) {
+        isWild = wild;
     }
 }
