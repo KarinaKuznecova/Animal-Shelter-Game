@@ -4,9 +4,9 @@ import base.gameobjects.*;
 import base.gameobjects.plants.Corn;
 import base.gameobjects.services.ItemService;
 import base.gameobjects.services.PlantService;
+import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
-import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +92,7 @@ public class MapService {
                     continue;
                 }
 
-                if (loadObjects(gameMap, line)) {
+                if (loadObjects(gameMap, line, tileService)) {
                     continue;
                 }
 
@@ -170,7 +170,7 @@ public class MapService {
         logger.info(String.format("Size of the map is %d by %d tiles", gameMap.getMapWidth(), gameMap.getMapHeight()));
     }
 
-    private boolean loadObjects(GameMap gameMap, String line) {
+    private boolean loadObjects(GameMap gameMap, String line, TileService tileService) {
         if (line.startsWith("plant")) {
             String[] splitLine = line.split(",");
             String plantId = splitLine[0];
@@ -195,7 +195,6 @@ public class MapService {
             String itemName = itemId.split("-")[1];
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            Sprite sprite = plantService.getPreviews().get(itemName);
             Item item = itemService.creteNewItem(itemName, x, y);
             gameMap.addItem(item);
             return true;
@@ -244,6 +243,14 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             gameMap.addObject(new Bush(x, y, gameMap.getMapName()));
+            return true;
+        }
+        if (line.startsWith("storagechest")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            String filename = splitLine[3];
+            gameMap.addObject(new StorageChest(x, y, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite(), filename));
             return true;
         }
 
@@ -302,7 +309,7 @@ public class MapService {
             printWriter.println("//layer,tileId,xPos,yPos,regularTile,portalDirection");
             for (List<MapTile> layer : gameMap.getLayeredTiles().values()) {
                 for (MapTile tile : layer) {
-                    if (tile.isRegularTile() && (tile.getId() == BOWL_TILE_ID || tile.getId() == WATER_BOWL_TILE_ID)) {
+                    if (tile.isRegularTile() && (tile.getId() == BOWL_TILE_ID || tile.getId() == WATER_BOWL_TILE_ID || tile.getId() == CHEST_TILE_ID)) {
                         continue;
                     }
                     String isRegular = tile.isRegularTile() ? "y" : "n";
@@ -376,14 +383,42 @@ public class MapService {
         }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject instanceof NpcSpot) {
-                printWriter.println("npc-spot," + ((NpcSpot) gameObject).getRectangle().getX() + "," + ((NpcSpot) gameObject).getRectangle().getY());
+                printWriter.println("npc-spot," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
             }
             if (gameObject instanceof Portal) {
-                printWriter.println("portal," + ((Portal) gameObject).getRectangle().getX() + "," + ((Portal) gameObject).getRectangle().getY() + "," + ((Portal) gameObject).getDirection());
+                printWriter.println("portal," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY() + "," + ((Portal) gameObject).getDirection());
             }
             if (gameObject instanceof Bush) {
                 printWriter.println("bush," + ((Bush) gameObject).getX() + "," + ((Bush) gameObject).getY());
             }
+            if (gameObject instanceof StorageChest) {
+                printWriter.println(("storagechest," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY() + "," + ((StorageChest) gameObject).getFileName()));
+                saveStorageChest((StorageChest) gameObject);
+            }
+        }
+    }
+
+    private void saveStorageChest(StorageChest chest) {
+        logger.info("Saving storage chest");
+        File file = new File("maps/storages/" + chest.getFileName());
+        try {
+            if (file.exists()) {
+                Files.deleteIfExists(file.toPath());
+            }
+            if (!file.createNewFile()) {
+                logger.error(String.format("Unable to create file: %s", file));
+                throw new IllegalArgumentException();
+            }
+            PrintWriter printWriter = new PrintWriter(file);
+            for (StorageCell cell : chest.getStorage().getCells()) {
+
+                printWriter.println(cell.getItemName() + ":" + cell.getObjectCount());
+            }
+            printWriter.close();
+
+        } catch (IOException e) {
+            logger.error("Error while saving storage chest");
+            e.printStackTrace();
         }
     }
 

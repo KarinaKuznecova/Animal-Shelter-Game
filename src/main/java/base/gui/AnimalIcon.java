@@ -23,7 +23,7 @@ public class AnimalIcon extends GUIButton {
         this.game = game;
 
         rectangle.generateBorder(3, getBorderColor(), getBackgroundColor());
-        stats = new AnimalStats(animal, region);
+        stats = new AnimalStats(animal, this.rectangle);
     }
 
     private boolean isAnimalOnActiveMap(Game game) {
@@ -32,11 +32,11 @@ public class AnimalIcon extends GUIButton {
 
     @Override
     public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
-        renderer.renderRectangle(region, rectangle, 1, fixed);
+        renderer.renderRectangle(this.rectangle, rectangle, 1, fixed);
         if (sprite != null) {
             renderer.renderSprite(sprite,
-                    region.getX() + rectangle.getX(),
-                    region.getY() + rectangle.getY(),
+                    this.rectangle.getX() + rectangle.getX(),
+                    this.rectangle.getY() + rectangle.getY(),
                     zoom,
                     fixed);
         }
@@ -49,13 +49,13 @@ public class AnimalIcon extends GUIButton {
     public void update(Game game) {
         if (animal == game.getYourSelectedAnimal()) {
             if (!isGreen) {
-                region.generateBorder(5, GREEN, getBackgroundColor());
+                rectangle.generateBorder(5, GREEN, getBackgroundColor());
                 isGreen = true;
                 stats.setVisible(true);
             }
         } else {
             if (isGreen) {
-                region.generateBorder(3, getBorderColor(), getBackgroundColor());
+                rectangle.generateBorder(3, getBorderColor(), getBackgroundColor());
                 game.getRenderer().clearRenderedText();
                 isGreen = false;
                 stats.setVisible(false);
@@ -71,7 +71,7 @@ public class AnimalIcon extends GUIButton {
 
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
-        if (mouseRectangle.intersects(region)) {
+        if (mouseRectangle.intersects(rectangle)) {
             activate();
             return true;
         }

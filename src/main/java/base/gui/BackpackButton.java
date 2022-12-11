@@ -16,10 +16,10 @@ public class BackpackButton extends GUIButton implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String item;
+    protected String item;
     private transient Game game;
     private boolean isGreen = false;
-    private final String defaultId;
+    protected final String defaultId;
 
     protected static final Logger logger = LoggerFactory.getLogger(BackpackButton.class);
 
@@ -33,17 +33,17 @@ public class BackpackButton extends GUIButton implements Serializable {
 
     @Override
     public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
-        renderer.renderRectangle(region, rectangle, 1, fixed);
+        renderer.renderRectangle(this.rectangle, rectangle, 1, fixed);
         if (sprite != null) {
             if (objectCount > 1) {
                 renderer.renderSprite(sprite,
-                        region.getX() + rectangle.getX(),
-                        region.getY() + rectangle.getY(),
+                        this.rectangle.getX() + rectangle.getX(),
+                        this.rectangle.getY() + rectangle.getY(),
                         zoom, fixed, objectCount);
             } else {
                 renderer.renderSprite(sprite,
-                        region.getX() + rectangle.getX(),
-                        region.getY() + rectangle.getY(),
+                        this.rectangle.getX() + rectangle.getX(),
+                        this.rectangle.getY() + rectangle.getY(),
                         zoom, fixed, 0);
             }
         }
@@ -53,12 +53,12 @@ public class BackpackButton extends GUIButton implements Serializable {
     public void update(Game game) {
         if (defaultId.equals(game.getSelectedItem())) {
             if (!isGreen) {
-                region.generateBorder(5, GREEN, BLUE);
+                rectangle.generateBorder(5, GREEN, BLUE);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateBorder(3, BROWN, BLUE);
+                rectangle.generateBorder(3, BROWN, BLUE);
                 isGreen = false;
             }
         }
@@ -99,7 +99,7 @@ public class BackpackButton extends GUIButton implements Serializable {
         game.changeSelectedItem(defaultId, this);
     }
 
-    private boolean isButtonEmpty() {
+    public boolean isButtonEmpty() {
         return defaultId.equals(item);
     }
 

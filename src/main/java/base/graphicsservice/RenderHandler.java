@@ -30,7 +30,8 @@ public class RenderHandler {
 
     private final List<String> textToDrawInCenter;
     private int textCountdown;
-    private Map<Position, String> textToDraw;
+    private Map<Position, String> textToDrawFixed;
+    private Map<Position, String> textToDrawNotFixed;
 
     protected static final Logger logger = LoggerFactory.getLogger(RenderHandler.class);
 
@@ -47,7 +48,8 @@ public class RenderHandler {
         pixels = ((DataBufferInt) view.getRaster().getDataBuffer()).getData();
 
         textToDrawInCenter = new ArrayList<>();
-        textToDraw = new HashMap<>();
+        textToDrawFixed = new HashMap<>();
+        textToDrawNotFixed = new HashMap<>();
     }
 
     private void setSizeBasedOnScreenSize() {
@@ -71,12 +73,15 @@ public class RenderHandler {
                 // Sometimes there is NPE or other exception when mouse is outside the game window. Will catch it and ignore so game continues.
                 logger.error("Exception with preview", e);
             }
-        } else if (game.getItemNameByButtonId() != null && !game.getItemNameByButtonId().isEmpty() && game.getMousePosition() != null) {
-            try {
-                renderItemPreview(game);
-            } catch (Exception e) {
-                // Sometimes there is NPE or other exception when mouse is outside the game window. Will catch it and ignore so game continues.
-                logger.error("Exception with preview", e);
+        } else {
+            String itemNameByButtonId = game.getItemNameByButtonId();
+            if (itemNameByButtonId != null && !itemNameByButtonId.isEmpty() && !itemNameByButtonId.startsWith("null") && game.getMousePosition() != null) {
+                try {
+                    renderItemPreview(game);
+                } catch (Exception e) {
+                    // Sometimes there is NPE or other exception when mouse is outside the game window. Will catch it and ignore so game continues.
+                    logger.error("Exception with preview", e);
+                }
             }
         }
 
@@ -93,9 +98,15 @@ public class RenderHandler {
             removeText();
         }
 
-        for (Map.Entry<Position, String> entry : textToDraw.entrySet()) {
+        for (Map.Entry<Position, String> entry : textToDrawFixed.entrySet()) {
             Position linePosition = entry.getKey();
             renderText(graphics, entry.getValue(), linePosition.getXPosition(), linePosition.getYPosition());
+        }
+        for (Map.Entry<Position, String> entry : textToDrawNotFixed.entrySet()) {
+            Position linePosition = entry.getKey();
+            int xPosition = linePosition.getXPosition() - camera.getX();
+            int yPosition = linePosition.getYPosition() - camera.getY();
+            renderText(graphics, entry.getValue(), xPosition, yPosition);
         }
     }
 
@@ -315,7 +326,7 @@ public class RenderHandler {
         renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, zoom, fixed);
         Position position = new Position(xPosition + (sprite.getWidth() * zoom - 62), yPosition + (sprite.getHeight() * zoom - 6));
         if (line != null) {
-            textToDraw.put(position, line);
+            textToDrawFixed.put(position, line);
         }
     }
 
@@ -325,30 +336,52 @@ public class RenderHandler {
         if (count != null && count != 0) {
             renderNumber(count, numberPosition);
         } else {
-            textToDraw.remove(numberPosition);
+            textToDrawFixed.remove(numberPosition);
+        }
+    }
+
+    public void renderStorageSprite(Sprite sprite, int xPosition, int yPosition, int zoom, boolean fixed, Integer count) {
+        renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, zoom, fixed);
+        Position numberPosition = new Position(xPosition + (TILE_SIZE * zoom) - 25, yPosition + (TILE_SIZE * zoom) - 5);
+        if (fixed) {
+            if (count != null && count != 0) {
+                renderNumber(count, numberPosition);
+            } else {
+                textToDrawFixed.remove(numberPosition);
+            }
+        } else {
+            if (count != null && count != 0) {
+                textToDrawNotFixed.put(numberPosition, String.valueOf(count));
+            } else {
+                textToDrawNotFixed.remove(numberPosition);
+            }
         }
     }
 
     public void renderNumber(int number, Position numberPosition) {
-        textToDraw.put(numberPosition, String.valueOf(number));
+        textToDrawFixed.put(numberPosition, String.valueOf(number));
     }
 
     public void renderText(String text, Position textPosition) {
-        textToDraw.put(textPosition, text);
+        textToDrawFixed.put(textPosition, text);
     }
 
     public void renderCustomizableText(String text, String customizable, Position textPosition, EditIcon editIcon) {
-        textToDraw.put(textPosition, text);
+        textToDrawFixed.put(textPosition, text);
 
         Position customTextPosition = new Position(textPosition.getXPosition() + text.length() * 10, textPosition.getYPosition());
-        textToDraw.put(customTextPosition, customizable);
+        textToDrawFixed.put(customTextPosition, customizable);
 
         Position editIconPosition = new Position(textPosition.getXPosition() - 20, textPosition.getYPosition() - 15);
         editIcon.changePosition(editIconPosition);
     }
 
     public void clearRenderedText() {
-        textToDraw.clear();
+        textToDrawFixed.clear();
+    }
+
+    public void removeTextFromPosition(Position position) {
+        textToDrawNotFixed.remove(position);
     }
 
     public void renderPixelsArrays(int[] renderPixels, int renderWidth, int renderHeight, int xPosition, int yPosition, int zoom, boolean fixed) {
@@ -446,10 +479,10 @@ public class RenderHandler {
 
     public void setTextToDraw(String line, int timer) {
         textCountdown = timer;
-        setTextToDraw(line);
+        setTextToDrawFixed(line);
     }
 
-    private void setTextToDraw(String line) {
+    private void setTextToDrawFixed(String line) {
         logger.debug(String.format("adding <%s> line", line));
         removeText();
         textToDrawInCenter.add(line);

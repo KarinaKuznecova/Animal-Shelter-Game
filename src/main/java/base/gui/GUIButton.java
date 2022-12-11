@@ -15,14 +15,14 @@ public abstract class GUIButton implements GameObject, Serializable {
     protected GuiService guiService = new GuiService();
 
     protected Sprite sprite;
-    protected Rectangle region;
+    protected Rectangle rectangle;
     protected boolean fixed;
     protected int objectCount;
     protected boolean multipleOptions;
 
-    protected GUIButton(Sprite sprite, Rectangle region, boolean fixed) {
+    protected GUIButton(Sprite sprite, Rectangle rectangle, boolean fixed) {
         this.sprite = sprite;
-        this.region = region;
+        this.rectangle = rectangle;
         this.fixed = fixed;
     }
 
@@ -32,9 +32,9 @@ public abstract class GUIButton implements GameObject, Serializable {
 
     public void render(RenderHandler renderer, int zoom, Rectangle interfaceRect) {
         if (objectCount > 1) {
-            renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), zoom, fixed, objectCount);
+            renderer.renderSprite(sprite, rectangle.getX() + interfaceRect.getX(), rectangle.getY() + interfaceRect.getY(), zoom, fixed, objectCount);
         } else {
-            renderer.renderSprite(sprite, region.getX() + interfaceRect.getX(), region.getY() + interfaceRect.getY(), zoom, fixed, 0);
+            renderer.renderSprite(sprite, rectangle.getX() + interfaceRect.getX(), rectangle.getY() + interfaceRect.getY(), zoom, fixed, 0);
         }
     }
 
@@ -45,7 +45,7 @@ public abstract class GUIButton implements GameObject, Serializable {
 
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
-        if (mouseRectangle.intersects(region)) {
+        if (mouseRectangle.intersects(rectangle)) {
             activate();
             return true;
         }
@@ -72,6 +72,6 @@ public abstract class GUIButton implements GameObject, Serializable {
 
     @Override
     public Rectangle getRectangle() {
-        return region;
+        return rectangle;
     }
 }

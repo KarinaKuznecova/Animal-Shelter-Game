@@ -11,6 +11,7 @@ import base.gameobjects.services.AnimalService;
 import base.gameobjects.services.BackpackService;
 import base.gameobjects.services.ItemService;
 import base.gameobjects.services.PlantService;
+import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
@@ -1293,10 +1294,34 @@ public class Game extends JFrame implements Runnable {
     }
 
     public String getItemNameByButtonId() {
-        return backpackService.getItemNameByButtonId(backpackGui, selectedItem);
+        String itemNameFromBackpack = backpackService.getItemNameByButtonId(backpackGui, selectedItem);
+        if (itemNameFromBackpack != null) {
+            return itemNameFromBackpack;
+        }
+        List<StorageChest> storageChests = getGameMap().getStorages();
+        for (StorageChest chest : storageChests) {
+            for (StorageCell cell : chest.getStorage().getCells()) {
+                if (cell.getDefaultId().equals(selectedItem)) {
+                    return cell.getItemName();
+                }
+            }
+        }
+        return null;
     }
 
     public BackpackButton getSelectedButton() {
-        return (BackpackButton) backpackGui.findButtonByDefaultId(selectedItem);
+        BackpackButton backpackButton = (BackpackButton) backpackGui.findButtonByDefaultId(selectedItem);
+        if (backpackButton != null) {
+            return backpackButton;
+        }
+        List<StorageChest> storageChests = getGameMap().getStorages();
+        for (StorageChest chest : storageChests) {
+            for (StorageCell cell : chest.getStorage().getCells()) {
+                if (cell.getDefaultId().equals(selectedItem)) {
+                    return cell;
+                }
+            }
+        }
+        return null;
     }
 }
