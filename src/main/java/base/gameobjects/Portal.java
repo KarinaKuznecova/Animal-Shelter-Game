@@ -6,7 +6,6 @@ import base.graphicsservice.RenderHandler;
 
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.DEBUG_MODE;
-import static base.constants.Constants.ZOOM;
 
 public class Portal implements GameObject {
 
@@ -24,7 +23,7 @@ public class Portal implements GameObject {
     @Override
     public void render(RenderHandler renderer, int zoom) {
         if (DEBUG_MODE) {
-            renderer.renderRectangle(rectangle, ZOOM, false);
+            renderer.renderRectangle(rectangle, 1, false);
         }
     }
 

@@ -549,8 +549,8 @@ public class Game extends JFrame implements Runnable {
 
     private void adjustPlayerPosition(Portal portalToPrevious) {
         if (portalToPrevious != null) {
-            int previousMapPortalX = gameMap.getSpawnPoint(portalToPrevious, true);
-            int previousMapPortalY = gameMap.getSpawnPoint(portalToPrevious, false);
+            int previousMapPortalX = gameMap.getSpawnPoint(portalToPrevious, true, player.getDirection());
+            int previousMapPortalY = gameMap.getSpawnPoint(portalToPrevious, false, player.getDirection());
             player.teleportTo(previousMapPortalX, previousMapPortalY);
         } else {
             player.teleportToCenter(this);
@@ -591,8 +591,8 @@ public class Game extends JFrame implements Runnable {
     private void adjustAnimalPosition(Animal animal, String previousMap) {
         Portal portalToPrevious = gameMaps.get(animal.getCurrentMap()).getPortalTo(previousMap);
         if (portalToPrevious != null) {
-            int previousMapPortalX = gameMaps.get(animal.getCurrentMap()).getSpawnPoint(portalToPrevious, true);
-            int previousMapPortalY = gameMaps.get(animal.getCurrentMap()).getSpawnPoint(portalToPrevious, false);
+            int previousMapPortalX = gameMaps.get(animal.getCurrentMap()).getSpawnPoint(portalToPrevious, true, animal.getDirection());
+            int previousMapPortalY = gameMaps.get(animal.getCurrentMap()).getSpawnPoint(portalToPrevious, false, animal.getDirection());
             animal.teleportAnimalTo(previousMapPortalX, previousMapPortalY);
         } else {
             animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
