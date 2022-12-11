@@ -514,6 +514,9 @@ public class MapService {
         if (version != null) {
             version = version.trim();
         }
+        if (version.startsWith("1.3")) {
+            return false;
+        }
         return !CURRENT_GAME_VERSION.equalsIgnoreCase(version);
     }
 

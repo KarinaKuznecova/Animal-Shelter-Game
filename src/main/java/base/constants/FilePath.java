@@ -56,6 +56,7 @@ public class FilePath {
     public static final String BACKPACK_FILE_PATH = "backpack";
     public static final String EDIT_ICON_PATH = "img/edit.png";
     public static final String HEART_ICON_PATH = "img/heart.png";
+    public static final String MONEY_ICON_PATH = "img/coins.png";
     public static final String OK_BUTTON_PATH = "img/button-ok.png";
     public static final String CANCEL_BUTTON_PATH = "img/button-cancel.png";
 

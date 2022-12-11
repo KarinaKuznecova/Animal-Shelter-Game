@@ -104,7 +104,7 @@ public class GuiService implements Serializable {
         return terrainButtonsArray;
     }
 
-    public GUI loadEmptyBackpack(Game game) {
+    public Backpack loadEmptyBackpack(Game game) {
         List<GUIButton> buttons = new ArrayList<>();
         for (int i = 0; i < BACKPACK_ROWS; i++) {
             for (int j = 0; j < BACKPACK_COLUMNS; j++) {
@@ -112,7 +112,7 @@ public class GuiService implements Serializable {
                 buttons.add(new BackpackButton(String.valueOf(i) + j, null, buttonRectangle, String.valueOf(i) + j));
             }
         }
-        return new GUI(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (CELL_SIZE + 2)), true);
+        return new Backpack(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (CELL_SIZE + 2)), 0);
     }
 
     public void decreaseNumberOnButton(Game game, BackpackButton button) {

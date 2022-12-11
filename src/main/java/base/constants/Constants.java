@@ -15,7 +15,7 @@ public class Constants {
     public static final String CHEATS_MODE_PROPERTY = "cheats";
     public static boolean CHEATS_MODE;
 
-    public static final String CURRENT_GAME_VERSION = "1.3.0";
+    public static final String CURRENT_GAME_VERSION = "1.4.0";
 
     public static final int INVENTORY_LIMIT = 99;
 

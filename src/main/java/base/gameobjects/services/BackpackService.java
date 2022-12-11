@@ -2,6 +2,7 @@ package base.gameobjects.services;
 
 import base.Game;
 import base.graphicsservice.Rectangle;
+import base.gui.Backpack;
 import base.gui.BackpackButton;
 import base.gui.GUI;
 import base.gui.GUIButton;
@@ -41,7 +42,7 @@ public class BackpackService {
         }
     }
 
-    public void saveBackpackToFile(GUI backpackGui) {
+    public void saveBackpackToFile(Backpack backpackGui) {
         logger.info("Attempt to save backpack");
 
         File backpackFile = new File(BACKPACK_FILE_PATH);
@@ -57,6 +58,7 @@ public class BackpackService {
 
             PrintWriter printWriter = new PrintWriter(backpackFile);
             printWriter.println("Game version:" + CURRENT_GAME_VERSION);
+            printWriter.println("money:" + backpackGui.getCoins());
             printWriter.println("// id, item name, count");
 
             for (GUIButton button : backpackGui.getButtons()) {
@@ -76,26 +78,27 @@ public class BackpackService {
         }
     }
 
-    public GUI loadBackpackFromFile() {
+    public Backpack loadBackpackFromFile() {
         logger.info("Attempt to load backpack");
         try {
             FileInputStream inputStream = new FileInputStream("backpack.bag");
             ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-            return (GUI) objectInputStream.readObject();
+            return (Backpack) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             logger.warn("No previous backpacks found, will load empty");
         }
         return null;
     }
 
-    public GUI loadBackpackFromFile(Game game) {
+    public Backpack loadBackpackFromFile(Game game) {
         logger.info("Attempt to load backpack from normal file");
 
         List<GUIButton> buttons = new ArrayList<>();
+        int coins = 0;
 
         File backpackFile = new File(BACKPACK_FILE_PATH);
         if (!backpackFile.exists()) {
-            GUI migrated = getMigratedBackpack(game);
+            Backpack migrated = getMigratedBackpack(game);
             if (migrated == null) {
                 return getEmptyBackpack(game, buttons);
             } else {
@@ -107,6 +110,10 @@ public class BackpackService {
                 String line = scanner.nextLine();
                 if (line.startsWith("//") || line.startsWith("Game version")) {
                     continue;
+                }
+                if (line.startsWith("money")) {
+                    String[] splitLine = line.split(":");
+                    coins = Integer.parseInt(splitLine[1]);
                 }
                 String[] splitLine = line.split(",");
                 if (splitLine.length == 3) {
@@ -126,15 +133,15 @@ public class BackpackService {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return new GUI(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (CELL_SIZE + 2)), true);
+        return new Backpack(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (CELL_SIZE + 2)), coins);
     }
 
-    public GUI getMigratedBackpack(Game game) {
-        GUI old = loadBackpackFromFile();
+    public Backpack getMigratedBackpack(Game game) {
+        Backpack old = loadBackpackFromFile();
 
         if (old != null) {
             List<GUIButton> buttons = new ArrayList<>();
-            GUI newEmpty = getEmptyBackpack(game, buttons);
+            Backpack newEmpty = getEmptyBackpack(game, buttons);
             for (GUIButton button : old.getButtons()) {
                 if (button instanceof BackpackButton) {
                     String defaultId = ((BackpackButton) button).getDefaultId();
@@ -168,14 +175,14 @@ public class BackpackService {
         return null;
     }
 
-    public GUI getEmptyBackpack(Game game, List<GUIButton> buttons) {
+    public Backpack getEmptyBackpack(Game game, List<GUIButton> buttons) {
         for (int i = 0; i < BACKPACK_ROWS; i++) {
             for (int j = 0; j < BACKPACK_COLUMNS; j++) {
                 Rectangle buttonRectangle = new Rectangle(j * (CELL_SIZE + 2), i * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
                 buttons.add(new BackpackButton(String.valueOf(i) + j, null, buttonRectangle, String.valueOf(i) + j));
             }
         }
-        return new GUI(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (CELL_SIZE + 2)), true);
+        return new Backpack(buttons, 5, game.getHeight() - ((BACKPACK_ROWS + 1) * (CELL_SIZE + 2)), 0);
     }
 
     public String getItemNameByButtonId(GUI backpack, String buttonId) {
