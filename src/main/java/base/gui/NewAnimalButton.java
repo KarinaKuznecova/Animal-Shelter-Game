@@ -31,18 +31,18 @@ public class NewAnimalButton extends GUIButton {
 
     @Override
     public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
-        renderer.renderRectangle(region, rectangle, 1, fixed);
+        renderer.renderRectangle(this.rectangle, rectangle, 1, fixed);
         if (sprite != null) {
             if (multipleOptions) {
                 renderer.renderSprite(sprite,
-                        region.getX() + rectangle.getX(),
-                        region.getY() + rectangle.getY(),
+                        this.rectangle.getX() + rectangle.getX(),
+                        this.rectangle.getY() + rectangle.getY(),
                         zoom,
                         fixed, "<      >");
             } else {
                 renderer.renderSprite(sprite,
-                        region.getX() + rectangle.getX(),
-                        region.getY() + rectangle.getY(),
+                        this.rectangle.getX() + rectangle.getX(),
+                        this.rectangle.getY() + rectangle.getY(),
                         zoom,
                         fixed);
             }
@@ -53,12 +53,12 @@ public class NewAnimalButton extends GUIButton {
     public void update(Game game) {
         if (animalType.equals(game.getSelectedAnimal())) {
             if (!isGreen) {
-                region.generateBorder(5, GREEN, BLUE);
+                rectangle.generateBorder(5, GREEN, BLUE);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateBorder(3, BROWN, BLUE);
+                rectangle.generateBorder(3, BROWN, BLUE);
                 isGreen = false;
             }
         }

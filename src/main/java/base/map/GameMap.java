@@ -1,6 +1,7 @@
 package base.map;
 
 import base.gameobjects.*;
+import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
 import base.map.bigobjects.BigObject;
 import base.map.bigobjects.Bookcase;
@@ -396,6 +397,16 @@ public class GameMap {
             }
         }
         return pillows;
+    }
+
+    public List<StorageChest> getStorages() {
+        List<StorageChest> storages = new ArrayList<>();
+        for (GameObject object : getInteractiveObjects()) {
+            if (object instanceof StorageChest) {
+                storages.add((StorageChest) object);
+            }
+        }
+        return storages;
     }
 
     public List<BigObject> getBigObjects() {

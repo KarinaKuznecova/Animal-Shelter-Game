@@ -37,20 +37,20 @@ public class SDKButton extends GUIButton {
 
     @Override
     public void render(RenderHandler renderer, int zoom, Rectangle interfaceRect) {
-        renderer.renderRectangle(region, interfaceRect, 1, fixed);
+        renderer.renderRectangle(rectangle, interfaceRect, 1, fixed);
         if (sprite != null) {
             if (multipleOptions) {
                 renderer.renderSprite(sprite,
-                        region.getX() + interfaceRect.getX(),
-                        region.getY() + interfaceRect.getY(), zoom, fixed, "<      >");
+                        rectangle.getX() + interfaceRect.getX(),
+                        rectangle.getY() + interfaceRect.getY(), zoom, fixed, "<      >");
             } else if (objectCount > 1) {
                 renderer.renderSprite(sprite,
-                        region.getX() + interfaceRect.getX(),
-                        region.getY() + interfaceRect.getY(), zoom, fixed, objectCount);
+                        rectangle.getX() + interfaceRect.getX(),
+                        rectangle.getY() + interfaceRect.getY(), zoom, fixed, objectCount);
             } else {
                 renderer.renderSprite(sprite,
-                        region.getX() + interfaceRect.getX(),
-                        region.getY() + interfaceRect.getY(),
+                        rectangle.getX() + interfaceRect.getX(),
+                        rectangle.getY() + interfaceRect.getY(),
                         zoom,
                         fixed);
             }
@@ -70,12 +70,12 @@ public class SDKButton extends GUIButton {
     public void update(Game game) {
         if (tileID == game.getSelectedTileId()) {
             if (!isGreen) {
-                region.generateBorder(5, GREEN, BLUE);
+                rectangle.generateBorder(5, GREEN, BLUE);
                 isGreen = true;
             }
         } else {
             if (isGreen) {
-                region.generateBorder(3, BROWN, BLUE);
+                rectangle.generateBorder(3, BROWN, BLUE);
                 isGreen = false;
             }
         }
