@@ -147,7 +147,9 @@ public class RenderHandler {
         int yPosition = yScreenRelated - (yPositionActual % CELL_SIZE);
         Item itemToDraw = new Item(0, 0, game.getSelectedItem(), game.getItemService().getItemSprite(game.getItemNameByButtonId()));
 
-        drawPreview(xPosition, yPosition, itemToDraw.getSprite());
+        if (itemToDraw.getSprite() != null) {
+            drawPreview(xPosition, yPosition, itemToDraw.getSprite());
+        }
 
     }
 

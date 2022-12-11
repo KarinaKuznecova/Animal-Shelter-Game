@@ -49,7 +49,8 @@ public class StorageCell extends BackpackButton {
 
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
-        if (mouseRectangle.intersects(rectangle)) {
+        Rectangle fixedRectangle = new Rectangle(rectangle.getX() - 30, rectangle.getY(), rectangle.getWidth(), rectangle.getHeight() - 25);
+        if (mouseRectangle.intersects(fixedRectangle)) {
             activate(game);
             return true;
         }
