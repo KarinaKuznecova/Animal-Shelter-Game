@@ -1,4 +1,4 @@
-Game version:1.3.0
+Game version:1.4.0
 Size:22:22
 Fill:14
 //Plants
@@ -39,7 +39,7 @@ bush,576,416
 spruce,1344,368
 oak,-96,472
 spruce,1344,464
-portal,-64,640,MainMap
+portal,-61,640,MainMap
 spruce,896,624
 spruce,1344,624
 spruce,-96,656

@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import static base.constants.Constants.*;
-import static base.constants.FilePath.BACKPACK_FILE_NAME;
+import static base.constants.Constants.CELL_SIZE;
+import static base.constants.Constants.CURRENT_GAME_VERSION;
 import static base.constants.FilePath.BACKPACK_FILE_PATH;
 import static base.gui.GuiService.BACKPACK_COLUMNS;
 import static base.gui.GuiService.BACKPACK_ROWS;
@@ -27,20 +27,7 @@ public class BackpackService {
 
     protected static final Logger logger = LoggerFactory.getLogger(BackpackService.class);
 
-    public BackpackButton inHand;
-
-    @Deprecated
-    public void saveBackpack(GUI backpackGui) {
-        logger.info("Attempt to save backpack");
-        try {
-            FileOutputStream outputStream = new FileOutputStream(BACKPACK_FILE_NAME);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-            objectOutputStream.writeObject(backpackGui);
-            objectOutputStream.close();
-        } catch (IOException e) {
-            logger.error("Unable to save backpack");
-        }
-    }
+    private BackpackButton inHand;
 
     public void saveBackpackToFile(Backpack backpackGui) {
         logger.info("Attempt to save backpack");

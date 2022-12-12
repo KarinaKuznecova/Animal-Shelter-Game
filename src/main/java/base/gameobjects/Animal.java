@@ -85,7 +85,7 @@ public abstract class Animal implements GameObject, Walking {
 
         direction = DOWN;
         updateDirection();
-        rectangle = new Rectangle(startX, startY, 32, 32);
+        rectangle = new Rectangle(startX, startY, 16, 16);
         rectangle.generateBorder(1, GREEN);
 
         if (BABY.equals(age)) {
@@ -95,7 +95,7 @@ public abstract class Animal implements GameObject, Walking {
         }
 
         route = new Route();
-        interactionZone = new InteractionZonePetHeart(rectangle.getX() + 32, rectangle.getY() + 32, 50);
+        interactionZone = new InteractionZonePetHeart(rectangle.getX() + 16, rectangle.getY() + 16, 50);
         heartIcon = new HeartIcon();
         state = waitingState;
     }
@@ -154,20 +154,19 @@ public abstract class Animal implements GameObject, Walking {
         int yForSprite = rectangle.getY();
         if (BABY.equals(age) && !animalType.contains("baby") || animalType.equals("chicken-baby")) {
             zoom = 1;
-            xForSprite = rectangle.getX() + rectangle.getWidth() / 2;
-            yForSprite = rectangle.getY() + rectangle.getHeight() / 2;
+            xForSprite = rectangle.getX() + (rectangle.getWidth());
+            yForSprite = rectangle.getY() + (rectangle.getHeight() + 5);
         }
         if (animatedSprite != null) {
-            renderer.renderSprite(animatedSprite, xForSprite, yForSprite, zoom, false);
+            renderer.renderSprite(animatedSprite, xForSprite-24, yForSprite-32, zoom, false);
         }
         if (DEBUG_MODE) {
-            Rectangle rectangle = new Rectangle(xForSprite, yForSprite, this.rectangle.getWidth(), this.rectangle.getHeight());
             if (interactionZone.isPlayerInRange()) {
                 rectangle.generateBorder(2, GREEN);
             } else {
                 rectangle.generateBorder(1, YELLOW);
             }
-            renderer.renderRectangle(rectangle, zoom, false);
+            renderer.renderRectangle(rectangle, 1, false);
             interactionZone.render(renderer, zoom);
         }
         if (isSelected && !DEBUG_MODE) {

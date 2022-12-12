@@ -136,7 +136,7 @@ public class RouteCalculator {
     }
 
     private void fillInitialRoutes(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangle, String destination) {
-        Rectangle initialRectangle = new Rectangle(rectangle.getX(), rectangle.getY(), TILE_SIZE, TILE_SIZE);
+        Rectangle initialRectangle = new Rectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
 
         Route potentialRoute = new Route();
         if (tryDown(gameMap, initialRectangle, destination) != null) {
@@ -234,29 +234,29 @@ public class RouteCalculator {
     }
 
     public Rectangle tryUp(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getY() >= 0 && canWalkThisDirection(gameMap, UP, rectangle.getX(), rectangle.getY(), destination)) {
-            return new Rectangle(rectangle.getX(), rectangle.getY() - NavigationService.getPixelsToAdjustPosition(UP, rectangle.getX(), rectangle.getY()), 32, 32);
+        if (rectangle.getY() >= 0 && canWalkThisDirection(gameMap, UP, rectangle, destination)) {
+            return new Rectangle(rectangle.getX(), rectangle.getY() - NavigationService.getPixelsToAdjustPosition(UP, rectangle.getX(), rectangle.getY()), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
 
     public Rectangle tryDown(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getY() + CELL_SIZE <= gameMap.getMapHeight() * CELL_SIZE && canWalkThisDirection(gameMap, DOWN, rectangle.getX(), rectangle.getY(), destination)) {
-            return new Rectangle(rectangle.getX(), rectangle.getY() + NavigationService.getPixelsToAdjustPosition(DOWN, rectangle.getX(), rectangle.getY()), 32, 32);
+        if (rectangle.getY() + CELL_SIZE <= gameMap.getMapHeight() * CELL_SIZE && canWalkThisDirection(gameMap, DOWN, rectangle, destination)) {
+            return new Rectangle(rectangle.getX(), rectangle.getY() + NavigationService.getPixelsToAdjustPosition(DOWN, rectangle.getX(), rectangle.getY()), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
 
     public Rectangle tryLeft(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getX() >= 0 && canWalkThisDirection(gameMap, LEFT, rectangle.getX(), rectangle.getY(), destination)) {
-            return new Rectangle(rectangle.getX() - NavigationService.getPixelsToAdjustPosition(LEFT, rectangle.getX(), rectangle.getY()), rectangle.getY(), 32, 32);
+        if (rectangle.getX() >= 0 && canWalkThisDirection(gameMap, LEFT, rectangle, destination)) {
+            return new Rectangle(rectangle.getX() - NavigationService.getPixelsToAdjustPosition(LEFT, rectangle.getX(), rectangle.getY()), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
 
     public Rectangle tryRight(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getX() + CELL_SIZE <= gameMap.getMapWidth() * CELL_SIZE && canWalkThisDirection(gameMap, RIGHT, rectangle.getX(), rectangle.getY(), destination)) {
-            return new Rectangle(rectangle.getX() + NavigationService.getPixelsToAdjustPosition(RIGHT, rectangle.getX(), rectangle.getY()), rectangle.getY(), 32, 32);
+        if (rectangle.getX() + CELL_SIZE <= gameMap.getMapWidth() * CELL_SIZE && canWalkThisDirection(gameMap, RIGHT, rectangle, destination)) {
+            return new Rectangle(rectangle.getX() + NavigationService.getPixelsToAdjustPosition(RIGHT, rectangle.getX(), rectangle.getY()), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
@@ -309,13 +309,15 @@ public class RouteCalculator {
     private boolean isThereNpcSpot(GameMap gameMap, Rectangle rectangle) {
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject instanceof NpcSpot) {
-                return rectangle.intersects(((NpcSpot) gameObject).getRectangle());
+                return rectangle.intersects(gameObject.getRectangle());
             }
         }
         return false;
     }
 
-    private boolean canWalkThisDirection(GameMap gameMap, Direction direction, int xPosition, int yPosition, String destination) {
+    private boolean canWalkThisDirection(GameMap gameMap, Direction direction, Rectangle rectangle, String destination) {
+        int xPosition = rectangle.getX();
+        int yPosition = rectangle.getY();
         switch (direction) {
             case LEFT:
                 xPosition = xPosition - Math.abs(NavigationService.getPixelsToAdjustPosition(direction, xPosition, yPosition));
@@ -330,11 +332,11 @@ public class RouteCalculator {
                 yPosition = yPosition + Math.abs(NavigationService.getPixelsToAdjustPosition(direction, xPosition, yPosition));
                 break;
         }
-        return isWalkable(gameMap, xPosition, yPosition, destination);
+        return isWalkable(gameMap, xPosition, yPosition, rectangle.getWidth(), rectangle.getHeight(), destination);
     }
 
-    public boolean isWalkable(GameMap gameMap, int x, int y, String destination) {
-        Rectangle rectangle = new Rectangle(x, y, 32, 32);
+    public boolean isWalkable(GameMap gameMap, int x, int y, int width, int height, String destination) {
+        Rectangle rectangle = new Rectangle(x, y, width, height);
 
         if (gameMap.isTherePortal(rectangle)) {
             return true;
@@ -347,8 +349,9 @@ public class RouteCalculator {
             return true;
         }
         for (MapTile tile : tilesOnLayer) {
-            Rectangle tileRectangle = new Rectangle(tile.getX() * CELL_SIZE, tile.getY() * CELL_SIZE, 32, 32);
-            if (rectangle.intersects(tileRectangle)) {
+//            Rectangle tileRectangle = new Rectangle(tile.getX() * CELL_SIZE, tile.getY() * CELL_SIZE, 32, 32);
+//            if (rectangle.intersects(tileRectangle)) {
+            if (rectangle.potentialIntersects(tile, x, y)) {
                 if (LAKE_WATER.equals(destination) && gameMap.isThereWaterTile(rectangle)) {
                     return true;
                 }

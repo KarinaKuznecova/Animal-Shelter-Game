@@ -220,7 +220,7 @@ public class GameMap {
             mapSize = mapHeight;
         }
 
-        if (previousMapPortal == mapSize * CELL_SIZE) {
+        if (mapSize * CELL_SIZE - previousMapPortal < CELL_SIZE) {
             previousMapPortal = previousMapPortal - CELL_SIZE;
         }
 
@@ -236,10 +236,10 @@ public class GameMap {
             }
         } else {
             if (direction == Direction.UP) {
-                return previousMapPortal - 3;
+                return previousMapPortal - 7;
             }
             if (direction == Direction.DOWN) {
-                return previousMapPortal + 3;
+                return previousMapPortal + 7;
             }
         }
         return previousMapPortal;

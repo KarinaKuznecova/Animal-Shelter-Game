@@ -41,8 +41,6 @@ public class FilePath {
     public static final String BUSH_IMG = "img/bush.png";
     public static final String OAK_IMG = "img/oak.png";
     public static final String SPRUCE_IMG = "img/spruce.png";
-    public static final String TREE_IMG = "img/tree.png";
-    public static final String TREE_PREVIEW = "img/tree-preview.png";
 
     //config
     public static final String MAPS_LIST_PATH = "maps/MapList.txt";
@@ -52,7 +50,6 @@ public class FilePath {
     public static final String MALE_NAMES_FILE_PATH = "config/names-m.txt";
 
     //other
-    public static final String BACKPACK_FILE_NAME = "backpack.bag";
     public static final String BACKPACK_FILE_PATH = "backpack";
     public static final String EDIT_ICON_PATH = "img/edit.png";
     public static final String HEART_ICON_PATH = "img/heart.png";
