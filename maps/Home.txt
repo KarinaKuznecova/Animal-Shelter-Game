@@ -1,12 +1,12 @@
-Game version:1.3.0
+Game version:1.4.0
 Size:41:20
 Fill:112
 //Items
 //type, xPosition, yPosition
 bowl,320,384,true
 water-bowl,320,320,true
-portal,-64,640,TopLeftMap
-portal,640,1280,MainMap
+portal,-61,640,TopLeftMap
+portal,640,1277,MainMap
 //layer,tileId,xPos,yPos,regularTile,portalDirection
 0,111,6,13,n
 0,111,15,7,n

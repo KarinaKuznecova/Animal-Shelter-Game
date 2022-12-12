@@ -62,6 +62,9 @@ public interface Walking {
         if (tilesOnLayer != null) {
             for (MapTile tile : tilesOnLayer) {
                 if (rectangle.potentialIntersects(tile, xPosition, yPosition)) {
+                    if (tile.isPortal()) {
+                        return false;
+                    }
                     if (gameMap.getWaterCornerTiles().contains(tile.getId())) {
                         return false;
                     }

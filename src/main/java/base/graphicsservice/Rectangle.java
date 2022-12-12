@@ -134,11 +134,11 @@ public class Rectangle implements Serializable {
     }
 
     private boolean potentialIntersectsByY(MapTile tile, int yPos) {
-        return !(yPos > tile.getY() * CELL_SIZE + TILE_SIZE || tile.getY() * CELL_SIZE > yPos + (CELL_SIZE - (TILE_SIZE / 2)));     //48 = 32 + 32/2
+        return !(yPos > tile.getY() * CELL_SIZE + CELL_SIZE - 1 || tile.getY() * CELL_SIZE + 1 > yPos + height);
     }
 
     private boolean potentialIntersectsByX(MapTile tile, int xPos) {
-        return !(xPos > tile.getX() * CELL_SIZE + CELL_SIZE || tile.getX() * CELL_SIZE > xPos + width);
+        return !(xPos > tile.getX() * CELL_SIZE + CELL_SIZE - 1 || tile.getX() * CELL_SIZE + 1 > xPos + width);
     }
 
     @Override

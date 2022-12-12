@@ -56,7 +56,7 @@ public class WalkingState implements AnimalState {
         }
 
         animal.getAnimatedSprite().update(game);
-        animal.getInteractionZone().changePosition(animal.getRectangle().getX() + 32, animal.getRectangle().getY() + 32);
+        animal.getInteractionZone().changePosition(animal.getRectangle().getX() + 12, animal.getRectangle().getY() + 12);
 
         checkIfNeedToGoToDifferentLocation(game, animal);
         checkPortal(game, animal);
@@ -98,7 +98,7 @@ public class WalkingState implements AnimalState {
     }
 
     protected int getMovingTickToAdjustPosition(Direction direction, Animal animal) {
-        return Math.abs(NavigationService.getPixelsToAdjustPosition(direction, animal.getCurrentX(), animal.getCurrentY())) / animal.getSpeed();
+        return Math.abs(NavigationService.getPixelsToAdjustPosition(direction, animal.getCurrentX(), animal.getCurrentY())) / animal.getSpeed() - 1;
     }
 
     private boolean isOutsideOfMap(GameMap gameMap, Rectangle animalRectangle) {

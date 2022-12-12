@@ -551,6 +551,7 @@ public class Game extends JFrame implements Runnable {
         if (portalToPrevious != null) {
             int previousMapPortalX = gameMap.getSpawnPoint(portalToPrevious, true, player.getDirection());
             int previousMapPortalY = gameMap.getSpawnPoint(portalToPrevious, false, player.getDirection());
+            logger.info("Will teleport player to x:" + previousMapPortalX + ", y: " + previousMapPortalY);
             player.teleportTo(previousMapPortalX, previousMapPortalY);
         } else {
             player.teleportToCenter(this);
@@ -594,6 +595,9 @@ public class Game extends JFrame implements Runnable {
             int previousMapPortalX = gameMaps.get(animal.getCurrentMap()).getSpawnPoint(portalToPrevious, true, animal.getDirection());
             int previousMapPortalY = gameMaps.get(animal.getCurrentMap()).getSpawnPoint(portalToPrevious, false, animal.getDirection());
             animal.teleportAnimalTo(previousMapPortalX, previousMapPortalY);
+            Route routeToAdjust = new Route();
+            routeToAdjust.addStep(animal.getDirection());
+            animal.setRoute(routeToAdjust);
         } else {
             animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
         }
@@ -926,6 +930,11 @@ public class Game extends JFrame implements Runnable {
         return true;
     }
 
+    public void pickUpCoins(Coin coin) {
+        backpackGui.addCoins(coin.getAmount());
+        getGameMap().removeObject(coin);
+    }
+
     public void removeItemFromInventory(String itemName) {
         guiService.decreaseNumberOnButton(this, (BackpackButton) backpackGui.findButtonByDefaultId(itemName));
     }
@@ -1163,15 +1172,6 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    public void dropRandomFood() {
-        int xPosition = npc.getRectangle().getX();
-        int yPosition = npc.getRectangle().getY();
-        String plantType = plantService.plantTypes.get(random.nextInt(plantService.plantTypes.size()));
-        Sprite sprite = plantService.getPlantSprite(plantType);
-        Item item = new Item(xPosition, yPosition, plantType, sprite);
-        getGameMap(MAIN_MAP).addItem(item);
-    }
-
     public void giveAnimal() {
         Animal adoptedAnimal = npc.getWantedAnimal();
         Route route = calculateRouteToNpc(adoptedAnimal);
@@ -1184,7 +1184,28 @@ public class Game extends JFrame implements Runnable {
         npc.setSpeed(1);
         adoptedAnimal.setSpeed(2);
         sendNpcAway();
-        dropRandomFood();
+        int randomDrop = random.nextInt(2);
+        if (randomDrop == 1) {
+            dropRandomCoins();
+        } else {
+            dropRandomFood();
+        }
+    }
+
+    public void dropRandomFood() {
+        int xPosition = npc.getRectangle().getX();
+        int yPosition = npc.getRectangle().getY();
+        String plantType = plantService.plantTypes.get(random.nextInt(plantService.plantTypes.size()));
+        Sprite sprite = plantService.getPlantSprite(plantType);
+        Item item = new Item(xPosition, yPosition, plantType, sprite);
+        getGameMap(MAIN_MAP).addItem(item);
+    }
+
+    public void dropRandomCoins() {
+        int xPosition = npc.getRectangle().getX();
+        int yPosition = npc.getRectangle().getY();
+        Coin coin = new Coin(xPosition, yPosition, random.nextInt(4) + 1);
+        getGameMap(MAIN_MAP).addObject(coin);
     }
 
     public void removeAnimal(Animal animal) {
