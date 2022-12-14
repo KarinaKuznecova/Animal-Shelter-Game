@@ -311,7 +311,7 @@ public class Game extends JFrame implements Runnable {
      * =================================== Defaults ======================================
      */
 
-    // TODO: only one item per all buttons should be selected
+    // TODO: only one item per all buttons should be selected - issue #325 on github
     private void enableDefaultGui() {
         deselectEverything();
 
@@ -1053,12 +1053,11 @@ public class Game extends JFrame implements Runnable {
         if (!route.isEmpty()) {
             return route;
         }
-        // TODO
-//        if (animal.getCurrentMap().equalsIgnoreCase(MAIN_MAP)) {
-//            return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, LAKE_WATER);
-//        } else {
+        if (animal.getCurrentMap().equalsIgnoreCase(MAIN_MAP)) {
+            return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, LAKE_WATER);
+        } else {
             return calculateRouteToOtherMap(animal, getNextPortalToGetToCenter(animal.getCurrentMap()));
-//        }
+        }
     }
 
     public Route calculateRouteToPillow(Animal animal) {

@@ -70,10 +70,9 @@ public interface Walking {
                     if (tile.isPortal()) {
                         return false;
                     }
-                    // TODO
-//                    if (gameMap.getWaterCornerTiles().contains(tile.getId())) {
-//                        return false;
-//                    }
+                    if (gameMap.getWaterCornerTiles().contains(tile.getId())) {
+                        return false;
+                    }
                     return true;
                 }
             }

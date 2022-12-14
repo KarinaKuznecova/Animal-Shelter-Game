@@ -356,6 +356,9 @@ public class RouteCalculator {
                 if (LAKE_WATER.equals(destination) && gameMap.isThereWaterTile(rectangle)) {
                     return true;
                 }
+                if (gameMap.getWaterCornerTiles().contains(tile.getId())) {
+                    return true;
+                }
                 return false;
             }
         }

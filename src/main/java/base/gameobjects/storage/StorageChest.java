@@ -42,7 +42,7 @@ public class StorageChest implements GameObject {
         this.spriteOpen = spriteOpen;
         interactionZone = new InteractionZoneStorageChest(x + 32, y + 32, 90);
         storage = new Storage(6, rectangle, fileName);
-        fileName = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));     // TODO: change to smth prettier
+        fileName = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));     // TODO: change to smth prettier - issue #324 on github
 
         isOpen = false;
     }

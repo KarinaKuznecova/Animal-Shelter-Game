@@ -356,7 +356,7 @@ public abstract class Animal implements GameObject, Walking {
         walkingState.goAway(this, route);
     }
 
-    // TODO: should be different for each language
+    // TODO: should be different for each language - issue #300 on github
     @Override
     public String toString() {
         return animalType + " named " + name;
