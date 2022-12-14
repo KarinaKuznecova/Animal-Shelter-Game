@@ -34,7 +34,6 @@ public class Cat extends Animal {
         incrementAge();
         if (isTimeToGrowUp()) {
             setAge(ADULT);
-            resetSpeedToDefault();
             setAnimalType(getName(getColor(), ADULT));
             loadAnimatedSprite();
             setPreviewSprite();

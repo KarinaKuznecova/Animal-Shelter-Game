@@ -14,7 +14,7 @@ public class NPCEvent extends Event {
 
     public NPCEvent() {
         repeatable = true;
-        coolDown = 3;
+        coolDown = 5;
         currentCoolDown = 2;
     }
 
@@ -23,7 +23,12 @@ public class NPCEvent extends Event {
         currentCoolDown--;
         chance = random.nextInt(4);
 
-        if ((!repeatable && happened) || isThereNpcAlready(game) || currentCoolDown > 0) {
+        if (isThereNpcAlready(game)) {
+            currentCoolDown = coolDown;
+            chance = 0;
+            return;
+        }
+        if ((!repeatable && happened) || currentCoolDown > 0) {
             chance = 0;
             return;
         }

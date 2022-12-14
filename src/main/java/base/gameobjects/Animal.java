@@ -91,7 +91,6 @@ public abstract class Animal implements GameObject, Walking {
         if (ADULT.equals(age)) {
             setCurrentAge(GROWING_UP_TIME);
         }
-        resetSpeedToDefault();
 
         route = new Route();
         interactionZone = new InteractionZonePetHeart(rectangle.getX() + 16, rectangle.getY() + 16, 50);
@@ -208,7 +207,6 @@ public abstract class Animal implements GameObject, Walking {
         incrementAge();
         if (isTimeToGrowUp()) {
             setAge(ADULT);
-            resetSpeedToDefault();
         }
     }
 
@@ -248,10 +246,6 @@ public abstract class Animal implements GameObject, Walking {
         if (currentHunger != 0 && currentHunger % (MAX_HUNGER / 10) == 0) {
             logger.debug(String.format("Hunger level for %s is %d percent", this, currentHunger / (MAX_HUNGER / 100)));
         }
-        if (currentHunger < MAX_HUNGER / 100 * 10) {
-            // TODO
-//            speed = 1;
-        }
     }
 
     private void decreaseThirstLevel() {
@@ -261,19 +255,6 @@ public abstract class Animal implements GameObject, Walking {
         if (currentThirst != 0 && currentThirst % (MAX_THIRST / 10) == 0) {
             logger.debug(String.format("Thirst level for %s is %d percent", this, currentThirst / (MAX_THIRST / 100)));
         }
-        if (currentThirst < MAX_THIRST / 100 * 10) {
-            // TODO
-//            speed = 1;
-        }
-    }
-
-    protected void resetSpeedToDefault() {
-        // TODO
-//        if (BABY.equals(age)) {
-            setSpeed(2);
-//        } else {
-//            setSpeed(3);
-//        }
     }
 
     public boolean isAnimalStuck(GameMap gameMap) {

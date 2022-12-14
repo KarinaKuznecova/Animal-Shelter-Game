@@ -18,7 +18,6 @@ public class Chicken extends Animal {
         incrementAge();
         if (isTimeToGrowUp()) {
             setAge(ADULT);
-            resetSpeedToDefault();
             setAnimalType(TYPE);
             loadAnimatedSprite();
             setPreviewSprite();

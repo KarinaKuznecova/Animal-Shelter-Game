@@ -83,28 +83,28 @@ public class AnimalService {
         Animal animal;
         switch (animalType.toLowerCase()) {
             case Rat.TYPE:
-                animal = new Rat(startX, startY, 3, color, hunger, thirst, energy, age, name);
+                animal = new Rat(startX, startY, 2, color, hunger, thirst, energy, age, name);
                 break;
             case Mouse.TYPE:
-                animal = new Mouse(startX, startY, 3, hunger, thirst, energy, age, name);
+                animal = new Mouse(startX, startY, 2, hunger, thirst, energy, age, name);
                 break;
             case Chicken.TYPE:
-                animal = new Chicken(startX, startY, 3, hunger, thirst, energy, age, name);
+                animal = new Chicken(startX, startY, 2, hunger, thirst, energy, age, name);
                 break;
             case Butterfly.TYPE:
                 animal = new Butterfly(startX, startY);
                 break;
             case Cat.TYPE:
-                animal = new Cat(startX, startY, 3, color, hunger, thirst, energy, age, name);
+                animal = new Cat(startX, startY, 2, color, hunger, thirst, energy, age, name);
                 break;
             case Pig.TYPE:
-                animal = new Pig(startX, startY, 3, hunger, thirst, energy, age, name);
+                animal = new Pig(startX, startY, 2, hunger, thirst, energy, age, name);
                 break;
             case Bunny.TYPE:
-                animal = new Bunny(startX, startY, 3, hunger, thirst, energy, age, name);
+                animal = new Bunny(startX, startY, 2, hunger, thirst, energy, age, name);
                 break;
             case Dog.TYPE:
-                animal = new Dog(startX, startY, 3, hunger, thirst, energy, age, name);
+                animal = new Dog(startX, startY, 2, hunger, thirst, energy, age, name);
                 break;
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalType));
