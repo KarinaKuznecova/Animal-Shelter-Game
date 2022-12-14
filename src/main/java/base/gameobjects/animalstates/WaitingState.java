@@ -26,6 +26,10 @@ public class WaitingState implements AnimalState {
     }
 
     private void initializeWaiting() {
-        currentWaitingTicks = new Random().nextInt(40) + 10;
+        currentWaitingTicks = new Random().nextInt(80) + 80;
+    }
+
+    public void setWaiting(int waiting) {
+        currentWaitingTicks = waiting;
     }
 }

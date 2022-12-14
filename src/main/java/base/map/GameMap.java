@@ -227,19 +227,20 @@ public class GameMap {
         if (previousMapPortal < 0) {
             previousMapPortal = 0;
         }
-        if (getX){
+        if (!getX){
             if (direction == Direction.LEFT) {
-                return previousMapPortal - 3;
+                return previousMapPortal - 7;
             }
             if (direction == Direction.RIGHT) {
-                return previousMapPortal + 3;
+                return previousMapPortal + 7;
             }
         } else {
             if (direction == Direction.UP) {
                 return previousMapPortal - 7;
             }
             if (direction == Direction.DOWN) {
-                return previousMapPortal + 7;
+                // TODO ?
+                return previousMapPortal + 14;
             }
         }
         return previousMapPortal;
@@ -330,9 +331,9 @@ public class GameMap {
         return false;
     }
 
-    public boolean isTherePortal(Rectangle rectangle) {
+    public boolean isTherePortal(Rectangle rectangle, String destination) {
         for (Portal portal : getPortals()) {
-            if (rectangle.intersects(portal.getRectangle())) {
+            if (portal.getDirection().equals(destination) && rectangle.intersects(portal.getRectangle())) {
                 return true;
             }
         }

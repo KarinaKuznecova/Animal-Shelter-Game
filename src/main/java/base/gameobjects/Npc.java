@@ -43,7 +43,7 @@ public class Npc implements GameObject, Walking {
         route = new Route();
         direction = DOWN;
 
-        rectangle = new Rectangle(startX, startY, 32, 32);
+        rectangle = new Rectangle(startX, startY, TILE_SIZE, TILE_SIZE);
         rectangle.generateBorder(1, GREEN);
 
         this.wantedAnimal = wantedAnimal;
@@ -73,13 +73,14 @@ public class Npc implements GameObject, Walking {
                 arrived = true;
             } else {
                 route = game.calculateRouteToNpcSpot(this);
+                route.addStep(UP);
                 route.addStep(LEFT);
             }
         }
 
         if (movingTicks < 1 && !route.isEmpty()) {
             nextDirection = route.getNextStep();
-            movingTicks = 64 / speed;
+            movingTicks = 32 / speed;
             logger.debug(String.format("Direction: %s, moving ticks: %d", direction.name(), movingTicks));
         }
 

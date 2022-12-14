@@ -128,6 +128,7 @@ public class Game extends JFrame implements Runnable {
 
         DEBUG_MODE = Boolean.parseBoolean(gameProperties.getProperty(DEBUG_MODE_PROPERTY));
         CHEATS_MODE = Boolean.parseBoolean(gameProperties.getProperty(CHEATS_MODE_PROPERTY));
+        TEST_MAP_MODE = Boolean.parseBoolean(gameProperties.getProperty(TEST_MAP_PROPERTY));
         LANGUAGE = gameProperties.getProperty(LANGUAGE_PROPERTY);
     }
 
@@ -224,7 +225,11 @@ public class Game extends JFrame implements Runnable {
     private void loadMap() {
         logger.info("Game map loading started");
 
-        gameMap = mapService.loadGameMap("MainMap", tileService);
+        if (TEST_MAP_MODE) {
+            gameMap = mapService.loadGameMap(MapConstants.TEST_MAP, tileService);
+        } else {
+            gameMap = mapService.loadGameMap(MAIN_MAP, tileService);
+        }
         loadAnimalsOnMaps();
 
         initialCacheMaps();
@@ -1048,11 +1053,12 @@ public class Game extends JFrame implements Runnable {
         if (!route.isEmpty()) {
             return route;
         }
-        if (animal.getCurrentMap().equalsIgnoreCase(MAIN_MAP)) {
-            return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, LAKE_WATER);
-        } else {
+        // TODO
+//        if (animal.getCurrentMap().equalsIgnoreCase(MAIN_MAP)) {
+//            return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, LAKE_WATER);
+//        } else {
             return calculateRouteToOtherMap(animal, getNextPortalToGetToCenter(animal.getCurrentMap()));
-        }
+//        }
     }
 
     public Route calculateRouteToPillow(Animal animal) {
@@ -1179,7 +1185,8 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void sendAnimalAway(Animal adoptedAnimal) {
-        Route route = routeCalculator.calculateRoute(getGameMap(MAIN_MAP), adoptedAnimal, "city");
+        logger.info(String.format("%s is going AWAY with NPC", adoptedAnimal));
+        Route route = routeCalculator.calculateRoute(getGameMap(adoptedAnimal.getCurrentMap()), adoptedAnimal, "city");
         adoptedAnimal.goAway(route);
         npc.setSpeed(1);
         adoptedAnimal.setSpeed(2);

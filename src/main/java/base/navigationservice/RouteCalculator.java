@@ -79,6 +79,7 @@ public class RouteCalculator {
                 searchQueue.remove(0);
             }
         }
+        logger.info(String.format("%s DID NOT found a way to : %s", animal, destination));
         return newRoute;
     }
 
@@ -122,7 +123,9 @@ public class RouteCalculator {
                 }
                 if (found) {
                     logger.info(String.format("%s found his way to %s!", npc, destination));
-                    return map.get(rectangleToCheck);
+                    Route successfulRoute = map.get(rectangleToCheck);
+                    successfulRoute.addStep(successfulRoute.getLastStep());
+                    return successfulRoute;
                 } else {
                     searched.add(rectangleToCheck);
                     fillSearchQueue(currentMap, searchQueue, rectangleToCheck, map.get(rectangleToCheck), searched, destination);
@@ -234,29 +237,29 @@ public class RouteCalculator {
     }
 
     public Rectangle tryUp(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getY() >= 0 && canWalkThisDirection(gameMap, UP, rectangle, destination)) {
-            return new Rectangle(rectangle.getX(), rectangle.getY() - NavigationService.getPixelsToAdjustPosition(UP, rectangle.getX(), rectangle.getY()), rectangle.getWidth(), rectangle.getHeight());
+        if (rectangle.getY() >= -64 && canWalkThisDirection(gameMap, UP, rectangle, destination)) {
+            return new Rectangle(rectangle.getX(), rectangle.getY() - Math.abs(NavigationService.getPixelsToAdjustPosition(UP, rectangle.getX(), rectangle.getY())), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
 
     public Rectangle tryDown(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getY() + CELL_SIZE <= gameMap.getMapHeight() * CELL_SIZE && canWalkThisDirection(gameMap, DOWN, rectangle, destination)) {
-            return new Rectangle(rectangle.getX(), rectangle.getY() + NavigationService.getPixelsToAdjustPosition(DOWN, rectangle.getX(), rectangle.getY()), rectangle.getWidth(), rectangle.getHeight());
+        if (rectangle.getY() + rectangle.getHeight() <= gameMap.getMapHeight() * CELL_SIZE && canWalkThisDirection(gameMap, DOWN, rectangle, destination)) {
+            return new Rectangle(rectangle.getX(), rectangle.getY() + Math.abs(NavigationService.getPixelsToAdjustPosition(DOWN, rectangle.getX(), rectangle.getY())), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
 
     public Rectangle tryLeft(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getX() >= 0 && canWalkThisDirection(gameMap, LEFT, rectangle, destination)) {
-            return new Rectangle(rectangle.getX() - NavigationService.getPixelsToAdjustPosition(LEFT, rectangle.getX(), rectangle.getY()), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+        if (rectangle.getX() >= -64 && canWalkThisDirection(gameMap, LEFT, rectangle, destination)) {
+            return new Rectangle(rectangle.getX() - Math.abs(NavigationService.getPixelsToAdjustPosition(LEFT, rectangle.getX(), rectangle.getY())), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
 
     public Rectangle tryRight(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getX() + CELL_SIZE <= gameMap.getMapWidth() * CELL_SIZE && canWalkThisDirection(gameMap, RIGHT, rectangle, destination)) {
-            return new Rectangle(rectangle.getX() + NavigationService.getPixelsToAdjustPosition(RIGHT, rectangle.getX(), rectangle.getY()), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+        if (rectangle.getX() + rectangle.getWidth() <= gameMap.getMapWidth() * CELL_SIZE && canWalkThisDirection(gameMap, RIGHT, rectangle, destination)) {
+            return new Rectangle(rectangle.getX() + Math.abs(NavigationService.getPixelsToAdjustPosition(RIGHT, rectangle.getX(), rectangle.getY())), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
@@ -338,9 +341,9 @@ public class RouteCalculator {
     public boolean isWalkable(GameMap gameMap, int x, int y, int width, int height, String destination) {
         Rectangle rectangle = new Rectangle(x, y, width, height);
 
-        if (gameMap.isTherePortal(rectangle)) {
+        if (gameMap.isTherePortal(rectangle, destination)) {
             return true;
-        } else if (x < 0 || y < 0 || x > gameMap.getMapWidth() * CELL_SIZE || y > gameMap.getMapHeight() * CELL_SIZE) {
+        } else if (x < -64 || y < -64 || x > gameMap.getMapWidth() * CELL_SIZE || y > gameMap.getMapHeight() * CELL_SIZE) {
             return false;
         }
 
@@ -349,8 +352,6 @@ public class RouteCalculator {
             return true;
         }
         for (MapTile tile : tilesOnLayer) {
-//            Rectangle tileRectangle = new Rectangle(tile.getX() * CELL_SIZE, tile.getY() * CELL_SIZE, 32, 32);
-//            if (rectangle.intersects(tileRectangle)) {
             if (rectangle.potentialIntersects(tile, x, y)) {
                 if (LAKE_WATER.equals(destination) && gameMap.isThereWaterTile(rectangle)) {
                     return true;

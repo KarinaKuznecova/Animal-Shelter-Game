@@ -8,6 +8,7 @@ import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static base.constants.Constants.CELL_SIZE;
 import static base.constants.FilePath.MONEY_ICON_PATH;
 
 public class Coin implements GameObject {
@@ -22,9 +23,7 @@ public class Coin implements GameObject {
         this.amount = amount;
 
         sprite = new Sprite(ImageLoader.loadImage(MONEY_ICON_PATH));
-        rectangle = new Rectangle();
-        rectangle.setX(xPosition);
-        rectangle.setY(yPosition);
+        rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
     }
 
     @Override

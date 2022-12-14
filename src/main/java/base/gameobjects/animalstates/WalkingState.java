@@ -15,7 +15,7 @@ import static base.constants.Constants.*;
 import static base.constants.MapConstants.CITY_MAP;
 import static base.constants.MapConstants.FOREST_MAP;
 import static base.gameobjects.Animal.*;
-import static base.navigationservice.Direction.*;
+import static base.navigationservice.Direction.STAY;
 
 public class WalkingState implements AnimalState {
 
@@ -28,12 +28,15 @@ public class WalkingState implements AnimalState {
     @Override
     public void update(Animal animal, Game game) {
         Direction nextDirection = animal.getDirection();
-
+        boolean makingLastRouteMove = false;
         if (movingTicks < 1) {
             if (!animal.getRoute().isEmpty()) {
                 nextDirection = animal.getRoute().getNextStep();
                 movingTicks = getMovingTickToAdjustPosition(nextDirection, animal);
                 logger.debug(String.format("Direction: %s, moving ticks: %d", animal.getDirection().name(), movingTicks));
+                if (animal.getRoute().isEmpty()) {
+                    makingLastRouteMove = true;
+                }
             } else {
                 nextDirection = animal.getRandomDirection();
                 if (nextDirection == STAY) {
@@ -63,13 +66,13 @@ public class WalkingState implements AnimalState {
 
         movingTicks--;
 
-        if (isHungry(animal)) {
+        if (isHungry(animal) && animal.getRoute().isEmpty() && !makingLastRouteMove) {
             lookForFood(animal, game);
         }
-        if (isThirsty(animal)) {
+        if (isThirsty(animal) && animal.getRoute().isEmpty() && !makingLastRouteMove) {
             lookForWater(animal, game);
         }
-        if (isSleepy(animal)) {
+        if (isSleepy(animal) && animal.getRoute().isEmpty() && !makingLastRouteMove) {
             if (animal.getRoute().isEmpty() && isTherePillow(game, animal)) {
                 animal.setFallingAsleepState();
                 return;
@@ -88,7 +91,6 @@ public class WalkingState implements AnimalState {
         }
 
         if (isGoingToNpc && animal.getRoute().isEmpty() && isArrivedToNpc(game, animal)) {
-            logger.info("here1");
             isGoingToNpc = false;
             game.sendAnimalAway(animal);
         }
@@ -98,7 +100,7 @@ public class WalkingState implements AnimalState {
     }
 
     protected int getMovingTickToAdjustPosition(Direction direction, Animal animal) {
-        return Math.abs(NavigationService.getPixelsToAdjustPosition(direction, animal.getCurrentX(), animal.getCurrentY())) / animal.getSpeed() - 1;
+        return Math.abs(NavigationService.getPixelsToAdjustPosition(direction, animal.getCurrentX(), animal.getCurrentY())) / animal.getSpeed();
     }
 
     private boolean isOutsideOfMap(GameMap gameMap, Rectangle animalRectangle) {
@@ -133,7 +135,7 @@ public class WalkingState implements AnimalState {
                 }
                 break;
             case RIGHT:
-                if (animal.getRectangle().getX() < (gameMap.getMapWidth() * TILE_SIZE - animal.getRectangle().getWidth()) * ZOOM || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
+                if (animal.getRectangle().getX() < (gameMap.getMapWidth() * CELL_SIZE - animal.getRectangle().getWidth()) || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
                     animal.getRectangle().setX(animal.getRectangle().getX() + animal.getSpeed());
                 }
                 break;
@@ -143,7 +145,7 @@ public class WalkingState implements AnimalState {
                 }
                 break;
             case DOWN:
-                if (animal.getRectangle().getY() < (gameMap.getMapHeight() * TILE_SIZE - animal.getRectangle().getHeight()) * ZOOM || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
+                if (animal.getRectangle().getY() < (gameMap.getMapHeight() * CELL_SIZE - animal.getRectangle().getHeight()) || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
                     animal.getRectangle().setY(animal.getRectangle().getY() + animal.getSpeed());
                 }
                 break;
@@ -158,7 +160,7 @@ public class WalkingState implements AnimalState {
 
     private void checkPortal(Game game, Animal animal) {
         Portal portal = animal.getPortalTile(game, animal.getCurrentMap(), animal.getRectangle());
-        if (portal != null && (!portal.getDirection().equalsIgnoreCase(FOREST_MAP) || !portal.getDirection().equalsIgnoreCase(CITY_MAP))) {
+        if (portal != null && !(portal.getDirection().equalsIgnoreCase(FOREST_MAP) || portal.getDirection().equalsIgnoreCase(CITY_MAP))) {
             game.moveAnimalToAnotherMap(animal, portal);
         }
     }
@@ -197,7 +199,7 @@ public class WalkingState implements AnimalState {
         if (animal.getRoute().isEmpty()) {
             String mapWithWater = game.getNearestMapWithWater(animal.getCurrentMap());
             if (!mapWithWater.equalsIgnoreCase(animal.getCurrentMap())) {
-                logger.info(String.format("%s is going to %s to get food", animal, mapWithWater));
+                logger.info(String.format("%s is going to %s to get water", animal, mapWithWater));
                 animal.setRoute(game.calculateRouteToOtherMap(animal, mapWithWater));
             }
         }
@@ -212,7 +214,13 @@ public class WalkingState implements AnimalState {
             String mapWithFood = game.getNearestMapWithFood(animal.getCurrentMap());
             if (!mapWithFood.equalsIgnoreCase(animal.getCurrentMap())) {
                 logger.info(String.format("%s is going to %s to get food", animal, mapWithFood));
-                animal.setRoute(game.calculateRouteToOtherMap(animal, mapWithFood));
+                Route routeToOtherMap = game.calculateRouteToOtherMap(animal, mapWithFood);
+                if (routeToOtherMap.isEmpty()) {
+                    logger.info("Route to other map was empty");
+                    animal.setWaitingState();
+                } else {
+                    animal.setRoute(routeToOtherMap);
+                }
             }
         }
         if (animal.getRoute().isEmpty()) {
@@ -255,7 +263,7 @@ public class WalkingState implements AnimalState {
         return false;
     }
 
-    private boolean isNearWater(Game game,  Animal animal) {
+    private boolean isNearWater(Game game, Animal animal) {
         for (WaterBowl bowl : game.getGameMap(animal.getCurrentMap()).getWaterBowls()) {
             if (bowl.isFull() && animal.getRectangle().intersects(bowl.getRectangle())) {
                 return true;

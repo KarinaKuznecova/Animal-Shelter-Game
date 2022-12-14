@@ -28,27 +28,27 @@ public class NavigationService {
     public static int getPixelsToAdjustPosition(Direction direction, int x, int y) {
         switch (direction) {
             case DOWN:
-                if (y % CELL_SIZE == 0) {
-                    return 64;
+                if (y % TILE_SIZE == 0) {
+                    return 32;
                 }
-                return CELL_SIZE - (y % CELL_SIZE);
+                return TILE_SIZE - (y % TILE_SIZE);
             case UP:
-                if (y % CELL_SIZE == 0) {
-                    return 64;
+                if (y % TILE_SIZE == 0) {
+                    return 32;
                 }
-                return y % CELL_SIZE;
+                return y % TILE_SIZE;
             case RIGHT:
-                if (x % CELL_SIZE == 0) {
-                    return 64;
+                if (x % TILE_SIZE == 0) {
+                    return 32;
                 }
-                return CELL_SIZE - (x % CELL_SIZE);
+                return TILE_SIZE - (x % TILE_SIZE);
             case LEFT:
-                if (x % CELL_SIZE == 0) {
-                    return 64;
+                if (x % TILE_SIZE == 0) {
+                    return 32;
                 }
-                return x % CELL_SIZE;
+                return x % TILE_SIZE;
             default:
-                return CELL_SIZE;
+                return TILE_SIZE;
         }
     }
 }

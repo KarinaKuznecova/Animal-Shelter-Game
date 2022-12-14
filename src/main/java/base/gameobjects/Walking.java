@@ -47,27 +47,33 @@ public interface Walking {
 
         switch (direction) {
             case LEFT:
-                xPosition = xPosition - (speed + 1);
+                xPosition = xPosition - speed;
                 break;
             case RIGHT:
-                xPosition = xPosition + (speed + 1);
+                xPosition = xPosition + speed;
                 break;
             case UP:
-                yPosition = yPosition - (speed + 1);
+                yPosition = yPosition - speed;
                 break;
             case DOWN:
-                yPosition = yPosition + (speed + 1);
+                yPosition = yPosition + speed;
                 break;
         }
+
+        if (nearPortal(gameMap.getPortals(), rectangle)) {
+            return false;
+        }
+
         if (tilesOnLayer != null) {
             for (MapTile tile : tilesOnLayer) {
                 if (rectangle.potentialIntersects(tile, xPosition, yPosition)) {
                     if (tile.isPortal()) {
                         return false;
                     }
-                    if (gameMap.getWaterCornerTiles().contains(tile.getId())) {
-                        return false;
-                    }
+                    // TODO
+//                    if (gameMap.getWaterCornerTiles().contains(tile.getId())) {
+//                        return false;
+//                    }
                     return true;
                 }
             }

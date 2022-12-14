@@ -24,4 +24,8 @@ public class Route {
     public List<Direction> getAllSteps() {
         return route;
     }
+
+    public Direction getLastStep() {
+        return route.get(route.size() - 1);
+    }
 }

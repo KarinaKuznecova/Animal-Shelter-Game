@@ -120,6 +120,9 @@ public class AnimalService {
         } else {
             animal.setCurrentMap(MAIN_MAP);
         }
+        if (TEST_MAP_MODE && TEST_MAP.equals(mapName)) {
+            animal.setCurrentMap(TEST_MAP);
+        }
     }
 
     public String getAnimalType(Animal animal) {
@@ -278,7 +281,15 @@ public class AnimalService {
                 animal.setCurrentAge(currentAge);
                 animal.setFavorite(favorite);
                 animal.setFileName(file.getName());
-                animalsOnMap.add(animal);
+                if (TEST_MAP_MODE) {
+                    if (TEST_MAP.equals(animal.getCurrentMap())) {
+                        animalsOnMap.add(animal);
+                    }
+                } else {
+                    if (!TEST_MAP.equals(animal.getCurrentMap())) {
+                        animalsOnMap.add(animal);
+                    }
+                }
             }
         }
         return animalsOnMap;

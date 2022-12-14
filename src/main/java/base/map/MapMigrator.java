@@ -265,7 +265,7 @@ public class MapMigrator {
             if (direction.equalsIgnoreCase(firstMapName) || direction.equalsIgnoreCase(secondMapName) || direction.equalsIgnoreCase("Home")) {
                 return true;
             }
-            portals.add(new Portal(new Rectangle(x, y, CELL_SIZE, CELL_SIZE), direction));
+            portals.add(new Portal(new Rectangle(x, y, TILE_SIZE, TILE_SIZE), direction));
             return true;
         }
 
@@ -299,7 +299,7 @@ public class MapMigrator {
         }
         int portalX = tile.getX() * CELL_SIZE;
         int portalY = tile.getY() * CELL_SIZE;
-        Portal portal = new Portal(new Rectangle(portalX, portalY, 64, 64), tilePortalDirection);
+        Portal portal = new Portal(new Rectangle(portalX, portalY, TILE_SIZE, TILE_SIZE), tilePortalDirection);
         portals.add(portal);
     }
 

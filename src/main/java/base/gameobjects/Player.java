@@ -153,16 +153,16 @@ public class Player implements GameObject {
 
         switch (direction) {
             case LEFT:
-                xPosition = xPosition - (speed * 2);
+                xPosition = xPosition - (speed + 2);
                 break;
             case RIGHT:
-                xPosition = xPosition + (speed * 2);
+                xPosition = xPosition + (speed + 2);
                 break;
             case UP:
-                yPosition = yPosition - (speed * 2);
+                yPosition = yPosition - (speed + 2);
                 break;
             case DOWN:
-                yPosition = yPosition + (speed * 2);
+                yPosition = yPosition + (speed + 2);
                 break;
         }
         List<MapTile> tilesOnLayer = game.getGameMap().getTilesOnLayer(getLayer());

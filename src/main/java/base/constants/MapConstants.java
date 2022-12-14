@@ -22,6 +22,8 @@ public class MapConstants {
     public static final String FOREST_MAP = "Forest";
     public static final String CITY_MAP = "City";
 
+    public static final String TEST_MAP = "TestMap";
+
     public static final List<String> HOME_MAPS = Arrays.asList(TOP_CENTER_MAP, TOP_RIGHT_MAP, HOME_MAP);
     public static final List<String> BOTTOM_MAPS = Arrays.asList(BOTTOM_LEFT_MAP, BOTTOM_CENTER_MAP, BOTTOM_RIGHT_MAP);
     public static final List<String> OUTSIDE_MAPS = Arrays.asList(TOP_LEFT_MAP, MAIN_MAP, FOREST_MAP, CITY_MAP);

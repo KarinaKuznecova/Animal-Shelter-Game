@@ -483,7 +483,7 @@ public class MapService {
         if ("TopCenterMap".equals(direction)) {
             direction = "Home";
         }
-        Portal portal = new Portal(new Rectangle(portalX, portalY, 64, 64), direction);
+        Portal portal = new Portal(new Rectangle(portalX, portalY, CELL_SIZE, CELL_SIZE), direction);
         gameMap.addObject(portal);
     }
 
