@@ -11,6 +11,9 @@ public class FilePath {
 
     //npc
     public static final String NPC_SHEET_PATH_LADY = "img/npc-lady.png";
+    public static final String NPC_SHEET_PATH_LADY1 = "img/npc-lady1.png";
+    public static final String NPC_SHEET_PATH_LADY2 = "img/npc-lady2.png";
+    public static final String NPC_SHEET_PATH_LADY3 = "img/npc-lady3.png";
     public static final String NPC_SHEET_PATH_MAN = "img/npc-man.png";
 
     //plants

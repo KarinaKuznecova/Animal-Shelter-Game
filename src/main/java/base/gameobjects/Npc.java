@@ -37,7 +37,7 @@ public class Npc implements GameObject, Walking {
     private Animal wantedAnimal;
 
     public Npc(int startX, int startY, Animal wantedAnimal) {
-        animatedSprite = ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64);
+        animatedSprite = getAnimatedSprite();
         logger.info("Loaded npc sprite");
         speed = 2;
         route = new Route();
@@ -48,6 +48,10 @@ public class Npc implements GameObject, Walking {
 
         this.wantedAnimal = wantedAnimal;
         interactionZone = new InteractionZoneAdoptionNpc(rectangle.getX() + 32, rectangle.getY() + 32, 100, wantedAnimal);
+    }
+
+    protected AnimatedSprite getAnimatedSprite() {
+       return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64);
     }
 
     @Override
