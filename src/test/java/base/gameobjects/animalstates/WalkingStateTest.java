@@ -23,10 +23,10 @@ class WalkingStateTest {
     @Test
     public void getMovingTickToAdjustPosition() {
         mouse.teleportAnimalTo(66,66);
-        assertEquals(15, testSubject.getMovingTickToAdjustPosition(DOWN, mouse));
-        assertEquals(1, testSubject.getMovingTickToAdjustPosition(UP, mouse));
-        assertEquals(1, testSubject.getMovingTickToAdjustPosition(LEFT, mouse));
-        assertEquals(15, testSubject.getMovingTickToAdjustPosition(RIGHT, mouse));
+        assertEquals(10, testSubject.getMovingTickToAdjustPosition(DOWN, mouse));
+        assertEquals(0, testSubject.getMovingTickToAdjustPosition(UP, mouse));
+        assertEquals(0, testSubject.getMovingTickToAdjustPosition(LEFT, mouse));
+        assertEquals(10, testSubject.getMovingTickToAdjustPosition(RIGHT, mouse));
 
         mouse.setSpeed(2);
         assertEquals(15, testSubject.getMovingTickToAdjustPosition(DOWN, mouse));
