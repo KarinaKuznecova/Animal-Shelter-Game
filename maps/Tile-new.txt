@@ -58,9 +58,9 @@ Food-3-5-2-n
 Food-4-5-2-n
 Food-5-5-2-n
 Food-6-5-2-n
-Food-7-5-2-n
-Food-8-5-2-n
-Food-9-5-2-n
+Food-7-5-2
+Food-8-5-2
+Food-9-5-2
 Tiles-1-6-0
 Grass-9-0-1
 Grass-9-1-1
