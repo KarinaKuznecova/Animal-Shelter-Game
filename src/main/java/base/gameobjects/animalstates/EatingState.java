@@ -114,10 +114,6 @@ public class EatingState implements AnimalState {
     }
 
     protected void resetSpeedToDefault(Animal animal) {
-        if (BABY.equals(animal.getAge())) {
-            animal.setSpeed(2);
-        } else {
-            animal.setSpeed(3);
-        }
+        animal.setSpeed(2);
     }
 }
