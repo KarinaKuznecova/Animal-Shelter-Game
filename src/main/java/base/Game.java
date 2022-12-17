@@ -1118,7 +1118,7 @@ public class Game extends JFrame implements Runnable {
 
     public void spawnNpc(Animal wantedAnimal) {
         logger.info("Spawning npc");
-        npc = new Npc(1408, 1600, wantedAnimal);
+        npc = new NpcLady(1408, 1600, wantedAnimal);
 
         if (getGameMap().getMapName().equals(MAIN_MAP)) {
             getGameMap().addObject(npc);
