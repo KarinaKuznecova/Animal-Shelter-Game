@@ -59,7 +59,7 @@ public class WalkingState implements AnimalState {
         }
 
         animal.getAnimatedSprite().update(game);
-        animal.getInteractionZone().changePosition(animal.getRectangle().getX() + 12, animal.getRectangle().getY() + 12);
+        animal.getInteractionZone().changePosition(animal.getRectangle().getX() + 8, animal.getRectangle().getY() + 8);
 
         checkIfNeedToGoToDifferentLocation(game, animal);
         checkPortal(game, animal);

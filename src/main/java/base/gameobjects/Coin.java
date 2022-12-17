@@ -28,7 +28,7 @@ public class Coin implements GameObject {
 
     @Override
     public void render(RenderHandler renderer, int zoom) {
-        renderer.renderSprite(sprite, rectangle.getX(), rectangle.getY(), zoom, false);
+        renderer.renderSprite(sprite, rectangle.getX() + 16, rectangle.getY() + 16, 1, false);
     }
 
     @Override

@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.ColorConstant.YELLOW;
-import static base.constants.Constants.*;
+import static base.constants.Constants.CELL_SIZE;
+import static base.constants.Constants.DEBUG_MODE;
 import static base.constants.FilePath.IMAGES_PATH;
 import static base.gameobjects.AgeStage.ADULT;
 import static base.gameobjects.AgeStage.BABY;
@@ -22,9 +23,9 @@ import static base.navigationservice.Direction.*;
 public abstract class Animal implements GameObject, Walking {
 
     private Sprite previewSprite;
-    private AnimatedSprite animatedSprite;
-    private final Rectangle rectangle;
-    private final int tileSize;
+    protected AnimatedSprite animatedSprite;
+    protected final Rectangle rectangle;
+    protected final int tileSize;
     private String fileName;
 
     private Direction direction;
@@ -41,11 +42,11 @@ public abstract class Animal implements GameObject, Walking {
     private String currentMap;
     private int speed;
     private String color;
-    private String animalType;
+    protected String animalType;
     private String name;
     private boolean favorite;
 
-    private AgeStage age;
+    protected AgeStage age;
     public static final int GROWING_UP_TIME = 200_000;
     private int currentAge;
 
@@ -59,10 +60,10 @@ public abstract class Animal implements GameObject, Walking {
     protected static final int MIN_ENERGY = 1;
     private int currentEnergy;
 
-    private final InteractionZonePetHeart interactionZone;
-    private final HeartIcon heartIcon;
+    protected final InteractionZonePetHeart interactionZone;
+    protected final HeartIcon heartIcon;
 
-    private boolean isSelected;
+    protected boolean isSelected;
 
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
@@ -93,7 +94,7 @@ public abstract class Animal implements GameObject, Walking {
         }
 
         route = new Route();
-        interactionZone = new InteractionZonePetHeart(rectangle.getX() + 16, rectangle.getY() + 16, 50);
+        interactionZone = new InteractionZonePetHeart(rectangle.getX() + 8, rectangle.getY() + 8, 50);
         heartIcon = new HeartIcon();
         state = waitingState;
         waitingState.setWaiting(20);
@@ -153,9 +154,8 @@ public abstract class Animal implements GameObject, Walking {
         int yForSprite = rectangle.getY();
         if (BABY.equals(age) && !animalType.contains("baby") || animalType.equals("chicken-baby")) {
             zoom = 1;
-            // TODO
-//            xForSprite = rectangle.getX() + (rectangle.getWidth());
-//            yForSprite = rectangle.getY() + (rectangle.getHeight() + 5);
+            xForSprite = rectangle.getX() + rectangle.getWidth();
+            yForSprite = rectangle.getY() + (rectangle.getHeight() + 5);
         }
         if (animatedSprite != null) {
             renderer.renderSprite(animatedSprite, xForSprite-24, yForSprite-38, zoom, false);
@@ -197,8 +197,8 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     private void updateHeart(Game game) {
-        int xPosition = rectangle.getX() - game.getRenderer().getCamera().getX() + 16;
-        int yPosition = rectangle.getY() - game.getRenderer().getCamera().getY() - 16;
+        int xPosition = rectangle.getX() - game.getRenderer().getCamera().getX() + 16 - 24;
+        int yPosition = rectangle.getY() - game.getRenderer().getCamera().getY() - 16 - 38;
         Position heartPosition = new Position(xPosition, yPosition);
         heartIcon.changePosition(heartPosition);
     }
