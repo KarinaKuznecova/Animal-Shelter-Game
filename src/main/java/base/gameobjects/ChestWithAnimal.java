@@ -52,7 +52,7 @@ public class ChestWithAnimal implements GameObject {
             animal.setCurrentMap(game.getGameMap().getMapName());
             game.getAnimalsOnMaps().get(game.getGameMap().getMapName()).add(animal);
             game.addAnimalToPanel(animal);
-            game.saveMap();
+            game.saveMaps();
 
             return true;
         }

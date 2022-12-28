@@ -62,7 +62,7 @@ public class FindAnimalEvent extends Event {
             logger.info(String.format("Random animal is %s", animalType));
             Animal animal = animalService.createAnimal(bigX, bigY + 64, animalType, game.getGameMap().getMapName());
             map.addObject(new ChestWithAnimal(bigX, bigY, animal, game.getTileService().getTiles().get(36).getSprite()));
-            game.saveMap();
+            game.saveMaps();
         }
         happened = true;
         logger.info("Event for new animal started");

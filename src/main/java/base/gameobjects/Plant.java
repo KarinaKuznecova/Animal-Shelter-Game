@@ -27,6 +27,7 @@ public class Plant implements GameObject {
     String plantType;
 
     private boolean isWild;
+    private boolean isRefreshable;
 
     public Plant(Sprite previewSprite, AnimatedSprite animatedSprite, int x, int y, String plantType) {
         this.previewSprite = previewSprite;
@@ -81,6 +82,7 @@ public class Plant implements GameObject {
     }
 
     public void setGrowingStage(int growingStage) {
+        animatedSprite.reset();
         for (int i = 0; i < growingStage; i++) {
             animatedSprite.incrementSprite();
         }
@@ -132,5 +134,13 @@ public class Plant implements GameObject {
 
     public void setWild(boolean wild) {
         isWild = wild;
+    }
+
+    public boolean isRefreshable() {
+        return isRefreshable;
+    }
+
+    public void setRefreshable(boolean refreshable) {
+        isRefreshable = refreshable;
     }
 }

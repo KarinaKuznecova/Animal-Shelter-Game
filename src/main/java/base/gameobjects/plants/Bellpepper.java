@@ -11,5 +11,6 @@ public class Bellpepper extends Plant {
     public Bellpepper(Sprite previewSprite, AnimatedSprite animatedSprite, int x, int y, String plantType) {
         super(previewSprite, animatedSprite, x, y, plantType);
         setGrowingTime(5500);
+        setRefreshable(true);
     }
 }
