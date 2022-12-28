@@ -4,6 +4,7 @@ Fill:48
 //Items
 //type, xPosition, yPosition
 portal,640,-64,MainMap
+npc-spot,128,704
 //layer,tileId,xPos,yPos,regularTile,portalDirection
 0,14,-1,8,n
 0,14,-1,7,n

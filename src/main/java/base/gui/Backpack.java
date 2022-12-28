@@ -39,4 +39,8 @@ public class Backpack extends GUI {
     public void addCoins(int amount) {
         coins += amount;
     }
+
+    public void removeCoins(int amount) {
+        coins -= amount;
+    }
 }

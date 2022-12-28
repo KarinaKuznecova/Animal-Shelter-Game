@@ -335,10 +335,18 @@ public class RenderHandler {
     public void renderSprite(Sprite sprite, int xPosition, int yPosition, int zoom, boolean fixed, Integer count) {
         renderPixelsArrays(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, zoom, fixed);
         Position numberPosition = new Position(xPosition + (sprite.getWidth() * zoom - 25), yPosition + (sprite.getHeight() * zoom - 5));
-        if (count != null && count != 0) {
-            renderNumber(count, numberPosition);
+        if (fixed) {
+            if (count != null && count != 0) {
+                renderNumber(count, numberPosition);
+            } else {
+                textToDrawFixed.remove(numberPosition);
+            }
         } else {
-            textToDrawFixed.remove(numberPosition);
+            if (count != null && count != 0) {
+                textToDrawNotFixed.put(numberPosition, String.valueOf(count));
+            } else {
+                textToDrawNotFixed.remove(numberPosition);
+            }
         }
     }
 
@@ -380,6 +388,7 @@ public class RenderHandler {
 
     public void clearRenderedText() {
         textToDrawFixed.clear();
+        textToDrawNotFixed.clear();
     }
 
     public void removeTextFromPosition(Position position) {

@@ -17,7 +17,6 @@ public class BackpackButton extends GUIButton implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected String item;
-    private transient Game game;
     private boolean isGreen = false;
     protected final String defaultId;
 
@@ -26,7 +25,6 @@ public class BackpackButton extends GUIButton implements Serializable {
     public BackpackButton(String item, Sprite tileSprite, Rectangle rectangle, String defaultId) {
         super(tileSprite, rectangle, true);
         this.item = item;
-        this.sprite = tileSprite;
         this.defaultId = defaultId;
         rectangle.generateBorder(3, BROWN, BLUE);
     }
@@ -70,8 +68,12 @@ public class BackpackButton extends GUIButton implements Serializable {
     }
 
     @Override
-    public void activate() {
+    public void activate(Game game) {
         String selectedItem = game.getItemNameByButtonId();
+        if (game.getVendorNpc().getShopMenu().isVisible()) {
+            sellItem(game);
+            return;
+        }
         if (selectedItem != null && !selectedItem.isEmpty()) {
             BackpackButton currentlySelectedButton = game.getSelectedButton();
             if (isButtonEmpty()) {
@@ -99,6 +101,14 @@ public class BackpackButton extends GUIButton implements Serializable {
         game.changeSelectedItem(defaultId, this);
     }
 
+    private void sellItem(Game game) {
+        objectCount--;
+        game.getBackpackGui().addCoins(1);
+        if (objectCount == 0) {
+            makeEmpty();
+        }
+    }
+
     public boolean isButtonEmpty() {
         return defaultId.equals(item);
     }
@@ -119,9 +129,5 @@ public class BackpackButton extends GUIButton implements Serializable {
 
     public String getDefaultId() {
         return defaultId;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
     }
 }

@@ -1,7 +1,7 @@
 package base.gameobjects;
 
 import base.Game;
-import base.gameobjects.interactionzones.InteractionZoneAdoptionNpc;
+import base.gameobjects.interactionzones.InteractionZone;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
@@ -14,29 +14,25 @@ import org.slf4j.LoggerFactory;
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.NPC_SHEET_PATH_LADY;
-import static base.constants.MapConstants.MAIN_MAP;
-import static base.navigationservice.Direction.*;
+import static base.navigationservice.Direction.DOWN;
+import static base.navigationservice.Direction.STAY;
 
 public class Npc implements GameObject, Walking {
 
     private static final Logger logger = LoggerFactory.getLogger(Npc.class);
 
-    private final AnimatedSprite animatedSprite;
-    private final Rectangle rectangle;
+    protected final AnimatedSprite animatedSprite;
+    protected final Rectangle rectangle;
 
-    private Direction direction;
-    private int movingTicks = 0;
-    private transient Route route;
+    protected Direction direction;
+    protected int movingTicks = 0;
+    protected transient Route route;
     private String currentMap;
-    private int speed;
+    protected int speed;
 
-    private boolean arrived;
-    private boolean isGoingAway;
+    protected InteractionZone interactionZone;
 
-    private final InteractionZoneAdoptionNpc interactionZone;
-    private Animal wantedAnimal;
-
-    public Npc(int startX, int startY, Animal wantedAnimal) {
+    public Npc(int startX, int startY) {
         animatedSprite = getAnimatedSprite();
         logger.info("Loaded npc sprite");
         speed = 2;
@@ -45,9 +41,6 @@ public class Npc implements GameObject, Walking {
 
         rectangle = new Rectangle(startX, startY, TILE_SIZE, TILE_SIZE);
         rectangle.generateBorder(1, GREEN);
-
-        this.wantedAnimal = wantedAnimal;
-        interactionZone = new InteractionZoneAdoptionNpc(rectangle.getX() + 32, rectangle.getY() + 32, 100, wantedAnimal);
     }
 
     protected AnimatedSprite getAnimatedSprite() {
@@ -69,58 +62,11 @@ public class Npc implements GameObject, Walking {
 
     @Override
     public void update(Game game) {
-        boolean isMoving = false;
-        Direction nextDirection = direction;
-
-        if (route.isEmpty() && !arrived) {
-            if (rectangle.intersects(game.getNpcSpot().getRectangle())) {
-                arrived = true;
-            } else {
-                route = game.calculateRouteToNpcSpot(this);
-                route.addStep(UP);
-                route.addStep(LEFT);
-            }
-        }
-
-        if (movingTicks < 1 && !route.isEmpty()) {
-            nextDirection = route.getNextStep();
-            movingTicks = 32 / speed;
-            logger.debug(String.format("Direction: %s, moving ticks: %d", direction.name(), movingTicks));
-        }
-
-        if (route.isEmpty() && !isGoingAway) {
-            nextDirection = STAY;
-        }
-
-        handleMoving(game.getGameMap(MAIN_MAP), nextDirection);
-        if (nextDirection != STAY) {
-            isMoving = true;
-        }
-
-        if (nextDirection != direction) {
-            direction = nextDirection;
-            updateDirection();
-        }
-        if (animatedSprite != null) {
-            if (isMoving) {
-                animatedSprite.update(game);
-                interactionZone.changePosition(rectangle.getX() + 32, rectangle.getY() + 32);
-            } else {
-                animatedSprite.reset();
-            }
-        }
-
-        interactionZone.update(game);
-        movingTicks--;
-
-        if (isGoingAway && route.isEmpty()) {
-            game.removeNpc(this);
-        }
     }
 
     @Override
     public int getLayer() {
-        return 1;
+        return 3;
     }
 
     @Override
@@ -128,7 +74,7 @@ public class Npc implements GameObject, Walking {
         return false;
     }
 
-    private void handleMoving(GameMap gameMap, Direction direction) {
+    protected void handleMoving(GameMap gameMap, Direction direction) {
 
         switch (direction) {
             case LEFT:
@@ -154,7 +100,7 @@ public class Npc implements GameObject, Walking {
         }
     }
 
-    private void updateDirection() {
+    protected void updateDirection() {
         if (direction == STAY) {
             animatedSprite.setAnimationRange(0, 1);
             return;
@@ -162,12 +108,6 @@ public class Npc implements GameObject, Walking {
         if (animatedSprite != null && direction != null) {
             animatedSprite.setAnimationRange((direction.directionNumber * 8), (direction.directionNumber * 8 + 7)); //if horizontal increase
         }
-    }
-
-    public void goAway(Route route) {
-        isGoingAway = true;
-        this.route = route;
-        logger.info("SENDING NPC AWAY");
     }
 
     /**
@@ -186,12 +126,8 @@ public class Npc implements GameObject, Walking {
         return rectangle;
     }
 
-    public InteractionZoneAdoptionNpc getInteractionZone() {
+    public InteractionZone getInteractionZone() {
         return interactionZone;
-    }
-
-    public Animal getWantedAnimal() {
-        return wantedAnimal;
     }
 
     @Override
@@ -206,5 +142,10 @@ public class Npc implements GameObject, Walking {
     public void setSpeed(int speed) {
         logger.info(String.format("changing npc speed from %d to %d", this.speed, speed));
         this.speed = speed;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+        updateDirection();
     }
 }

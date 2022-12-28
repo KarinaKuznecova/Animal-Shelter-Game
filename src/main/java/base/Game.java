@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
+import static base.constants.MapConstants.CITY_MAP;
 import static base.constants.MapConstants.MAIN_MAP;
 import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 import static base.navigationservice.NavigationService.getNextPortalToGetToCenter;
@@ -58,7 +59,8 @@ public class Game extends JFrame implements Runnable {
     private transient List<InteractionZone> interactionZones;
 
     private transient Player player;
-    private transient Npc npc;
+    private transient NpcLady npc;
+    private transient NpcMan vendorNpc;
 
     private transient GameTips gameTips;
 
@@ -277,12 +279,12 @@ public class Game extends JFrame implements Runnable {
 
     private void loadSDKGUI() {
         List<Tile> tiles = tileService.getTiles();
-        tileButtonsArray = guiService.loadTerrainGui(this, tiles, 10);
+        tileButtonsArray = guiService.loadTerrainGui(tiles, 10);
     }
 
     void loadTerrainGui() {
         List<Tile> tiles = tileService.getTerrainTiles();
-        terrainButtonsArray = guiService.loadTerrainGui(this, tiles, 18);
+        terrainButtonsArray = guiService.loadTerrainGui(tiles, 18);
     }
 
     private void loadYourAnimals() {
@@ -304,7 +306,6 @@ public class Game extends JFrame implements Runnable {
         if (backpackGui == null) {
             backpackGui = guiService.loadEmptyBackpack(this);
         }
-        backpackGui.setGame(this);
     }
 
     /**
@@ -396,6 +397,8 @@ public class Game extends JFrame implements Runnable {
 
         gameTips = new GameTips();
         cacheAllPlants();
+
+        createVendorNpc();
     }
 
     private void loadPlayer(int startX, int startY) {
@@ -707,7 +710,7 @@ public class Game extends JFrame implements Runnable {
         showYourAnimals();
     }
 
-    public void showBackpack() {
+    public void switchBackpack() {
         if (guiList.contains(backpackGui)) {
             guiList.remove(backpackGui);
             changeSelectedItem("");
@@ -717,11 +720,38 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
+    public void openBackpack() {
+        if (!guiList.contains(backpackGui)) {
+            guiList.add(backpackGui);
+        }
+    }
+
+    public void closeBackpack() {
+        if (guiList.contains(backpackGui)) {
+            guiList.remove(backpackGui);
+            changeSelectedItem("");
+            renderer.clearRenderedText();
+        }
+    }
+
     public void changeAnimal(String animalType) {
         deselectBagItem();
         deselectTile();
         logger.info(String.format("changing selected animal to : %s", animalType));
         selectedAnimal = animalType;
+    }
+
+    public void openShopMenu(GUI shop) {
+        if (!guiList.contains(shop)) {
+            guiList.add(shop);
+        }
+    }
+
+    public void closeShopMenu(GUI shop) {
+        if (guiList.contains(shop)) {
+            guiList.remove(shop);
+            renderer.clearRenderedText();
+        }
     }
 
     /**
@@ -746,14 +776,14 @@ public class Game extends JFrame implements Runnable {
         }
         for (GameObject gameObject : gameMap.getPlants()) {
             if (!stoppedChecking) {
-                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
+                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
         for (GameObject gameObject : getGameMap().getInteractiveObjects()) {
             if (!stoppedChecking) {
-                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = gameObject.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
+                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
         for (Item item : gameMap.getItems()) {
@@ -899,6 +929,11 @@ public class Game extends JFrame implements Runnable {
         if (pickUp(itemName, sprite, button, 1)) {
             gameMap.removeItem(itemName, rectangle);
         }
+    }
+
+    public void getItem(String itemName, Sprite sprite) {
+        GUIButton button = backpackGui.getButtonBySprite(sprite);
+        pickUp(itemName, sprite, button, 1);
     }
 
     private boolean pickUp(String itemName, Sprite sprite, GUIButton button, int amount) {
@@ -1223,6 +1258,18 @@ public class Game extends JFrame implements Runnable {
         refreshGuiPanels();
     }
 
+    public void createVendorNpc() {
+        logger.info("Spawning vendor npc");
+        Rectangle spot = getGameMap(CITY_MAP).getNpcSpot().getRectangle();
+        vendorNpc = new NpcMan(spot.getX(), spot.getY(), plantService);
+        getGameMap(CITY_MAP).addObject(vendorNpc);
+
+        vendorNpc.setCurrentMap(CITY_MAP);
+        refreshCurrentMapCache();
+        gameObjectsList.add(vendorNpc);
+        interactionZones.add(vendorNpc.getInteractionZone());
+    }
+
     /**
      * =================================== GETTERS ======================================
      */
@@ -1288,7 +1335,7 @@ public class Game extends JFrame implements Runnable {
         return regularTiles;
     }
 
-    public GUI getBackpackGui() {
+    public Backpack getBackpackGui() {
         return backpackGui;
     }
 
@@ -1316,8 +1363,12 @@ public class Game extends JFrame implements Runnable {
         return gameObjectsList.contains(npc);
     }
 
-    public Npc getNpc() {
+    public NpcLady getAdoptionNpc() {
         return npc;
+    }
+
+    public NpcMan getVendorNpc() {
+        return vendorNpc;
     }
 
     public String getItemNameByButtonId() {

@@ -12,17 +12,15 @@ import static base.constants.ColorConstant.*;
 
 public class NewAnimalButton extends GUIButton {
 
-    private final Game game;
     private boolean isGreen = false;
     private String animalType;
 
     private final AnimalService animalService = new AnimalService();
 
-    public NewAnimalButton(Game game, String animalType, Sprite sprite, Rectangle rectangle) {
+    public NewAnimalButton(String animalType, Sprite sprite, Rectangle rectangle) {
         super(sprite, rectangle, true);
         this.sprite = sprite;
         this.animalType = animalType;
-        this.game = game;
         rectangle.generateBorder(3, BROWN, BLUE);
         if (animalType.equalsIgnoreCase(Cat.TYPE) || animalType.equalsIgnoreCase(Rat.TYPE)) {
             multipleOptions = true;
@@ -70,7 +68,7 @@ public class NewAnimalButton extends GUIButton {
     }
 
     @Override
-    public void activate() {
+    public void activate(Game game) {
         String nextColor = animalService.getNextColor(animalType);
         if (isGreen && !animalType.equals(nextColor)) {
             animalType = nextColor;
