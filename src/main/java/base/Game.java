@@ -420,9 +420,8 @@ public class Game extends JFrame implements Runnable {
 
     private void cacheAllPlants() {
         logger.info("Caching plants");
-        List<String> mapNames = mapService.getAllMapsNames();
-        for (String mapName : mapNames) {
-            plantsOnMaps.put(mapName, mapService.getOnlyPlantsFromMap(mapName));
+        for (GameMap map : gameMaps.values()) {
+            plantsOnMaps.put(map.getMapName(), map.getPlants());
         }
         logger.info("Caching plants finished");
     }
@@ -503,7 +502,7 @@ public class Game extends JFrame implements Runnable {
 
     public void loadSecondaryMap(String mapName) {
         logger.info("Game map loading started");
-        saveMap();
+        saveMaps();
         refreshCurrentMapCache();
 
         String previousMapName = gameMap.getMapName();
@@ -527,12 +526,14 @@ public class Game extends JFrame implements Runnable {
         refreshGuiPanels();
     }
 
-    public void saveMap() {
+    public void saveMaps() {
         renderer.setTextToDraw("...saving game...", 40);
 
         refreshCurrentMapCache();
         plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
-        mapService.saveMap(gameMap);
+        for (GameMap map : gameMaps.values()) {
+            mapService.saveMap(map);
+        }
 
         for (List<Animal> animals : animalsOnMaps.values()) {
             if (animals.isEmpty()) {
@@ -894,8 +895,6 @@ public class Game extends JFrame implements Runnable {
         if (gameMap.isThereGrassOrDirt(tileX, tileY) && gameMap.isPlaceEmpty(1, tileX, tileY) && gameMap.isInsideOfMap(x, y)) {
             Plant plant = plantService.createPlant(plantType, tileX, tileY);
             gameMap.addPlant(plant);
-            List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
-            plantList.add(plant);
             return true;
         }
         return false;
@@ -918,10 +917,19 @@ public class Game extends JFrame implements Runnable {
         } else {
             pickUp("seed" + plant.getPlantType(), seedSprite, buttonForSeed, seedAmount);
         }
-
-        gameMap.removePlant(plant);
-        List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
-        plantList.remove(plant);
+        if (plant.isRefreshable()) {
+            if (random.nextInt(3) == 1) {
+                gameMap.removePlant(plant);
+                List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
+                plantList.remove(plant);
+            }
+            plant.setGrowingStage(1);
+            plant.setGrowingTicks(0);
+        } else {
+            gameMap.removePlant(plant);
+            List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
+            plantList.remove(plant);
+        }
     }
 
     public void pickUpItem(String itemName, Sprite sprite, Rectangle rectangle) {

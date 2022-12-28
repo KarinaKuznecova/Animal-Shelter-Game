@@ -11,5 +11,6 @@ public class Tomato  extends Plant {
     public Tomato(Sprite previewSprite, AnimatedSprite animatedSprite, int x, int y, String plantType) {
         super(previewSprite, animatedSprite, x, y, plantType);
         setGrowingTime(3900);
+        setRefreshable(true);
     }
 }

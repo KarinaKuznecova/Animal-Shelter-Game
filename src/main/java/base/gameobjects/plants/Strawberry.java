@@ -11,5 +11,6 @@ public class Strawberry  extends Plant {
     public Strawberry(Sprite previewSprite, AnimatedSprite animatedSprite, int x, int y, String plantType) {
         super(previewSprite, animatedSprite, x, y, plantType);
         setGrowingTime(3500);
+        setRefreshable(true);
     }
 }

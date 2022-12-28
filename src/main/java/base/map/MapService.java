@@ -183,10 +183,15 @@ public class MapService {
             if (splitLine.length > 4) {
                 growingTicks = Integer.parseInt(splitLine[4]);
             }
-
             Plant plant = plantService.createPlant(plantType, x, y);
             plant.setGrowingStage(growingStage);
             plant.setGrowingTicks(growingTicks);
+            if (splitLine.length > 6) {
+                boolean isWild = Boolean.parseBoolean(splitLine[5]);
+                boolean isRefreshable = Boolean.parseBoolean(splitLine[6]);
+                plant.setWild(isWild);
+                plant.setRefreshable(isRefreshable);
+            }
             gameMap.addPlant(plant);
             return true;
         }
@@ -365,17 +370,19 @@ public class MapService {
             return;
         }
         printWriter.println("//Plants");
-        printWriter.println("//type, xPosition, yPosition, growingStage, growingTicks");
+        printWriter.println("//type, xPosition, yPosition, growingStage, growingTicks, isWild, isRefreshable");
         for (Plant plant : gameMap.getPlants()) {
             String plantType = plant.getPlantType();
             int plantX = plant.getRectangle().getX();
             int plantY = plant.getRectangle().getY();
             int growingStage = plant.getGrowingStage();
             int growingTicks = plant.getGrowingTicks();
+            boolean isWild = plant.isWild();
+            boolean isRefreshable = plant.isRefreshable();
             if (Corn.NAME.equals(plant.getPlantType())) {
                 plantY += CELL_SIZE;
             }
-            printWriter.println("plant-" + plantType + "," + plantX + "," + plantY + "," + growingStage + "," + growingTicks);
+            printWriter.println("plant-" + plantType + "," + plantX + "," + plantY + "," + growingStage + "," + growingTicks + "," + isWild + "," + isRefreshable);
         }
     }
 
@@ -441,34 +448,6 @@ public class MapService {
             logger.error("Error while saving storage chest");
             e.printStackTrace();
         }
-    }
-
-    /**
-     * =================================== Other ======================================
-     */
-
-    public List<Plant> getOnlyPlantsFromMap(String mapName) {
-        List<Plant> plants = new CopyOnWriteArrayList<>();
-        try (Scanner scanner = new Scanner(new File(getMapConfig(mapName)))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (line.startsWith("plant")) {
-                    String[] splitLine = line.split(",");
-                    String plantId = splitLine[0];
-                    String plantType = plantId.split("-")[1];
-                    int x = Integer.parseInt(splitLine[1]);
-                    int y = Integer.parseInt(splitLine[2]);
-                    int growingStage = Integer.parseInt(splitLine[3]);
-
-                    Plant plant = plantService.createPlant(plantType, x, y);
-                    plant.setGrowingStage(growingStage);
-                    plants.add(plant);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return plants;
     }
 
     /**
