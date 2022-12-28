@@ -490,6 +490,9 @@ public class Game extends JFrame implements Runnable {
             for (GameObject object : map.getInteractiveObjects()) {
                 object.update(this);
             }
+            for (GameObject object : map.getItems()) {
+                object.update(this);
+            }
         }
         eventService.update(this);
     }

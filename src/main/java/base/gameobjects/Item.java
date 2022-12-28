@@ -7,6 +7,8 @@ import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Random;
+
 import static base.constants.Constants.TILE_SIZE;
 import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 
@@ -19,6 +21,9 @@ public class Item implements GameObject {
     private final Sprite sprite;
     private final Rectangle rectangle;
     private boolean stackable;
+    private String mapName;
+    private final int MAX_FRESHNESS = 15_000;
+    private int freshness;
 
     public Item(int x, int y, String itemName, Sprite sprite) {
         this.x = x;
@@ -30,6 +35,7 @@ public class Item implements GameObject {
         }
 
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
+        freshness = MAX_FRESHNESS + new Random().nextInt(MAX_FRESHNESS);
     }
 
     @Override
@@ -41,7 +47,12 @@ public class Item implements GameObject {
 
     @Override
     public void update(Game game) {
-
+        if (mapName != null && !mapName.isEmpty()) {
+            freshness--;
+            if (freshness < 1) {
+                game.getGameMap().removeItem(itemName, rectangle);
+            }
+        }
     }
 
     @Override
@@ -77,5 +88,13 @@ public class Item implements GameObject {
 
     public void setStackable(boolean stackable) {
         this.stackable = stackable;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public void setMapName(String mapName) {
+        this.mapName = mapName;
     }
 }
