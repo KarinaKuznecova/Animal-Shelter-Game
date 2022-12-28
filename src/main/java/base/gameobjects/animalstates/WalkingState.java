@@ -166,7 +166,7 @@ public class WalkingState implements AnimalState {
     }
 
     private boolean isArrivedToNpc(Game game, Animal animal) {
-        if (!animal.getRectangle().intersects(game.getNpc().getRectangle())) {
+        if (!animal.getRectangle().intersects(game.getAdoptionNpc().getRectangle())) {
             animal.setRoute(game.calculateRouteToNpc(animal));
             return false;
         } else {

@@ -13,13 +13,11 @@ import static base.constants.MultiOptionalObjects.MASTER_TILE_LIST;
 
 public class SDKButton extends GUIButton {
 
-    Game game;
     int tileID;
     boolean isGreen = false;
 
-    public SDKButton(Game game, int tileID, Sprite tileSprite, Rectangle rectangle) {
+    public SDKButton(int tileID, Sprite tileSprite, Rectangle rectangle) {
         super(tileSprite, rectangle, true);
-        this.game = game;
         this.tileID = tileID;
         rectangle.generateBorder(3, BROWN, BLUE);
 
@@ -57,7 +55,8 @@ public class SDKButton extends GUIButton {
         }
     }
 
-    public void activate() {
+    @Override
+    public void activate(Game game) {
         int nextId = guiService.getNextId(tileID);
         if (isGreen && nextId != tileID) {
             tileID = nextId;

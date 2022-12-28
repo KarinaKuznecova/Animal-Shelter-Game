@@ -46,13 +46,13 @@ public abstract class GUIButton implements GameObject, Serializable {
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
-            activate();
+            activate(game);
             return true;
         }
         return false;
     }
 
-    public abstract void activate();
+    public abstract void activate(Game game);
 
     public Sprite getSprite() {
         return sprite;

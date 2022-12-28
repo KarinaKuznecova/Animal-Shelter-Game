@@ -72,7 +72,7 @@ public class AnimalIcon extends GUIButton {
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
-            activate();
+            activate(game);
             return true;
         }
         if (isGreen) {
@@ -82,7 +82,7 @@ public class AnimalIcon extends GUIButton {
     }
 
     @Override
-    public void activate() {
+    public void activate(Game game) {
         game.changeYourAnimal(animal);
     }
 

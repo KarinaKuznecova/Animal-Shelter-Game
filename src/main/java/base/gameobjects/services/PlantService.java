@@ -19,11 +19,11 @@ public class PlantService {
 
     protected static final Logger logger = LoggerFactory.getLogger(PlantService.class);
 
-    Map<String, String> plantAnimations;
-    Map<String, String> plantMapping;
-    Map<String, String> seedMapping;
+    public Map<String, String> plantAnimations;
+    public Map<String, String> plantMapping;
+    public Map<String, String> seedMapping;
 
-    public List<String> plantTypes = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME, Corn.NAME);
+    public static List<String> plantTypes = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME, Corn.NAME);
 
     public PlantService() {
         plantAnimations = new HashMap<>();
@@ -96,6 +96,13 @@ public class PlantService {
     }
 
     public Sprite getPlantSprite(String plantName) {
+        if (plantName == null) {
+            return null;
+        }
+        if (plantName.startsWith("seed")) {
+            plantName = plantName.substring(4);
+            return getSeedSprite(plantName);
+        }
         return ImageLoader.getPreviewSprite(plantMapping.get(plantName));
     }
 

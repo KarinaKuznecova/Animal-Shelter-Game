@@ -128,14 +128,6 @@ public class GUI implements GameObject, Serializable {
         return null;
     }
 
-    public void setGame(Game game) {
-        for (GUIButton button : buttons) {
-            if (button instanceof BackpackButton) {
-                ((BackpackButton) button).setGame(game);
-            }
-        }
-    }
-
     public List<GUIButton> getButtons() {
         return buttons;
     }

@@ -46,11 +46,11 @@ public class GuiService implements Serializable {
         for (Map.Entry<String, Sprite> entry : previews.entrySet()) {
             Sprite animalSprite = entry.getValue();
             Rectangle tileRectangle = new Rectangle(i * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);  //horizontal on top left
-            buttons.add(new NewAnimalButton(game, entry.getKey(), animalSprite, tileRectangle));
+            buttons.add(new NewAnimalButton(entry.getKey(), animalSprite, tileRectangle));
             i++;
         }
         Rectangle tileRectangle = new Rectangle((previews.size()) * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);  //one more horizontal on top left
-        buttons.add(new NewAnimalButton(game, "", null, tileRectangle));
+        buttons.add(new NewAnimalButton("", null, tileRectangle));
         game.changeAnimal("");
 
         return new GUI(buttons, 5, 5, true);
@@ -63,17 +63,17 @@ public class GuiService implements Serializable {
         for (Map.Entry<String, Sprite> entry : previews.entrySet()) {
             Sprite previewSprite = entry.getValue();
             Rectangle tileRectangle = new Rectangle(i * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
-            buttons.add(new PlantButton(game, entry.getKey(), previewSprite, tileRectangle));
+            buttons.add(new PlantButton(entry.getKey(), previewSprite, tileRectangle));
             i++;
         }
         Rectangle oneMoreTileRectangle = new Rectangle((previews.size()) * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
-        buttons.add(new PlantButton(game, "", null, oneMoreTileRectangle));
+        buttons.add(new PlantButton("", null, oneMoreTileRectangle));
         game.changeSelectedPlant("");
 
         return new GUI(buttons, 5, 5, true);
     }
 
-    public GUI[] loadTerrainGui(Game game, List<Tile> tiles, int buttonCount) {
+    public GUI[] loadTerrainGui(List<Tile> tiles, int buttonCount) {
         GUI[] terrainButtonsArray = new GUI[11];
 
         List<GUIButton> buttons = new ArrayList<>();
@@ -83,10 +83,10 @@ public class GuiService implements Serializable {
                 continue;
             }
             Rectangle tileRectangle = new Rectangle(j * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
-            buttons.add(new SDKButton(game, i, tiles.get(i).getSprite(), tileRectangle));
+            buttons.add(new SDKButton(i, tiles.get(i).getSprite(), tileRectangle));
             if (k != 0 && k % buttonCount == 0) {
                 Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
-                buttons.add(new SDKButton(game, -1, null, oneMoreTileRectangle));
+                buttons.add(new SDKButton(-1, null, oneMoreTileRectangle));
                 terrainButtonsArray[k / buttonCount - 1] = new GUI(buttons, 5, 5, true);
 
                 buttons = new ArrayList<>();
@@ -94,7 +94,7 @@ public class GuiService implements Serializable {
             }
             if (i == tiles.size() - 1) {
                 Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
-                buttons.add(new SDKButton(game, -1, null, oneMoreTileRectangle));
+                buttons.add(new SDKButton(-1, null, oneMoreTileRectangle));
                 int temp = (k - (k % buttonCount)) / buttonCount;
                 terrainButtonsArray[temp] = new GUI(buttons, 5, 5, true);
             }

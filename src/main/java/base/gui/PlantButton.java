@@ -10,14 +10,12 @@ import static base.constants.ColorConstant.*;
 public class PlantButton extends GUIButton {
 
     private final String plantType;
-    private final Game game;
     private boolean isGreen = false;
 
-    public PlantButton(Game game, String plantType, Sprite tileSprite, Rectangle rectangle) {
+    public PlantButton(String plantType, Sprite tileSprite, Rectangle rectangle) {
         super(tileSprite, rectangle, true);
         this.plantType = plantType;
         this.sprite = tileSprite;
-        this.game = game;
         rectangle.generateBorder(3, BROWN, BLUE);
     }
 
@@ -40,7 +38,7 @@ public class PlantButton extends GUIButton {
     }
 
     @Override
-    public void activate() {
+    public void activate(Game game) {
         game.changeSelectedPlant(plantType);
     }
 

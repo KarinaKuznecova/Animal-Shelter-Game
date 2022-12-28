@@ -37,7 +37,7 @@ public class CancelButton extends GUIButton{
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(buttonRegion)) {
-            activate();
+            activate(game);
             game.hideDialogBox();
             game.sendNpcAway();
             return true;
@@ -46,7 +46,7 @@ public class CancelButton extends GUIButton{
     }
 
     @Override
-    public void activate() {
+    public void activate(Game game) {
         logger.info("Cancel button clicked");
     }
 }
