@@ -363,6 +363,7 @@ public class GameMap {
     public void addItem(Item item) {
         logger.debug("Adding item to the list");
         items.add(item);
+        item.setMapName(mapName);
     }
 
     public void removeItem(String itemName, Rectangle rectangle) {
