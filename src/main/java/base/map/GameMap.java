@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static base.constants.Constants.CELL_SIZE;
@@ -368,6 +369,10 @@ public class GameMap {
 
     public void removeItem(String itemName, Rectangle rectangle) {
         items.removeIf(item -> itemName.equals(item.getItemName()) && rectangle.intersects(item.getRectangle()));
+
+        if (itemName.equalsIgnoreCase(Wood.itemName)) {
+            interactiveObjects.removeIf(item -> item instanceof Wood && rectangle.intersects((item.getRectangle())));
+        }
     }
 
     public List<Item> getItems() {
@@ -435,6 +440,16 @@ public class GameMap {
             }
         }
         return storages;
+    }
+
+    public List<Wood> getWoods() {
+        List<Wood> woods = new ArrayList<>();
+        for (GameObject object : getInteractiveObjects()) {
+            if (object instanceof Wood) {
+                woods.add((Wood) object);
+            }
+        }
+        return woods;
     }
 
     public List<BigObject> getBigObjects() {

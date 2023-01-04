@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NPCEvent extends Event {
+public class AdoptionNPCEvent extends Event {
 
-    private static final Logger logger = LoggerFactory.getLogger(NPCEvent.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdoptionNPCEvent.class);
 
-    public NPCEvent() {
+    public AdoptionNPCEvent() {
         repeatable = true;
         coolDown = 5;
         currentCoolDown = 2;

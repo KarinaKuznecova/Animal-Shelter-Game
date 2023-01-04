@@ -44,8 +44,8 @@ Rock-7-1-2-nr
 Rock-9-6-1-nr
 Rock-9-7-1-nr
 Trunk-0-2-2
-Logs-6-2-2
-Logs-0-6-2
+Logs-6-2-2-n
+Logs-0-6-2-n
 Puddle-5-2-1
 Puddle-5-3-1
 Food-4-4-2-n
@@ -74,3 +74,4 @@ bookcase3-2-7-2-np
 bookcase4-3-7-2
 WaterBowl-6-7-1
 Pillow-8-6-1
+Wood-4-7-1-n

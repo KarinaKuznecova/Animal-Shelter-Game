@@ -195,6 +195,7 @@ public class MapService {
             gameMap.addPlant(plant);
             return true;
         }
+        // TODO: wood
         if (line.startsWith("item")) {
             String[] splitLine = line.split(",");
             String itemId = splitLine[0];
@@ -386,6 +387,7 @@ public class MapService {
         }
     }
 
+    // TODO: save wood
     private void saveItems(GameMap gameMap, PrintWriter printWriter) {
         if (gameMap.getItems().isEmpty() && gameMap.getInteractiveObjects().isEmpty()) {
             return;

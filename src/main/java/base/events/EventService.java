@@ -19,8 +19,9 @@ public class EventService {
     public EventService() {
         eventList.add(new GrowFlowerEvent());
         eventList.add(new FindAnimalEvent());
-        eventList.add(new NPCEvent());
+        eventList.add(new AdoptionNPCEvent());
         eventList.add(new GrowRandomPlantEvent());
+        eventList.add(new WoodInForestEvent());
     }
 
     public void update(Game game) {
