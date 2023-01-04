@@ -195,7 +195,6 @@ public class MapService {
             gameMap.addPlant(plant);
             return true;
         }
-        // TODO: wood
         if (line.startsWith("item")) {
             String[] splitLine = line.split(",");
             String itemId = splitLine[0];
@@ -272,6 +271,13 @@ public class MapService {
             int y = Integer.parseInt(splitLine[2]);
             String filename = splitLine[3];
             gameMap.addObject(new StorageChest(x, y, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite(), filename));
+            return true;
+        }
+        if (line.startsWith("wood")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            gameMap.addObject(new Wood(tileService.getTiles().get(75).getSprite(), x, y));
             return true;
         }
 
@@ -387,7 +393,6 @@ public class MapService {
         }
     }
 
-    // TODO: save wood
     private void saveItems(GameMap gameMap, PrintWriter printWriter) {
         if (gameMap.getItems().isEmpty() && gameMap.getInteractiveObjects().isEmpty()) {
             return;
@@ -424,6 +429,9 @@ public class MapService {
             if (gameObject instanceof StorageChest) {
                 printWriter.println(("storagechest," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY() + "," + ((StorageChest) gameObject).getFileName()));
                 saveStorageChest((StorageChest) gameObject);
+            }
+            if (gameObject instanceof Wood) {
+                printWriter.println("wood," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
             }
         }
     }

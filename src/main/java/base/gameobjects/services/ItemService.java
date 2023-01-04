@@ -4,6 +4,7 @@ import base.gameobjects.Item;
 import base.gameobjects.Wood;
 import base.gameobjects.plants.*;
 import base.graphicsservice.Sprite;
+import base.map.TileService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +24,7 @@ public class ItemService {
         this.plantService = plantService;
     }
 
-    public Sprite getItemSprite(String itemType) {
+    public Sprite getItemSprite(String itemType, TileService tileService) {
         if (itemType.startsWith("seed")) {
             itemType = itemType.substring(4);
             return plantService.getSeedSprite(itemType);
@@ -32,7 +33,7 @@ public class ItemService {
             return plantService.getPlantSprite(itemType);
         }
         else if (itemType.equalsIgnoreCase(Wood.itemName)) {
-            // TODO: wood
+            return tileService.getTiles().get(75).getSprite();
         }
         return null;
     }
