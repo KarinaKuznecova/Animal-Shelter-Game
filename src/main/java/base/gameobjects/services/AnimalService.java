@@ -22,7 +22,7 @@ import static base.gameobjects.Animal.*;
 
 public class AnimalService {
 
-    public static final List<String> ANIMAL_TYPES = Arrays.asList(Rat.TYPE, Mouse.TYPE, Chicken.TYPE, Butterfly.TYPE, Cat.TYPE, Pig.TYPE, Bunny.TYPE, Dog.TYPE);
+    public static final List<String> ANIMAL_TYPES = Arrays.asList(Rat.TYPE, Mouse.TYPE, Chicken.TYPE, Butterfly.TYPE, Cat.TYPE, Pig.TYPE, Bunny.TYPE, Dog.TYPE, Wolf.TYPE);
     private List<String> femaleNamesList = new ArrayList<>();
     private List<String> maleNamesList = new ArrayList<>();
 
@@ -105,6 +105,9 @@ public class AnimalService {
                 break;
             case Dog.TYPE:
                 animal = new Dog(startX, startY, 2, hunger, thirst, energy, age, name);
+                break;
+            case Wolf.TYPE:
+                animal = new Wolf(startX, startY, 2, hunger, thirst, energy, age, name);
                 break;
             default:
                 logger.error(String.format("Unknown animal requested or animal not defined : %s", animalType));
