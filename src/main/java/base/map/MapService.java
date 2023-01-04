@@ -273,6 +273,13 @@ public class MapService {
             gameMap.addObject(new StorageChest(x, y, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite(), filename));
             return true;
         }
+        if (line.startsWith("wood")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            gameMap.addObject(new Wood(tileService.getTiles().get(75).getSprite(), x, y));
+            return true;
+        }
 
         return false;
     }
@@ -422,6 +429,9 @@ public class MapService {
             if (gameObject instanceof StorageChest) {
                 printWriter.println(("storagechest," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY() + "," + ((StorageChest) gameObject).getFileName()));
                 saveStorageChest((StorageChest) gameObject);
+            }
+            if (gameObject instanceof Wood) {
+                printWriter.println("wood," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
             }
         }
     }

@@ -91,7 +91,7 @@ public class StorageCell extends BackpackButton {
     public void update(Game game) {
         super.update(game);
         if (this.sprite == null && this.getItemName() != null && this.getObjectCount() > 0) {
-            this.sprite = game.getItemService().getItemSprite(item);
+            this.sprite = game.getItemService().getItemSprite(item, game.getTileService());
         }
     }
 }

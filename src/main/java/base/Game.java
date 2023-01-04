@@ -852,9 +852,16 @@ public class Game extends JFrame implements Runnable {
         putItemOnTheGround(xAdjusted, yAdjusted, selectedItem, false);
     }
 
+    // TODO: change this when refactoring sprites and objects
     private void putItemOnTheGround(int xAdjusted, int yAdjusted, String itemType, boolean justDrop) {
         int xAlligned = xAdjusted - (xAdjusted % CELL_SIZE);
         int yAlligned = yAdjusted - (yAdjusted % CELL_SIZE);
+        if (itemType.equalsIgnoreCase(Wood.itemName)) {
+            Wood wood = new Wood(tileService.getTiles().get(75).getSprite(), xAlligned, yAlligned);
+            gameMap.addObject(wood);
+            guiService.decreaseNumberOnButton(this, getSelectedButton());
+            return;
+        }
         Item item = itemService.creteNewItem(itemType, xAlligned, yAlligned);
         if (item instanceof Seed) {
             if (justDrop || !createNewPlant(((Seed) item).getPlantType(), xAlligned / 64, yAlligned / 64)) {
