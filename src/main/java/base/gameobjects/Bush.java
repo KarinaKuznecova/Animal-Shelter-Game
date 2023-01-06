@@ -1,6 +1,7 @@
 package base.gameobjects;
 
 import base.Game;
+import base.gameobjects.animals.Wolf;
 import base.gameobjects.interactionzones.InteractionZoneBushWithAnimal;
 import base.gameobjects.services.AnimalService;
 import base.graphicsservice.Position;
@@ -14,9 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Random;
 
 import static base.constants.ColorConstant.GREEN;
-import static base.constants.Constants.DEBUG_MODE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
 import static base.constants.FilePath.BUSH_IMG;
+import static base.constants.MapConstants.FOREST_MAP;
 import static base.graphicsservice.ImageLoader.getPreviewSprite;
 
 public class Bush implements GameObject {
@@ -120,8 +121,17 @@ public class Bush implements GameObject {
     }
 
     private void createAnimalInside(Game game) {
+        if (game.getAnimalCount() >= ANIMAL_LIMIT) {
+            logger.debug("Too many animals");
+            return;
+        }
         animalService = game.getAnimalService();
-        animalType = animalService.getRandomAnimalType();
+        String potentialAnimal = animalService.getRandomAnimalType();
+        if (Wolf.TYPE.equalsIgnoreCase(potentialAnimal) && !FOREST_MAP.equalsIgnoreCase(mapName)) {
+            logger.debug("Wolf cannot appear on non-forest map, will recalculate");
+            createAnimalInside(game);
+        }
+        animalType = potentialAnimal;
         isAnimalInside = true;
         logger.info(String.format("New animal inside the bush - %s", animalType));
 

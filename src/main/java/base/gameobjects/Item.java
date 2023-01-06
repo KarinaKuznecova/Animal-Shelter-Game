@@ -22,7 +22,7 @@ public class Item implements GameObject {
     private final Rectangle rectangle;
     private boolean stackable;
     private String mapName;
-    private final int MAX_FRESHNESS = 15_000;
+    private final int MAX_FRESHNESS = 25_000;
     private int freshness;
 
     public Item(int x, int y, String itemName, Sprite sprite) {

@@ -877,7 +877,7 @@ public class Game extends JFrame implements Runnable {
         if (selectedAnimal.isEmpty()) {
             return;
         }
-        if (animalsOnMaps.get(gameMap.getMapName()).size() >= 10) {
+        if (getAnimalCount() >= ANIMAL_LIMIT) {
             logger.warn("Too many animals, can't add new");
             return;
         }
@@ -1419,5 +1419,11 @@ public class Game extends JFrame implements Runnable {
             }
         }
         return null;
+    }
+
+    public int getAnimalCount() {
+        return animalsOnMaps.values().stream()
+                .mapToInt(List::size)
+                .sum();
     }
 }

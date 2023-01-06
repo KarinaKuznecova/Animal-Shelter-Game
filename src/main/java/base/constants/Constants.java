@@ -21,6 +21,7 @@ public class Constants {
     public static final String CURRENT_GAME_VERSION = "1.4.0";
 
     public static final int INVENTORY_LIMIT = 99;
+    public static final int ANIMAL_LIMIT = 15;
 
     private static final String ENGLISH = "eng";
     private static final String LATVIAN = "lv";

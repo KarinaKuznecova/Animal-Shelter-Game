@@ -23,7 +23,7 @@ public class PlantService {
     public Map<String, String> plantMapping;
     public Map<String, String> seedMapping;
 
-    public static List<String> plantTypes = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME, Corn.NAME);
+    public static List<String> plantTypes = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME, Corn.NAME, Potato.NAME);
 
     public PlantService() {
         plantAnimations = new HashMap<>();
@@ -53,6 +53,10 @@ public class PlantService {
         plantAnimations.put(CORN_PREVIEW, CORN_IMG);
         plantMapping.put(Corn.NAME, CORN_PREVIEW);
         seedMapping.put(Corn.NAME, CORN_SEEDS);
+
+        plantAnimations.put(POTATO_PREVIEW, POTATO_IMG);
+        plantMapping.put(Potato.NAME, POTATO_PREVIEW);
+        seedMapping.put(Potato.NAME, POTATO_SEEDS);
     }
 
     public Plant createPlant(String plantName, int x, int y) {
@@ -81,6 +85,8 @@ public class PlantService {
                 return new Tomato(previewSprite, animatedSprite, x, y, plantName);
             case Corn.NAME:
                 return new Corn(previewSprite, animatedSprite, x, y, plantName);
+            case Potato.NAME:
+                return new Potato(previewSprite, animatedSprite, x, y, plantName);
             default:
                 logger.error(String.format("Unknown plant requested or plant not defined : %s", plantName));
                 throw new IllegalArgumentException();

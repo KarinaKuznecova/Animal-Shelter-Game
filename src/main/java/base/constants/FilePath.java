@@ -41,6 +41,10 @@ public class FilePath {
     public static final String CORN_PREVIEW = "img/corn-preview.png";
     public static final String CORN_SEEDS = "img/corn-seeds.png";
 
+    public static final String POTATO_IMG = "img/potato.png";
+    public static final String POTATO_PREVIEW = "img/potato-preview.png";
+    public static final String POTATO_SEEDS = "img/potato-seeds.png";
+
     public static final String BUSH_IMG = "img/bush.png";
     public static final String OAK_IMG = "img/oak.png";
     public static final String SPRUCE_IMG = "img/spruce.png";
