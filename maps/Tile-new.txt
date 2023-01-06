@@ -75,3 +75,5 @@ bookcase4-3-7-2
 WaterBowl-6-7-1
 Pillow-8-6-1
 Wood-4-7-1-n
+Feather-5-7-1-n
+Mushroom-8-7-1-n

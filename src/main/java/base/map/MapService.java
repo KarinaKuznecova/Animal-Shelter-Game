@@ -277,7 +277,21 @@ public class MapService {
             String[] splitLine = line.split(",");
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            gameMap.addObject(new Wood(tileService.getTiles().get(75).getSprite(), x, y));
+            gameMap.addObject(new Wood(tileService.getTiles().get(Wood.TILE_ID).getSprite(), x, y));
+            return true;
+        }
+        if (line.startsWith("feather")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            gameMap.addObject(new Feather(tileService.getTiles().get(Feather.TILE_ID).getSprite(), x, y));
+            return true;
+        }
+        if (line.startsWith("mushroom")) {
+            String[] splitLine = line.split(",");
+            int x = Integer.parseInt(splitLine[1]);
+            int y = Integer.parseInt(splitLine[2]);
+            gameMap.addObject(new Mushroom(tileService.getTiles().get(Mushroom.TILE_ID).getSprite(), x, y));
             return true;
         }
 
@@ -432,6 +446,12 @@ public class MapService {
             }
             if (gameObject instanceof Wood) {
                 printWriter.println("wood," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
+            }
+            if (gameObject instanceof Feather) {
+                printWriter.println("feather," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
+            }
+            if (gameObject instanceof Mushroom) {
+                printWriter.println("mushroom," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
             }
         }
     }

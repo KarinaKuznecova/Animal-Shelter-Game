@@ -856,9 +856,21 @@ public class Game extends JFrame implements Runnable {
     private void putItemOnTheGround(int xAdjusted, int yAdjusted, String itemType, boolean justDrop) {
         int xAlligned = xAdjusted - (xAdjusted % CELL_SIZE);
         int yAlligned = yAdjusted - (yAdjusted % CELL_SIZE);
-        if (itemType.equalsIgnoreCase(Wood.itemName)) {
-            Wood wood = new Wood(tileService.getTiles().get(75).getSprite(), xAlligned, yAlligned);
+        if (itemType.equalsIgnoreCase(Wood.ITEM_NAME)) {
+            Wood wood = new Wood(tileService.getTiles().get(Wood.TILE_ID).getSprite(), xAlligned, yAlligned);
             gameMap.addObject(wood);
+            guiService.decreaseNumberOnButton(this, getSelectedButton());
+            return;
+        }
+        if (itemType.equalsIgnoreCase(Feather.ITEM_NAME)) {
+            Feather feather = new Feather(tileService.getTiles().get(Feather.TILE_ID).getSprite(), xAlligned, yAlligned);
+            gameMap.addObject(feather);
+            guiService.decreaseNumberOnButton(this, getSelectedButton());
+            return;
+        }
+        if (itemType.equalsIgnoreCase(Mushroom.ITEM_NAME)) {
+            Mushroom mushroom = new Mushroom(tileService.getTiles().get(Mushroom.TILE_ID).getSprite(), xAlligned, yAlligned);
+            gameMap.addObject(mushroom);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }

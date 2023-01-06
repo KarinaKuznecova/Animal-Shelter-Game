@@ -22,6 +22,8 @@ public class EventService {
         eventList.add(new AdoptionNPCEvent());
         eventList.add(new GrowRandomPlantEvent());
         eventList.add(new WoodInForestEvent());
+        eventList.add(new FeatherInForestEvent());
+        eventList.add(new MushroomInForestEvent());
     }
 
     public void update(Game game) {
