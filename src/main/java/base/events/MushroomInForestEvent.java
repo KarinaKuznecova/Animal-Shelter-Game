@@ -1,7 +1,7 @@
 package base.events;
 
 import base.Game;
-import base.gameobjects.Wood;
+import base.gameobjects.Mushroom;
 import base.graphicsservice.Sprite;
 import base.map.GameMap;
 import org.slf4j.Logger;
@@ -10,18 +10,18 @@ import org.slf4j.LoggerFactory;
 import static base.constants.Constants.CELL_SIZE;
 import static base.constants.MapConstants.FOREST_MAP;
 
-public class WoodInForestEvent extends Event {
+public class MushroomInForestEvent extends Event {
 
-    protected static final Logger logger = LoggerFactory.getLogger(WoodInForestEvent.class);
+    protected static final Logger logger = LoggerFactory.getLogger(MushroomInForestEvent.class);
 
-    public WoodInForestEvent() {
+    public MushroomInForestEvent() {
         repeatable = true;
     }
 
     @Override
     void calculateChance(Game game) {
         chance = random.nextInt(6);
-        if ((!repeatable && happened) || game.getGameMap(FOREST_MAP).getWoods().size() > 5) {
+        if ((!repeatable && happened) || game.getGameMap(FOREST_MAP).getMushrooms().size() > 5) {
             chance = 0;
             return;
         }
@@ -37,11 +37,11 @@ public class WoodInForestEvent extends Event {
         int y = random.nextInt(map.getMapHeight());
         int bigX = x  * CELL_SIZE;
         int bigY = y  * CELL_SIZE;
-        logger.info(String.format("Random wood will appear at %d and %d", x, y));
+        logger.info(String.format("Random mushroom will appear at %d and %d", x, y));
         if (map.isPlaceEmpty(1, bigX, bigY)) {
-            logger.info("Place was empty, will add wood");
-            Sprite sprite = game.getTileService().getTiles().get(Wood.TILE_ID).getSprite();
-            map.addObject(new Wood(sprite, bigX, bigY));
+            logger.info("Place was empty, will add mushroom");
+            Sprite sprite = game.getTileService().getTiles().get(Mushroom.TILE_ID).getSprite();
+            map.addObject(new Mushroom(sprite, bigX, bigY));
             happened = true;
         }
     }

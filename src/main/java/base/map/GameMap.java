@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static base.constants.Constants.CELL_SIZE;
@@ -367,11 +366,18 @@ public class GameMap {
         item.setMapName(mapName);
     }
 
+    //TODO: refactor not to mention every item type separately
     public void removeItem(String itemName, Rectangle rectangle) {
         items.removeIf(item -> itemName.equals(item.getItemName()) && rectangle.intersects(item.getRectangle()));
 
-        if (itemName.equalsIgnoreCase(Wood.itemName)) {
+        if (itemName.equalsIgnoreCase(Wood.ITEM_NAME)) {
             interactiveObjects.removeIf(item -> item instanceof Wood && rectangle.intersects((item.getRectangle())));
+        }
+        if (itemName.equalsIgnoreCase(Feather.ITEM_NAME)) {
+            interactiveObjects.removeIf(item -> item instanceof Feather && rectangle.intersects((item.getRectangle())));
+        }
+        if (itemName.equalsIgnoreCase(Mushroom.ITEM_NAME)) {
+            interactiveObjects.removeIf(item -> item instanceof Mushroom && rectangle.intersects((item.getRectangle())));
         }
     }
 
@@ -450,6 +456,26 @@ public class GameMap {
             }
         }
         return woods;
+    }
+
+    public List<Feather> getFeathers() {
+        List<Feather> feathers = new ArrayList<>();
+        for (GameObject object : getInteractiveObjects()) {
+            if (object instanceof Feather) {
+                feathers.add((Feather) object);
+            }
+        }
+        return feathers;
+    }
+
+    public List<Mushroom> getMushrooms() {
+        List<Mushroom> mushrooms = new ArrayList<>();
+        for (GameObject object : getInteractiveObjects()) {
+            if (object instanceof Mushroom) {
+                mushrooms.add((Mushroom) object);
+            }
+        }
+        return mushrooms;
     }
 
     public List<BigObject> getBigObjects() {

@@ -12,12 +12,12 @@ import static base.constants.Constants.ZOOM;
 import static base.constants.MapConstants.FOREST_MAP;
 
 // TODO: extends Item? And refactor item
-public class Wood implements GameObject {
+public class Mushroom implements GameObject {
 
-    protected static final Logger logger = LoggerFactory.getLogger(Wood.class);
+    protected static final Logger logger = LoggerFactory.getLogger(Mushroom.class);
 
-    public static final String ITEM_NAME = "wood";
-    public static final int TILE_ID = 75;
+    public static final String ITEM_NAME = "mushroom";
+    public static final int TILE_ID = 77;
 
     private final Sprite sprite;
     private final int xPosition;
@@ -25,7 +25,7 @@ public class Wood implements GameObject {
     private final Rectangle rectangle;
     private String mapName;
 
-    public Wood(Sprite sprite, int xPosition, int yPosition) {
+    public Mushroom(Sprite sprite, int xPosition, int yPosition) {
         this.sprite = sprite;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
@@ -51,7 +51,7 @@ public class Wood implements GameObject {
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
-            logger.info("Wood is clicked");
+            logger.info("Mushroom is clicked");
             game.pickUpItem(ITEM_NAME, sprite, rectangle);
             return true;
         }
