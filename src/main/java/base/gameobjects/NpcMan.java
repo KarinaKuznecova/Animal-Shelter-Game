@@ -38,7 +38,7 @@ public class NpcMan extends Npc {
         List<GUIButton> buttons = new ArrayList<>();
 
         int rows = 2;
-        int columns = 6;
+        int columns = 7;
         for (int i = 0; i < rows; i++) { // rows
             for (int j = 0; j < columns; j++) { // columns
                 Rectangle buttonRectangle = new Rectangle(j * (CELL_SIZE + 2), i * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
