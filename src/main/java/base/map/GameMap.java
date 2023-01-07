@@ -169,12 +169,13 @@ public class GameMap {
     }
 
     public boolean removeTile(int tileX, int tileY, int layer, boolean regularTiles, int selectedTile) {
-//        if (bookcases.contains(selectedTile) && regularTiles) {
-//            for (MapTile tile : new Bookcase(tileX, tileY, bookcases.indexOf(selectedTile), 1).getObjectParts()) {
-//                removeTile(tile.getX(), tile.getY(), tile.getLayer(), false, tile.getId());
-//            }
-//            return;
-//        }
+        if (bookcases.contains(selectedTile) && regularTiles) {
+            boolean removed = false;
+            for (MapTile tile : new Bookcase(tileX, tileY, bookcases.indexOf(selectedTile), 1).getObjectParts()) {
+                removed = removeTile(tile.getX(), tile.getY(), tile.getLayer(), false, tile.getId());
+            }
+            return removed;
+        }
         if (layeredTiles.get(layer) != null && !isThereAPortal(tileX, tileY)) {
             return tileRemoved(tileX, tileY, layer, regularTiles, selectedTile);
         }
@@ -412,7 +413,7 @@ public class GameMap {
     }
 
     public boolean removeStorageChest(int xPosition, int yPosition) {
-        Rectangle rectangle = new Rectangle(xPosition, yPosition, TILE_SIZE, TILE_SIZE);
+        Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
         for (GameObject gameObject : interactiveObjects) {
             if (gameObject instanceof StorageChest && gameObject.getRectangle().intersects(rectangle)) {
                 interactiveObjects.remove(gameObject);

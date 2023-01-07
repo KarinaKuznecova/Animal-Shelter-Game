@@ -1034,6 +1034,7 @@ public class Game extends JFrame implements Runnable {
             removed = getGameMap().removeObject(waterBowl);
         } else if (CHEST_TILE_ID == selectedTileId) {
             removed = getGameMap().removeStorageChest(xAlligned, yAlligned);
+            gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
         } else {
             removed = gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
         }
