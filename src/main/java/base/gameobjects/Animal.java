@@ -187,6 +187,7 @@ public abstract class Animal implements GameObject, Walking {
 
         if (BABY.equals(age)) {
             updateAge();
+            game.updateAnimalIcon(this);
         }
         interactionZone.update(game);
         if (interactionZone.isPlayerInRange()) {

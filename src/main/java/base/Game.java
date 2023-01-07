@@ -1025,14 +1025,21 @@ public class Game extends JFrame implements Runnable {
             deselectBagItem();
             return;
         }
-        if (selectedTileId == BOWL_TILE_ID) {
+        boolean removed;
+        if (BOWL_TILE_ID == selectedTileId) {
             FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
-            getGameMap().removeObject(foodBowl);
-        } else if (selectedTileId == WATER_BOWL_TILE_ID) {
+            removed = getGameMap().removeObject(foodBowl);
+        } else if (WATER_BOWL_TILE_ID == selectedTileId) {
             WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned);
-            getGameMap().removeObject(waterBowl);
-        } else {
+            removed = getGameMap().removeObject(waterBowl);
+        } else if (CHEST_TILE_ID == selectedTileId) {
+            removed = getGameMap().removeStorageChest(xAlligned, yAlligned);
             gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
+        } else {
+            removed = gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
+        }
+        if (!removed) {
+            deselectTile();
         }
         refreshCurrentMapCache();
     }
@@ -1086,7 +1093,15 @@ public class Game extends JFrame implements Runnable {
     }
 
     public boolean isNearWater(Animal animal) {
-        return gameMap.isThereWaterTile(animal.getRectangle());
+        return getGameMap(animal.getCurrentMap()).isThereWaterTile(animal.getRectangle());
+    }
+
+    public void updateAnimalIcon(Animal animal) {
+        for (GUIButton animalIcon : yourAnimalButtons.getButtons()) {
+            if (animalIcon instanceof AnimalIcon && ((AnimalIcon) animalIcon).getAnimal().equals(animal)) {
+                animalIcon.update(this);
+            }
+        }
     }
 
     /**
