@@ -15,8 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import static base.constants.Constants.CELL_SIZE;
-import static base.constants.Constants.PILLOW_TILE_ID;
+import static base.constants.Constants.*;
 import static base.constants.MultiOptionalObjects.bookcases;
 
 public class GameMap {
@@ -169,20 +168,27 @@ public class GameMap {
         return null;
     }
 
-    public void removeTile(int tileX, int tileY, int layer, boolean regularTiles, int selectedTile) {
-        if (selectedTile == 66 && !regularTiles) {
-            removeBigObject(new Bush(tileX, tileY));
-            return;
-        }
-        if (bookcases.contains(selectedTile) && regularTiles) {
-            for (MapTile tile : new Bookcase(tileX, tileY, bookcases.indexOf(selectedTile), 1).getObjectParts()) {
-                removeTile(tile.getX(), tile.getY(), tile.getLayer(), false, tile.getId());
-            }
-            return;
-        }
+    public boolean removeTile(int tileX, int tileY, int layer, boolean regularTiles, int selectedTile) {
+//        if (bookcases.contains(selectedTile) && regularTiles) {
+//            for (MapTile tile : new Bookcase(tileX, tileY, bookcases.indexOf(selectedTile), 1).getObjectParts()) {
+//                removeTile(tile.getX(), tile.getY(), tile.getLayer(), false, tile.getId());
+//            }
+//            return;
+//        }
         if (layeredTiles.get(layer) != null && !isThereAPortal(tileX, tileY)) {
-            layeredTiles.get(layer).removeIf(tile -> tile.getX() == tileX && tile.getY() == tileY && tile.isRegularTile() == regularTiles && tile.getId() == selectedTile);
+            return tileRemoved(tileX, tileY, layer, regularTiles, selectedTile);
         }
+        return false;
+    }
+
+    private boolean tileRemoved(int tileX, int tileY, int layer, boolean regularTiles, int selectedTile) {
+        for (MapTile mapTile : layeredTiles.get(layer)) {
+            if (mapTile.getX() == tileX && mapTile.getY() == tileY && mapTile.isRegularTile() == regularTiles && mapTile.getId() == selectedTile) {
+                layeredTiles.get(layer).remove(mapTile);
+                return true;
+            }
+        }
+        return false;
     }
 
     boolean isThereAPortal(int x, int y) {
@@ -397,8 +403,23 @@ public class GameMap {
         interactiveObjects.sort(Comparator.comparingInt(o -> o.getRectangle().getY()));
     }
 
-    public void removeObject(GameObject object) {
-        interactiveObjects.remove(object);
+    public boolean removeObject(GameObject object) {
+        if (interactiveObjects.contains(object)) {
+            interactiveObjects.remove(object);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeStorageChest(int xPosition, int yPosition) {
+        Rectangle rectangle = new Rectangle(xPosition, yPosition, TILE_SIZE, TILE_SIZE);
+        for (GameObject gameObject : interactiveObjects) {
+            if (gameObject instanceof StorageChest && gameObject.getRectangle().intersects(rectangle)) {
+                interactiveObjects.remove(gameObject);
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<GameObject> getInteractiveObjects() {
