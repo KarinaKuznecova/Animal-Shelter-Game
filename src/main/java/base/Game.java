@@ -239,6 +239,7 @@ public class Game extends JFrame implements Runnable {
 
         if (TEST_MAP_MODE) {
             gameMap = mapService.loadGameMap(MapConstants.TEST_MAP, tileService);
+//            gameMap = mapService.loadGameMapFromJson(TEST_MAP, tileService);
         } else {
             gameMap = mapService.loadGameMap(MAIN_MAP, tileService);
 //            gameMap = mapService.loadGameMapFromJson(MAIN_MAP, tileService);
@@ -246,7 +247,9 @@ public class Game extends JFrame implements Runnable {
         loadSprites(gameMap);
         loadAnimalsOnMaps();
 
-        initialCacheMaps();
+        if (!TEST_MAP_MODE) {
+            initialCacheMaps();
+        }
 
         logger.info("Game map loaded");
     }
