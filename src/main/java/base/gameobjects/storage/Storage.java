@@ -21,7 +21,7 @@ public class Storage implements GameObject {
     private int size;
     private Rectangle chestRectangle;
     private boolean isVisible;
-    private List<StorageCell> cells = new ArrayList<>();
+    private transient List<StorageCell> cells = new ArrayList<>();
     private String fileName;
 
     public Storage(int size, Rectangle chestRectangle, String fileName) {
@@ -121,5 +121,17 @@ public class Storage implements GameObject {
                 return;
             }
         }
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public Rectangle getChestRectangle() {
+        return chestRectangle;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 }

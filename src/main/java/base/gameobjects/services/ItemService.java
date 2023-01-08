@@ -11,9 +11,7 @@ import base.map.TileService;
 import java.util.Arrays;
 import java.util.List;
 
-// TODO: don't like this at all
-// should not contain plant service
-// should have cached sprites
+// TODO: don't like this at all, should not contain plant service, should have cached sprites, issue #344
 public class ItemService {
 
     PlantService plantService;

@@ -9,7 +9,7 @@ import static base.constants.Constants.ZOOM;
 
 public class Flower implements GameObject{
 
-    private final Sprite sprite;
+    private final transient Sprite sprite;
     private final int xPosition;
     private final int yPosition;
     private final String mapName;
@@ -50,5 +50,21 @@ public class Flower implements GameObject{
     @Override
     public Rectangle getRectangle() {
         return null;
+    }
+
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public int getCurrentTick() {
+        return currentTick;
     }
 }

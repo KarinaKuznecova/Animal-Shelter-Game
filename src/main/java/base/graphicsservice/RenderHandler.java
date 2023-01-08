@@ -156,9 +156,9 @@ public class RenderHandler {
     private Sprite getTileSpriteForPreview(Game game, MapTile potentialTile) {
         Sprite sprite;
         if (potentialTile.isRegularTile()) {
-            sprite = game.getGameMap().getTileService().getTiles().get(potentialTile.getId()).getSprite();
+            sprite = game.getTileService().getTiles().get(potentialTile.getId()).getSprite();
         } else {
-            sprite = game.getGameMap().getTileService().getTerrainTiles().get(potentialTile.getId()).getSprite();
+            sprite = game.getTileService().getTerrainTiles().get(potentialTile.getId()).getSprite();
         }
         return sprite;
     }
@@ -207,7 +207,7 @@ public class RenderHandler {
     }
 
     public void renderMap(Game game, GameMap gameMap) {
-        renderBackground(gameMap);
+        renderBackground(game, gameMap);
         for (int i = 0; i <= 5; i++) {
             List<MapTile> tiles = gameMap.getLayeredTiles().get(i);
             if (tiles != null) {
@@ -215,7 +215,7 @@ public class RenderHandler {
                 for (int j = 0; j < tiles.size(); j++) {
                     MapTile mappedTile = tiles.get(j);
                     if (mappedTile.getLayer() == i && isInRangeOfCamera(mappedTile)) {
-                        renderTile(gameMap, mappedTile);
+                        renderTile(game, gameMap, mappedTile);
                     }
                 }
             }
@@ -230,7 +230,7 @@ public class RenderHandler {
                 && mappedTile.getY() * CELL_SIZE < camera.getY() + camera.getHeight() + CELL_SIZE;
     }
 
-    private void renderBackground(GameMap gameMap) {
+    private void renderBackground(Game game, GameMap gameMap) {
         int backGroundTileId = gameMap.getBackGroundTileId();
         if (backGroundTileId >= 0) {
             for (int i = (camera.getX() / CELL_SIZE) * CELL_SIZE - 64;
@@ -239,20 +239,20 @@ public class RenderHandler {
                 for (int j = (camera.getY() / CELL_SIZE) * CELL_SIZE - 64;
                      j < (camera.getY() / CELL_SIZE) * CELL_SIZE + camera.getHeight() + CELL_SIZE;
                      j += CELL_SIZE) {
-                    renderSprite(gameMap.getTileService().getTerrainTiles().get(backGroundTileId).getSprite(), i, j, ZOOM, false);
+                    renderSprite(game.getTileService().getTerrainTiles().get(backGroundTileId).getSprite(), i, j, ZOOM, false);
                 }
             }
         }
     }
 
-    private void renderTile(GameMap gameMap, MapTile mappedTile) {
+    private void renderTile(Game game, GameMap gameMap, MapTile mappedTile) {
         int xPosition = mappedTile.getX() * CELL_SIZE;
         int yPosition = mappedTile.getY() * CELL_SIZE;
         if (xPosition <= gameMap.getMapWidth() * CELL_SIZE && yPosition <= gameMap.getMapHeight() * CELL_SIZE) {
             if (mappedTile.isRegularTile()) {
-                renderSprite(gameMap.getTileService().getTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, false);
+                renderSprite(game.getTileService().getTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, false);
             } else {
-                renderSprite(gameMap.getTileService().getTerrainTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, false);
+                renderSprite(game.getTileService().getTerrainTiles().get(mappedTile.getId()).getSprite(), xPosition, yPosition, ZOOM, false);
             }
         }
     }

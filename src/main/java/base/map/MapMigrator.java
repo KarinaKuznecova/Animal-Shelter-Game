@@ -206,6 +206,7 @@ public class MapMigrator {
             String itemName = itemId.split("-")[1];
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
+            // TODO: should get sprites from sprite service
             Sprite sprite = plantService.getPreviews().get(itemName);
             if (second) {
                 x = x + (firstMapWidth * CELL_SIZE);

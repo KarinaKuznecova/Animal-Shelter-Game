@@ -19,7 +19,7 @@ public class Feather implements GameObject {
     public static final String ITEM_NAME = "feather";
     public static final int TILE_ID = 76;
 
-    private final Sprite sprite;
+    private final transient Sprite sprite;
     private final int xPosition;
     private final int yPosition;
     private final Rectangle rectangle;
@@ -69,5 +69,13 @@ public class Feather implements GameObject {
 
     public void setMapName(String mapName) {
         this.mapName = mapName;
+    }
+
+    public int getPosition() {
+        return xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
     }
 }

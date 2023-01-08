@@ -14,7 +14,7 @@ public class FoodBowl extends Bowl {
 
         sprite = ImageLoader.getAnimatedSprite(FOOD_BOWL_PATH, TILE_SIZE);
         sprite.setAnimationRange(0, 1);
-        sprite.vertical = false;
+        sprite.setVertical(false);
     }
 
     @Override

@@ -50,10 +50,12 @@ public class GrowRandomPlantEvent extends Event {
         int bigX = x  * CELL_SIZE;
         int bigY = y  * CELL_SIZE;
         logger.info(String.format("Random plant will appear at %d and %d", x, y));
-        if (map.isThereGrassOrDirt(bigX, bigY) && map.isPlaceEmpty(1, bigX, bigY)) {
+        if (game.getMapService().isThereGrassOrDirt(map, bigX, bigY) && game.getMapService().isPlaceEmpty(map, 1, bigX, bigY)) {
             int plantId = random.nextInt(PlantService.plantTypes.size());
             logger.info(String.format("Place was empty, will add plant with id %d", plantId));
             Plant plant = game.getPlantService().createPlant(PlantService.plantTypes.get(plantId), bigX, bigY);
+            game.getSpriteService().getPlantAnimatedSprite(plant.getPlantType());
+            game.getSpriteService().getPlantPreviewSprite(plant.getPlantType());
             plant.setWild(true);
             plant.setRefreshable(false);
             map.addPlant(plant);

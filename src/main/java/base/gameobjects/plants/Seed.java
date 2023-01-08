@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class Seed extends Item {
 
-    protected static final Logger logger = LoggerFactory.getLogger(Seed.class);
+    protected static final transient Logger logger = LoggerFactory.getLogger(Seed.class);
 
     private String plantType;
 

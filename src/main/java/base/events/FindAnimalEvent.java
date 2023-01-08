@@ -55,7 +55,7 @@ public class FindAnimalEvent extends Event {
 
         int bigX = x * CELL_SIZE;
         int bigY = y * CELL_SIZE;
-        if (map.isPlaceEmpty(2, bigX, bigY)) {
+        if (game.getMapService().isPlaceEmpty(map, 2, bigX, bigY)) {
             logger.info("Place was empty, will put chest");
             AnimalService animalService = game.getAnimalService();
             String animalType = animalService.getRandomAnimalType();

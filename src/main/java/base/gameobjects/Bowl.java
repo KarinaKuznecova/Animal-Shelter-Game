@@ -16,7 +16,7 @@ public abstract class Bowl implements GameObject {
 
     private final int x;
     private final int y;
-    protected AnimatedSprite sprite;
+    protected transient AnimatedSprite sprite;
     protected final Rectangle rectangle;
     protected boolean isFull;
 
@@ -73,5 +73,13 @@ public abstract class Bowl implements GameObject {
 
     public boolean isFull() {
         return isFull;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 }

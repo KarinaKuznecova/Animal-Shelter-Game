@@ -22,26 +22,26 @@ import static base.graphicsservice.ImageLoader.getPreviewSprite;
 
 public class Bush implements GameObject {
 
-    private static final Logger logger = LoggerFactory.getLogger(Bush.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(Bush.class);
 
     private final int x;
     private final int y;
-    private final Sprite sprite;
+    private final transient Sprite sprite;
     private final Rectangle rectangle;
     private final String mapName;
     private final boolean canContainAnimal;
-    private final Random random = new Random();
+    private final transient Random random = new Random();
 
     private boolean isAnimalInside;
     private String animalType;
 
-    private final InteractionZoneBushWithAnimal interactionZone;
+    private final transient InteractionZoneBushWithAnimal interactionZone;
     private final ContextClue contextClue;
 
     private final int maxInterval;
     private int currentInterval;
 
-    private AnimalService animalService;
+    private transient AnimalService animalService;
 
     public Bush(int x, int y, String mapName) {
         this.x = x;
@@ -148,5 +148,33 @@ public class Bush implements GameObject {
     @Override
     public Rectangle getRectangle() {
         return rectangle;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public boolean isCanContainAnimal() {
+        return canContainAnimal;
+    }
+
+    public boolean isAnimalInside() {
+        return isAnimalInside;
+    }
+
+    public String getAnimalType() {
+        return animalType;
+    }
+
+    public ContextClue getContextClue() {
+        return contextClue;
+    }
+
+    public int getMaxInterval() {
+        return maxInterval;
+    }
+
+    public int getCurrentInterval() {
+        return currentInterval;
     }
 }

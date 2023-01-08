@@ -14,11 +14,11 @@ import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 
 public class Item implements GameObject {
 
-    protected static final Logger logger = LoggerFactory.getLogger(Item.class);
+    protected static final transient Logger logger = LoggerFactory.getLogger(Item.class);
     private final int x;
     private final int y;
     private final String itemName;
-    private final Sprite sprite;
+    private final transient Sprite sprite;
     private final Rectangle rectangle;
     private boolean stackable;
     private String mapName;
@@ -96,5 +96,21 @@ public class Item implements GameObject {
 
     public void setMapName(String mapName) {
         this.mapName = mapName;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getMAX_FRESHNESS() {
+        return MAX_FRESHNESS;
+    }
+
+    public int getFreshness() {
+        return freshness;
     }
 }

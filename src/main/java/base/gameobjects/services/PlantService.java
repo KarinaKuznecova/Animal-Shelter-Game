@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static base.constants.Constants.TILE_SIZE;
 import static base.constants.FilePath.*;
 
 public class PlantService {
@@ -30,67 +31,67 @@ public class PlantService {
         plantMapping = new HashMap<>();
         seedMapping = new HashMap<>();
 
-        plantAnimations.put(CARROT_PREVIEW, CARROT_IMG);
+        plantAnimations.put(Carrot.NAME, CARROT_IMG);
         plantMapping.put(Carrot.NAME, CARROT_PREVIEW);
         seedMapping.put(Carrot.NAME, CARROT_SEEDS);
 
-        plantAnimations.put(BEET_PREVIEW, BEET_IMG);
+        plantAnimations.put(Beet.NAME, BEET_IMG);
         plantMapping.put(Beet.NAME, BEET_PREVIEW);
         seedMapping.put(Beet.NAME, BEET_SEEDS);
 
-        plantAnimations.put(TOMATO_PREVIEW, TOMATO_IMG);
+        plantAnimations.put(Tomato.NAME, TOMATO_IMG);
         plantMapping.put(Tomato.NAME, TOMATO_PREVIEW);
         seedMapping.put(Tomato.NAME, TOMATO_SEEDS);
 
-        plantAnimations.put(STRAWBERRY_PREVIEW, STRAWBERRY_IMG);
+        plantAnimations.put(Strawberry.NAME, STRAWBERRY_IMG);
         plantMapping.put(Strawberry.NAME, STRAWBERRY_PREVIEW);
         seedMapping.put(Strawberry.NAME, STRAWBERRY_SEEDS);
 
-        plantAnimations.put(BELLPEPPER_PREVIEW, BELLPEPPER_IMG);
+        plantAnimations.put(Bellpepper.NAME, BELLPEPPER_IMG);
         plantMapping.put(Bellpepper.NAME, BELLPEPPER_PREVIEW);
         seedMapping.put(Bellpepper.NAME, BELLPEPPER_SEEDS);
 
-        plantAnimations.put(CORN_PREVIEW, CORN_IMG);
+        plantAnimations.put(Corn.NAME, CORN_IMG);
         plantMapping.put(Corn.NAME, CORN_PREVIEW);
         seedMapping.put(Corn.NAME, CORN_SEEDS);
 
-        plantAnimations.put(POTATO_PREVIEW, POTATO_IMG);
+        plantAnimations.put(Potato.NAME, POTATO_IMG);
         plantMapping.put(Potato.NAME, POTATO_PREVIEW);
         seedMapping.put(Potato.NAME, POTATO_SEEDS);
     }
 
     public Plant createPlant(String plantName, int x, int y) {
-        String previewPath = plantMapping.get(plantName);
-        Sprite previewSprite = ImageLoader.getPreviewSprite(previewPath);
-        AnimatedSprite animatedSprite;
         if (Corn.NAME.equals(plantName)) {
-            animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(previewPath), 32, 64);
             y -= 64;
-        } else {
-            animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(previewPath), 32);
         }
-        animatedSprite.setSpeed(0);
-        animatedSprite.setAnimationRange(0, 4);
-
+        Plant newPlant;
         switch (plantName) {
             case Beet.NAME:
-                return new Beet(previewSprite, animatedSprite, x, y, plantName);
+                newPlant = new Beet(x, y, plantName);
+                break;
             case Bellpepper.NAME:
-                return new Bellpepper(previewSprite, animatedSprite, x, y, plantName);
+                newPlant =  new Bellpepper(x, y, plantName);
+                break;
             case Carrot.NAME:
-                return new Carrot(previewSprite, animatedSprite, x, y, plantName);
+                newPlant =  new Carrot(x, y, plantName);
+                break;
             case Strawberry.NAME:
-                return new Strawberry(previewSprite, animatedSprite, x, y, plantName);
+                newPlant =  new Strawberry(x, y, plantName);
+                break;
             case Tomato.NAME:
-                return new Tomato(previewSprite, animatedSprite, x, y, plantName);
+                newPlant =  new Tomato(x, y, plantName);
+                break;
             case Corn.NAME:
-                return new Corn(previewSprite, animatedSprite, x, y, plantName);
+                newPlant =  new Corn(x, y, plantName);
+                break;
             case Potato.NAME:
-                return new Potato(previewSprite, animatedSprite, x, y, plantName);
+                newPlant =  new Potato(x, y, plantName);
+                break;
             default:
                 logger.error(String.format("Unknown plant requested or plant not defined : %s", plantName));
                 throw new IllegalArgumentException();
         }
+        return newPlant;
     }
 
     public Map<String, Sprite> getPreviews() {
@@ -101,6 +102,31 @@ public class PlantService {
         return previews;
     }
 
+    public Map<String, Sprite> getSeedSprites() {
+        Map<String, Sprite> seedSprites = new HashMap<>();
+        for (String plantType : plantTypes) {
+            seedSprites.put(plantType, ImageLoader.getPreviewSprite(seedMapping.get(plantType)));
+        }
+        return seedSprites;
+    }
+
+    public Map<String, AnimatedSprite> getAnimatedSprites() {
+        Map<String, AnimatedSprite> animatedSprites = new HashMap<>();
+        for (String plantType : plantTypes) {
+            AnimatedSprite animatedSprite;
+            if (plantType.equalsIgnoreCase(Corn.NAME)) {
+                animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(plantType), 32, 64);
+            } else {
+                animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(plantType), TILE_SIZE);
+            }
+            animatedSprite.setSpeed(0);
+            animatedSprite.setAnimationRange(0, 4);
+            animatedSprites.put(plantType, animatedSprite);
+        }
+        return animatedSprites;
+    }
+
+    @Deprecated
     public Sprite getPlantSprite(String plantName) {
         if (plantName == null) {
             return null;
@@ -112,6 +138,7 @@ public class PlantService {
         return ImageLoader.getPreviewSprite(plantMapping.get(plantName));
     }
 
+    @Deprecated
     public Sprite getSeedSprite(String plantName) {
         return ImageLoader.getPreviewSprite(seedMapping.get(plantName));
     }

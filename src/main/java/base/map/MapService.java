@@ -7,16 +7,14 @@ import base.gameobjects.services.PlantService;
 import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
+import base.navigationservice.Direction;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
 import static base.constants.FilePath.MAPS_LIST_PATH;
@@ -68,8 +66,22 @@ public class MapService {
      * =================================== Load Map ======================================
      */
 
+    // TODO: migration, if there is no json, but only normal file, them immediately save?
+    public GameMap loadGameMapFromJson(String mapName, TileService tileService) {
+        try {
+            Gson gson = new Gson();
+            Reader reader = new FileReader("maps-json/" + mapName);
+            GameMap gameMap = gson.fromJson(reader, GameMap.class);
+            reader.close();
+            return gameMap;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return loadGameMap(mapName, tileService);
+    }
+
     public GameMap loadGameMap(String mapName, TileService tileService) {
-        GameMap gameMap = new GameMap(mapName, tileService);
+        GameMap gameMap = new GameMap(mapName);
         boolean migrationChecked = false;
         boolean migrationNeeded = false;
         File mapFile = new File(getMapConfig(mapName));
@@ -320,8 +332,22 @@ public class MapService {
      * =================================== Save Map ======================================
      */
 
+    public void saveMapToJson(GameMap gameMap) {
+        Gson gson = new Gson();
+        try {
+            FileWriter writer = new FileWriter("maps-json/" + gameMap.getMapName());
+            gson.toJson(gameMap, writer);
+            writer.flush();
+            writer.close();
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public void saveMap(GameMap gameMap) {
         logger.info("Saving map");
+        saveMapToJson(gameMap);
         File mapFile = new File(getMapConfig(gameMap.getMapName()));
         try {
             if (mapFile.exists()) {
@@ -545,6 +571,112 @@ public class MapService {
             mapMigrator.migrate("TopCenterMap", "maps/TopCenterMap.txt", "TopRightMap", "maps/TopRightMap.txt", "maps/Home.txt");
             // reload
         }
+    }
+
+    /**
+     * =================================== Other ======================================
+     */
+
+    public Portal getPortalTo(GameMap gameMap, String destination) {
+        for (Portal portal : gameMap.getPortals()) {
+            if (portal.getDirection().equals(destination)) {
+                return portal;
+            }
+        }
+        return null;
+    }
+
+    public int getSpawnPoint(Portal portalToPrevious, boolean getX, Direction direction, GameMap gameMap) {
+        int previousMapPortal;
+        if (getX) {
+            previousMapPortal = portalToPrevious.getRectangle().getX();
+        } else {
+            previousMapPortal = portalToPrevious.getRectangle().getY();
+        }
+
+        int mapSize;
+        if (getX) {
+            mapSize = gameMap.getMapWidth();
+        } else {
+            mapSize = gameMap.getMapHeight();
+        }
+
+        if (mapSize * CELL_SIZE - previousMapPortal < CELL_SIZE) {
+            previousMapPortal = previousMapPortal - CELL_SIZE;
+        }
+
+        if (previousMapPortal < 0) {
+            previousMapPortal = 0;
+        }
+        if (!getX){
+            if (direction == Direction.LEFT) {
+                return previousMapPortal - 7;
+            }
+            if (direction == Direction.RIGHT) {
+                return previousMapPortal + 7;
+            }
+        } else {
+            if (direction == Direction.UP) {
+                return previousMapPortal - 7;
+            }
+            if (direction == Direction.DOWN) {
+                return previousMapPortal + 14;
+            }
+        }
+        return previousMapPortal;
+    }
+
+    public boolean isThereGrassOrDirt(GameMap gameMap, int x, int y) {
+        x = x / CELL_SIZE;
+        y = y / CELL_SIZE;
+        for (MapTile tile : gameMap.getLayeredTiles().get(0)) {
+            if (tile.getX() == x && tile.getY() == y) {
+                return getGrassTileIds().contains(tile.getId());
+            }
+        }
+        if (getGrassTileIds().contains(gameMap.getBackGroundTileId()) && isPlaceEmpty(gameMap, 1, x, y) && isPlaceEmpty(gameMap, 2, x, y)) {
+            return true;
+        }
+        logger.info("There is no grass");
+        return false;
+    }
+
+    private List<Integer> getGrassTileIds() {
+        return Arrays.asList(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 158, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173);
+    }
+
+    public boolean isPlaceEmpty(GameMap gameMap, int layer, int x, int y) {
+        if (isTherePlant(gameMap, x, y)) {
+            return false;
+        }
+        if (gameMap.getLayeredTiles().get(layer) == null) {
+            return true;
+        }
+        for (MapTile tile : gameMap.getLayeredTiles().get(layer)) {
+            if (tile.getX() == x && tile.getY() == y) {
+                logger.info("Place is taken");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isTherePlant(GameMap gameMap, int x, int y) {
+        for (Plant plant : gameMap.getPlants()) {
+            if (plant.getRectangle().getX() == x && plant.getRectangle().getY() == y) {
+                logger.info("There is already a plant");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isInsideOfMap(GameMap gameMap, int x, int y) {
+        if (x < 0 || x > gameMap.getMapWidth() || y < 0 || y > gameMap.getMapHeight()) {
+            logger.info("Outside of modifiable map");
+            return false;
+        }
+        return true;
     }
 
 }

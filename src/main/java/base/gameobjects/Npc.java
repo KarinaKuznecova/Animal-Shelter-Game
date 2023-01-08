@@ -19,18 +19,18 @@ import static base.navigationservice.Direction.STAY;
 
 public class Npc implements GameObject, Walking {
 
-    private static final Logger logger = LoggerFactory.getLogger(Npc.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(Npc.class);
 
-    protected final AnimatedSprite animatedSprite;
+    protected final transient AnimatedSprite animatedSprite;
     protected final Rectangle rectangle;
 
     protected Direction direction;
-    protected int movingTicks = 0;
+    protected transient int movingTicks = 0;
     protected transient Route route;
     private String currentMap;
     protected int speed;
 
-    protected InteractionZone interactionZone;
+    protected transient InteractionZone interactionZone;
 
     public Npc(int startX, int startY) {
         animatedSprite = getAnimatedSprite();
@@ -147,5 +147,9 @@ public class Npc implements GameObject, Walking {
     public void setDirection(Direction direction) {
         this.direction = direction;
         updateDirection();
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 }

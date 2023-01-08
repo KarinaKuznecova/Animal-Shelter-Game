@@ -46,7 +46,7 @@ public class GrowFlowerEvent extends Event{
         int bigX = x  * CELL_SIZE;
         int bigY = y  * CELL_SIZE;
         logger.info(String.format("Random flower will appear at %d and %d", x, y));
-        if (map.isThereGrassOrDirt(bigX, bigY) && map.isPlaceEmpty(1, bigX, bigY)) {
+        if (game.getMapService().isThereGrassOrDirt(map, bigX, bigY) && game.getMapService().isPlaceEmpty(map, 1, bigX, bigY)) {
             int flowerId = random.nextInt(flowerIds.size());
             logger.info(String.format("Place was empty, will add flower with id %d", flowerId));
             Sprite sprite = game.getTileService().getTiles().get(flowerId).getSprite();

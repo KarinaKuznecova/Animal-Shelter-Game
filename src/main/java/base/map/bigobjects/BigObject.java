@@ -39,4 +39,12 @@ public abstract class BigObject {
     public int hashCode() {
         return Objects.hash(x, y);
     }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
 }

@@ -19,7 +19,7 @@ public class Wood implements GameObject {
     public static final String ITEM_NAME = "wood";
     public static final int TILE_ID = 75;
 
-    private final Sprite sprite;
+    private final transient Sprite sprite;
     private final int xPosition;
     private final int yPosition;
     private final Rectangle rectangle;
@@ -69,5 +69,13 @@ public class Wood implements GameObject {
 
     public void setMapName(String mapName) {
         this.mapName = mapName;
+    }
+
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
     }
 }

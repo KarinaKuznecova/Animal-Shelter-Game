@@ -25,12 +25,12 @@ public class StorageChest implements GameObject {
     private final int x;
     private final int y;
     private Rectangle rectangle;
-    private Sprite spriteClosed;
-    private Sprite spriteOpen;
+    private transient Sprite spriteClosed;
+    private transient Sprite spriteOpen;
     private Storage storage;
     private String fileName;
 
-    public InteractionZoneStorageChest interactionZone;
+    public transient InteractionZoneStorageChest interactionZone;
 
     private boolean isOpen;
 
@@ -123,7 +123,7 @@ public class StorageChest implements GameObject {
         return fileName;
     }
 
-    // TODO: move to service class
+    // TODO: change to json, issue #353
     public void readFile() {
         File mapFile = new File("maps/storages/" + fileName);
         try (Scanner scanner = new Scanner(mapFile)) {
@@ -139,5 +139,17 @@ public class StorageChest implements GameObject {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
     }
 }
