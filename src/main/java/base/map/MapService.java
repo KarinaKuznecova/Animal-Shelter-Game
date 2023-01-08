@@ -450,12 +450,12 @@ public class MapService {
         for (WaterBowl waterBowl : gameMap.getWaterBowls()) {
             printWriter.println("water-bowl," + waterBowl.getRectangle().getX() + "," + waterBowl.getRectangle().getY() + "," + waterBowl.isFull());
         }
+        for (Portal portal : gameMap.getPortals()) {
+            printWriter.println("portal," + portal.getRectangle().getX() + "," + portal.getRectangle().getY() + "," + portal.getDirection());
+        }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject instanceof NpcSpot) {
                 printWriter.println("npc-spot," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
-            }
-            if (gameObject instanceof Portal) {
-                printWriter.println("portal," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY() + "," + ((Portal) gameObject).getDirection());
             }
             if (gameObject instanceof Bush) {
                 printWriter.println("bush," + ((Bush) gameObject).getX() + "," + ((Bush) gameObject).getY());
