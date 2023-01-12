@@ -8,6 +8,7 @@ public class Constants {
     public static final int TILE_SIZE = 32;
     public static final int ZOOM = 2;
     public static final int CELL_SIZE = TILE_SIZE * ZOOM;
+    public static final int PLAYER_SPRITE_SIZE = 37;
 
     public static final String DEBUG_MODE_PROPERTY = "debug-mode";
     public static boolean DEBUG_MODE;

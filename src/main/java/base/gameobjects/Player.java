@@ -27,7 +27,7 @@ public class Player implements GameObject {
         this.animatedSprite = playerSprite;
 
         updateDirection();
-        playerRectangle = new Rectangle(startX, startY, TILE_SIZE, TILE_SIZE);
+        playerRectangle = new Rectangle(startX, startY, PLAYER_SPRITE_SIZE, PLAYER_SPRITE_SIZE);
         playerRectangle.generateBorder(1, 123);
     }
 

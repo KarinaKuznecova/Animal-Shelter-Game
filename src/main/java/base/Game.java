@@ -437,7 +437,7 @@ public class Game extends JFrame implements Runnable {
 
         BufferedImage playerSheetImage = ImageLoader.loadImage(FilePath.PLAYER_SHEET_PATH);
         SpriteSheet playerSheet = new SpriteSheet(playerSheetImage);
-        playerSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
+        playerSheet.loadSprites(PLAYER_SPRITE_SIZE, PLAYER_SPRITE_SIZE, 0);
 
         return new AnimatedSprite(playerSheet, 5, true);
     }

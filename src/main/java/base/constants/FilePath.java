@@ -5,7 +5,7 @@ import static base.constants.Constants.LANGUAGE;
 public class FilePath {
 
     //images
-    public static final String PLAYER_SHEET_PATH = "img/betty.png";
+    public static final String PLAYER_SHEET_PATH = "img/betty2.png";
     public static final String FOOD_BOWL_PATH = "img/bowl.png";
     public static final String WATER_BOWL_PATH = "img/water-bowl.png";
 
