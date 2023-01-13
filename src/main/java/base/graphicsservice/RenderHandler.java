@@ -277,6 +277,11 @@ public class RenderHandler {
         if (game.getPlayer().getLayer() == layer) {
             game.getPlayer().render(this, ZOOM);
         }
+        for (Bowl bowl : gameMap.getBowls()) {
+            if (bowl.getLayer() == layer) {
+                bowl.render(this, ZOOM);
+            }
+        }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject.getLayer() == layer) {
                 gameObject.render(this, ZOOM);

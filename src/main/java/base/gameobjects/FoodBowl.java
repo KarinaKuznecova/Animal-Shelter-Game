@@ -1,20 +1,21 @@
 package base.gameobjects;
 
 import base.Game;
-import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
-
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.FilePath.FOOD_BOWL_PATH;
 
 public class FoodBowl extends Bowl {
 
     public FoodBowl(int x, int y) {
         super(x, y);
+    }
 
-        sprite = ImageLoader.getAnimatedSprite(FOOD_BOWL_PATH, TILE_SIZE);
-        sprite.setAnimationRange(0, 1);
-        sprite.setVertical(false);
+    public FoodBowl(int x, int y, boolean isFull) {
+        super(x, y, isFull);
+    }
+
+    public FoodBowl(int x, int y, AnimatedSprite animatedSprite) {
+        super(x, y);
+        setSprite(animatedSprite);
     }
 
     @Override

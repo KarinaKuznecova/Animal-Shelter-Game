@@ -213,7 +213,7 @@ public class MapService {
             String itemName = itemId.split("-")[1];
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            Item item = itemService.creteNewItem(itemName, x, y);
+            Item item = itemService.createNewItem(itemName, x, y);
             gameMap.addItem(item);
             return true;
         }
@@ -222,11 +222,8 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             boolean shouldBeFull = Boolean.parseBoolean(splitLine[3]);
-            FoodBowl foodBowl = new FoodBowl(x, y);
-            if (shouldBeFull) {
-                foodBowl.fillBowl();
-            }
-            gameMap.addObject(foodBowl);
+            FoodBowl foodBowl = new FoodBowl(x, y, shouldBeFull);
+            gameMap.addBowl(foodBowl);
             return true;
         }
         if (line.startsWith("water-bowl")) {
@@ -234,11 +231,8 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             boolean shouldBeFull = Boolean.parseBoolean(splitLine[3]);
-            WaterBowl waterBowl = new WaterBowl(x, y);
-            if (shouldBeFull) {
-                waterBowl.fillBowl();
-            }
-            gameMap.addObject(waterBowl);
+            WaterBowl waterBowl = new WaterBowl(x, y, shouldBeFull);
+            gameMap.addBowl(waterBowl);
             return true;
         }
         if (line.startsWith("npc-spot")) {

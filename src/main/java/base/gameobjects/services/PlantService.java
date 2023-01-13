@@ -5,6 +5,7 @@ import base.gameobjects.Plant;
 import base.gameobjects.plants.*;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Sprite;
+import base.graphicsservice.SpriteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,13 @@ public class PlantService {
         plantAnimations.put(Potato.NAME, POTATO_IMG);
         plantMapping.put(Potato.NAME, POTATO_PREVIEW);
         seedMapping.put(Potato.NAME, POTATO_SEEDS);
+    }
+
+    public Plant createPlant(SpriteService spriteService, String plantName, int x, int y) {
+        Plant plant = createPlant(plantName, x, y);
+        plant.setAnimatedSprite(spriteService.getPlantAnimatedSprite(plant.getPlantType()));
+        plant.setPreviewSprite(spriteService.getPlantPreviewSprite(plant.getPlantType()));
+        return plant;
     }
 
     public Plant createPlant(String plantName, int x, int y) {

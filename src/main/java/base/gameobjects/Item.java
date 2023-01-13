@@ -18,7 +18,7 @@ public class Item implements GameObject {
     private final int x;
     private final int y;
     private final String itemName;
-    private final transient Sprite sprite;
+    private transient Sprite sprite;
     private final Rectangle rectangle;
     private boolean stackable;
     private String mapName;
@@ -26,10 +26,15 @@ public class Item implements GameObject {
     private int freshness;
 
     public Item(int x, int y, String itemName, Sprite sprite) {
+        this(x, y, itemName);
+        this.sprite = sprite;
+    }
+
+    public Item(int x, int y, String itemName) {
         this.x = x;
         this.y = y;
         this.itemName = itemName;
-        this.sprite = sprite;
+
         if (STACKABLE_ITEMS.contains(itemName)) {
             stackable = true;
         }
@@ -112,5 +117,9 @@ public class Item implements GameObject {
 
     public int getFreshness() {
         return freshness;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
     }
 }

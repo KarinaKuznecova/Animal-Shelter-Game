@@ -30,6 +30,8 @@ public class GameMap {
     private final Map<Integer, List<MapTile>> layeredTiles = new ConcurrentHashMap<>();
     private List<Plant> plants = new CopyOnWriteArrayList<>();
     private final List<Item> items = new CopyOnWriteArrayList<>();
+    // Separate Lists. NPC transient
+    private final List<Bowl> bowls = new CopyOnWriteArrayList<>();
     private final List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
     private final List<Portal> portals = new ArrayList<>();
 
@@ -172,6 +174,10 @@ public class GameMap {
         plants.add(plant);
     }
 
+    public void addBowl(Bowl bowl) {
+        bowls.add(bowl);
+    }
+
     /**
      * =================================== Remove object ======================================
      */
@@ -238,28 +244,37 @@ public class GameMap {
         plants.remove(plant);
     }
 
+    // TODO: check by x and y instead of full object
+    public boolean removeBowl(Bowl bowl) {
+        if (bowls.contains(bowl)) {
+            bowls.remove(bowl);
+            return true;
+        }
+        return false;
+    }
+
     /**
      * =================================== Getters with some logic ======================================
      */
 
     public List<FoodBowl> getFoodBowls() {
-        List<FoodBowl> bowls = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof FoodBowl) {
-                bowls.add((FoodBowl) object);
+        List<FoodBowl> foodBowls = new ArrayList<>();
+        for (Bowl bowl : bowls) {
+            if (bowl instanceof FoodBowl) {
+                foodBowls.add((FoodBowl) bowl);
             }
         }
-        return bowls;
+        return foodBowls;
     }
 
     public List<WaterBowl> getWaterBowls() {
-        List<WaterBowl> bowls = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof WaterBowl) {
-                bowls.add((WaterBowl) object);
+        List<WaterBowl> waterBowls = new ArrayList<>();
+        for (Bowl bowl : bowls) {
+            if (bowl instanceof WaterBowl) {
+                waterBowls.add((WaterBowl) bowl);
             }
         }
-        return bowls;
+        return waterBowls;
     }
 
     public List<MapTile> getPillows() {
@@ -371,6 +386,10 @@ public class GameMap {
 
     public void setPlants(List<Plant> plants) {
         this.plants = plants;
+    }
+
+    public List<Bowl> getBowls() {
+        return bowls;
     }
 
     public List<Portal> getPortals() {

@@ -223,10 +223,7 @@ public class MapMigrator {
             if (second) {
                 x = x + (firstMapWidth * CELL_SIZE);
             }
-            FoodBowl foodBowl = new FoodBowl(x, y);
-            if (shouldBeFull) {
-                foodBowl.fillBowl();
-            }
+            FoodBowl foodBowl = new FoodBowl(x, y, shouldBeFull);
             foodBowls.add(foodBowl);
             return true;
         }
@@ -238,10 +235,7 @@ public class MapMigrator {
             if (second) {
                 x = x + (firstMapWidth * CELL_SIZE);
             }
-            WaterBowl waterBowl = new WaterBowl(x, y);
-            if (shouldBeFull) {
-                waterBowl.fillBowl();
-            }
+            WaterBowl waterBowl = new WaterBowl(x, y, shouldBeFull);
             waterBowls.add(waterBowl);
             return true;
         }

@@ -6,6 +6,7 @@ import base.gameobjects.Mushroom;
 import base.gameobjects.Wood;
 import base.gameobjects.plants.*;
 import base.graphicsservice.Sprite;
+import base.graphicsservice.SpriteService;
 import base.map.TileService;
 
 import java.util.Arrays;
@@ -44,13 +45,19 @@ public class ItemService {
         return null;
     }
 
-    public Item creteNewItem(String itemType, int x, int y) {
+    public Item createNewItem(SpriteService spriteService, String itemType, int x, int y) {
+        Item item = createNewItem(itemType, x, y);
+        item.setSprite(spriteService.getPlantPreviewSprite(itemType));
+        return item;
+    }
+
+    public Item createNewItem(String itemType, int x, int y) {
         if (itemType.startsWith("seed")) {
             itemType = itemType.substring(4);
-            return new Seed(itemType, plantService.getSeedSprite(itemType), x, y);
+            return new Seed(itemType, x, y);
         }
         else if (PlantService.plantTypes.contains(itemType)) {
-            return new Item(x, y, itemType, plantService.getPlantSprite(itemType));
+            return new Item(x, y, itemType);
         }
         return null;
     }
