@@ -340,7 +340,7 @@ public class MapService {
     }
 
     public void saveMap(GameMap gameMap) {
-        logger.info("Saving map");
+        logger.info(String.format("Saving map %s", gameMap.getMapName()));
         saveMapToJson(gameMap);
         File mapFile = new File(getMapConfig(gameMap.getMapName()));
         try {
@@ -428,9 +428,6 @@ public class MapService {
     }
 
     private void saveItems(GameMap gameMap, PrintWriter printWriter) {
-        if (gameMap.getItems().isEmpty() && gameMap.getInteractiveObjects().isEmpty()) {
-            return;
-        }
         printWriter.println("//Items");
         printWriter.println("//type, xPosition, yPosition");
         for (Item item : gameMap.getItems()) {
@@ -463,16 +460,14 @@ public class MapService {
         for (Bush bush : gameMap.getBushes()) {
             printWriter.println("bush," + bush.getX() + "," + bush.getY());
         }
-        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
-            if (gameObject instanceof NpcSpot) {
-                printWriter.println("npc-spot," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
-            }
-            if (gameObject instanceof Oak) {
-                printWriter.println("oak," + ((Oak) gameObject).getOriginalRectangle().getX() + "," + ((Oak) gameObject).getOriginalRectangle().getY());
-            }
-            if (gameObject instanceof Spruce) {
-                printWriter.println("spruce," + ((Spruce) gameObject).getOriginalRectangle().getX() + "," + ((Spruce) gameObject).getOriginalRectangle().getY());
-            }
+        for (Oak oak : gameMap.getOaks()) {
+            printWriter.println("oak," + oak.getOriginalRectangle().getX() + "," + oak.getOriginalRectangle().getY());
+        }
+        for (Spruce spruce : gameMap.getSpruces()) {
+            printWriter.println("spruce," + spruce.getOriginalRectangle().getX() + "," + spruce.getOriginalRectangle().getY());
+        }
+        for (NpcSpot npcSpot : gameMap.getNpcSpots()) {
+            printWriter.println("npc-spot," + npcSpot.getRectangle().getX() + "," + npcSpot.getRectangle().getY());
         }
     }
 
@@ -602,19 +597,19 @@ public class MapService {
         if (previousMapPortal < 0) {
             previousMapPortal = 0;
         }
-        if (!getX){
+        if (getX){
             if (direction == Direction.LEFT) {
-                return previousMapPortal - 7;
+                return previousMapPortal - 1;
             }
             if (direction == Direction.RIGHT) {
-                return previousMapPortal + 7;
+                return previousMapPortal + 1;
             }
         } else {
             if (direction == Direction.UP) {
-                return previousMapPortal - 7;
+                return previousMapPortal - 1;
             }
             if (direction == Direction.DOWN) {
-                return previousMapPortal + 14;
+                return previousMapPortal + 1;
             }
         }
         return previousMapPortal;

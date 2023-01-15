@@ -308,6 +308,26 @@ public class RenderHandler {
                 bush.render(this, ZOOM);
             }
         }
+        for (Oak oak : gameMap.getOaks()) {
+            if (oak.getLayer() == layer) {
+                oak.render(this, ZOOM);
+            }
+        }
+        for (Spruce spruce : gameMap.getSpruces()) {
+            if (spruce.getLayer() == layer) {
+                spruce.render(this, ZOOM);
+            }
+        }
+        for (NpcSpot npcSpot : gameMap.getNpcSpots()) {
+            if (npcSpot.getLayer() == layer) {
+                npcSpot.render(this, ZOOM);
+            }
+        }
+        for (Portal portal : gameMap.getPortals()) {
+            if (portal.getLayer() == layer) {
+                portal.render(this, ZOOM);
+            }
+        }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject.getLayer() == layer) {
                 gameObject.render(this, ZOOM);

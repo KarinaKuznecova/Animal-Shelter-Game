@@ -39,6 +39,9 @@ public class GameMap {
     private final List<Mushroom> mushrooms = new CopyOnWriteArrayList<>();
     private final List<Wood> woods = new CopyOnWriteArrayList<>();
     private final List<Bush> bushes = new CopyOnWriteArrayList<>();
+    private final List<Oak> oaks = new CopyOnWriteArrayList<>();
+    private final List<Spruce> spruces = new CopyOnWriteArrayList<>();
+    private final List<NpcSpot> npcSpots = new CopyOnWriteArrayList<>();
     // npc transient, trees
     private final List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
     private final List<Portal> portals = new ArrayList<>();
@@ -171,6 +174,12 @@ public class GameMap {
             woods.add((Wood) object);
         } else if (object instanceof Bush) {
             bushes.add((Bush) object);
+        } else if (object instanceof Oak) {
+            oaks.add((Oak) object);
+        } else if (object instanceof Spruce) {
+            spruces.add((Spruce) object);
+        } else if (object instanceof NpcSpot) {
+            npcSpots.add((NpcSpot) object);
         } else {
             interactiveObjects.add(object);
         }
@@ -394,6 +403,18 @@ public class GameMap {
 
     public List<Bush> getBushes() {
         return bushes;
+    }
+
+    public List<Oak> getOaks() {
+        return oaks;
+    }
+
+    public List<Spruce> getSpruces() {
+        return spruces;
+    }
+
+    public List<NpcSpot> getNpcSpots() {
+        return npcSpots;
     }
 
     public Map<Integer, List<MapTile>> getLayeredTiles() {

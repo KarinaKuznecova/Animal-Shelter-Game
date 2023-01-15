@@ -9,6 +9,7 @@ import base.navigationservice.KeyboardListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static base.constants.Constants.*;
@@ -34,7 +35,7 @@ public class Player implements GameObject {
     @Override
     public void render(RenderHandler renderer, int zoom) {
         if (animatedSprite != null) {
-            renderer.renderSprite(animatedSprite, playerRectangle.getX() - 16, playerRectangle.getY() - 18, zoom, false);
+            renderer.renderSprite(animatedSprite, playerRectangle.getX() - 18, playerRectangle.getY() - 28, zoom, false);
         }
         if (DEBUG_MODE) {
             renderer.renderRectangle(playerRectangle, 1, false);
@@ -90,29 +91,29 @@ public class Player implements GameObject {
     }
 
     void handleWalking(Game game, Direction direction) {
-        if (unwalkableInThisDirection(game, direction)) {
+        if (!nearPortal(game.getGameMap().getPortals()) && unwalkableInThisDirection(game, direction)) {
             handleUnwalkable(direction);
             return;
         }
 
         switch (direction) {
             case LEFT:
-                if (playerRectangle.getX() > 0 || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getX() >= 0 || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setX(playerRectangle.getX() - speed);
                 }
                 break;
             case RIGHT:
-                if (playerRectangle.getX() < (game.getGameMap().getMapWidth() * TILE_SIZE - playerRectangle.getWidth()) * ZOOM || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getX() <= (game.getGameMap().getMapWidth() * TILE_SIZE) * ZOOM || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setX(playerRectangle.getX() + speed);
                 }
                 break;
             case UP:
-                if (playerRectangle.getY() > 0 || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getY() >= 0 || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setY(playerRectangle.getY() - speed);
                 }
                 break;
             case DOWN:
-                if (playerRectangle.getY() < (game.getGameMap().getMapHeight() * TILE_SIZE - playerRectangle.getHeight()) * ZOOM || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getY() <= (game.getGameMap().getMapHeight() * TILE_SIZE) * ZOOM || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setY(playerRectangle.getY() + speed);
                 }
                 break;
@@ -173,8 +174,16 @@ public class Player implements GameObject {
                 }
             }
         }
-        List<GameObject> gameObjects = game.getGameMap().getInteractiveObjects();
-        if (gameObjects != null) {
+        List<GameObject> gameObjects = new ArrayList<>();
+        gameObjects.addAll(game.getGameMap().getSpruces());
+        gameObjects.addAll(game.getGameMap().getOaks());
+        gameObjects.addAll(game.getGameMap().getItems());
+        gameObjects.addAll(game.getGameMap().getPlants());
+        gameObjects.addAll(game.getGameMap().getBowls());
+        gameObjects.addAll(game.getGameMap().getStorages());
+        gameObjects.addAll(game.getGameMap().getNpcSpots());
+        gameObjects.addAll(game.getGameMap().getBushes());
+        if (!gameObjects.isEmpty()) {
             Rectangle potentialRectangle = new Rectangle(xPosition, yPosition, playerRectangle.getWidth(), playerRectangle.getHeight());
             for (GameObject gameObject : gameObjects) {
                 if (gameObject.getLayer() == getLayer() && potentialRectangle.intersects(gameObject.getRectangle())) {
@@ -183,7 +192,6 @@ public class Player implements GameObject {
             }
         }
         return false;
-
     }
 
     private boolean nearPortal(List<Portal> portals) {
@@ -193,7 +201,7 @@ public class Player implements GameObject {
             logger.debug(String.format("diff x: %d", diffX));
             int diffY = portal.getRectangle().getY() - playerRectangle.getY();
             logger.debug(String.format("diff y: %d", diffY));
-            if (Math.abs(diffX) <= CELL_SIZE && Math.abs(diffY) <= CELL_SIZE) {
+            if (Math.abs(diffX) <= CELL_SIZE + 5 && Math.abs(diffY) <= CELL_SIZE + 5) {
                 return true;
             }
         }
