@@ -32,6 +32,8 @@ public class GameMap {
     private final List<Item> items = new CopyOnWriteArrayList<>();
     // Separate Lists. NPC transient
     private final List<Bowl> bowls = new CopyOnWriteArrayList<>();
+    private final List<StorageChest> storageChests = new CopyOnWriteArrayList<>();
+    // feather,  mushroom, wood, npc transient, bush, trees
     private final List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
     private final List<Portal> portals = new ArrayList<>();
 
@@ -178,6 +180,10 @@ public class GameMap {
         bowls.add(bowl);
     }
 
+    public void addStorageChest(StorageChest storageChest) {
+        storageChests.add(storageChest);
+    }
+
     /**
      * =================================== Remove object ======================================
      */
@@ -231,9 +237,9 @@ public class GameMap {
 
     public boolean removeStorageChest(int xPosition, int yPosition) {
         Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
-        for (GameObject gameObject : interactiveObjects) {
-            if (gameObject instanceof StorageChest && gameObject.getRectangle().intersects(rectangle)) {
-                interactiveObjects.remove(gameObject);
+        for (StorageChest chest : storageChests) {
+            if (chest.getRectangle().intersects(rectangle)) {
+                storageChests.remove(chest);
                 return true;
             }
         }
@@ -288,16 +294,6 @@ public class GameMap {
             }
         }
         return pillows;
-    }
-
-    public List<StorageChest> getStorages() {
-        List<StorageChest> storages = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof StorageChest) {
-                storages.add((StorageChest) object);
-            }
-        }
-        return storages;
     }
 
     public List<Wood> getWoods() {
@@ -394,6 +390,10 @@ public class GameMap {
 
     public List<Portal> getPortals() {
         return portals;
+    }
+
+    public List<StorageChest> getStorages() {
+        return storageChests;
     }
 
     public Map<Integer, List<MapTile>> getLayeredTiles() {

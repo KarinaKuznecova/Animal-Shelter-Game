@@ -47,12 +47,10 @@ public class StorageChest implements GameObject {
         isOpen = false;
     }
 
-    public StorageChest(int x, int y, Sprite spriteClosed, Sprite spriteOpen, String fileName) {
+    public StorageChest(int x, int y, String fileName) {
         this.x = x;
         this.y = y;
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
-        this.spriteClosed = spriteClosed;
-        this.spriteOpen = spriteOpen;
         interactionZone = new InteractionZoneStorageChest(x + 32, y + 32, 90);
         storage = new Storage(6, rectangle, fileName);
         this.fileName = fileName;
@@ -151,5 +149,13 @@ public class StorageChest implements GameObject {
 
     public boolean isOpen() {
         return isOpen;
+    }
+
+    public void setSpriteClosed(Sprite spriteClosed) {
+        this.spriteClosed = spriteClosed;
+    }
+
+    public void setSpriteOpen(Sprite spriteOpen) {
+        this.spriteOpen = spriteOpen;
     }
 }

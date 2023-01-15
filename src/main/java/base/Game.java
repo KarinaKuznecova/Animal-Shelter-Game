@@ -158,6 +158,14 @@ public class Game extends JFrame implements Runnable {
         spriteService.setSeedSprites(plantService.getSeedSprites());
 
         spriteService.setBowlsSprites();
+
+        spriteService.setStorageChestSprites(tileService.getTiles().get(37).getSprite(), tileService.getTiles().get(36).getSprite());
+        // feather, - tile service
+        // mushroom, - tile service
+        // wood, - tile service
+        // npc? - no, transient, they are loaded later and will be refactored also later
+        // bush,
+        // trees
     }
 
     private void loadUI() {
@@ -293,7 +301,17 @@ public class Game extends JFrame implements Runnable {
         for (FoodBowl foodBowl : gameMap.getFoodBowls()) {
             foodBowl.setSprite(spriteService.getFoodBowlAnimatedSprite());
         }
-        // other objects - bowls, chest, feather, mushroom, wood, npc?, bush, trees
+        for (StorageChest storageChest : gameMap.getStorages()) {
+            storageChest.setSpriteClosed(spriteService.getClosedChestSprite());
+            storageChest.setSpriteOpen(spriteService.getOpenChestSprite());
+            gameMap.setTile(storageChest.getX() / CELL_SIZE, storageChest.getY() / CELL_SIZE, CHEST_TILE_ID, 2, true);
+        }
+        // feather,
+        // mushroom,
+        // wood,
+        // npc? - no, transient, they are loaded later and will be refactored also later
+        // bush,
+        // trees
     }
 
     /**
@@ -518,6 +536,9 @@ public class Game extends JFrame implements Runnable {
             for (Plant plant : plants) {
                 plant.update(this);
             }
+        }
+        for (StorageChest chest : gameMap.getStorages()) {
+            chest.update(this);
         }
         for (GameMap map : gameMaps.values()) {
             for (GameObject object : map.getInteractiveObjects()) {
@@ -829,6 +850,12 @@ public class Game extends JFrame implements Runnable {
                 stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
+        for (GameObject gameObject : getGameMap().getStorages()) {
+            if (!stoppedChecking) {
+                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
         for (Item item : gameMap.getItems()) {
             if (!stoppedChecking) {
                 mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -854,7 +881,6 @@ public class Game extends JFrame implements Runnable {
                 setNewTile(xMapRelated, yMapRelated, smallerX, smallerY);
             }
         }
-//        refreshCurrentMapCache();
     }
 
     private void setNewTile(int xMapRelated, int yMapRelated, int smallerX, int smallerY) {
@@ -872,7 +898,7 @@ public class Game extends JFrame implements Runnable {
                     WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned, spriteService.getWaterBowlAnimatedSprite());
                     getGameMap().addBowl(waterBowl);
                 } else if (selectedTileId == CHEST_TILE_ID) {
-                    StorageChest chest = new StorageChest(xAlligned, yAlligned, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite());
+                    StorageChest chest = new StorageChest(xAlligned, yAlligned, spriteService.getClosedChestSprite(), spriteService.getOpenChestSprite());
                     getGameMap().addObject(chest);
                     gameMap.setTile(smallerX, smallerY, CHEST_TILE_ID, layer, regularTiles);
                 }

@@ -276,7 +276,7 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             String filename = splitLine[3];
-            gameMap.addObject(new StorageChest(x, y, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite(), filename));
+            gameMap.addStorageChest(new StorageChest(x, y, filename));
             return true;
         }
         if (line.startsWith("wood")) {
@@ -447,6 +447,10 @@ public class MapService {
         for (Portal portal : gameMap.getPortals()) {
             printWriter.println("portal," + portal.getRectangle().getX() + "," + portal.getRectangle().getY() + "," + portal.getDirection());
         }
+        for (StorageChest storageChest : gameMap.getStorages()) {
+            printWriter.println(("storagechest," + storageChest.getRectangle().getX() + "," + storageChest.getRectangle().getY() + "," + storageChest.getFileName()));
+            saveStorageChest(storageChest);
+        }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject instanceof NpcSpot) {
                 printWriter.println("npc-spot," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
@@ -459,10 +463,6 @@ public class MapService {
             }
             if (gameObject instanceof Spruce) {
                 printWriter.println("spruce," + ((Spruce) gameObject).getOriginalRectangle().getX() + "," + ((Spruce) gameObject).getOriginalRectangle().getY());
-            }
-            if (gameObject instanceof StorageChest) {
-                printWriter.println(("storagechest," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY() + "," + ((StorageChest) gameObject).getFileName()));
-                saveStorageChest((StorageChest) gameObject);
             }
             if (gameObject instanceof Wood) {
                 printWriter.println("wood," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());

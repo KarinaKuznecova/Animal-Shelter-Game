@@ -2,6 +2,7 @@ package base.graphicsservice;
 
 import base.Game;
 import base.gameobjects.*;
+import base.gameobjects.storage.StorageChest;
 import base.gui.EditIcon;
 import base.map.GameMap;
 import base.map.MapTile;
@@ -272,6 +273,11 @@ public class RenderHandler {
         for (Plant plant : gameMap.getPlants()) {
             if (plant.getLayer() == layer) {
                 plant.render(this, ZOOM);
+            }
+        }
+        for (StorageChest chest : gameMap.getStorages()) {
+            if (chest.getLayer() == layer) {
+                chest.render(this, ZOOM);
             }
         }
         if (game.getPlayer().getLayer() == layer) {
