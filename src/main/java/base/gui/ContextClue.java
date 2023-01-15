@@ -11,7 +11,7 @@ public class ContextClue {
     private final transient Sprite sprite;
     private Rectangle rectangle;
 
-    protected static final Logger logger = LoggerFactory.getLogger(HeartIcon.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ContextClue.class);
 
     public ContextClue() {
         sprite = new Sprite(ImageLoader.loadImage(HEART_ICON_PATH));

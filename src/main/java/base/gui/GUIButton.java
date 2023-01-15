@@ -12,9 +12,9 @@ public abstract class GUIButton implements GameObject, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected GuiService guiService = new GuiService();
+    protected transient GuiService guiService = new GuiService();
 
-    protected Sprite sprite;
+    protected transient Sprite sprite;
     protected Rectangle rectangle;
     protected boolean fixed;
     protected int objectCount;

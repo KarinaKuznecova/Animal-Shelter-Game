@@ -17,7 +17,7 @@ public class BackpackButton extends GUIButton implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected String item;
-    private boolean isGreen = false;
+    private transient boolean isGreen = false;
     protected final String defaultId;
 
     protected static final Logger logger = LoggerFactory.getLogger(BackpackButton.class);
@@ -70,7 +70,7 @@ public class BackpackButton extends GUIButton implements Serializable {
     @Override
     public void activate(Game game) {
         String selectedItem = game.getItemNameByButtonId();
-        if (game.getVendorNpc().getShopMenu().isVisible()) {
+        if (game.getVendorNpc() != null && game.getVendorNpc().getShopMenu().isVisible()) {
             sellItem(game);
             return;
         }

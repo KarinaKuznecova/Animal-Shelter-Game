@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static base.constants.Constants.TILE_SIZE;
-import static base.constants.FilePath.FOOD_BOWL_PATH;
-import static base.constants.FilePath.WATER_BOWL_PATH;
+import static base.constants.FilePath.*;
+import static base.graphicsservice.ImageLoader.getPreviewSprite;
 
 public class SpriteService {
 
@@ -128,5 +128,43 @@ public class SpriteService {
 
     public Sprite getWoodSprite() {
         return wood;
+    }
+
+    /**
+     * =================================== TREES ======================================
+     */
+
+    private Sprite oakSprite;
+    private Sprite spruceSprite;
+
+
+    public void loadOakSprite() {
+        oakSprite = getPreviewSprite(OAK_IMG);
+    }
+
+    public void loadSpruceSprite() {
+        spruceSprite = getPreviewSprite(SPRUCE_IMG);
+    }
+
+    public Sprite getSpruceSprite() {
+        return spruceSprite;
+    }
+
+    public Sprite getOakSprite() {
+        return oakSprite;
+    }
+
+    /**
+     * =================================== OTHER ======================================
+     */
+
+    private Sprite bushSprite;
+
+    public void loadBushSprite() {
+        bushSprite = getPreviewSprite(BUSH_IMG);
+    }
+
+    public Sprite getBushSprite() {
+        return bushSprite;
     }
 }

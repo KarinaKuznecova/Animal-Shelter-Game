@@ -27,12 +27,12 @@ public class StorageChest implements GameObject {
     private Rectangle rectangle;
     private transient Sprite spriteClosed;
     private transient Sprite spriteOpen;
-    private Storage storage;
+    private transient Storage storage;
     private String fileName;
 
     public transient InteractionZoneStorageChest interactionZone;
 
-    private boolean isOpen;
+    private transient boolean isOpen;
 
     public StorageChest(int x, int y, Sprite spriteClosed, Sprite spriteOpen) {
         this.x = x;
@@ -76,9 +76,11 @@ public class StorageChest implements GameObject {
 
     @Override
     public void update(Game game) {
-        interactionZone.update(game);
+        if (interactionZone != null) {
+            interactionZone.update(game);
+        }
         storage.update(game);
-        if (!interactionZone.isPlayerInRange() && isOpen) {
+        if (interactionZone != null && !interactionZone.isPlayerInRange() && isOpen) {
             isOpen = false;
             storage.setVisible(false);
             storage.removeRenderedText(game.getRenderer());
@@ -157,5 +159,17 @@ public class StorageChest implements GameObject {
 
     public void setSpriteOpen(Sprite spriteOpen) {
         this.spriteOpen = spriteOpen;
+    }
+
+    public void setRectangle(Rectangle rectangle) {
+        this.rectangle = rectangle;
+    }
+
+    public void setInteractionZone(InteractionZoneStorageChest interactionZone) {
+        this.interactionZone = interactionZone;
+    }
+
+    public void setStorage(Storage storage) {
+        this.storage = storage;
     }
 }

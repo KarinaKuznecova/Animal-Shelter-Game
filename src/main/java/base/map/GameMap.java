@@ -33,7 +33,8 @@ public class GameMap {
     // every type separate?
     private final List<Item> items = new CopyOnWriteArrayList<>();
     // maybe water and food separate?
-    private final List<Bowl> bowls = new CopyOnWriteArrayList<>();
+    private final List<FoodBowl> foodBowls = new CopyOnWriteArrayList<>();
+    private final List<WaterBowl> waterBowls = new CopyOnWriteArrayList<>();
     private final List<StorageChest> storageChests = new CopyOnWriteArrayList<>();
     private final List<Feather> feathers = new CopyOnWriteArrayList<>();
     private final List<Mushroom> mushrooms = new CopyOnWriteArrayList<>();
@@ -42,8 +43,9 @@ public class GameMap {
     private final List<Oak> oaks = new CopyOnWriteArrayList<>();
     private final List<Spruce> spruces = new CopyOnWriteArrayList<>();
     private final List<NpcSpot> npcSpots = new CopyOnWriteArrayList<>();
-    // npc transient, trees
-    private final List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
+    private transient List<Npc> npcs = new CopyOnWriteArrayList<>();
+
+    private transient List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
     private final List<Portal> portals = new ArrayList<>();
 
     public GameMap(String mapName) {
@@ -164,6 +166,9 @@ public class GameMap {
     }
 
     public void addObject(GameObject object) {
+        if (interactiveObjects == null) {
+            interactiveObjects = new CopyOnWriteArrayList<>();
+        }
         if (object instanceof Portal) {
             addPortal((Portal) object);
         } else if (object instanceof Feather) {
@@ -180,6 +185,8 @@ public class GameMap {
             spruces.add((Spruce) object);
         } else if (object instanceof NpcSpot) {
             npcSpots.add((NpcSpot) object);
+        } else if (object instanceof Npc) {
+            npcs.add((Npc) object);
         } else {
             interactiveObjects.add(object);
         }
@@ -199,8 +206,12 @@ public class GameMap {
         plants.add(plant);
     }
 
-    public void addBowl(Bowl bowl) {
-        bowls.add(bowl);
+    public void addFoodBowl(FoodBowl bowl) {
+        foodBowls.add(bowl);
+    }
+
+    public void addWaterBowl(WaterBowl bowl) {
+        waterBowls.add(bowl);
     }
 
     public void addStorageChest(StorageChest storageChest) {
@@ -255,6 +266,12 @@ public class GameMap {
             interactiveObjects.remove(object);
             return true;
         }
+        if (object instanceof Npc) {
+            if (npcs.contains(object)) {
+                npcs.remove(object);
+                return true;
+            }
+        }
         return false;
     }
 
@@ -275,8 +292,12 @@ public class GameMap {
 
     // TODO: check by x and y instead of full object
     public boolean removeBowl(Bowl bowl) {
-        if (bowls.contains(bowl)) {
-            bowls.remove(bowl);
+        if (foodBowls.contains(bowl)) {
+            foodBowls.remove(bowl);
+            return true;
+        }
+        if (waterBowls.contains(bowl)) {
+            waterBowls.remove(bowl);
             return true;
         }
         return false;
@@ -285,26 +306,6 @@ public class GameMap {
     /**
      * =================================== Getters with some logic ======================================
      */
-
-    public List<FoodBowl> getFoodBowls() {
-        List<FoodBowl> foodBowls = new ArrayList<>();
-        for (Bowl bowl : bowls) {
-            if (bowl instanceof FoodBowl) {
-                foodBowls.add((FoodBowl) bowl);
-            }
-        }
-        return foodBowls;
-    }
-
-    public List<WaterBowl> getWaterBowls() {
-        List<WaterBowl> waterBowls = new ArrayList<>();
-        for (Bowl bowl : bowls) {
-            if (bowl instanceof WaterBowl) {
-                waterBowls.add((WaterBowl) bowl);
-            }
-        }
-        return waterBowls;
-    }
 
     public List<MapTile> getPillows() {
         List<MapTile> pillows = new ArrayList<>();
@@ -320,12 +321,7 @@ public class GameMap {
     }
 
     public NpcSpot getNpcSpot() {
-        for (GameObject gameObject : getInteractiveObjects()) {
-            if (gameObject instanceof NpcSpot) {
-                return (NpcSpot) gameObject;
-            }
-        }
-        return new NpcSpot(new Rectangle(100, 100, 32, 32));
+        return npcSpots.get(0);
     }
 
     public List<Plant> getWildPlants() {
@@ -366,6 +362,9 @@ public class GameMap {
     }
 
     public List<GameObject> getInteractiveObjects() {
+        if (interactiveObjects == null) {
+            interactiveObjects = new CopyOnWriteArrayList<>();
+        }
         return interactiveObjects;
     }
 
@@ -377,15 +376,19 @@ public class GameMap {
         this.plants = plants;
     }
 
-    public List<Bowl> getBowls() {
-        return bowls;
+    public List<FoodBowl> getFoodBowls() {
+        return foodBowls;
+    }
+
+    public List<WaterBowl> getWaterBowls() {
+        return waterBowls;
     }
 
     public List<Portal> getPortals() {
         return portals;
     }
 
-    public List<StorageChest> getStorages() {
+    public List<StorageChest> getStorageChests() {
         return storageChests;
     }
 
@@ -415,6 +418,14 @@ public class GameMap {
 
     public List<NpcSpot> getNpcSpots() {
         return npcSpots;
+    }
+
+    public List<Npc> getNpcs() {
+        return npcs;
+    }
+
+    public void setNpcs(List<Npc> npcs) {
+        this.npcs = npcs;
     }
 
     public Map<Integer, List<MapTile>> getLayeredTiles() {

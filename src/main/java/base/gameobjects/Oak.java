@@ -18,7 +18,7 @@ public class Oak implements GameObject {
 
     private final int x;
     private final int y;
-    private final Sprite sprite;
+    private transient Sprite sprite;
     private final Rectangle originalRectangle;
     private final Rectangle rectangle;
 
@@ -26,7 +26,6 @@ public class Oak implements GameObject {
         this.x = x;
         this.y = y;
 
-        sprite = getPreviewSprite(OAK_IMG);
         originalRectangle = new Rectangle(x, y, 72, 65);
         rectangle = new Rectangle(x + 26, y + 78, 72, 65);
         rectangle.generateBorder(1, GREEN);
@@ -64,5 +63,9 @@ public class Oak implements GameObject {
 
     public Rectangle getOriginalRectangle() {
         return originalRectangle;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
     }
 }

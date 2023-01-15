@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
+import static base.constants.Constants.MAX_FOOD_FRESHNESS;
 import static base.constants.Constants.TILE_SIZE;
 import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 
@@ -22,7 +23,6 @@ public class Item implements GameObject {
     private final Rectangle rectangle;
     private boolean stackable;
     private String mapName;
-    private final int MAX_FRESHNESS = 25_000;
     private int freshness;
 
     public Item(int x, int y, String itemName, Sprite sprite) {
@@ -40,7 +40,7 @@ public class Item implements GameObject {
         }
 
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
-        freshness = MAX_FRESHNESS + new Random().nextInt(MAX_FRESHNESS);
+        freshness = MAX_FOOD_FRESHNESS + new Random().nextInt(MAX_FOOD_FRESHNESS);
     }
 
     @Override
@@ -109,10 +109,6 @@ public class Item implements GameObject {
 
     public int getY() {
         return y;
-    }
-
-    public int getMAX_FRESHNESS() {
-        return MAX_FRESHNESS;
     }
 
     public int getFreshness() {

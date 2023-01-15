@@ -23,6 +23,9 @@ public class Constants {
 
     public static final int INVENTORY_LIMIT = 99;
     public static final int ANIMAL_LIMIT = 15;
+    public static final int BUSH_INTERVAL_BOUND = 7000;
+    public static final int EVENTS_INTERVAL = 1000;
+    public static final int MAX_FOOD_FRESHNESS = 25_000;
 
     private static final String ENGLISH = "eng";
     private static final String LATVIAN = "lv";

@@ -15,8 +15,8 @@ public class Plant implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Plant.class);
 
-    private Sprite previewSprite;
-    private AnimatedSprite animatedSprite;
+    private transient Sprite previewSprite;
+    private transient AnimatedSprite animatedSprite;
 
     private final Rectangle rectangle;
 

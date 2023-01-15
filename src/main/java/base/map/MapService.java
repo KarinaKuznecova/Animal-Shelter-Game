@@ -1,9 +1,11 @@
 package base.map;
 
 import base.gameobjects.*;
+import base.gameobjects.interactionzones.InteractionZoneStorageChest;
 import base.gameobjects.plants.Corn;
 import base.gameobjects.services.ItemService;
 import base.gameobjects.services.PlantService;
+import base.gameobjects.storage.Storage;
 import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
@@ -17,7 +19,7 @@ import java.nio.file.Files;
 import java.util.*;
 
 import static base.constants.Constants.*;
-import static base.constants.FilePath.MAPS_LIST_PATH;
+import static base.constants.FilePath.*;
 import static base.constants.MapConstants.MAIN_MAP;
 import static base.constants.MapConstants.TOP_CENTER_MAP;
 
@@ -68,11 +70,17 @@ public class MapService {
 
     // TODO: migration, if there is no json, but only normal file, them immediately save?
     public GameMap loadGameMapFromJson(String mapName, TileService tileService) {
+        File directory = new File(JSON_MAPS_DIRECTORY);
+        if (directory.listFiles() == null || directory.listFiles().length == 0) {
+            logger.info(String.format("No json map for %s, will load old way", mapName));
+            return loadGameMap(mapName, tileService);
+        }
         try {
             Gson gson = new Gson();
-            Reader reader = new FileReader("maps-json/" + mapName);
+            Reader reader = new FileReader(JSON_MAPS_DIRECTORY + mapName);
             GameMap gameMap = gson.fromJson(reader, GameMap.class);
             reader.close();
+            loadStorageChests(gameMap);
             return gameMap;
         } catch (IOException e) {
             e.printStackTrace();
@@ -137,10 +145,6 @@ public class MapService {
                         migratePortal(gameMap, tile);
                     } else {
                         tiles.add(tile);
-                    }
-                    if (tileId == CHEST_TILE_ID) {
-                        StorageChest storageChest = new StorageChest(xPosition * CELL_SIZE, yPosition * CELL_SIZE, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite());
-                        gameMap.addObject(storageChest);
                     }
                 }
             }
@@ -223,7 +227,7 @@ public class MapService {
             int y = Integer.parseInt(splitLine[2]);
             boolean shouldBeFull = Boolean.parseBoolean(splitLine[3]);
             FoodBowl foodBowl = new FoodBowl(x, y, shouldBeFull);
-            gameMap.addBowl(foodBowl);
+            gameMap.addFoodBowl(foodBowl);
             return true;
         }
         if (line.startsWith("water-bowl")) {
@@ -232,7 +236,7 @@ public class MapService {
             int y = Integer.parseInt(splitLine[2]);
             boolean shouldBeFull = Boolean.parseBoolean(splitLine[3]);
             WaterBowl waterBowl = new WaterBowl(x, y, shouldBeFull);
-            gameMap.addBowl(waterBowl);
+            gameMap.addWaterBowl(waterBowl);
             return true;
         }
         if (line.startsWith("npc-spot")) {
@@ -322,6 +326,35 @@ public class MapService {
         return false;
     }
 
+    private void loadStorageChests(GameMap gameMap) {
+        for (StorageChest storageChest: gameMap.getStorageChests()) {
+            int x = storageChest.getX();
+            int y = storageChest.getY();
+            String fileName = storageChest.getFileName();
+            storageChest.setInteractionZone(new InteractionZoneStorageChest(x + 32, y + 32, 90));
+            storageChest.setStorage(new Storage(6, storageChest.getRectangle(), fileName));
+            loadStorageChest(fileName, storageChest);
+        }
+    }
+
+    public void loadStorageChest(String fileName, StorageChest chest) {
+        File mapFile = new File(STORAGES_DIRECTORY + fileName);
+        try (Scanner scanner = new Scanner(mapFile)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] splitLine = line.split(":");
+                String itemName = splitLine[0];
+                int qty = Integer.parseInt(splitLine[1]);
+                if (!itemName.startsWith(fileName) && qty > 0) {
+                    chest.getStorage().addItem(itemName, qty);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("Storage chest file not found");
+            e.printStackTrace();
+        }
+    }
+
     /**
      * =================================== Save Map ======================================
      */
@@ -329,7 +362,14 @@ public class MapService {
     public void saveMapToJson(GameMap gameMap) {
         Gson gson = new Gson();
         try {
-            FileWriter writer = new FileWriter("maps-json/" + gameMap.getMapName());
+            File directory = new File(JSON_MAPS_DIRECTORY);
+            if (!directory.exists()) {
+                if (!directory.mkdirs()) {
+                    logger.error("Error while saving map to json file - cannot create directory");
+                    return;
+                }
+            }
+            FileWriter writer = new FileWriter(JSON_MAPS_DIRECTORY + gameMap.getMapName());
             gson.toJson(gameMap, writer);
             writer.flush();
             writer.close();
@@ -337,8 +377,12 @@ public class MapService {
         catch (IOException ex) {
             ex.printStackTrace();
         }
+        for (StorageChest storageChest : gameMap.getStorageChests()) {
+            saveStorageChest(storageChest);
+        }
     }
 
+    @Deprecated // use saveMapToJson
     public void saveMap(GameMap gameMap) {
         logger.info(String.format("Saving map %s", gameMap.getMapName()));
         saveMapToJson(gameMap);
@@ -444,7 +488,7 @@ public class MapService {
         for (Portal portal : gameMap.getPortals()) {
             printWriter.println("portal," + portal.getRectangle().getX() + "," + portal.getRectangle().getY() + "," + portal.getDirection());
         }
-        for (StorageChest storageChest : gameMap.getStorages()) {
+        for (StorageChest storageChest : gameMap.getStorageChests()) {
             printWriter.println(("storagechest," + storageChest.getRectangle().getX() + "," + storageChest.getRectangle().getY() + "," + storageChest.getFileName()));
             saveStorageChest(storageChest);
         }
@@ -473,7 +517,7 @@ public class MapService {
 
     private void saveStorageChest(StorageChest chest) {
         logger.info("Saving storage chest");
-        File file = new File("maps/storages/" + chest.getFileName());
+        File file = new File(STORAGES_DIRECTORY + chest.getFileName());
         try {
             if (file.exists()) {
                 Files.deleteIfExists(file.toPath());

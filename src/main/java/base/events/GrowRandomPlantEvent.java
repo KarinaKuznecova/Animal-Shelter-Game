@@ -7,9 +7,10 @@ import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static base.constants.Constants.*;
-import static base.constants.MapConstants.FOREST_MAP;
-import static base.constants.MapConstants.MAIN_MAP;
+import static base.constants.MapConstants.*;
 
 public class GrowRandomPlantEvent extends Event {
 
@@ -41,7 +42,11 @@ public class GrowRandomPlantEvent extends Event {
         } else {
             map = game.getGameMap(FOREST_MAP);
         }
-        if (map.getWildPlants().size() > 5) {
+        if (TEST_MAP_MODE) {
+            map = game.getGameMap(TEST_MAP);
+        }
+        List<Plant> wildPlants = map.getWildPlants();
+        if (wildPlants != null && wildPlants.size() > 5) {
             logger.info(String.format("There are more than 5 plants on %s map", map.getMapName()));
             return;
         }

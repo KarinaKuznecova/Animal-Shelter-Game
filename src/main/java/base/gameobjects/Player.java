@@ -179,8 +179,8 @@ public class Player implements GameObject {
         gameObjects.addAll(game.getGameMap().getOaks());
         gameObjects.addAll(game.getGameMap().getItems());
         gameObjects.addAll(game.getGameMap().getPlants());
-        gameObjects.addAll(game.getGameMap().getBowls());
-        gameObjects.addAll(game.getGameMap().getStorages());
+        gameObjects.addAll(game.getGameMap().getFoodBowls());
+        gameObjects.addAll(game.getGameMap().getStorageChests());
         gameObjects.addAll(game.getGameMap().getNpcSpots());
         gameObjects.addAll(game.getGameMap().getBushes());
         if (!gameObjects.isEmpty()) {

@@ -23,6 +23,9 @@ public class Portal implements GameObject {
     @Override
     public void render(RenderHandler renderer, int zoom) {
         if (DEBUG_MODE) {
+            if (rectangle.getPixels().length == 0) {
+                rectangle.generateBorder(1, GREEN);
+            }
             renderer.renderRectangle(rectangle, 1, false);
         }
     }

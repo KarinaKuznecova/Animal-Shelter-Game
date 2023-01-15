@@ -21,7 +21,7 @@ public class Storage implements GameObject {
     private int size;
     private Rectangle chestRectangle;
     private boolean isVisible;
-    private transient List<StorageCell> cells = new ArrayList<>();
+    private final List<StorageCell> cells = new ArrayList<>();
     private String fileName;
 
     public Storage(int size, Rectangle chestRectangle, String fileName) {

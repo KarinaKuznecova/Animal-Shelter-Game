@@ -1,14 +1,15 @@
 package base.events;
 
 import base.Game;
-import base.constants.MapConstants;
 import base.gameobjects.Flower;
 import base.graphicsservice.Sprite;
 import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static base.constants.Constants.*;
+import static base.constants.Constants.CELL_SIZE;
+import static base.constants.MapConstants.CITY_MAP;
+import static base.constants.MapConstants.HOME_MAP;
 import static base.constants.MultiOptionalObjects.flowerIds;
 
 public class GrowFlowerEvent extends Event{
@@ -22,17 +23,11 @@ public class GrowFlowerEvent extends Event{
     @Override
     void calculateChance(Game game) {
         chance = random.nextInt(6);
-        if (!repeatable && happened) {
+        if ((!repeatable && happened) || (HOME_MAP.equals(game.getGameMap().getMapName()) || CITY_MAP.equals(game.getGameMap().getMapName()))) {
             chance = 0;
             return;
         }
         if (happened) {
-            chance--;
-        }
-        if (MapConstants.OUTSIDE_MAPS.contains(game.getGameMap().getMapName())) {
-            chance++;
-        }
-        if (MapConstants.HOME_MAPS.contains(game.getGameMap().getMapName())) {
             chance--;
         }
         logger.info(String.format("Event 'Grow Random Flower' chance is %d", chance));

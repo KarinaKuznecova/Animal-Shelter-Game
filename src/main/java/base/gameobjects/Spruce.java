@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.DEBUG_MODE;
-import static base.constants.FilePath.SPRUCE_IMG;
-import static base.graphicsservice.ImageLoader.getPreviewSprite;
 
 public class Spruce implements GameObject {
 
@@ -18,7 +16,7 @@ public class Spruce implements GameObject {
 
     private final int x;
     private final int y;
-    private final Sprite sprite;
+    private transient Sprite sprite;
     private final Rectangle originalRectangle;
     private final Rectangle rectangle;
 
@@ -26,7 +24,6 @@ public class Spruce implements GameObject {
         this.x = x;
         this.y = y;
 
-        sprite = getPreviewSprite(SPRUCE_IMG);
         originalRectangle = new Rectangle(x, y, 140, 64);
         rectangle = new Rectangle(x + 8, y + 96, 140, 64);
         rectangle.generateBorder(1, GREEN);
@@ -64,5 +61,9 @@ public class Spruce implements GameObject {
 
     public Rectangle getOriginalRectangle() {
         return originalRectangle;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
     }
 }

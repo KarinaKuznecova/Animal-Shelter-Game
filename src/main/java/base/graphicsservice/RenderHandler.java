@@ -265,17 +265,17 @@ public class RenderHandler {
                 animal.render(this, ZOOM);
             }
         }
-        for (GameObject gameObject : gameMap.getItems()) {
+        for (GameObject gameObject : new ArrayList<>(gameMap.getItems())) {
             if (gameObject != null && gameObject.getLayer() == layer) {
                 gameObject.render(this, ZOOM);
             }
         }
-        for (Plant plant : gameMap.getPlants()) {
+        for (Plant plant : new ArrayList<>(gameMap.getPlants())) {
             if (plant.getLayer() == layer) {
                 plant.render(this, ZOOM);
             }
         }
-        for (StorageChest chest : gameMap.getStorages()) {
+        for (StorageChest chest : gameMap.getStorageChests()) {
             if (chest.getLayer() == layer) {
                 chest.render(this, ZOOM);
             }
@@ -283,7 +283,15 @@ public class RenderHandler {
         if (game.getPlayer().getLayer() == layer) {
             game.getPlayer().render(this, ZOOM);
         }
-        for (Bowl bowl : gameMap.getBowls()) {
+        if (game.getGameMap().getNpcs() != null && !game.getGameMap().getNpcs().isEmpty() && game.getGameMap().getNpcs().get(0).getLayer() == layer) {
+            game.getGameMap().getNpcs().get(0).render(this, ZOOM);
+        }
+        for (Bowl bowl : gameMap.getFoodBowls()) {
+            if (bowl.getLayer() == layer) {
+                bowl.render(this, ZOOM);
+            }
+        }
+        for (Bowl bowl : gameMap.getWaterBowls()) {
             if (bowl.getLayer() == layer) {
                 bowl.render(this, ZOOM);
             }

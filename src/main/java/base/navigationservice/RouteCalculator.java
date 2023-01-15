@@ -301,19 +301,13 @@ public class RouteCalculator {
     }
 
     private boolean isThereNpc(GameMap gameMap, Rectangle rectangle) {
-        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
-            if (gameObject instanceof Npc) {
-                return rectangle.intersects(((Npc) gameObject).getRectangle());
-            }
-        }
-        return false;
+        Npc npc = gameMap.getNpcs().get(0);
+        return rectangle.intersects(npc.getRectangle());
     }
 
     private boolean isThereNpcSpot(GameMap gameMap, Rectangle rectangle) {
-        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
-            if (gameObject instanceof NpcSpot) {
-                return rectangle.intersects(gameObject.getRectangle());
-            }
+        for (NpcSpot npcSpot : gameMap.getNpcSpots()) {
+            return rectangle.intersects(npcSpot.getRectangle());
         }
         return false;
     }
@@ -369,9 +363,9 @@ public class RouteCalculator {
         if (destination == null) {
             return null;
         }
-        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
-            if (gameObject instanceof Portal && destination.equalsIgnoreCase(((Portal) gameObject).getDirection())) {
-                return (Portal) gameObject;
+        for (Portal portal : gameMap.getPortals()) {
+            if (destination.equalsIgnoreCase(portal.getDirection())) {
+                return portal;
             }
         }
         return null;
