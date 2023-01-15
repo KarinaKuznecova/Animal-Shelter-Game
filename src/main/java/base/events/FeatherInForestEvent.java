@@ -40,8 +40,8 @@ public class FeatherInForestEvent extends Event {
         logger.info(String.format("Random feather will appear at %d and %d", x, y));
         if (game.getMapService().isPlaceEmpty(map, 1, bigX, bigY)) {
             logger.info("Place was empty, will add feather");
-            Sprite sprite = game.getTileService().getTiles().get(Feather.TILE_ID).getSprite();
-            map.addObject(new Feather(sprite, bigX, bigY));
+            Sprite sprite = game.getSpriteService().getFeatherSprite();
+            map.addObject(new Feather(bigX, bigY, sprite));
             happened = true;
         }
     }

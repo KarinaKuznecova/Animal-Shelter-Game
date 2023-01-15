@@ -40,8 +40,8 @@ public class WoodInForestEvent extends Event {
         logger.info(String.format("Random wood will appear at %d and %d", x, y));
         if (game.getMapService().isPlaceEmpty(map, 1, bigX, bigY)) {
             logger.info("Place was empty, will add wood");
-            Sprite sprite = game.getTileService().getTiles().get(Wood.TILE_ID).getSprite();
-            map.addObject(new Wood(sprite, bigX, bigY));
+            Sprite sprite = game.getSpriteService().getWoodSprite();
+            map.addObject(new Wood(bigX, bigY, sprite));
             happened = true;
         }
     }

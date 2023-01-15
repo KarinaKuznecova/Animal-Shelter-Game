@@ -28,12 +28,17 @@ public class GameMap {
     private int maxLayer = -1;
 
     private final Map<Integer, List<MapTile>> layeredTiles = new ConcurrentHashMap<>();
+    // every plant type separate?
     private List<Plant> plants = new CopyOnWriteArrayList<>();
+    // every type separate?
     private final List<Item> items = new CopyOnWriteArrayList<>();
-    // Separate Lists. NPC transient
+    // maybe water and food separate?
     private final List<Bowl> bowls = new CopyOnWriteArrayList<>();
     private final List<StorageChest> storageChests = new CopyOnWriteArrayList<>();
-    // feather,  mushroom, wood, npc transient, bush, trees
+    private final List<Feather> feathers = new CopyOnWriteArrayList<>();
+    private final List<Mushroom> mushrooms = new CopyOnWriteArrayList<>();
+    private final List<Wood> woods = new CopyOnWriteArrayList<>();
+    // npc transient, bush, trees
     private final List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
     private final List<Portal> portals = new ArrayList<>();
 
@@ -157,6 +162,12 @@ public class GameMap {
     public void addObject(GameObject object) {
         if (object instanceof Portal) {
             addPortal((Portal) object);
+        } else if (object instanceof Feather) {
+            feathers.add((Feather) object);
+        } else if (object instanceof Mushroom) {
+            mushrooms.add((Mushroom) object);
+        } else if (object instanceof Wood) {
+            woods.add((Wood) object);
         } else {
             interactiveObjects.add(object);
         }
@@ -217,13 +228,13 @@ public class GameMap {
         items.removeIf(item -> itemName.equals(item.getItemName()) && rectangle.intersects(item.getRectangle()));
 
         if (itemName.equalsIgnoreCase(Wood.ITEM_NAME)) {
-            interactiveObjects.removeIf(item -> item instanceof Wood && rectangle.intersects((item.getRectangle())));
+            woods.removeIf(wood -> rectangle.intersects(wood.getRectangle()));
         }
         if (itemName.equalsIgnoreCase(Feather.ITEM_NAME)) {
-            interactiveObjects.removeIf(item -> item instanceof Feather && rectangle.intersects((item.getRectangle())));
+            feathers.removeIf(feather -> rectangle.intersects(feather.getRectangle()));
         }
         if (itemName.equalsIgnoreCase(Mushroom.ITEM_NAME)) {
-            interactiveObjects.removeIf(item -> item instanceof Mushroom && rectangle.intersects((item.getRectangle())));
+            mushrooms.removeIf(mushroom -> rectangle.intersects(mushroom.getRectangle()));
         }
     }
 
@@ -296,36 +307,6 @@ public class GameMap {
         return pillows;
     }
 
-    public List<Wood> getWoods() {
-        List<Wood> woods = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof Wood) {
-                woods.add((Wood) object);
-            }
-        }
-        return woods;
-    }
-
-    public List<Feather> getFeathers() {
-        List<Feather> feathers = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof Feather) {
-                feathers.add((Feather) object);
-            }
-        }
-        return feathers;
-    }
-
-    public List<Mushroom> getMushrooms() {
-        List<Mushroom> mushrooms = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof Mushroom) {
-                mushrooms.add((Mushroom) object);
-            }
-        }
-        return mushrooms;
-    }
-
     public NpcSpot getNpcSpot() {
         for (GameObject gameObject : getInteractiveObjects()) {
             if (gameObject instanceof NpcSpot) {
@@ -394,6 +375,18 @@ public class GameMap {
 
     public List<StorageChest> getStorages() {
         return storageChests;
+    }
+
+    public List<Wood> getWoods() {
+        return woods;
+    }
+
+    public List<Feather> getFeathers() {
+        return feathers;
+    }
+
+    public List<Mushroom> getMushrooms() {
+        return mushrooms;
     }
 
     public Map<Integer, List<MapTile>> getLayeredTiles() {

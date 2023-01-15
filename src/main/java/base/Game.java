@@ -153,16 +153,21 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void cacheSprites() {
+        // TODO: previews and seeds to sprite sheet, then get sprite from tile service or similar
         spriteService.setPlantPreview(plantService.getPreviews());
         spriteService.setPlantAnimatedSprites(plantService.getAnimatedSprites());
         spriteService.setSeedSprites(plantService.getSeedSprites());
 
+        // TODO: add to regulat sprite sheet, then get full and empty sprites from tile service
+        // TODO: water bowl sprite not updating?
         spriteService.setBowlsSprites();
 
         spriteService.setStorageChestSprites(tileService.getTiles().get(37).getSprite(), tileService.getTiles().get(36).getSprite());
-        // feather, - tile service
-        // mushroom, - tile service
-        // wood, - tile service
+
+        spriteService.setFeatherSprite(tileService.getTiles().get(Feather.TILE_ID).getSprite());
+        spriteService.setMushroomSprite(tileService.getTiles().get(Mushroom.TILE_ID).getSprite());
+        spriteService.setWoodSprite(tileService.getTiles().get(Wood.TILE_ID).getSprite());
+
         // npc? - no, transient, they are loaded later and will be refactored also later
         // bush,
         // trees
@@ -306,9 +311,16 @@ public class Game extends JFrame implements Runnable {
             storageChest.setSpriteOpen(spriteService.getOpenChestSprite());
             gameMap.setTile(storageChest.getX() / CELL_SIZE, storageChest.getY() / CELL_SIZE, CHEST_TILE_ID, 2, true);
         }
-        // feather,
-        // mushroom,
-        // wood,
+        for (Feather feather : gameMap.getFeathers()) {
+            feather.setSprite(spriteService.getFeatherSprite());
+        }
+        for (Mushroom mushroom : gameMap.getMushrooms()) {
+            mushroom.setSprite(spriteService.getMushroomSprite());
+        }
+        for (Wood wood : gameMap.getWoods()) {
+            wood.setSprite(spriteService.getWoodSprite());
+        }
+
         // npc? - no, transient, they are loaded later and will be refactored also later
         // bush,
         // trees
@@ -923,19 +935,19 @@ public class Game extends JFrame implements Runnable {
         int xAlligned = xAdjusted - (xAdjusted % CELL_SIZE);
         int yAlligned = yAdjusted - (yAdjusted % CELL_SIZE);
         if (itemType.equalsIgnoreCase(Wood.ITEM_NAME)) {
-            Wood wood = new Wood(tileService.getTiles().get(Wood.TILE_ID).getSprite(), xAlligned, yAlligned);
+            Wood wood = new Wood(xAlligned, yAlligned, spriteService.getWoodSprite());
             gameMap.addObject(wood);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }
         if (itemType.equalsIgnoreCase(Feather.ITEM_NAME)) {
-            Feather feather = new Feather(tileService.getTiles().get(Feather.TILE_ID).getSprite(), xAlligned, yAlligned);
+            Feather feather = new Feather(xAlligned, yAlligned, spriteService.getFeatherSprite());
             gameMap.addObject(feather);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }
         if (itemType.equalsIgnoreCase(Mushroom.ITEM_NAME)) {
-            Mushroom mushroom = new Mushroom(tileService.getTiles().get(Mushroom.TILE_ID).getSprite(), xAlligned, yAlligned);
+            Mushroom mushroom = new Mushroom(xAlligned, yAlligned, spriteService.getMushroomSprite());
             gameMap.addObject(mushroom);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;

@@ -288,6 +288,21 @@ public class RenderHandler {
                 bowl.render(this, ZOOM);
             }
         }
+        for (Feather feather : gameMap.getFeathers()) {
+            if (feather.getLayer() == layer) {
+                feather.render(this, ZOOM);
+            }
+        }
+        for (Mushroom mushroom : gameMap.getMushrooms()) {
+            if (mushroom.getLayer() == layer) {
+                mushroom.render(this, ZOOM);
+            }
+        }
+        for (Wood wood : gameMap.getWoods()) {
+            if (wood.getLayer() == layer) {
+                wood.render(this, ZOOM);
+            }
+        }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject.getLayer() == layer) {
                 gameObject.render(this, ZOOM);

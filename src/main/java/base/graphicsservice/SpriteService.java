@@ -96,4 +96,37 @@ public class SpriteService {
     public Sprite getClosedChestSprite() {
         return closedChestSprite;
     }
+
+    /**
+     * =================================== OBJECTS FROM THE FOREST ======================================
+     */
+
+    // keep in alphabetical order
+    private Sprite feather;
+    private Sprite mushroom;
+    private Sprite wood;
+
+    public void setFeatherSprite(Sprite feather) {
+        this.feather = feather;
+    }
+
+    public void setMushroomSprite(Sprite mushroom) {
+        this.mushroom = mushroom;
+    }
+
+    public void setWoodSprite(Sprite wood) {
+        this.wood = wood;
+    }
+
+    public Sprite getFeatherSprite() {
+        return feather;
+    }
+
+    public Sprite getMushroomSprite() {
+        return mushroom;
+    }
+
+    public Sprite getWoodSprite() {
+        return wood;
+    }
 }

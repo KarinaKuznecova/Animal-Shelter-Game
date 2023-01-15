@@ -19,14 +19,18 @@ public class Wood implements GameObject {
     public static final String ITEM_NAME = "wood";
     public static final int TILE_ID = 75;
 
-    private final transient Sprite sprite;
+    private transient Sprite sprite;
     private final int xPosition;
     private final int yPosition;
     private final Rectangle rectangle;
     private String mapName;
 
-    public Wood(Sprite sprite, int xPosition, int yPosition) {
+    public Wood(int xPosition, int yPosition, Sprite sprite) {
+        this(xPosition, yPosition);
         this.sprite = sprite;
+    }
+
+    public Wood(int xPosition, int yPosition) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.rectangle = new Rectangle(xPosition, yPosition, TILE_SIZE, TILE_SIZE);
@@ -77,5 +81,9 @@ public class Wood implements GameObject {
 
     public int getyPosition() {
         return yPosition;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
     }
 }

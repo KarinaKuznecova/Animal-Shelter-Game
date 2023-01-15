@@ -283,21 +283,21 @@ public class MapService {
             String[] splitLine = line.split(",");
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            gameMap.addObject(new Wood(tileService.getTiles().get(Wood.TILE_ID).getSprite(), x, y));
+            gameMap.addObject(new Wood(x, y));
             return true;
         }
         if (line.startsWith("feather")) {
             String[] splitLine = line.split(",");
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            gameMap.addObject(new Feather(tileService.getTiles().get(Feather.TILE_ID).getSprite(), x, y));
+            gameMap.addObject(new Feather(x, y));
             return true;
         }
         if (line.startsWith("mushroom")) {
             String[] splitLine = line.split(",");
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            gameMap.addObject(new Mushroom(tileService.getTiles().get(Mushroom.TILE_ID).getSprite(), x, y));
+            gameMap.addObject(new Mushroom(x, y));
             return true;
         }
 
@@ -451,6 +451,15 @@ public class MapService {
             printWriter.println(("storagechest," + storageChest.getRectangle().getX() + "," + storageChest.getRectangle().getY() + "," + storageChest.getFileName()));
             saveStorageChest(storageChest);
         }
+        for (Feather feather : gameMap.getFeathers()) {
+            printWriter.println("feather," + feather.getRectangle().getX() + "," + feather.getRectangle().getY());
+        }
+        for (Mushroom mushroom : gameMap.getMushrooms()) {
+            printWriter.println("mushroom," + mushroom.getRectangle().getX() + "," + mushroom.getRectangle().getY());
+        }
+        for (Wood wood : gameMap.getWoods()) {
+            printWriter.println("wood," + wood.getRectangle().getX() + "," + wood.getRectangle().getY());
+        }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject instanceof NpcSpot) {
                 printWriter.println("npc-spot," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
@@ -463,15 +472,6 @@ public class MapService {
             }
             if (gameObject instanceof Spruce) {
                 printWriter.println("spruce," + ((Spruce) gameObject).getOriginalRectangle().getX() + "," + ((Spruce) gameObject).getOriginalRectangle().getY());
-            }
-            if (gameObject instanceof Wood) {
-                printWriter.println("wood," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
-            }
-            if (gameObject instanceof Feather) {
-                printWriter.println("feather," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
-            }
-            if (gameObject instanceof Mushroom) {
-                printWriter.println("mushroom," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
             }
         }
     }
