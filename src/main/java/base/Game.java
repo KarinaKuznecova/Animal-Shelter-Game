@@ -559,6 +559,9 @@ public class Game extends JFrame implements Runnable {
             for (GameObject object : map.getItems()) {
                 object.update(this);
             }
+            for (Bush bush : gameMap.getBushes()) {
+                bush.update(this);
+            }
         }
         eventService.update(this);
     }
@@ -863,6 +866,12 @@ public class Game extends JFrame implements Runnable {
             }
         }
         for (GameObject gameObject : getGameMap().getStorages()) {
+            if (!stoppedChecking) {
+                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
+        for (GameObject gameObject : getGameMap().getBushes()) {
             if (!stoppedChecking) {
                 Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);

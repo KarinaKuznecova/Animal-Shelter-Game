@@ -126,15 +126,18 @@ public class Bush implements GameObject {
             return;
         }
         animalService = game.getAnimalService();
+        animalType = getPotentialAnimal();
+        isAnimalInside = true;
+        logger.info(String.format("New animal inside the bush - %s", animalType));
+    }
+
+    private String getPotentialAnimal() {
         String potentialAnimal = animalService.getRandomAnimalType();
         if (Wolf.TYPE.equalsIgnoreCase(potentialAnimal) && !FOREST_MAP.equalsIgnoreCase(mapName)) {
             logger.debug("Wolf cannot appear on non-forest map, will recalculate");
-            createAnimalInside(game);
+            return getPotentialAnimal();
         }
-        animalType = potentialAnimal;
-        isAnimalInside = true;
-        logger.info(String.format("New animal inside the bush - %s", animalType));
-
+        return potentialAnimal;
     }
 
     public int getX() {

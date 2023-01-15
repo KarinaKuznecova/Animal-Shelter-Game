@@ -303,6 +303,11 @@ public class RenderHandler {
                 wood.render(this, ZOOM);
             }
         }
+        for (Bush bush : gameMap.getBushes()) {
+            if (bush.getLayer() == layer) {
+                bush.render(this, ZOOM);
+            }
+        }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject.getLayer() == layer) {
                 gameObject.render(this, ZOOM);

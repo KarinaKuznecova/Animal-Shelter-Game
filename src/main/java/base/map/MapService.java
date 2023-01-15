@@ -460,12 +460,12 @@ public class MapService {
         for (Wood wood : gameMap.getWoods()) {
             printWriter.println("wood," + wood.getRectangle().getX() + "," + wood.getRectangle().getY());
         }
+        for (Bush bush : gameMap.getBushes()) {
+            printWriter.println("bush," + bush.getX() + "," + bush.getY());
+        }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject instanceof NpcSpot) {
                 printWriter.println("npc-spot," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
-            }
-            if (gameObject instanceof Bush) {
-                printWriter.println("bush," + ((Bush) gameObject).getX() + "," + ((Bush) gameObject).getY());
             }
             if (gameObject instanceof Oak) {
                 printWriter.println("oak," + ((Oak) gameObject).getOriginalRectangle().getX() + "," + ((Oak) gameObject).getOriginalRectangle().getY());
