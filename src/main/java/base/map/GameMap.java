@@ -3,10 +3,7 @@ package base.map;
 import base.gameobjects.*;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
-import base.map.bigobjects.BigObject;
 import base.map.bigobjects.Bookcase;
-import base.map.bigobjects.Bush;
-import base.navigationservice.Direction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,98 +12,98 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import static base.constants.Constants.*;
+import static base.constants.Constants.CELL_SIZE;
+import static base.constants.Constants.PILLOW_TILE_ID;
 import static base.constants.MultiOptionalObjects.bookcases;
 
 public class GameMap {
 
-    private final TileService tileService;
-    private final Map<Integer, List<MapTile>> layeredTiles = new ConcurrentHashMap<>();
-    private final List<MapTile> portalsOldWay = new ArrayList<>();
-    private List<Plant> plants = new CopyOnWriteArrayList<>();
-    private final List<Item> items = new CopyOnWriteArrayList<>();
-    private final List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
-    private final List<Portal> portals = new ArrayList<>();
-    private final List<BigObject> bigObjects = new CopyOnWriteArrayList<>();
-
-    int backGroundTileId = -1;
-    private int mapWidth = -1;
-    private int mapHeight = -1;
-    int maxLayer = -1;
+    private static final Logger logger = LoggerFactory.getLogger(GameMap.class);
 
     private final String mapName;
 
-    private static final Logger logger = LoggerFactory.getLogger(GameMap.class);
+    private int backGroundTileId = -1;
+    private int mapWidth = -1;
+    private int mapHeight = -1;
+    private int maxLayer = -1;
 
-    public GameMap(String mapName, TileService tileService) {
+    private final Map<Integer, List<MapTile>> layeredTiles = new ConcurrentHashMap<>();
+    // every plant type separate?
+    private List<Plant> plants = new CopyOnWriteArrayList<>();
+    // every type separate?
+    private final List<Item> items = new CopyOnWriteArrayList<>();
+    // maybe water and food separate?
+    private final List<FoodBowl> foodBowls = new CopyOnWriteArrayList<>();
+    private final List<WaterBowl> waterBowls = new CopyOnWriteArrayList<>();
+    private final List<StorageChest> storageChests = new CopyOnWriteArrayList<>();
+    private final List<Feather> feathers = new CopyOnWriteArrayList<>();
+    private final List<Mushroom> mushrooms = new CopyOnWriteArrayList<>();
+    private final List<Wood> woods = new CopyOnWriteArrayList<>();
+    private final List<Bush> bushes = new CopyOnWriteArrayList<>();
+    private final List<Oak> oaks = new CopyOnWriteArrayList<>();
+    private final List<Spruce> spruces = new CopyOnWriteArrayList<>();
+    private final List<NpcSpot> npcSpots = new CopyOnWriteArrayList<>();
+    private transient List<Npc> npcs = new CopyOnWriteArrayList<>();
+
+    private transient List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
+    private final List<Portal> portals = new ArrayList<>();
+
+    public GameMap(String mapName) {
         this.mapName = mapName;
-        this.tileService = tileService;
     }
 
-    public int getBackGroundTileId() {
-        return backGroundTileId;
+    boolean isThereAPortal(int x, int y) {
+        for (Portal portal : getPortals()) {
+            int portalX = portal.getRectangle().getX() / CELL_SIZE;
+            int portalY = portal.getRectangle().getY() / CELL_SIZE;
+            if (portalX == x && portalY == y) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void setBackGroundTileId(int backGroundTileId) {
-        this.backGroundTileId = backGroundTileId;
+    public boolean isTherePortal(Rectangle rectangle, String destination) {
+        for (Portal portal : getPortals()) {
+            if (portal.getDirection().equals(destination) && rectangle.intersects(portal.getRectangle())) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public Map<Integer, List<MapTile>> getLayeredTiles() {
-        return layeredTiles;
+    public boolean isThereWaterTile(Rectangle rectangle) {
+        for (MapTile tile : layeredTiles.get(2)) {
+            if (tile.isRegularTile()) {
+                continue;
+            }
+            if (rectangle.intersects(tile)) {
+                return getWaterTileIds().contains(tile.getId());
+            }
+        }
+        return false;
     }
 
-    public int getMaxLayer() {
-        return maxLayer;
+    private List<Integer> getWaterTileIds() {
+        return Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 71, 72);
     }
 
-    public void setMaxLayer(int maxLayer) {
-        this.maxLayer = maxLayer;
+    public List<Integer> getWaterCornerTiles() {
+        return Arrays.asList(0, 2, 6, 8, 71, 72, 1, 3, 5, 7);
     }
 
-    public void setMapWidth(int mapWidth) {
-        this.mapWidth = mapWidth;
+    public void sortInteractiveObjects() {
+        interactiveObjects.sort(Comparator.comparingInt(o -> o.getRectangle().getY()));
     }
 
-    public void setMapHeight(int mapHeight) {
-        this.mapHeight = mapHeight;
-    }
+    /**
+     * =================================== Setters with some logic ======================================
+     */
 
-    public TileService getTileService() {
-        return tileService;
-    }
-
-    @Deprecated
-    public void addPortalOldWay(MapTile tile) {
-        portalsOldWay.add(tile);
-    }
-
-    @Deprecated
-    public List<MapTile> getPortalsOldWay() {
-        return portalsOldWay;
-    }
-
-    private void addPortal(Portal portal) {
-        portals.add(portal);
-    }
-
-    public List<Portal> getPortals() {
-        return portals;
-    }
-
-    public List<MapTile> getTilesOnLayer(int layer) {
-        return layeredTiles.get(layer);
-    }
-
-    public void setTile(int tileX, int tileY, int tileId, boolean regularTiles) {
+    public void setTile(int tileX, int tileY, int tileId, int layer, boolean regularTiles) {
         if (tileId == -1) {
             return;
         }
-        if (tileId == 66 && !regularTiles) {
-            addBigObject(new Bush(tileX, tileY));
-            return;
-        }
-
-        int layer = tileService.getLayerById(tileId, regularTiles);
 
         if (bookcases.contains(tileId) && regularTiles && !isThereAPortal(tileX, tileY)) {
 
@@ -168,6 +165,63 @@ public class GameMap {
         return null;
     }
 
+    public void addObject(GameObject object) {
+        if (interactiveObjects == null) {
+            interactiveObjects = new CopyOnWriteArrayList<>();
+        }
+        if (object instanceof Portal) {
+            addPortal((Portal) object);
+        } else if (object instanceof Feather) {
+            feathers.add((Feather) object);
+        } else if (object instanceof Mushroom) {
+            mushrooms.add((Mushroom) object);
+        } else if (object instanceof Wood) {
+            woods.add((Wood) object);
+        } else if (object instanceof Bush) {
+            bushes.add((Bush) object);
+        } else if (object instanceof Oak) {
+            oaks.add((Oak) object);
+        } else if (object instanceof Spruce) {
+            spruces.add((Spruce) object);
+        } else if (object instanceof NpcSpot) {
+            npcSpots.add((NpcSpot) object);
+        } else if (object instanceof Npc) {
+            npcs.add((Npc) object);
+        } else {
+            interactiveObjects.add(object);
+        }
+    }
+
+    private void addPortal(Portal portal) {
+        portals.add(portal);
+    }
+
+    public void addItem(Item item) {
+        logger.debug("Adding item to the list");
+        items.add(item);
+        item.setMapName(mapName);
+    }
+
+    public void addPlant(Plant plant) {
+        plants.add(plant);
+    }
+
+    public void addFoodBowl(FoodBowl bowl) {
+        foodBowls.add(bowl);
+    }
+
+    public void addWaterBowl(WaterBowl bowl) {
+        waterBowls.add(bowl);
+    }
+
+    public void addStorageChest(StorageChest storageChest) {
+        storageChests.add(storageChest);
+    }
+
+    /**
+     * =================================== Remove object ======================================
+     */
+
     public boolean removeTile(int tileX, int tileY, int layer, boolean regularTiles, int selectedTile) {
         if (bookcases.contains(selectedTile) && regularTiles) {
             boolean removed = false;
@@ -192,216 +246,19 @@ public class GameMap {
         return false;
     }
 
-    boolean isThereAPortal(int x, int y) {
-        for (Portal portal : getPortals()) {
-            int portalX = portal.getRectangle().getX() / CELL_SIZE;
-            int portalY = portal.getRectangle().getY() / CELL_SIZE;
-            if (portalX == x && portalY == y) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Portal getPortalTo(String destination) {
-        for (Portal portal : getPortals()) {
-            if (portal.getDirection().equals(destination)) {
-                return portal;
-            }
-        }
-        return null;
-    }
-
-    public int getSpawnPoint(Portal portalToPrevious, boolean getX, Direction direction) {
-        int previousMapPortal;
-        if (getX) {
-            previousMapPortal = portalToPrevious.getRectangle().getX();
-        } else {
-            previousMapPortal = portalToPrevious.getRectangle().getY();
-        }
-
-        int mapSize;
-        if (getX) {
-            mapSize = mapWidth;
-        } else {
-            mapSize = mapHeight;
-        }
-
-        if (mapSize * CELL_SIZE - previousMapPortal < CELL_SIZE) {
-            previousMapPortal = previousMapPortal - CELL_SIZE;
-        }
-
-        if (previousMapPortal < 0) {
-            previousMapPortal = 0;
-        }
-        if (!getX){
-            if (direction == Direction.LEFT) {
-                return previousMapPortal - 7;
-            }
-            if (direction == Direction.RIGHT) {
-                return previousMapPortal + 7;
-            }
-        } else {
-            if (direction == Direction.UP) {
-                return previousMapPortal - 7;
-            }
-            if (direction == Direction.DOWN) {
-                // TODO ?
-                return previousMapPortal + 14;
-            }
-        }
-        return previousMapPortal;
-    }
-
-    public String getMapName() {
-        return mapName;
-    }
-
-    public int getMapWidth() {
-        return mapWidth;
-    }
-
-    public int getMapHeight() {
-        return mapHeight;
-    }
-
-    public void addPlant(Plant plant) {
-        plants.add(plant);
-    }
-
-    public void removePlant(Plant plant) {
-        plants.remove(plant);
-    }
-
-    public List<Plant> getPlants() {
-        return plants;
-    }
-
-    public List<Plant> getWildPlants() {
-        return plants.stream().filter(Plant::isWild).collect(Collectors.toList());
-    }
-
-    public void setPlants(List<Plant> plants) {
-        this.plants = plants;
-    }
-
-    public boolean isThereGrassOrDirt(int x, int y) {
-        x = x / CELL_SIZE;
-        y = y / CELL_SIZE;
-        for (MapTile tile : layeredTiles.get(0)) {
-            if (tile.getX() == x && tile.getY() == y) {
-                return getGrassTileIds().contains(tile.getId());
-            }
-        }
-        if (getGrassTileIds().contains(backGroundTileId) && isPlaceEmpty(1, x, y) && isPlaceEmpty(2, x, y)) {
-            return true;
-        }
-        logger.info("There is no grass");
-        return false;
-    }
-
-    private List<Integer> getGrassTileIds() {
-        return Arrays.asList(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 158, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173);
-    }
-
-    public boolean isPlaceEmpty(int layer, int x, int y) {
-        if (isTherePlant(x, y)) {
-            return false;
-        }
-        if (layeredTiles.get(layer) == null) {
-            return true;
-        }
-        for (MapTile tile : layeredTiles.get(layer)) {
-            if (tile.getX() == x && tile.getY() == y) {
-                logger.info("Place is taken");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean isInsideOfMap(int x, int y) {
-        if (x < 0 || x > mapWidth || y < 0 || y > mapHeight) {
-            logger.info("Outside of modifiable map");
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isTherePlant(int x, int y) {
-        for (Plant plant : plants) {
-            if (plant.getRectangle().getX() == x && plant.getRectangle().getY() == y) {
-                logger.info("There is already a plant");
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isTherePortal(Rectangle rectangle, String destination) {
-        for (Portal portal : getPortals()) {
-            if (portal.getDirection().equals(destination) && rectangle.intersects(portal.getRectangle())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isThereWaterTile(Rectangle rectangle) {
-        for (MapTile tile : layeredTiles.get(2)) {
-            if (tile.isRegularTile()) {
-                continue;
-            }
-            if (rectangle.intersects(tile)) {
-                return getWaterTileIds().contains(tile.getId());
-            }
-        }
-        return false;
-    }
-
-    private List<Integer> getWaterTileIds() {
-        return Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 71, 72);
-    }
-
-    public List<Integer> getWaterCornerTiles() {
-        return Arrays.asList(0, 2, 6, 8, 71, 72, 1, 3, 5, 7);
-    }
-
-    public void addItem(Item item) {
-        logger.debug("Adding item to the list");
-        items.add(item);
-        item.setMapName(mapName);
-    }
-
     //TODO: refactor not to mention every item type separately
     public void removeItem(String itemName, Rectangle rectangle) {
         items.removeIf(item -> itemName.equals(item.getItemName()) && rectangle.intersects(item.getRectangle()));
 
         if (itemName.equalsIgnoreCase(Wood.ITEM_NAME)) {
-            interactiveObjects.removeIf(item -> item instanceof Wood && rectangle.intersects((item.getRectangle())));
+            woods.removeIf(wood -> rectangle.intersects(wood.getRectangle()));
         }
         if (itemName.equalsIgnoreCase(Feather.ITEM_NAME)) {
-            interactiveObjects.removeIf(item -> item instanceof Feather && rectangle.intersects((item.getRectangle())));
+            feathers.removeIf(feather -> rectangle.intersects(feather.getRectangle()));
         }
         if (itemName.equalsIgnoreCase(Mushroom.ITEM_NAME)) {
-            interactiveObjects.removeIf(item -> item instanceof Mushroom && rectangle.intersects((item.getRectangle())));
+            mushrooms.removeIf(mushroom -> rectangle.intersects(mushroom.getRectangle()));
         }
-    }
-
-    public List<Item> getItems() {
-        items.removeIf(Objects::isNull);
-        return items;
-    }
-
-    public void addObject(GameObject object) {
-        interactiveObjects.add(object);
-        if (object instanceof Portal) {
-            addPortal((Portal) object);
-        }
-    }
-
-    public void sortInteractiveObjects() {
-        interactiveObjects.sort(Comparator.comparingInt(o -> o.getRectangle().getY()));
     }
 
     public boolean removeObject(GameObject object) {
@@ -409,43 +266,46 @@ public class GameMap {
             interactiveObjects.remove(object);
             return true;
         }
-        return false;
-    }
-
-    public boolean removeStorageChest(int xPosition, int yPosition) {
-        Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
-        for (GameObject gameObject : interactiveObjects) {
-            if (gameObject instanceof StorageChest && gameObject.getRectangle().intersects(rectangle)) {
-                interactiveObjects.remove(gameObject);
+        if (object instanceof Npc) {
+            if (npcs.contains(object)) {
+                npcs.remove(object);
                 return true;
             }
         }
         return false;
     }
 
-    public List<GameObject> getInteractiveObjects() {
-        return interactiveObjects;
-    }
-
-    public List<FoodBowl> getFoodBowls() {
-        List<FoodBowl> bowls = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof FoodBowl) {
-                bowls.add((FoodBowl) object);
+    public boolean removeStorageChest(int xPosition, int yPosition) {
+        Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
+        for (StorageChest chest : storageChests) {
+            if (chest.getRectangle().intersects(rectangle)) {
+                storageChests.remove(chest);
+                return true;
             }
         }
-        return bowls;
+        return false;
     }
 
-    public List<WaterBowl> getWaterBowls() {
-        List<WaterBowl> bowls = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof WaterBowl) {
-                bowls.add((WaterBowl) object);
-            }
-        }
-        return bowls;
+    public void removePlant(Plant plant) {
+        plants.remove(plant);
     }
+
+    // TODO: check by x and y instead of full object
+    public boolean removeBowl(Bowl bowl) {
+        if (foodBowls.contains(bowl)) {
+            foodBowls.remove(bowl);
+            return true;
+        }
+        if (waterBowls.contains(bowl)) {
+            waterBowls.remove(bowl);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * =================================== Getters with some logic ======================================
+     */
 
     public List<MapTile> getPillows() {
         List<MapTile> pillows = new ArrayList<>();
@@ -460,64 +320,131 @@ public class GameMap {
         return pillows;
     }
 
-    public List<StorageChest> getStorages() {
-        List<StorageChest> storages = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof StorageChest) {
-                storages.add((StorageChest) object);
-            }
+    public NpcSpot getNpcSpot() {
+        return npcSpots.get(0);
+    }
+
+    public List<Plant> getWildPlants() {
+        return plants.stream().filter(Plant::isWild).collect(Collectors.toList());
+    }
+
+    public List<MapTile> getTilesOnLayer(int layer) {
+        return layeredTiles.get(layer);
+    }
+
+    public List<Item> getItems() {
+        items.removeIf(Objects::isNull);
+        return items;
+    }
+
+    /**
+     * =================================== Simple getters & setters ======================================
+     */
+
+    public int getBackGroundTileId() {
+        return backGroundTileId;
+    }
+
+    public void setBackGroundTileId(int backGroundTileId) {
+        this.backGroundTileId = backGroundTileId;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public int getMapWidth() {
+        return mapWidth;
+    }
+
+    public int getMapHeight() {
+        return mapHeight;
+    }
+
+    public List<GameObject> getInteractiveObjects() {
+        if (interactiveObjects == null) {
+            interactiveObjects = new CopyOnWriteArrayList<>();
         }
-        return storages;
+        return interactiveObjects;
+    }
+
+    public List<Plant> getPlants() {
+        return plants;
+    }
+
+    public void setPlants(List<Plant> plants) {
+        this.plants = plants;
+    }
+
+    public List<FoodBowl> getFoodBowls() {
+        return foodBowls;
+    }
+
+    public List<WaterBowl> getWaterBowls() {
+        return waterBowls;
+    }
+
+    public List<Portal> getPortals() {
+        return portals;
+    }
+
+    public List<StorageChest> getStorageChests() {
+        return storageChests;
     }
 
     public List<Wood> getWoods() {
-        List<Wood> woods = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof Wood) {
-                woods.add((Wood) object);
-            }
-        }
         return woods;
     }
 
     public List<Feather> getFeathers() {
-        List<Feather> feathers = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof Feather) {
-                feathers.add((Feather) object);
-            }
-        }
         return feathers;
     }
 
     public List<Mushroom> getMushrooms() {
-        List<Mushroom> mushrooms = new ArrayList<>();
-        for (GameObject object : getInteractiveObjects()) {
-            if (object instanceof Mushroom) {
-                mushrooms.add((Mushroom) object);
-            }
-        }
         return mushrooms;
     }
 
-    public List<BigObject> getBigObjects() {
-        return bigObjects;
+    public List<Bush> getBushes() {
+        return bushes;
     }
 
-    public void addBigObject(BigObject bigObject) {
-        bigObjects.add(bigObject);
+    public List<Oak> getOaks() {
+        return oaks;
     }
 
-    public void removeBigObject(BigObject bigObject) {
-        bigObjects.remove(bigObject);
+    public List<Spruce> getSpruces() {
+        return spruces;
     }
 
-    public NpcSpot getNpcSpot() {
-        for (GameObject gameObject : getInteractiveObjects()) {
-            if (gameObject instanceof NpcSpot) {
-                return (NpcSpot) gameObject;
-            }
-        }
-        return new NpcSpot(new Rectangle(100, 100, 32, 32));
+    public List<NpcSpot> getNpcSpots() {
+        return npcSpots;
+    }
+
+    public List<Npc> getNpcs() {
+        return npcs;
+    }
+
+    public void setNpcs(List<Npc> npcs) {
+        this.npcs = npcs;
+    }
+
+    public Map<Integer, List<MapTile>> getLayeredTiles() {
+        return layeredTiles;
+    }
+
+    public int getMaxLayer() {
+        return maxLayer;
+    }
+
+    public void setMaxLayer(int maxLayer) {
+        this.maxLayer = maxLayer;
+    }
+
+    public void setMapWidth(int mapWidth) {
+        this.mapWidth = mapWidth;
+    }
+
+    public void setMapHeight(int mapHeight) {
+        this.mapHeight = mapHeight;
     }
 }

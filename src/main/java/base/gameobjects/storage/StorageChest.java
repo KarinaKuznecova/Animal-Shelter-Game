@@ -25,14 +25,14 @@ public class StorageChest implements GameObject {
     private final int x;
     private final int y;
     private Rectangle rectangle;
-    private Sprite spriteClosed;
-    private Sprite spriteOpen;
-    private Storage storage;
+    private transient Sprite spriteClosed;
+    private transient Sprite spriteOpen;
+    private transient Storage storage;
     private String fileName;
 
-    public InteractionZoneStorageChest interactionZone;
+    public transient InteractionZoneStorageChest interactionZone;
 
-    private boolean isOpen;
+    private transient boolean isOpen;
 
     public StorageChest(int x, int y, Sprite spriteClosed, Sprite spriteOpen) {
         this.x = x;
@@ -47,12 +47,10 @@ public class StorageChest implements GameObject {
         isOpen = false;
     }
 
-    public StorageChest(int x, int y, Sprite spriteClosed, Sprite spriteOpen, String fileName) {
+    public StorageChest(int x, int y, String fileName) {
         this.x = x;
         this.y = y;
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
-        this.spriteClosed = spriteClosed;
-        this.spriteOpen = spriteOpen;
         interactionZone = new InteractionZoneStorageChest(x + 32, y + 32, 90);
         storage = new Storage(6, rectangle, fileName);
         this.fileName = fileName;
@@ -78,9 +76,11 @@ public class StorageChest implements GameObject {
 
     @Override
     public void update(Game game) {
-        interactionZone.update(game);
+        if (interactionZone != null) {
+            interactionZone.update(game);
+        }
         storage.update(game);
-        if (!interactionZone.isPlayerInRange() && isOpen) {
+        if (interactionZone != null && !interactionZone.isPlayerInRange() && isOpen) {
             isOpen = false;
             storage.setVisible(false);
             storage.removeRenderedText(game.getRenderer());
@@ -123,7 +123,7 @@ public class StorageChest implements GameObject {
         return fileName;
     }
 
-    // TODO: move to service class
+    // TODO: change to json, issue #353
     public void readFile() {
         File mapFile = new File("maps/storages/" + fileName);
         try (Scanner scanner = new Scanner(mapFile)) {
@@ -139,5 +139,37 @@ public class StorageChest implements GameObject {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setSpriteClosed(Sprite spriteClosed) {
+        this.spriteClosed = spriteClosed;
+    }
+
+    public void setSpriteOpen(Sprite spriteOpen) {
+        this.spriteOpen = spriteOpen;
+    }
+
+    public void setRectangle(Rectangle rectangle) {
+        this.rectangle = rectangle;
+    }
+
+    public void setInteractionZone(InteractionZoneStorageChest interactionZone) {
+        this.interactionZone = interactionZone;
+    }
+
+    public void setStorage(Storage storage) {
+        this.storage = storage;
     }
 }

@@ -16,9 +16,14 @@ public abstract class Bowl implements GameObject {
 
     private final int x;
     private final int y;
-    protected AnimatedSprite sprite;
+    protected transient AnimatedSprite sprite;
     protected final Rectangle rectangle;
     protected boolean isFull;
+
+    protected Bowl(int x, int y, boolean isFull) {
+        this(x, y);
+        this.isFull = isFull;
+    }
 
     protected Bowl(int x, int y) {
         this.x = x;
@@ -50,7 +55,9 @@ public abstract class Bowl implements GameObject {
     }
 
     public void fillBowl() {
-        sprite.incrementSprite();
+        if (sprite != null) {
+            sprite.incrementSprite();
+        }
         isFull = true;
     }
 
@@ -73,5 +80,20 @@ public abstract class Bowl implements GameObject {
 
     public boolean isFull() {
         return isFull;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setSprite(AnimatedSprite sprite) {
+        this.sprite = sprite;
+        if (isFull) {
+            sprite.incrementSprite();
+        }
     }
 }

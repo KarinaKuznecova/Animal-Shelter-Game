@@ -38,10 +38,10 @@ public class MushroomInForestEvent extends Event {
         int bigX = x  * CELL_SIZE;
         int bigY = y  * CELL_SIZE;
         logger.info(String.format("Random mushroom will appear at %d and %d", x, y));
-        if (map.isPlaceEmpty(1, bigX, bigY)) {
+        if (game.getMapService().isPlaceEmpty(map, 1, bigX, bigY)) {
             logger.info("Place was empty, will add mushroom");
-            Sprite sprite = game.getTileService().getTiles().get(Mushroom.TILE_ID).getSprite();
-            map.addObject(new Mushroom(sprite, bigX, bigY));
+            Sprite sprite = game.getSpriteService().getMushroomSprite();
+            map.addObject(new Mushroom(bigX, bigY, sprite));
             happened = true;
         }
     }

@@ -1,12 +1,5 @@
 MainMap:maps/GameMap.txt
-SecondMap:maps/GameMap2.txt
-WaterMap:maps/WaterMap.txt
 TopLeftMap:maps/TopLeftMap.txt
-TopCenterMap:maps/TopCenterMap.txt
-TopRightMap:maps/TopRightMap.txt
-BottomLeftMap:maps/BottomLeftMap.txt
-BottomCenterMap:maps/BottomCenterMap.txt
-BottomRightMap:maps/BottomRightMap.txt
 City:maps/City.txt
 Forest:maps/Forest.txt
 Home:maps/Home.txt

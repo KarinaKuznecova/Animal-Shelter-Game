@@ -5,7 +5,7 @@ import static base.constants.Constants.LANGUAGE;
 public class FilePath {
 
     //images
-    public static final String PLAYER_SHEET_PATH = "img/betty.png";
+    public static final String PLAYER_SHEET_PATH = "img/betty2.png";
     public static final String FOOD_BOWL_PATH = "img/bowl.png";
     public static final String WATER_BOWL_PATH = "img/water-bowl.png";
 
@@ -50,11 +50,15 @@ public class FilePath {
     public static final String SPRUCE_IMG = "img/spruce.png";
 
     //config
-    public static final String MAPS_LIST_PATH = "maps/MapList.txt";
     public static final String TIPS_FILE_PATH = "config/tips"+ "-" + LANGUAGE + ".txt";
     public static final String TRANSLATION_FILE_PATH = "config/translation" + "-" + LANGUAGE;
     public static final String FEMALE_NAMES_FILE_PATH = "config/names-f.txt";
     public static final String MALE_NAMES_FILE_PATH = "config/names-m.txt";
+
+    //maps
+    public static final String MAPS_LIST_PATH = "maps/MapList.txt";
+    public static final String JSON_MAPS_DIRECTORY = "maps-json/";
+    public static final String STORAGES_DIRECTORY = "maps/storages/";
 
     //other
     public static final String BACKPACK_FILE_PATH = "backpack";

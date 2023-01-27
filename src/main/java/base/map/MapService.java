@@ -1,25 +1,25 @@
 package base.map;
 
 import base.gameobjects.*;
+import base.gameobjects.interactionzones.InteractionZoneStorageChest;
 import base.gameobjects.plants.Corn;
 import base.gameobjects.services.ItemService;
 import base.gameobjects.services.PlantService;
+import base.gameobjects.storage.Storage;
 import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
+import base.navigationservice.Direction;
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
-import static base.constants.FilePath.MAPS_LIST_PATH;
+import static base.constants.FilePath.*;
 import static base.constants.MapConstants.MAIN_MAP;
 import static base.constants.MapConstants.TOP_CENTER_MAP;
 
@@ -68,8 +68,28 @@ public class MapService {
      * =================================== Load Map ======================================
      */
 
+    // TODO: migration, if there is no json, but only normal file, them immediately save?
+    public GameMap loadGameMapFromJson(String mapName, TileService tileService) {
+        File directory = new File(JSON_MAPS_DIRECTORY);
+        if (directory.listFiles() == null || directory.listFiles().length == 0) {
+            logger.info(String.format("No json map for %s, will load old way", mapName));
+            return loadGameMap(mapName, tileService);
+        }
+        try {
+            Gson gson = new Gson();
+            Reader reader = new FileReader(JSON_MAPS_DIRECTORY + mapName);
+            GameMap gameMap = gson.fromJson(reader, GameMap.class);
+            reader.close();
+            loadStorageChests(gameMap);
+            return gameMap;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return loadGameMap(mapName, tileService);
+    }
+
     public GameMap loadGameMap(String mapName, TileService tileService) {
-        GameMap gameMap = new GameMap(mapName, tileService);
+        GameMap gameMap = new GameMap(mapName);
         boolean migrationChecked = false;
         boolean migrationNeeded = false;
         File mapFile = new File(getMapConfig(mapName));
@@ -125,10 +145,6 @@ public class MapService {
                         migratePortal(gameMap, tile);
                     } else {
                         tiles.add(tile);
-                    }
-                    if (tileId == CHEST_TILE_ID) {
-                        StorageChest storageChest = new StorageChest(xPosition * CELL_SIZE, yPosition * CELL_SIZE, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite());
-                        gameMap.addObject(storageChest);
                     }
                 }
             }
@@ -201,7 +217,7 @@ public class MapService {
             String itemName = itemId.split("-")[1];
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            Item item = itemService.creteNewItem(itemName, x, y);
+            Item item = itemService.createNewItem(itemName, x, y);
             gameMap.addItem(item);
             return true;
         }
@@ -210,11 +226,8 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             boolean shouldBeFull = Boolean.parseBoolean(splitLine[3]);
-            FoodBowl foodBowl = new FoodBowl(x, y);
-            if (shouldBeFull) {
-                foodBowl.fillBowl();
-            }
-            gameMap.addObject(foodBowl);
+            FoodBowl foodBowl = new FoodBowl(x, y, shouldBeFull);
+            gameMap.addFoodBowl(foodBowl);
             return true;
         }
         if (line.startsWith("water-bowl")) {
@@ -222,11 +235,8 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             boolean shouldBeFull = Boolean.parseBoolean(splitLine[3]);
-            WaterBowl waterBowl = new WaterBowl(x, y);
-            if (shouldBeFull) {
-                waterBowl.fillBowl();
-            }
-            gameMap.addObject(waterBowl);
+            WaterBowl waterBowl = new WaterBowl(x, y, shouldBeFull);
+            gameMap.addWaterBowl(waterBowl);
             return true;
         }
         if (line.startsWith("npc-spot")) {
@@ -270,28 +280,28 @@ public class MapService {
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
             String filename = splitLine[3];
-            gameMap.addObject(new StorageChest(x, y, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite(), filename));
+            gameMap.addStorageChest(new StorageChest(x, y, filename));
             return true;
         }
         if (line.startsWith("wood")) {
             String[] splitLine = line.split(",");
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            gameMap.addObject(new Wood(tileService.getTiles().get(Wood.TILE_ID).getSprite(), x, y));
+            gameMap.addObject(new Wood(x, y));
             return true;
         }
         if (line.startsWith("feather")) {
             String[] splitLine = line.split(",");
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            gameMap.addObject(new Feather(tileService.getTiles().get(Feather.TILE_ID).getSprite(), x, y));
+            gameMap.addObject(new Feather(x, y));
             return true;
         }
         if (line.startsWith("mushroom")) {
             String[] splitLine = line.split(",");
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            gameMap.addObject(new Mushroom(tileService.getTiles().get(Mushroom.TILE_ID).getSprite(), x, y));
+            gameMap.addObject(new Mushroom(x, y));
             return true;
         }
 
@@ -316,12 +326,66 @@ public class MapService {
         return false;
     }
 
+    private void loadStorageChests(GameMap gameMap) {
+        for (StorageChest storageChest: gameMap.getStorageChests()) {
+            int x = storageChest.getX();
+            int y = storageChest.getY();
+            String fileName = storageChest.getFileName();
+            storageChest.setInteractionZone(new InteractionZoneStorageChest(x + 32, y + 32, 90));
+            storageChest.setStorage(new Storage(6, storageChest.getRectangle(), fileName));
+            loadStorageChest(fileName, storageChest);
+        }
+    }
+
+    public void loadStorageChest(String fileName, StorageChest chest) {
+        File mapFile = new File(STORAGES_DIRECTORY + fileName);
+        try (Scanner scanner = new Scanner(mapFile)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] splitLine = line.split(":");
+                String itemName = splitLine[0];
+                int qty = Integer.parseInt(splitLine[1]);
+                if (!itemName.startsWith(fileName) && qty > 0) {
+                    chest.getStorage().addItem(itemName, qty);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("Storage chest file not found");
+            e.printStackTrace();
+        }
+    }
+
     /**
      * =================================== Save Map ======================================
      */
 
+    public void saveMapToJson(GameMap gameMap) {
+        Gson gson = new Gson();
+        try {
+            File directory = new File(JSON_MAPS_DIRECTORY);
+            if (!directory.exists()) {
+                if (!directory.mkdirs()) {
+                    logger.error("Error while saving map to json file - cannot create directory");
+                    return;
+                }
+            }
+            FileWriter writer = new FileWriter(JSON_MAPS_DIRECTORY + gameMap.getMapName());
+            gson.toJson(gameMap, writer);
+            writer.flush();
+            writer.close();
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        for (StorageChest storageChest : gameMap.getStorageChests()) {
+            saveStorageChest(storageChest);
+        }
+    }
+
+    @Deprecated // use saveMapToJson
     public void saveMap(GameMap gameMap) {
-        logger.info("Saving map");
+        logger.info(String.format("Saving map %s", gameMap.getMapName()));
+        saveMapToJson(gameMap);
         File mapFile = new File(getMapConfig(gameMap.getMapName()));
         try {
             if (mapFile.exists()) {
@@ -408,9 +472,6 @@ public class MapService {
     }
 
     private void saveItems(GameMap gameMap, PrintWriter printWriter) {
-        if (gameMap.getItems().isEmpty() && gameMap.getInteractiveObjects().isEmpty()) {
-            return;
-        }
         printWriter.println("//Items");
         printWriter.println("//type, xPosition, yPosition");
         for (Item item : gameMap.getItems()) {
@@ -424,41 +485,39 @@ public class MapService {
         for (WaterBowl waterBowl : gameMap.getWaterBowls()) {
             printWriter.println("water-bowl," + waterBowl.getRectangle().getX() + "," + waterBowl.getRectangle().getY() + "," + waterBowl.isFull());
         }
-        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
-            if (gameObject instanceof NpcSpot) {
-                printWriter.println("npc-spot," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
-            }
-            if (gameObject instanceof Portal) {
-                printWriter.println("portal," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY() + "," + ((Portal) gameObject).getDirection());
-            }
-            if (gameObject instanceof Bush) {
-                printWriter.println("bush," + ((Bush) gameObject).getX() + "," + ((Bush) gameObject).getY());
-            }
-            if (gameObject instanceof Oak) {
-                printWriter.println("oak," + ((Oak) gameObject).getOriginalRectangle().getX() + "," + ((Oak) gameObject).getOriginalRectangle().getY());
-            }
-            if (gameObject instanceof Spruce) {
-                printWriter.println("spruce," + ((Spruce) gameObject).getOriginalRectangle().getX() + "," + ((Spruce) gameObject).getOriginalRectangle().getY());
-            }
-            if (gameObject instanceof StorageChest) {
-                printWriter.println(("storagechest," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY() + "," + ((StorageChest) gameObject).getFileName()));
-                saveStorageChest((StorageChest) gameObject);
-            }
-            if (gameObject instanceof Wood) {
-                printWriter.println("wood," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
-            }
-            if (gameObject instanceof Feather) {
-                printWriter.println("feather," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
-            }
-            if (gameObject instanceof Mushroom) {
-                printWriter.println("mushroom," + gameObject.getRectangle().getX() + "," + gameObject.getRectangle().getY());
-            }
+        for (Portal portal : gameMap.getPortals()) {
+            printWriter.println("portal," + portal.getRectangle().getX() + "," + portal.getRectangle().getY() + "," + portal.getDirection());
+        }
+        for (StorageChest storageChest : gameMap.getStorageChests()) {
+            printWriter.println(("storagechest," + storageChest.getRectangle().getX() + "," + storageChest.getRectangle().getY() + "," + storageChest.getFileName()));
+            saveStorageChest(storageChest);
+        }
+        for (Feather feather : gameMap.getFeathers()) {
+            printWriter.println("feather," + feather.getRectangle().getX() + "," + feather.getRectangle().getY());
+        }
+        for (Mushroom mushroom : gameMap.getMushrooms()) {
+            printWriter.println("mushroom," + mushroom.getRectangle().getX() + "," + mushroom.getRectangle().getY());
+        }
+        for (Wood wood : gameMap.getWoods()) {
+            printWriter.println("wood," + wood.getRectangle().getX() + "," + wood.getRectangle().getY());
+        }
+        for (Bush bush : gameMap.getBushes()) {
+            printWriter.println("bush," + bush.getX() + "," + bush.getY());
+        }
+        for (Oak oak : gameMap.getOaks()) {
+            printWriter.println("oak," + oak.getOriginalRectangle().getX() + "," + oak.getOriginalRectangle().getY());
+        }
+        for (Spruce spruce : gameMap.getSpruces()) {
+            printWriter.println("spruce," + spruce.getOriginalRectangle().getX() + "," + spruce.getOriginalRectangle().getY());
+        }
+        for (NpcSpot npcSpot : gameMap.getNpcSpots()) {
+            printWriter.println("npc-spot," + npcSpot.getRectangle().getX() + "," + npcSpot.getRectangle().getY());
         }
     }
 
     private void saveStorageChest(StorageChest chest) {
         logger.info("Saving storage chest");
-        File file = new File("maps/storages/" + chest.getFileName());
+        File file = new File(STORAGES_DIRECTORY + chest.getFileName());
         try {
             if (file.exists()) {
                 Files.deleteIfExists(file.toPath());
@@ -545,6 +604,112 @@ public class MapService {
             mapMigrator.migrate("TopCenterMap", "maps/TopCenterMap.txt", "TopRightMap", "maps/TopRightMap.txt", "maps/Home.txt");
             // reload
         }
+    }
+
+    /**
+     * =================================== Other ======================================
+     */
+
+    public Portal getPortalTo(GameMap gameMap, String destination) {
+        for (Portal portal : gameMap.getPortals()) {
+            if (portal.getDirection().equals(destination)) {
+                return portal;
+            }
+        }
+        return null;
+    }
+
+    public int getSpawnPoint(Portal portalToPrevious, boolean getX, Direction direction, GameMap gameMap) {
+        int previousMapPortal;
+        if (getX) {
+            previousMapPortal = portalToPrevious.getRectangle().getX();
+        } else {
+            previousMapPortal = portalToPrevious.getRectangle().getY();
+        }
+
+        int mapSize;
+        if (getX) {
+            mapSize = gameMap.getMapWidth();
+        } else {
+            mapSize = gameMap.getMapHeight();
+        }
+
+        if (mapSize * CELL_SIZE - previousMapPortal < CELL_SIZE) {
+            previousMapPortal = previousMapPortal - CELL_SIZE;
+        }
+
+        if (previousMapPortal < 0) {
+            previousMapPortal = 0;
+        }
+        if (getX){
+            if (direction == Direction.LEFT) {
+                return previousMapPortal - 1;
+            }
+            if (direction == Direction.RIGHT) {
+                return previousMapPortal + 1;
+            }
+        } else {
+            if (direction == Direction.UP) {
+                return previousMapPortal - 1;
+            }
+            if (direction == Direction.DOWN) {
+                return previousMapPortal + 1;
+            }
+        }
+        return previousMapPortal;
+    }
+
+    public boolean isThereGrassOrDirt(GameMap gameMap, int x, int y) {
+        x = x / CELL_SIZE;
+        y = y / CELL_SIZE;
+        for (MapTile tile : gameMap.getLayeredTiles().get(0)) {
+            if (tile.getX() == x && tile.getY() == y) {
+                return getGrassTileIds().contains(tile.getId());
+            }
+        }
+        if (getGrassTileIds().contains(gameMap.getBackGroundTileId()) && isPlaceEmpty(gameMap, 1, x, y) && isPlaceEmpty(gameMap, 2, x, y)) {
+            return true;
+        }
+        logger.info("There is no grass");
+        return false;
+    }
+
+    private List<Integer> getGrassTileIds() {
+        return Arrays.asList(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 158, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173);
+    }
+
+    public boolean isPlaceEmpty(GameMap gameMap, int layer, int x, int y) {
+        if (isTherePlant(gameMap, x, y)) {
+            return false;
+        }
+        if (gameMap.getLayeredTiles().get(layer) == null) {
+            return true;
+        }
+        for (MapTile tile : gameMap.getLayeredTiles().get(layer)) {
+            if (tile.getX() == x && tile.getY() == y) {
+                logger.info("Place is taken");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isTherePlant(GameMap gameMap, int x, int y) {
+        for (Plant plant : gameMap.getPlants()) {
+            if (plant.getRectangle().getX() == x && plant.getRectangle().getY() == y) {
+                logger.info("There is already a plant");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isInsideOfMap(GameMap gameMap, int x, int y) {
+        if (x < 0 || x > gameMap.getMapWidth() || y < 0 || y > gameMap.getMapHeight()) {
+            logger.info("Outside of modifiable map");
+            return false;
+        }
+        return true;
     }
 
 }

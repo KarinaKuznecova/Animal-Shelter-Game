@@ -15,7 +15,7 @@ public class Coin implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Coin.class);
 
-    private final Sprite sprite;
+    private final transient Sprite sprite;
     private Rectangle rectangle;
     private int amount;
 

@@ -1,7 +1,6 @@
 package base.events;
 
 import base.Game;
-import base.constants.MapConstants;
 import base.gameobjects.Animal;
 import base.gameobjects.ChestWithAnimal;
 import base.gameobjects.services.AnimalService;
@@ -11,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static base.constants.Constants.*;
+import static base.constants.Constants.CELL_SIZE;
 
 public class FindAnimalEvent extends Event {
 
@@ -24,15 +23,12 @@ public class FindAnimalEvent extends Event {
     @Override
     void calculateChance(Game game) {
         chance = 5;
-        if (!MapConstants.BOTTOM_MAPS.contains(game.getGameMap().getMapName()) || (!repeatable && happened)) {
+        if (!repeatable && happened) {
             chance = 0;
             return;
         }
         if (happened) {
             chance--;
-        }
-        if (MapConstants.BOTTOM_LEFT_MAP.equals(game.getGameMap().getMapName()) || MapConstants.BOTTOM_CENTER_MAP.equals(game.getGameMap().getMapName())) {
-            chance++;
         }
         if (game.isBackpackEmpty()) {
             chance--;
@@ -55,7 +51,7 @@ public class FindAnimalEvent extends Event {
 
         int bigX = x * CELL_SIZE;
         int bigY = y * CELL_SIZE;
-        if (map.isPlaceEmpty(2, bigX, bigY)) {
+        if (game.getMapService().isPlaceEmpty(map, 2, bigX, bigY)) {
             logger.info("Place was empty, will put chest");
             AnimalService animalService = game.getAnimalService();
             String animalType = animalService.getRandomAnimalType();

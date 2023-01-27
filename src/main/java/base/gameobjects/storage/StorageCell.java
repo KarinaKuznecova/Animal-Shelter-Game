@@ -9,12 +9,15 @@ import base.gui.BackpackButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static base.constants.ColorConstant.BLUE;
+import static base.constants.ColorConstant.BROWN;
 import static base.constants.Constants.*;
 import static base.constants.Constants.TILE_SIZE;
+import static base.gameobjects.storage.Storage.BORDER_SIZE;
 
 public class StorageCell extends BackpackButton {
 
-    protected static final Logger logger = LoggerFactory.getLogger(StorageCell.class);
+    protected static final transient Logger logger = LoggerFactory.getLogger(StorageCell.class);
 
     public StorageCell(Rectangle rectangle, String item, Sprite itemSprite, String defaultId) {
         super(item, itemSprite, rectangle, defaultId);
@@ -22,6 +25,9 @@ public class StorageCell extends BackpackButton {
     }
 
     public void render(RenderHandler renderer) {
+        if (rectangle.getPixels().length == 0) {
+            rectangle.generateBorder(BORDER_SIZE, BROWN, BLUE);
+        }
         renderer.renderRectangle(rectangle, 1, false);
         if (sprite != null) {
             if (objectCount > 1) {

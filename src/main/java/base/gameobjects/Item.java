@@ -9,33 +9,38 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
+import static base.constants.Constants.MAX_FOOD_FRESHNESS;
 import static base.constants.Constants.TILE_SIZE;
 import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 
 public class Item implements GameObject {
 
-    protected static final Logger logger = LoggerFactory.getLogger(Item.class);
+    protected static final transient Logger logger = LoggerFactory.getLogger(Item.class);
     private final int x;
     private final int y;
     private final String itemName;
-    private final Sprite sprite;
+    private transient Sprite sprite;
     private final Rectangle rectangle;
     private boolean stackable;
     private String mapName;
-    private final int MAX_FRESHNESS = 25_000;
     private int freshness;
 
     public Item(int x, int y, String itemName, Sprite sprite) {
+        this(x, y, itemName);
+        this.sprite = sprite;
+    }
+
+    public Item(int x, int y, String itemName) {
         this.x = x;
         this.y = y;
         this.itemName = itemName;
-        this.sprite = sprite;
+
         if (STACKABLE_ITEMS.contains(itemName)) {
             stackable = true;
         }
 
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
-        freshness = MAX_FRESHNESS + new Random().nextInt(MAX_FRESHNESS);
+        freshness = MAX_FOOD_FRESHNESS + new Random().nextInt(MAX_FOOD_FRESHNESS);
     }
 
     @Override
@@ -96,5 +101,21 @@ public class Item implements GameObject {
 
     public void setMapName(String mapName) {
         this.mapName = mapName;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getFreshness() {
+        return freshness;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
     }
 }

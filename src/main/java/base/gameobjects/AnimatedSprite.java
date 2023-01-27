@@ -12,17 +12,24 @@ public class AnimatedSprite extends Sprite implements GameObject {
     private int currentSprite = 0;
     private int speed;
     private int counter;
-    boolean vertical;
+    private boolean isVertical;
 
     private int startSprite = 0;
     private int endSprite;
 
     //higher number = slower speed
-    public AnimatedSprite(SpriteSheet sheet, int speed, boolean vertical) {
+    public AnimatedSprite(SpriteSheet sheet, int speed, boolean isVertical) {
         sprites = sheet.getLoadedSprites();
         this.speed = speed;
         this.endSprite = sprites.length - 1;
-        this.vertical = vertical;
+        this.isVertical = isVertical;
+    }
+
+    public AnimatedSprite(Sprite[] sprites, int speed, boolean isVertical, int endSprite) {
+        this.sprites = sprites;
+        this.speed = speed;
+        this.isVertical = isVertical;
+        this.endSprite = endSprite;
     }
 
     @Override
@@ -57,7 +64,7 @@ public class AnimatedSprite extends Sprite implements GameObject {
     }
 
     public void incrementSprite() {
-        if (vertical) {
+        if (isVertical) {
             currentSprite += 4;
         } else {
             currentSprite++;
@@ -117,4 +124,15 @@ public class AnimatedSprite extends Sprite implements GameObject {
         return null;
     }
 
+    public Sprite[] getSprites() {
+        return sprites;
+    }
+
+    public boolean isVertical() {
+        return isVertical;
+    }
+
+    public void setVertical(boolean vertical) {
+        isVertical = vertical;
+    }
 }

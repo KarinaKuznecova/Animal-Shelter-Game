@@ -16,39 +16,36 @@ import java.util.Random;
 
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.*;
-import static base.constants.FilePath.BUSH_IMG;
 import static base.constants.MapConstants.FOREST_MAP;
-import static base.graphicsservice.ImageLoader.getPreviewSprite;
 
 public class Bush implements GameObject {
 
-    private static final Logger logger = LoggerFactory.getLogger(Bush.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(Bush.class);
 
     private final int x;
     private final int y;
-    private final Sprite sprite;
+    private transient Sprite sprite;
     private final Rectangle rectangle;
     private final String mapName;
-    private final boolean canContainAnimal;
-    private final Random random = new Random();
+    private transient boolean canContainAnimal;
+    private transient Random random = new Random();
 
-    private boolean isAnimalInside;
-    private String animalType;
+    private transient boolean isAnimalInside;
+    private transient String animalType;
 
-    private final InteractionZoneBushWithAnimal interactionZone;
-    private final ContextClue contextClue;
+    private transient InteractionZoneBushWithAnimal interactionZone;
+    private transient ContextClue contextClue;
 
-    private final int maxInterval;
-    private int currentInterval;
+    private transient int maxInterval;
+    private transient int currentInterval;
 
-    private AnimalService animalService;
+    private transient AnimalService animalService;
 
     public Bush(int x, int y, String mapName) {
         this.x = x;
         this.y = y;
         this.mapName = mapName;
         this.canContainAnimal = random.nextBoolean();
-        sprite = getPreviewSprite(BUSH_IMG);
         rectangle = new Rectangle(x, y, 96, 82);
         rectangle.generateBorder(1, GREEN);
         interactionZone = new InteractionZoneBushWithAnimal(rectangle.getX() + 96, rectangle.getY() + 82, 150);
@@ -56,7 +53,19 @@ public class Bush implements GameObject {
         contextClue = new ContextClue();
 
         isAnimalInside = false;
-        maxInterval = 7000 + random.nextInt(7000);
+        maxInterval = BUSH_INTERVAL_BOUND + random.nextInt(BUSH_INTERVAL_BOUND);
+        currentInterval = maxInterval;
+    }
+
+    public void startBush() {
+        rectangle.generateBorder(1, GREEN);
+        random = new Random();
+        this.canContainAnimal = random.nextBoolean();
+        interactionZone = new InteractionZoneBushWithAnimal(rectangle.getX() + 96, rectangle.getY() + 82, 150);
+        contextClue = new ContextClue();
+
+        isAnimalInside = false;
+        maxInterval = BUSH_INTERVAL_BOUND + random.nextInt(BUSH_INTERVAL_BOUND);
         currentInterval = maxInterval;
     }
 
@@ -126,15 +135,18 @@ public class Bush implements GameObject {
             return;
         }
         animalService = game.getAnimalService();
+        animalType = getPotentialAnimal();
+        isAnimalInside = true;
+        logger.info(String.format("New animal inside the bush - %s", animalType));
+    }
+
+    private String getPotentialAnimal() {
         String potentialAnimal = animalService.getRandomAnimalType();
         if (Wolf.TYPE.equalsIgnoreCase(potentialAnimal) && !FOREST_MAP.equalsIgnoreCase(mapName)) {
             logger.debug("Wolf cannot appear on non-forest map, will recalculate");
-            createAnimalInside(game);
+            return getPotentialAnimal();
         }
-        animalType = potentialAnimal;
-        isAnimalInside = true;
-        logger.info(String.format("New animal inside the bush - %s", animalType));
-
+        return potentialAnimal;
     }
 
     public int getX() {
@@ -148,5 +160,41 @@ public class Bush implements GameObject {
     @Override
     public Rectangle getRectangle() {
         return rectangle;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public boolean isCanContainAnimal() {
+        return canContainAnimal;
+    }
+
+    public boolean isAnimalInside() {
+        return isAnimalInside;
+    }
+
+    public String getAnimalType() {
+        return animalType;
+    }
+
+    public ContextClue getContextClue() {
+        return contextClue;
+    }
+
+    public int getMaxInterval() {
+        return maxInterval;
+    }
+
+    public int getCurrentInterval() {
+        return currentInterval;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
+    }
+
+    public void setInteractionZone(InteractionZoneBushWithAnimal interactionZone) {
+        this.interactionZone = interactionZone;
     }
 }

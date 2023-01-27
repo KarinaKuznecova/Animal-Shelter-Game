@@ -21,18 +21,18 @@ import static base.constants.FilePath.NPC_SHEET_PATH_MAN;
 
 public class NpcMan extends Npc {
 
-    private static final Logger logger = LoggerFactory.getLogger(NpcMan.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(NpcMan.class);
 
-    private ShopMenu shopMenu;
+    private transient ShopMenu shopMenu;
 
-    public NpcMan(int startX, int startY, PlantService plantService) {
+    public NpcMan(int startX, int startY, Game game) {
         super(startX, startY);
         interactionZone = new InteractionZoneFoodVendor(startX + 32, startY + 32, 200);
-        initializeShop(plantService);
+        initializeShop(game);
     }
 
-    // TODO: move to service
-    public void initializeShop(PlantService plantService) {
+    // TODO: move to service, issue #332
+    public void initializeShop(Game game) {
         logger.info("initializing shop menu");
 
         List<GUIButton> buttons = new ArrayList<>();
@@ -43,7 +43,7 @@ public class NpcMan extends Npc {
             for (int j = 0; j < columns; j++) { // columns
                 Rectangle buttonRectangle = new Rectangle(j * (CELL_SIZE + 2), i * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
                 String itemName = getItemName(i, j, columns);
-                Sprite itemSprite = plantService.getPlantSprite(itemName);
+                Sprite itemSprite = game.getSpriteService().getPlantPreviewSprite(itemName);
                 buttons.add(new ShopButton(itemName, itemSprite, buttonRectangle, 1));
             }
         }

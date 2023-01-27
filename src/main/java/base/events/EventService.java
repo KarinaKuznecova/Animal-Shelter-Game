@@ -7,28 +7,31 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static base.constants.Constants.EVENTS_INTERVAL;
+import static base.constants.Constants.TEST_MAP_MODE;
+
 public class EventService {
 
     protected static final Logger logger = LoggerFactory.getLogger(EventService.class);
 
     int ticks;
-    int eventTime = 1000;
 
     List<Event> eventList = new ArrayList<>();
 
     public EventService() {
         eventList.add(new GrowFlowerEvent());
-        eventList.add(new FindAnimalEvent());
-        eventList.add(new AdoptionNPCEvent());
         eventList.add(new GrowRandomPlantEvent());
-        eventList.add(new WoodInForestEvent());
-        eventList.add(new FeatherInForestEvent());
-        eventList.add(new MushroomInForestEvent());
+        if (!TEST_MAP_MODE) {
+            eventList.add(new AdoptionNPCEvent());
+            eventList.add(new WoodInForestEvent());
+            eventList.add(new FeatherInForestEvent());
+            eventList.add(new MushroomInForestEvent());
+        }
     }
 
     public void update(Game game) {
         ticks++;
-        if (ticks == eventTime) {
+        if (ticks == EVENTS_INTERVAL) {
             logger.info("Event time");
 
             calculateChances(game);

@@ -15,23 +15,21 @@ public class Plant implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Plant.class);
 
-    Sprite previewSprite;
-    AnimatedSprite animatedSprite;
+    private transient Sprite previewSprite;
+    private transient AnimatedSprite animatedSprite;
 
-    Rectangle rectangle;
+    private final Rectangle rectangle;
 
-    int growingTicks;
-    int growingStage;
-    int growingTime;
+    private int growingTicks;
+    private int growingStage;
+    private int growingTime;
 
-    String plantType;
+    private final String plantType;
 
     private boolean isWild;
     private boolean isRefreshable;
 
-    public Plant(Sprite previewSprite, AnimatedSprite animatedSprite, int x, int y, String plantType) {
-        this.previewSprite = previewSprite;
-        this.animatedSprite = animatedSprite;
+    public Plant(int x, int y, String plantType) {
         this.plantType = plantType;
 
         rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
@@ -46,7 +44,7 @@ public class Plant implements GameObject {
 
     @Override
     public void update(Game game) {
-        if (growingStage < animatedSprite.getSpritesSize() - 1) {
+        if (animatedSprite != null && growingStage < animatedSprite.getSpritesSize() - 1) {
             growingTicks++;
             if (growingTicks > getGrowingTime()) {
                 animatedSprite.incrementSprite();
@@ -73,6 +71,13 @@ public class Plant implements GameObject {
         return false;
     }
 
+    private void adjustAnimatedSprite() {
+        animatedSprite.reset();
+        for (int i = 0; i < growingStage; i++) {
+            animatedSprite.incrementSprite();
+        }
+    }
+
     public Rectangle getRectangle() {
         return rectangle;
     }
@@ -82,26 +87,10 @@ public class Plant implements GameObject {
     }
 
     public void setGrowingStage(int growingStage) {
-        animatedSprite.reset();
-        for (int i = 0; i < growingStage; i++) {
-            animatedSprite.incrementSprite();
-        }
         this.growingStage = growingStage;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Plant plant = (Plant) o;
-        return growingTicks == plant.growingTicks && growingStage == plant.growingStage && growingTime == plant.growingTime
-                && previewSprite.equals(plant.previewSprite) && animatedSprite.equals(plant.animatedSprite)
-                && rectangle.equals(plant.rectangle) && plantType.equals(plant.plantType);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(previewSprite, animatedSprite, rectangle, growingTicks, growingStage, growingTime, plantType);
+        if (animatedSprite != null) {
+            adjustAnimatedSprite();
+        }
     }
 
     public Sprite getPreviewSprite() {
@@ -142,5 +131,29 @@ public class Plant implements GameObject {
 
     public void setRefreshable(boolean refreshable) {
         isRefreshable = refreshable;
+    }
+
+    public void setPreviewSprite(Sprite previewSprite) {
+        this.previewSprite = previewSprite;
+    }
+
+    public void setAnimatedSprite(AnimatedSprite animatedSprite) {
+        this.animatedSprite = animatedSprite;
+        adjustAnimatedSprite();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Plant plant = (Plant) o;
+        return growingTicks == plant.growingTicks && growingStage == plant.growingStage && growingTime == plant.growingTime
+                && previewSprite.equals(plant.previewSprite) && animatedSprite.equals(plant.animatedSprite)
+                && rectangle.equals(plant.rectangle) && plantType.equals(plant.plantType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(previewSprite, animatedSprite, rectangle, growingTicks, growingStage, growingTime, plantType);
     }
 }

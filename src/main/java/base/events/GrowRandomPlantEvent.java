@@ -7,9 +7,10 @@ import base.map.GameMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static base.constants.Constants.*;
-import static base.constants.MapConstants.FOREST_MAP;
-import static base.constants.MapConstants.MAIN_MAP;
+import static base.constants.MapConstants.*;
 
 public class GrowRandomPlantEvent extends Event {
 
@@ -41,7 +42,11 @@ public class GrowRandomPlantEvent extends Event {
         } else {
             map = game.getGameMap(FOREST_MAP);
         }
-        if (map.getWildPlants().size() > 5) {
+        if (TEST_MAP_MODE) {
+            map = game.getGameMap(TEST_MAP);
+        }
+        List<Plant> wildPlants = map.getWildPlants();
+        if (wildPlants != null && wildPlants.size() > 5) {
             logger.info(String.format("There are more than 5 plants on %s map", map.getMapName()));
             return;
         }
@@ -50,10 +55,10 @@ public class GrowRandomPlantEvent extends Event {
         int bigX = x  * CELL_SIZE;
         int bigY = y  * CELL_SIZE;
         logger.info(String.format("Random plant will appear at %d and %d", x, y));
-        if (map.isThereGrassOrDirt(bigX, bigY) && map.isPlaceEmpty(1, bigX, bigY)) {
+        if (game.getMapService().isThereGrassOrDirt(map, bigX, bigY) && game.getMapService().isPlaceEmpty(map, 1, bigX, bigY)) {
             int plantId = random.nextInt(PlantService.plantTypes.size());
             logger.info(String.format("Place was empty, will add plant with id %d", plantId));
-            Plant plant = game.getPlantService().createPlant(PlantService.plantTypes.get(plantId), bigX, bigY);
+            Plant plant = game.getPlantService().createPlant(game.getSpriteService(), PlantService.plantTypes.get(plantId), bigX, bigY);
             plant.setWild(true);
             plant.setRefreshable(false);
             map.addPlant(plant);

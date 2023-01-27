@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.*;
-import static base.constants.MapConstants.CITY_MAP;
-import static base.constants.MapConstants.MAIN_MAP;
+import static base.constants.MapConstants.*;
 import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 import static base.navigationservice.NavigationService.getNextPortalToGetToCenter;
 import static base.navigationservice.RouteCalculator.*;
@@ -76,6 +76,7 @@ public class Game extends JFrame implements Runnable {
     private transient RouteCalculator routeCalculator;
     private transient MapService mapService;
     private transient EventService eventService;
+    private transient SpriteService spriteService;
 
     // Gui
     private transient GUI[] tileButtonsArray = new GUI[10];
@@ -105,6 +106,7 @@ public class Game extends JFrame implements Runnable {
     public Game() {
         loadGameProperties();
         initializeServices();
+        cacheSprites();
         loadUI();
         loadControllers();
         loadMap();
@@ -148,7 +150,28 @@ public class Game extends JFrame implements Runnable {
         interactionZones = new ArrayList<>();
         gameMaps = new HashMap<>();
         eventService = new EventService();
+        spriteService = new SpriteService();
         VisibleText.initializeTranslations();
+    }
+
+    private void cacheSprites() {
+        // TODO: previews and seeds to sprite sheet, then get sprite from tile service or similar
+        spriteService.setPlantPreview(plantService.getPreviews());
+        spriteService.setPlantAnimatedSprites(plantService.getAnimatedSprites());
+        spriteService.setSeedSprites(plantService.getSeedSprites());
+
+        // TODO: add to regular sprite sheet, then get full and empty sprites from tile service
+        spriteService.setBowlsSprites();
+
+        spriteService.setStorageChestSprites(tileService.getTiles().get(37).getSprite(), tileService.getTiles().get(36).getSprite());
+
+        spriteService.setFeatherSprite(tileService.getTiles().get(Feather.TILE_ID).getSprite());
+        spriteService.setMushroomSprite(tileService.getTiles().get(Mushroom.TILE_ID).getSprite());
+        spriteService.setWoodSprite(tileService.getTiles().get(Wood.TILE_ID).getSprite());
+
+        spriteService.loadBushSprite();
+        spriteService.loadSpruceSprite();
+        spriteService.loadOakSprite();
     }
 
     private void loadUI() {
@@ -228,13 +251,17 @@ public class Game extends JFrame implements Runnable {
         logger.info("Game map loading started");
 
         if (TEST_MAP_MODE) {
-            gameMap = mapService.loadGameMap(MapConstants.TEST_MAP, tileService);
+            gameMap = mapService.loadGameMapFromJson(TEST_MAP, tileService);
+            gameMaps.put(TEST_MAP, gameMap);
         } else {
-            gameMap = mapService.loadGameMap(MAIN_MAP, tileService);
+            gameMap = mapService.loadGameMapFromJson(MAIN_MAP, tileService);
         }
+        loadSprites(gameMap);
         loadAnimalsOnMaps();
 
-        initialCacheMaps();
+        if (!TEST_MAP_MODE) {
+            initialCacheMaps();
+        }
 
         logger.info("Game map loaded");
     }
@@ -258,8 +285,51 @@ public class Game extends JFrame implements Runnable {
 
     private void initialCacheMaps() {
         for (String mapName : mapService.getAllMapsNames()) {
-            GameMap map = mapService.loadGameMap(mapName, tileService);
+            GameMap map = mapService.loadGameMapFromJson(mapName, tileService);
+            loadSprites(map);
             gameMaps.put(mapName, map);
+        }
+    }
+
+    private void loadSprites(GameMap gameMap) {
+        for (Plant plant : gameMap.getPlants()) {
+            plant.setPreviewSprite(spriteService.getPlantPreviewSprite(plant.getPlantType()));
+            plant.setAnimatedSprite(spriteService.getPlantAnimatedSprite(plant.getPlantType()));
+        }
+        for (Item item : gameMap.getItems()) {
+            item.setSprite(spriteService.getPlantPreviewSprite(item.getItemName()));
+        }
+        for (WaterBowl waterBowl : gameMap.getWaterBowls()) {
+            waterBowl.setSprite(spriteService.getWaterBowlAnimatedSprite());
+        }
+        for (FoodBowl foodBowl : gameMap.getFoodBowls()) {
+            foodBowl.setSprite(spriteService.getFoodBowlAnimatedSprite());
+        }
+        for (StorageChest storageChest : gameMap.getStorageChests()) {
+            storageChest.setSpriteClosed(spriteService.getClosedChestSprite());
+            storageChest.setSpriteOpen(spriteService.getOpenChestSprite());
+            gameMap.setTile(storageChest.getX() / CELL_SIZE, storageChest.getY() / CELL_SIZE, CHEST_TILE_ID, 2, true);
+        }
+        for (Feather feather : gameMap.getFeathers()) {
+            feather.setSprite(spriteService.getFeatherSprite());
+        }
+        for (Mushroom mushroom : gameMap.getMushrooms()) {
+            mushroom.setSprite(spriteService.getMushroomSprite());
+        }
+        for (Wood wood : gameMap.getWoods()) {
+            wood.setSprite(spriteService.getWoodSprite());
+        }
+        for (Bush bush : gameMap.getBushes()) {
+            bush.setSprite(spriteService.getBushSprite());
+            bush.startBush();
+        }
+        for (Oak oak : gameMap.getOaks()) {
+            oak.setSprite(spriteService.getOakSprite());
+            oak.getRectangle().generateBorder(1, GREEN);
+        }
+        for (Spruce spruce : gameMap.getSpruces()) {
+            spruce.setSprite(spriteService.getSpruceSprite());
+            spruce.getRectangle().generateBorder(1, GREEN);
         }
     }
 
@@ -398,7 +468,9 @@ public class Game extends JFrame implements Runnable {
         gameTips = new GameTips();
         cacheAllPlants();
 
-        createVendorNpc();
+        if (!TEST_MAP_MODE) {
+            createVendorNpc();
+        }
     }
 
     private void loadPlayer(int startX, int startY) {
@@ -413,7 +485,7 @@ public class Game extends JFrame implements Runnable {
 
         BufferedImage playerSheetImage = ImageLoader.loadImage(FilePath.PLAYER_SHEET_PATH);
         SpriteSheet playerSheet = new SpriteSheet(playerSheetImage);
-        playerSheet.loadSprites(TILE_SIZE, TILE_SIZE, 0);
+        playerSheet.loadSprites(PLAYER_SPRITE_SIZE, PLAYER_SPRITE_SIZE, 0);
 
         return new AnimatedSprite(playerSheet, 5, true);
     }
@@ -486,12 +558,18 @@ public class Game extends JFrame implements Runnable {
                 plant.update(this);
             }
         }
+        for (StorageChest chest : gameMap.getStorageChests()) {
+            chest.update(this);
+        }
         for (GameMap map : gameMaps.values()) {
             for (GameObject object : map.getInteractiveObjects()) {
                 object.update(this);
             }
-            for (GameObject object : map.getItems()) {
+            for (GameObject object : new ArrayList<>(map.getItems())) {
                 object.update(this);
+            }
+            for (Bush bush : gameMap.getBushes()) {
+                bush.update(this);
             }
         }
         eventService.update(this);
@@ -523,7 +601,7 @@ public class Game extends JFrame implements Runnable {
         addPlantsToCache();
         logger.info(String.format("Game map %s loaded", gameMap.getMapName()));
 
-        Portal portalToPrevious = gameMap.getPortalTo(previousMapName);
+        Portal portalToPrevious = mapService.getPortalTo(gameMap, previousMapName);
         adjustPlayerPosition(portalToPrevious);
         renderer.adjustCamera(this, player);
         refreshGuiPanels();
@@ -561,8 +639,8 @@ public class Game extends JFrame implements Runnable {
 
     private void adjustPlayerPosition(Portal portalToPrevious) {
         if (portalToPrevious != null) {
-            int previousMapPortalX = gameMap.getSpawnPoint(portalToPrevious, true, player.getDirection());
-            int previousMapPortalY = gameMap.getSpawnPoint(portalToPrevious, false, player.getDirection());
+            int previousMapPortalX = mapService.getSpawnPoint(portalToPrevious, true, player.getDirection(), gameMap);
+            int previousMapPortalY = mapService.getSpawnPoint(portalToPrevious, false, player.getDirection(), gameMap);
             logger.info("Will teleport player to x:" + previousMapPortalX + ", y: " + previousMapPortalY);
             player.teleportTo(previousMapPortalX, previousMapPortalY);
         } else {
@@ -602,13 +680,14 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void adjustAnimalPosition(Animal animal, String previousMap) {
-        Portal portalToPrevious = gameMaps.get(animal.getCurrentMap()).getPortalTo(previousMap);
+        Portal portalToPrevious = mapService.getPortalTo(gameMaps.get(animal.getCurrentMap()), previousMap);
         if (portalToPrevious != null) {
-            int previousMapPortalX = gameMaps.get(animal.getCurrentMap()).getSpawnPoint(portalToPrevious, true, animal.getDirection());
-            int previousMapPortalY = gameMaps.get(animal.getCurrentMap()).getSpawnPoint(portalToPrevious, false, animal.getDirection());
+            int previousMapPortalX = mapService.getSpawnPoint(portalToPrevious, true, animal.getDirection(), gameMaps.get(animal.getCurrentMap()));
+            int previousMapPortalY = mapService.getSpawnPoint(portalToPrevious, false, animal.getDirection(), gameMaps.get(animal.getCurrentMap()));
             animal.teleportAnimalTo(previousMapPortalX, previousMapPortalY);
             Route routeToAdjust = new Route();
             routeToAdjust.addStep(animal.getDirection());
+            animal.setRoute(routeToAdjust);
             animal.setRoute(routeToAdjust);
         } else {
             animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
@@ -778,13 +857,37 @@ public class Game extends JFrame implements Runnable {
         if (!stoppedChecking) {
             deselectAnimal();
         }
-        for (GameObject gameObject : gameMap.getPlants()) {
+        for (GameObject gameObject : new ArrayList<>(gameMap.getPlants())) {
             if (!stoppedChecking) {
                 Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
         for (GameObject gameObject : getGameMap().getInteractiveObjects()) {
+            if (!stoppedChecking) {
+                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
+        for (GameObject gameObject : getGameMap().getFoodBowls()) {
+            if (!stoppedChecking) {
+                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
+        for (GameObject gameObject : getGameMap().getWaterBowls()) {
+            if (!stoppedChecking) {
+                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
+        for (GameObject gameObject : getGameMap().getStorageChests()) {
+            if (!stoppedChecking) {
+                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
+        for (GameObject gameObject : getGameMap().getBushes()) {
             if (!stoppedChecking) {
                 Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
@@ -815,7 +918,6 @@ public class Game extends JFrame implements Runnable {
                 setNewTile(xMapRelated, yMapRelated, smallerX, smallerY);
             }
         }
-        refreshCurrentMapCache();
     }
 
     private void setNewTile(int xMapRelated, int yMapRelated, int smallerX, int smallerY) {
@@ -825,19 +927,20 @@ public class Game extends JFrame implements Runnable {
             } else {
                 int xAlligned = xMapRelated - (xMapRelated % CELL_SIZE);
                 int yAlligned = yMapRelated - (yMapRelated % CELL_SIZE);
+                int layer = tileService.getLayerById(selectedTileId, regularTiles);
                 if (selectedTileId == BOWL_TILE_ID) {
-                    FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
-                    getGameMap().addObject(foodBowl);
+                    FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned, spriteService.getFoodBowlAnimatedSprite());
+                    getGameMap().addFoodBowl(foodBowl);
                 } else if (selectedTileId == WATER_BOWL_TILE_ID) {
-                    WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned);
-                    getGameMap().addObject(waterBowl);
+                    WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned, spriteService.getWaterBowlAnimatedSprite());
+                    getGameMap().addWaterBowl(waterBowl);
                 } else if (selectedTileId == CHEST_TILE_ID) {
-                    StorageChest chest = new StorageChest(xAlligned, yAlligned, tileService.getTiles().get(36).getSprite(), tileService.getTiles().get(37).getSprite());
-                    getGameMap().addObject(chest);
-                    gameMap.setTile(smallerX, smallerY, CHEST_TILE_ID, regularTiles);
+                    StorageChest chest = new StorageChest(xAlligned, yAlligned, spriteService.getClosedChestSprite(), spriteService.getOpenChestSprite());
+                    getGameMap().addStorageChest(chest);
+                    gameMap.setTile(smallerX, smallerY, CHEST_TILE_ID, layer, regularTiles);
                 }
                 else {
-                    gameMap.setTile(smallerX, smallerY, selectedTileId, regularTiles);
+                    gameMap.setTile(smallerX, smallerY, selectedTileId, layer, regularTiles);
                 }
             }
         }
@@ -852,29 +955,29 @@ public class Game extends JFrame implements Runnable {
         putItemOnTheGround(xAdjusted, yAdjusted, selectedItem, false);
     }
 
-    // TODO: change this when refactoring sprites and objects
+    // TODO: change this when refactoring sprites and objects, issue #316
     private void putItemOnTheGround(int xAdjusted, int yAdjusted, String itemType, boolean justDrop) {
         int xAlligned = xAdjusted - (xAdjusted % CELL_SIZE);
         int yAlligned = yAdjusted - (yAdjusted % CELL_SIZE);
         if (itemType.equalsIgnoreCase(Wood.ITEM_NAME)) {
-            Wood wood = new Wood(tileService.getTiles().get(Wood.TILE_ID).getSprite(), xAlligned, yAlligned);
+            Wood wood = new Wood(xAlligned, yAlligned, spriteService.getWoodSprite());
             gameMap.addObject(wood);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }
         if (itemType.equalsIgnoreCase(Feather.ITEM_NAME)) {
-            Feather feather = new Feather(tileService.getTiles().get(Feather.TILE_ID).getSprite(), xAlligned, yAlligned);
+            Feather feather = new Feather(xAlligned, yAlligned, spriteService.getFeatherSprite());
             gameMap.addObject(feather);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }
         if (itemType.equalsIgnoreCase(Mushroom.ITEM_NAME)) {
-            Mushroom mushroom = new Mushroom(tileService.getTiles().get(Mushroom.TILE_ID).getSprite(), xAlligned, yAlligned);
+            Mushroom mushroom = new Mushroom(xAlligned, yAlligned, spriteService.getMushroomSprite());
             gameMap.addObject(mushroom);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }
-        Item item = itemService.creteNewItem(itemType, xAlligned, yAlligned);
+        Item item = itemService.createNewItem(spriteService, itemType, xAlligned, yAlligned);
         if (item instanceof Seed) {
             if (justDrop || !createNewPlant(((Seed) item).getPlantType(), xAlligned / 64, yAlligned / 64)) {
                 gameMap.addItem(item);
@@ -914,8 +1017,8 @@ public class Game extends JFrame implements Runnable {
         }
         int tileX = x * CELL_SIZE;
         int tileY = y * CELL_SIZE;
-        if (gameMap.isThereGrassOrDirt(tileX, tileY) && gameMap.isPlaceEmpty(1, tileX, tileY) && gameMap.isInsideOfMap(x, y)) {
-            Plant plant = plantService.createPlant(plantType, tileX, tileY);
+        if (mapService.isThereGrassOrDirt(gameMap, tileX, tileY) && mapService.isPlaceEmpty(gameMap, 1, tileX, tileY) && mapService.isInsideOfMap(gameMap, x, y)) {
+            Plant plant = plantService.createPlant(spriteService, plantType, tileX, tileY);
             gameMap.addPlant(plant);
             return true;
         }
@@ -932,7 +1035,7 @@ public class Game extends JFrame implements Runnable {
         }
 
         int seedAmount = 1 + random.nextInt(2);
-        Sprite seedSprite = plantService.getSeedSprite(plant.getPlantType());
+        Sprite seedSprite = spriteService.getSeedSprite(plant.getPlantType());
         GUIButton buttonForSeed = backpackGui.getButtonBySprite(seedSprite);
         if (buttonForSeed == null) {
             putItemOnTheGround(plant.getRectangle().getX() + (ZOOM * TILE_SIZE), plant.getRectangle().getY(), "seed" + plant.getPlantType(), true);
@@ -1028,10 +1131,10 @@ public class Game extends JFrame implements Runnable {
         boolean removed;
         if (BOWL_TILE_ID == selectedTileId) {
             FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
-            removed = getGameMap().removeObject(foodBowl);
+            removed = getGameMap().removeBowl(foodBowl);
         } else if (WATER_BOWL_TILE_ID == selectedTileId) {
             WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned);
-            removed = getGameMap().removeObject(waterBowl);
+            removed = getGameMap().removeBowl(waterBowl);
         } else if (CHEST_TILE_ID == selectedTileId) {
             removed = getGameMap().removeStorageChest(xAlligned, yAlligned);
             gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
@@ -1102,6 +1205,15 @@ public class Game extends JFrame implements Runnable {
                 animalIcon.update(this);
             }
         }
+    }
+
+    public boolean isFoodSelected() {
+        GUIButton button = backpackGui.findButtonByDefaultId(selectedItem);
+        if (button instanceof BackpackButton) {
+            String itemName = ((BackpackButton) button).getItemName();
+            return itemName.length() > 2;
+        }
+        return false;
     }
 
     /**
@@ -1200,11 +1312,11 @@ public class Game extends JFrame implements Runnable {
         logger.info("Spawning npc");
         npc = new NpcLady(1408, 1600, wantedAnimal);
 
-        if (getGameMap().getMapName().equals(MAIN_MAP)) {
-            getGameMap().addObject(npc);
-        } else {
-            getGameMap(MAIN_MAP).addObject(npc);
+        if (getGameMap(MAIN_MAP).getNpcs() == null) {
+            getGameMap(MAIN_MAP).setNpcs(new CopyOnWriteArrayList<>());
         }
+        getGameMap(MAIN_MAP).addObject(npc);
+
         npc.setCurrentMap(MAIN_MAP);
         refreshCurrentMapCache();
         gameObjectsList.add(npc);
@@ -1253,7 +1365,9 @@ public class Game extends JFrame implements Runnable {
         logger.info("Removing npc");
         gameObjectsList.remove(npc);
         for (GameMap map : gameMaps.values()) {
-            map.removeObject(npc);
+            if (map.removeObject(npc)) {
+                return;
+            }
         }
     }
 
@@ -1267,7 +1381,6 @@ public class Game extends JFrame implements Runnable {
         logger.info(String.format("%s is going AWAY with NPC", adoptedAnimal));
         Route route = routeCalculator.calculateRoute(getGameMap(adoptedAnimal.getCurrentMap()), adoptedAnimal, "city");
         adoptedAnimal.goAway(route);
-        npc.setSpeed(1);
         adoptedAnimal.setSpeed(2);
         sendNpcAway();
         int randomDrop = random.nextInt(2);
@@ -1282,7 +1395,7 @@ public class Game extends JFrame implements Runnable {
         int xPosition = npc.getRectangle().getX();
         int yPosition = npc.getRectangle().getY();
         String plantType = plantService.plantTypes.get(random.nextInt(plantService.plantTypes.size()));
-        Sprite sprite = plantService.getPlantSprite(plantType);
+        Sprite sprite = spriteService.getPlantPreviewSprite(plantType);
         Item item = new Item(xPosition, yPosition, plantType, sprite);
         getGameMap(MAIN_MAP).addItem(item);
     }
@@ -1306,7 +1419,11 @@ public class Game extends JFrame implements Runnable {
     public void createVendorNpc() {
         logger.info("Spawning vendor npc");
         Rectangle spot = getGameMap(CITY_MAP).getNpcSpot().getRectangle();
-        vendorNpc = new NpcMan(spot.getX(), spot.getY(), plantService);
+        vendorNpc = new NpcMan(spot.getX(), spot.getY(), this);
+
+        if (getGameMap(CITY_MAP).getNpcs() == null) {
+            getGameMap(CITY_MAP).setNpcs(new CopyOnWriteArrayList<>());
+        }
         getGameMap(CITY_MAP).addObject(vendorNpc);
 
         vendorNpc.setCurrentMap(CITY_MAP);
@@ -1341,15 +1458,6 @@ public class Game extends JFrame implements Runnable {
 
     public String getSelectedItem() {
         return selectedItem;
-    }
-
-    public boolean isFoodSelected() {
-        GUIButton button = backpackGui.findButtonByDefaultId(selectedItem);
-        if (button instanceof BackpackButton) {
-            String itemName = ((BackpackButton) button).getItemName();
-            return itemName.length() > 2;
-        }
-        return false;
     }
 
     public KeyboardListener getKeyboardListener() {
@@ -1421,11 +1529,13 @@ public class Game extends JFrame implements Runnable {
         if (itemNameFromBackpack != null) {
             return itemNameFromBackpack;
         }
-        List<StorageChest> storageChests = getGameMap().getStorages();
+        List<StorageChest> storageChests = getGameMap().getStorageChests();
         for (StorageChest chest : storageChests) {
-            for (StorageCell cell : chest.getStorage().getCells()) {
-                if (cell.getDefaultId().equals(selectedItem)) {
-                    return cell.getItemName();
+            if (chest.getStorage().getCells() != null) {
+                for (StorageCell cell : chest.getStorage().getCells()) {
+                    if (cell.getDefaultId().equals(selectedItem)) {
+                        return cell.getItemName();
+                    }
                 }
             }
         }
@@ -1437,7 +1547,7 @@ public class Game extends JFrame implements Runnable {
         if (backpackButton != null) {
             return backpackButton;
         }
-        List<StorageChest> storageChests = getGameMap().getStorages();
+        List<StorageChest> storageChests = getGameMap().getStorageChests();
         for (StorageChest chest : storageChests) {
             for (StorageCell cell : chest.getStorage().getCells()) {
                 if (cell.getDefaultId().equals(selectedItem)) {
@@ -1452,5 +1562,13 @@ public class Game extends JFrame implements Runnable {
         return animalsOnMaps.values().stream()
                 .mapToInt(List::size)
                 .sum();
+    }
+
+    public MapService getMapService() {
+        return mapService;
+    }
+
+    public SpriteService getSpriteService() {
+        return spriteService;
     }
 }

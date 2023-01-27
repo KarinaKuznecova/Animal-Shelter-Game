@@ -16,7 +16,7 @@ import static base.navigationservice.Direction.*;
 
 public class NpcLady extends Npc {
 
-    private static final Logger logger = LoggerFactory.getLogger(NpcLady.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(NpcLady.class);
 
     private Animal wantedAnimal;
     private boolean isGoingAway;
@@ -107,5 +107,13 @@ public class NpcLady extends Npc {
 
     public void setWantedAnimal(Animal wantedAnimal) {
         this.wantedAnimal = wantedAnimal;
+    }
+
+    public boolean isGoingAway() {
+        return isGoingAway;
+    }
+
+    public boolean isArrived() {
+        return arrived;
     }
 }

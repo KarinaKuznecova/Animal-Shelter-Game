@@ -19,7 +19,7 @@ public class Rectangle implements Serializable {
     private int y;
     private int width;
     private int height;
-    private int[] pixels;
+    private transient int[] pixels;
 
     protected static final Logger logger = LoggerFactory.getLogger(Rectangle.class);
 

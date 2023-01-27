@@ -24,6 +24,7 @@ public class WalkingState implements AnimalState {
     private int movingTicks = 0;
     private boolean isGoingToNpc;
     private boolean isGoingAway;
+    private int arrivingCooldown = 15;
 
     @Override
     public void update(Animal animal, Game game) {
@@ -62,9 +63,14 @@ public class WalkingState implements AnimalState {
         animal.getInteractionZone().changePosition(animal.getRectangle().getX() + 8, animal.getRectangle().getY() + 8);
 
         checkIfNeedToGoToDifferentLocation(game, animal);
-        checkPortal(game, animal);
+        if (arrivingCooldown <= 0) {
+            checkPortal(game, animal);
+        }
 
         movingTicks--;
+        if (arrivingCooldown > 0) {
+            arrivingCooldown--;
+        }
 
         if (isHungry(animal) && animal.getRoute().isEmpty() && !makingLastRouteMove) {
             lookForFood(animal, game);
@@ -162,6 +168,7 @@ public class WalkingState implements AnimalState {
         Portal portal = animal.getPortalTile(game, animal.getCurrentMap(), animal.getRectangle());
         if (portal != null && !(portal.getDirection().equalsIgnoreCase(FOREST_MAP) || portal.getDirection().equalsIgnoreCase(CITY_MAP))) {
             game.moveAnimalToAnotherMap(animal, portal);
+            arrivingCooldown = 15;
         }
     }
 
@@ -220,11 +227,12 @@ public class WalkingState implements AnimalState {
                     animal.setWaitingState();
                 } else {
                     animal.setRoute(routeToOtherMap);
+                    movingTicks = 0;
                 }
             }
         }
         if (animal.getRoute().isEmpty()) {
-            animal.setWaitingState();
+            animal.setWaitingState(400);
         }
     }
 

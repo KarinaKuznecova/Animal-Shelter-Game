@@ -8,10 +8,10 @@ import static base.constants.FilePath.HEART_ICON_PATH;
 
 public class ContextClue {
 
-    private final Sprite sprite;
+    private final transient Sprite sprite;
     private Rectangle rectangle;
 
-    protected static final Logger logger = LoggerFactory.getLogger(HeartIcon.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ContextClue.class);
 
     public ContextClue() {
         sprite = new Sprite(ImageLoader.loadImage(HEART_ICON_PATH));
@@ -24,5 +24,9 @@ public class ContextClue {
 
     public void render(RenderHandler renderer, int zoom) {
         renderer.renderSprite(sprite, rectangle.getX() + 2, rectangle.getY() + 2, zoom, true);
+    }
+
+    public Rectangle getRectangle() {
+        return rectangle;
     }
 }

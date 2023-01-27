@@ -12,11 +12,17 @@ public abstract class InteractionZone implements GameObject {
 
     private static final Logger logger = LoggerFactory.getLogger(InteractionZone.class);
 
-    protected final Circle circle;
+    protected transient Circle circle;
+    private int centerPointX;
+    private int centerPointY;
+    private int radius;
 
     private boolean playerInRange;
 
     protected InteractionZone(int centerPointX, int centerPointY, int radius) {
+        this.centerPointX = centerPointX;
+        this.centerPointY = centerPointY;
+        this.radius = radius;
         circle = new Circle(centerPointX, centerPointY, radius);
     }
 
@@ -41,6 +47,9 @@ public abstract class InteractionZone implements GameObject {
 
     @Override
     public void update(Game game) {
+        if (circle == null) {
+            circle = new Circle(centerPointX, centerPointY, radius);
+        }
         if (isInRange(game.getPlayer().getRectangle())) {
             logger.debug("player is in range of interaction zone");
             playerInRange = true;
@@ -66,5 +75,29 @@ public abstract class InteractionZone implements GameObject {
     @Override
     public Rectangle getRectangle() {
         return null;
+    }
+
+    public int getCenterPointX() {
+        return centerPointX;
+    }
+
+    public void setCenterPointX(int centerPointX) {
+        this.centerPointX = centerPointX;
+    }
+
+    public int getCenterPointY() {
+        return centerPointY;
+    }
+
+    public void setCenterPointY(int centerPointY) {
+        this.centerPointY = centerPointY;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 }

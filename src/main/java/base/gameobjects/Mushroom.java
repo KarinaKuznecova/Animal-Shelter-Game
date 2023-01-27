@@ -19,14 +19,18 @@ public class Mushroom implements GameObject {
     public static final String ITEM_NAME = "mushroom";
     public static final int TILE_ID = 77;
 
-    private final Sprite sprite;
+    private transient Sprite sprite;
     private final int xPosition;
     private final int yPosition;
     private final Rectangle rectangle;
     private String mapName;
 
-    public Mushroom(Sprite sprite, int xPosition, int yPosition) {
+    public Mushroom(int xPosition, int yPosition, Sprite sprite) {
+        this(xPosition, yPosition);
         this.sprite = sprite;
+    }
+
+    public Mushroom(int xPosition, int yPosition) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.rectangle = new Rectangle(xPosition, yPosition, TILE_SIZE, TILE_SIZE);
@@ -69,5 +73,17 @@ public class Mushroom implements GameObject {
 
     public void setMapName(String mapName) {
         this.mapName = mapName;
+    }
+
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
+    }
+
+    public void setSprite(Sprite sprite) {
+        this.sprite = sprite;
     }
 }
