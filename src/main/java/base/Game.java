@@ -140,7 +140,7 @@ public class Game extends JFrame implements Runnable {
         tileService = new TileService();
         animalService = new AnimalService();
         plantService = new PlantService();
-        itemService = new ItemService(plantService);
+        itemService = new ItemService();
         guiService = new GuiService();
         backpackService = new BackpackService();
         routeCalculator = new RouteCalculator();
@@ -155,12 +155,10 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void cacheSprites() {
-        // TODO: previews and seeds to sprite sheet, then get sprite from tile service or similar
         spriteService.setPlantPreview(plantService.getPreviews());
         spriteService.setPlantAnimatedSprites(plantService.getAnimatedSprites());
         spriteService.setSeedSprites(plantService.getSeedSprites());
 
-        // TODO: add to regular sprite sheet, then get full and empty sprites from tile service
         spriteService.setBowlsSprites();
 
         spriteService.setStorageChestSprites(tileService.getTiles().get(37).getSprite(), tileService.getTiles().get(36).getSprite());
