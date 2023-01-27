@@ -26,7 +26,7 @@ public class ItemService {
     }
 
     public Sprite getItemSprite(String itemType, TileService tileService) {
-        if (itemType.startsWith("seed")) {
+        if (itemType != null && itemType.startsWith("seed")) {
             itemType = itemType.substring(4);
             return plantService.getSeedSprite(itemType);
         }

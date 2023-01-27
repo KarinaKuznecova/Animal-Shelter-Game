@@ -565,7 +565,7 @@ public class Game extends JFrame implements Runnable {
             for (GameObject object : map.getInteractiveObjects()) {
                 object.update(this);
             }
-            for (GameObject object : map.getItems()) {
+            for (GameObject object : new ArrayList<>(map.getItems())) {
                 object.update(this);
             }
             for (Bush bush : gameMap.getBushes()) {
@@ -687,6 +687,7 @@ public class Game extends JFrame implements Runnable {
             animal.teleportAnimalTo(previousMapPortalX, previousMapPortalY);
             Route routeToAdjust = new Route();
             routeToAdjust.addStep(animal.getDirection());
+            animal.setRoute(routeToAdjust);
             animal.setRoute(routeToAdjust);
         } else {
             animal.teleportAnimalTo(getWidth() / 2, getHeight() / 2);
@@ -856,7 +857,7 @@ public class Game extends JFrame implements Runnable {
         if (!stoppedChecking) {
             deselectAnimal();
         }
-        for (GameObject gameObject : gameMap.getPlants()) {
+        for (GameObject gameObject : new ArrayList<>(gameMap.getPlants())) {
             if (!stoppedChecking) {
                 Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);

@@ -356,6 +356,11 @@ public abstract class Animal implements GameObject, Walking {
         state = new WaitingState();
     }
 
+    public void setWaitingState(int howLong) {
+        waitingState.setWaiting(howLong);
+        state = waitingState;
+    }
+
     public void setEatingState() {
         state = eatingState;
     }
