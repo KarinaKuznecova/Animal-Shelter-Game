@@ -28,7 +28,7 @@ public class MapService {
     private final File mapListFile = new File(MAPS_LIST_PATH);
     private final Map<String, String> mapFiles = new HashMap<>();
     private final PlantService plantService = new PlantService();
-    private final ItemService itemService = new ItemService(plantService);
+    private final ItemService itemService = new ItemService();
     private final MapMigrator mapMigrator = new MapMigrator();
 
     protected static final Logger logger = LoggerFactory.getLogger(MapService.class);

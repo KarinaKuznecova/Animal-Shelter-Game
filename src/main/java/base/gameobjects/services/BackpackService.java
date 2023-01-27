@@ -23,8 +23,6 @@ import static base.gui.GuiService.BACKPACK_ROWS;
 
 public class BackpackService {
 
-    ItemService itemService = new ItemService(new PlantService());
-
     protected static final Logger logger = LoggerFactory.getLogger(BackpackService.class);
 
     private BackpackButton inHand;
@@ -112,7 +110,7 @@ public class BackpackService {
                     int column = Integer.parseInt(String.valueOf(id.charAt(1)));
 
                     Rectangle buttonRectangle = new Rectangle(column * (CELL_SIZE + 2), row * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
-                    BackpackButton button = new BackpackButton(itemName, itemService.getItemSprite(itemName, game.getTileService()), buttonRectangle, id);
+                    BackpackButton button = new BackpackButton(itemName, game.getSpriteService().getItemSprite(itemName, game.getTileService()), buttonRectangle, id);
                     button.setObjectCount(count);
                     buttons.add(button);
                 }
@@ -144,14 +142,14 @@ public class BackpackService {
                     for (GUIButton emptyButton : newEmpty.getButtons()) {
                         if (emptyButton instanceof BackpackButton && ((BackpackButton) emptyButton).getDefaultId().equalsIgnoreCase(defaultId)) {
                             ((BackpackButton) emptyButton).setItem(itemName);
-                            emptyButton.setSprite(itemService.getItemSprite(itemName, game.getTileService()));
+                            emptyButton.setSprite(game.getSpriteService().getItemSprite(itemName, game.getTileService()));
                             emptyButton.setObjectCount(count);
                             buttonExists = true;
                             break;
                         }
                     }
                     if (!buttonExists) {
-                        BackpackButton newButton = new BackpackButton(itemName, itemService.getItemSprite(itemName, game.getTileService()), buttonRectangle, defaultId);
+                        BackpackButton newButton = new BackpackButton(itemName, game.getSpriteService().getItemSprite(itemName, game.getTileService()), buttonRectangle, defaultId);
                         newButton.setObjectCount(count);
                         buttons.add(newButton);
                     }

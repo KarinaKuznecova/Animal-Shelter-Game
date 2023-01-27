@@ -1,6 +1,11 @@
 package base.graphicsservice;
 
 import base.gameobjects.AnimatedSprite;
+import base.gameobjects.Feather;
+import base.gameobjects.Mushroom;
+import base.gameobjects.Wood;
+import base.gameobjects.services.PlantService;
+import base.map.TileService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -166,5 +171,25 @@ public class SpriteService {
 
     public Sprite getBushSprite() {
         return bushSprite;
+    }
+
+    public Sprite getItemSprite(String itemType, TileService tileService) {
+        if (itemType != null && itemType.startsWith("seed")) {
+            itemType = itemType.substring(4);
+            return getSeedSprite(itemType);
+        }
+        else if (PlantService.plantTypes.contains(itemType)) {
+            return getPlantPreviewSprite(itemType);
+        }
+        else if (Wood.ITEM_NAME.equalsIgnoreCase(itemType)) {
+            return tileService.getTiles().get(Wood.TILE_ID).getSprite();
+        }
+        else if (Feather.ITEM_NAME.equalsIgnoreCase(itemType)) {
+            return tileService.getTiles().get(Feather.TILE_ID).getSprite();
+        }
+        else if (Mushroom.ITEM_NAME.equalsIgnoreCase(itemType)) {
+            return tileService.getTiles().get(Mushroom.TILE_ID).getSprite();
+        }
+        return null;
     }
 }

@@ -146,7 +146,7 @@ public class RenderHandler {
         int yPositionActual = yScreenRelated + getCamera().getY();
         int xPosition = xScreenRelated - (xPositionActual % CELL_SIZE);
         int yPosition = yScreenRelated - (yPositionActual % CELL_SIZE);
-        Item itemToDraw = new Item(0, 0, game.getSelectedItem(), game.getItemService().getItemSprite(game.getItemNameByButtonId(), game.getTileService()));
+        Item itemToDraw = new Item(0, 0, game.getSelectedItem(), game.getSpriteService().getItemSprite(game.getItemNameByButtonId(), game.getTileService()));
 
         if (itemToDraw.getSprite() != null) {
             drawPreview(xPosition, yPosition, itemToDraw.getSprite());
