@@ -57,7 +57,7 @@ public class FilePath {
 
     //maps
     public static final String MAPS_LIST_PATH = "maps/MapList.txt";
-    public static final String JSON_MAPS_DIRECTORY = "maps-json/";
+    public static final String JSON_MAPS_DIRECTORY = "maps/maps-json/";
     public static final String STORAGES_DIRECTORY = "maps/storages/";
 
     //other
