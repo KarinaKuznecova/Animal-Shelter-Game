@@ -80,7 +80,6 @@ public class MapService {
             Reader reader = new FileReader(JSON_MAPS_DIRECTORY + mapName);
             GameMap gameMap = gson.fromJson(reader, GameMap.class);
             reader.close();
-            loadStorageChests(gameMap);
             return gameMap;
         } catch (IOException e) {
             e.printStackTrace();
@@ -326,17 +325,6 @@ public class MapService {
         return false;
     }
 
-    private void loadStorageChests(GameMap gameMap) {
-        for (StorageChest storageChest: gameMap.getStorageChests()) {
-            int x = storageChest.getX();
-            int y = storageChest.getY();
-            String fileName = storageChest.getFileName();
-            storageChest.setInteractionZone(new InteractionZoneStorageChest(x + 32, y + 32, 90));
-            storageChest.setStorage(new Storage(6, storageChest.getRectangle(), fileName));
-            loadStorageChest(fileName, storageChest);
-        }
-    }
-
     public void loadStorageChest(String fileName, StorageChest chest) {
         File mapFile = new File(STORAGES_DIRECTORY + fileName);
         try (Scanner scanner = new Scanner(mapFile)) {
@@ -376,9 +364,6 @@ public class MapService {
         }
         catch (IOException ex) {
             ex.printStackTrace();
-        }
-        for (StorageChest storageChest : gameMap.getStorageChests()) {
-            saveStorageChest(storageChest);
         }
     }
 
