@@ -7,10 +7,7 @@ import base.events.EventService;
 import base.gameobjects.*;
 import base.gameobjects.interactionzones.InteractionZone;
 import base.gameobjects.plants.Seed;
-import base.gameobjects.services.AnimalService;
-import base.gameobjects.services.BackpackService;
-import base.gameobjects.services.ItemService;
-import base.gameobjects.services.PlantService;
+import base.gameobjects.services.*;
 import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
@@ -77,6 +74,7 @@ public class Game extends JFrame implements Runnable {
     private transient MapService mapService;
     private transient EventService eventService;
     private transient SpriteService spriteService;
+    private transient StorageService storageService;
 
     // Gui
     private transient GUI[] tileButtonsArray;
@@ -151,6 +149,7 @@ public class Game extends JFrame implements Runnable {
         gameMaps = new HashMap<>();
         eventService = new EventService();
         spriteService = new SpriteService();
+        storageService = new StorageService();
         VisibleText.initializeTranslations();
     }
 
@@ -253,14 +252,16 @@ public class Game extends JFrame implements Runnable {
             gameMaps.put(TEST_MAP, gameMap);
         } else {
             gameMap = mapService.loadGameMapFromJson(MAIN_MAP, tileService);
+
         }
+        storageService.loadStorageChests(gameMap);
         loadSprites(gameMap);
         loadAnimalsOnMaps();
 
         if (!TEST_MAP_MODE) {
             initialCacheMaps();
         }
-
+        storageService.cleanUpDisconnectedChests();
         logger.info("Game map loaded");
     }
 
@@ -285,6 +286,7 @@ public class Game extends JFrame implements Runnable {
         for (String mapName : mapService.getAllMapsNames()) {
             GameMap map = mapService.loadGameMapFromJson(mapName, tileService);
             loadSprites(map);
+            storageService.loadStorageChests(map);
             gameMaps.put(mapName, map);
         }
     }
@@ -611,7 +613,8 @@ public class Game extends JFrame implements Runnable {
         refreshCurrentMapCache();
         plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
         for (GameMap map : gameMaps.values()) {
-            mapService.saveMap(map);
+            mapService.saveMapToJson(map);
+            storageService.saveStorages(map.getStorageChests());
         }
 
         for (List<Animal> animals : animalsOnMaps.values()) {

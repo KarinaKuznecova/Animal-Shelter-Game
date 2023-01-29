@@ -9,10 +9,7 @@ import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.UUID;
 
 import static base.constants.ColorConstant.YELLOW;
 import static base.constants.Constants.DEBUG_MODE;
@@ -42,7 +39,7 @@ public class StorageChest implements GameObject {
         this.spriteOpen = spriteOpen;
         interactionZone = new InteractionZoneStorageChest(x + 32, y + 32, 90);
         storage = new Storage(6, rectangle, fileName);
-        fileName = String.valueOf(new Random().nextInt(Integer.MAX_VALUE));     // TODO: change to smth prettier - issue #324 on github
+        fileName = UUID.randomUUID().toString();
 
         isOpen = false;
     }
@@ -54,7 +51,6 @@ public class StorageChest implements GameObject {
         interactionZone = new InteractionZoneStorageChest(x + 32, y + 32, 90);
         storage = new Storage(6, rectangle, fileName);
         this.fileName = fileName;
-        readFile();
 
         isOpen = false;
     }
@@ -121,24 +117,6 @@ public class StorageChest implements GameObject {
 
     public String getFileName() {
         return fileName;
-    }
-
-    // TODO: change to json, issue #353
-    public void readFile() {
-        File mapFile = new File("maps/storages/" + fileName);
-        try (Scanner scanner = new Scanner(mapFile)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] splitLine = line.split(":");
-                String itemName = splitLine[0];
-                int qty = Integer.parseInt(splitLine[1]);
-                if (!itemName.startsWith(fileName) && qty > 0) {
-                    storage.addItem(itemName, qty);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     public int getX() {
