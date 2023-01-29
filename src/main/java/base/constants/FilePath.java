@@ -50,6 +50,7 @@ public class FilePath {
     public static final String SPRUCE_IMG = "img/spruce.png";
 
     //config
+    public static final String CONFIG_DIRECTORY = "config/";
     public static final String TIPS_FILE_PATH = "config/tips"+ "-" + LANGUAGE + ".txt";
     public static final String TRANSLATION_FILE_PATH = "config/translation" + "-" + LANGUAGE;
     public static final String FEMALE_NAMES_FILE_PATH = "config/names-f.txt";
@@ -71,8 +72,8 @@ public class FilePath {
     //tiles
     public static final String SPRITES_PATH = "img/tiles-new.png";
     public static final String TERRAIN_SPRITES_PATH = "img/terrain-tiles.png";
-    public static final String TILE_LIST_PATH = "config/Tiles.txt";
-    public static final String TERRAIN_TILE_LIST_PATH = "config/Tile-terrain.txt";
+    public static final String TILE_LIST_PATH = "Tiles";
+    public static final String TERRAIN_TILE_LIST_PATH = "Tile-terrain";
 
     public static final String IMAGES_PATH = "img/";
     public static final String ANIMALS_DIR_PATH = "animals/";
