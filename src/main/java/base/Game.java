@@ -628,6 +628,7 @@ public class Game extends JFrame implements Runnable {
             animalService.saveAllAnimals(animals);
         }
         backpackService.saveBackpackToFile(backpackGui);
+        tileService.saveTilesAsJson();
     }
 
     public void refreshCurrentMapCache() {
