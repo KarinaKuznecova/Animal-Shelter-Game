@@ -71,8 +71,8 @@ public class FilePath {
     //tiles
     public static final String SPRITES_PATH = "img/tiles-new.png";
     public static final String TERRAIN_SPRITES_PATH = "img/terrain-tiles.png";
-    public static final String TILE_LIST_PATH = "maps/Tile-new.txt";
-    public static final String TERRAIN_TILE_LIST_PATH = "maps/Tile-terrain.txt";
+    public static final String TILE_LIST_PATH = "config/Tiles.txt";
+    public static final String TERRAIN_TILE_LIST_PATH = "config/Tile-terrain.txt";
 
     public static final String IMAGES_PATH = "img/";
     public static final String ANIMALS_DIR_PATH = "animals/";
