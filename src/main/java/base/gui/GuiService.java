@@ -73,35 +73,52 @@ public class GuiService implements Serializable {
         return new GUI(buttons, 5, 5, true);
     }
 
-    public GUI[] loadTerrainGui(List<Tile> tiles, int buttonCount) {
+    public GUI[] loadTerrainGui(List<Tile> tiles, int buttonCountPerRow) {
         GUI[] terrainButtonsArray = new GUI[11];
 
         List<GUIButton> buttons = new ArrayList<>();
-        for (int i = 0, j = 0, k = 0; i < tiles.size(); i++) {
-            Tile tile = tiles.get(i);
-            if (!tile.isVisibleInMenu()) {
+        int tileId = 0;
+        int buttonNumberInRow = 0;
+        int buttonsTotal = 0;
+        int rows = 0;
+        for (Tile tile : tiles) {
+            if (!isLastTile(tiles, tileId) && !tile.isVisibleInMenu()) {
+                tileId++;
                 continue;
             }
-            Rectangle tileRectangle = new Rectangle(j * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
-            buttons.add(new SDKButton(i, tiles.get(i).getSprite(), tileRectangle));
-            if (k != 0 && k % buttonCount == 0) {
-                Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
-                buttons.add(new SDKButton(-1, null, oneMoreTileRectangle));
-                terrainButtonsArray[k / buttonCount - 1] = new GUI(buttons, 5, 5, true);
-
+            if (isLastTile(tiles, tileId)) {
+                if (tile.isVisibleInMenu()) {
+                    Rectangle tileRectangle = new Rectangle(buttonNumberInRow * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
+                    buttons.add(new SDKButton(tileId, tile.getSprite(), tileRectangle));
+                    buttonNumberInRow++;
+                }
+                createEmptyButton(buttons, buttonNumberInRow - 1);
+                terrainButtonsArray[rows] = new GUI(buttons, 5, 5, true);
+                return terrainButtonsArray;
+            }
+            Rectangle tileRectangle = new Rectangle(buttonNumberInRow * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
+            buttons.add(new SDKButton(tileId, tile.getSprite(), tileRectangle));
+            if (buttonsTotal != 0 && buttonNumberInRow == buttonCountPerRow) {
+                createEmptyButton(buttons, buttonNumberInRow);
+                terrainButtonsArray[rows] = new GUI(buttons, 5, 5, true);
+                rows++;
                 buttons = new ArrayList<>();
-                j = -1;
+                buttonNumberInRow = -1;
             }
-            if (i == tiles.size() - 1) {
-                Rectangle oneMoreTileRectangle = new Rectangle((j + 1) * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
-                buttons.add(new SDKButton(-1, null, oneMoreTileRectangle));
-                int temp = (k - (k % buttonCount)) / buttonCount;
-                terrainButtonsArray[temp] = new GUI(buttons, 5, 5, true);
-            }
-            j++;
-            k++;
+            buttonsTotal++;
+            tileId++;
+            buttonNumberInRow++;
         }
         return terrainButtonsArray;
+    }
+
+    private void createEmptyButton(List<GUIButton> buttons, int buttonNumberInRow) {
+        Rectangle oneMoreTileRectangle = new Rectangle((buttonNumberInRow + 1) * (CELL_SIZE + 2), 0, CELL_SIZE, CELL_SIZE);
+        buttons.add(new SDKButton(-1, null, oneMoreTileRectangle));
+    }
+
+    private boolean isLastTile(List<Tile> tiles, int tileId) {
+        return tileId == tiles.size() - 1;
     }
 
     public Backpack loadEmptyBackpack(Game game) {

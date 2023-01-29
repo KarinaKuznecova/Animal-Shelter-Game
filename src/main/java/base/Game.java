@@ -79,7 +79,7 @@ public class Game extends JFrame implements Runnable {
     private transient SpriteService spriteService;
 
     // Gui
-    private transient GUI[] tileButtonsArray = new GUI[10];
+    private transient GUI[] tileButtonsArray;
     private transient GUI[] terrainButtonsArray;
     private transient GUI yourAnimalButtons;
     private transient GUI possibleAnimalButtons;
