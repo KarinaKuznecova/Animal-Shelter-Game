@@ -1315,8 +1315,11 @@ public class Game extends JFrame implements Runnable {
         logger.info("Spawning npc");
         GameMap mapToSpawn = getGameMap(mapName);
         NpcSpawnSpot spawnSpot = mapToSpawn.getNpcSpawnSpotByType(NpcType.ADOPTION);
-
-        npc = new NpcAdoption(spawnSpot.getRectangle().getX(), spawnSpot.getRectangle().getY(), wantedAnimal);
+        if (spawnSpot != null) {
+            npc = new NpcAdoption(spawnSpot.getRectangle().getX(), spawnSpot.getRectangle().getY(), wantedAnimal);
+        } else {
+            npc = new NpcAdoption((mapToSpawn.getMapWidth() * TILE_SIZE) / 2, (mapToSpawn.getMapHeight() * TILE_SIZE) / 2, wantedAnimal);
+        }
 
         if (mapToSpawn.getNpcs() == null) {
             mapToSpawn.setNpcs(new CopyOnWriteArrayList<>());
