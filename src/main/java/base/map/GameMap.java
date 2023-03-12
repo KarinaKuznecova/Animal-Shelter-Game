@@ -2,6 +2,7 @@ package base.map;
 
 import base.gameobjects.*;
 import base.gameobjects.npc.Npc;
+import base.gameobjects.npc.NpcSpawnSpot;
 import base.gameobjects.npc.NpcSpot;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
@@ -45,6 +46,7 @@ public class GameMap {
     private final List<Oak> oaks = new CopyOnWriteArrayList<>();
     private final List<Spruce> spruces = new CopyOnWriteArrayList<>();
     private final List<NpcSpot> npcSpots = new CopyOnWriteArrayList<>();
+    private final List<NpcSpawnSpot> npcSpawnSpots = new CopyOnWriteArrayList<>();
     private transient List<Npc> npcs = new CopyOnWriteArrayList<>();
 
     private transient List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
@@ -187,6 +189,8 @@ public class GameMap {
             spruces.add((Spruce) object);
         } else if (object instanceof NpcSpot) {
             npcSpots.add((NpcSpot) object);
+        } else if (object instanceof NpcSpawnSpot) {
+            npcSpawnSpots.add((NpcSpawnSpot) object);
         } else if (object instanceof Npc) {
             npcs.add((Npc) object);
         } else {
@@ -424,6 +428,10 @@ public class GameMap {
 
     public List<Npc> getNpcs() {
         return npcs;
+    }
+
+    public List<NpcSpawnSpot> getNpcSpawnSpots() {
+        return npcSpawnSpots;
     }
 
     public void setNpcs(List<Npc> npcs) {

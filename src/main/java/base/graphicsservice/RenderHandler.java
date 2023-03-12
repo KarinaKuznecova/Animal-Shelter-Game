@@ -2,6 +2,7 @@ package base.graphicsservice;
 
 import base.Game;
 import base.gameobjects.*;
+import base.gameobjects.npc.NpcSpawnSpot;
 import base.gameobjects.npc.NpcSpot;
 import base.gameobjects.storage.StorageChest;
 import base.gui.EditIcon;
@@ -330,6 +331,11 @@ public class RenderHandler {
         for (NpcSpot npcSpot : gameMap.getNpcSpots()) {
             if (npcSpot.getLayer() == layer) {
                 npcSpot.render(this, ZOOM);
+            }
+        }
+        for (NpcSpawnSpot npcSpawnSpot : gameMap.getNpcSpawnSpots()) {
+            if (npcSpawnSpot.getLayer() == layer) {
+                npcSpawnSpot.render(this, ZOOM);
             }
         }
         for (Portal portal : gameMap.getPortals()) {

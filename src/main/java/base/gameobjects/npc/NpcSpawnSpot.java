@@ -5,18 +5,20 @@ import base.gameobjects.GameObject;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 
-import static base.constants.ColorConstant.GREEN;
+import static base.constants.ColorConstant.BLUE;
 import static base.constants.Constants.DEBUG_MODE;
 import static base.constants.Constants.ZOOM;
 
 public class NpcSpawnSpot implements GameObject {
 
     private final Rectangle rectangle;
+    private final Npc assignedNpc;
 
-    public NpcSpawnSpot(Rectangle rectangle) {
+    public NpcSpawnSpot(Rectangle rectangle, Npc assignedNpc) {
         this.rectangle = rectangle;
+        this.assignedNpc = assignedNpc;
         if (DEBUG_MODE) {
-            rectangle.generateBorder(1, GREEN);
+            rectangle.generateBorder(1, BLUE);
         }
     }
 
@@ -24,7 +26,7 @@ public class NpcSpawnSpot implements GameObject {
     public void render(RenderHandler renderer, int zoom) {
         if (DEBUG_MODE) {
             if (rectangle.getPixels().length == 0) {
-                rectangle.generateBorder(1, GREEN);
+                rectangle.generateBorder(1, BLUE);
             }
             renderer.renderRectangle(rectangle, ZOOM, false);
         }
