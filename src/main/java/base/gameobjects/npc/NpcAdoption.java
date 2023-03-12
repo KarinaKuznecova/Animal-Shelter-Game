@@ -1,6 +1,8 @@
-package base.gameobjects;
+package base.gameobjects.npc;
 
 import base.Game;
+import base.gameobjects.Animal;
+import base.gameobjects.AnimatedSprite;
 import base.gameobjects.interactionzones.InteractionZoneAdoptionNpc;
 import base.graphicsservice.ImageLoader;
 import base.navigationservice.Direction;
@@ -12,18 +14,20 @@ import java.util.Random;
 
 import static base.constants.FilePath.*;
 import static base.constants.MapConstants.MAIN_MAP;
+import static base.gameobjects.npc.NpcType.ADOPTION;
 import static base.navigationservice.Direction.*;
 
-public class NpcLady extends Npc {
+public class NpcAdoption extends Npc {
 
-    private static final transient Logger logger = LoggerFactory.getLogger(NpcLady.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(NpcAdoption.class);
 
     private Animal wantedAnimal;
     private boolean isGoingAway;
     private boolean arrived;
 
-    public NpcLady(int startX, int startY, Animal wantedAnimal) {
+    public NpcAdoption(int startX, int startY, Animal wantedAnimal) {
         super(startX, startY);
+        type = ADOPTION;
         setWantedAnimal(wantedAnimal);
         interactionZone = new InteractionZoneAdoptionNpc(rectangle.getX() + 32, rectangle.getY() + 32, 100, wantedAnimal);
     }
@@ -34,7 +38,7 @@ public class NpcLady extends Npc {
         Direction nextDirection = direction;
 
         if (route.isEmpty() && !arrived) {
-            if (rectangle.intersects(game.getNpcSpot().getRectangle())) {
+            if (rectangle.intersects(game.getNpcSpot(ADOPTION).getRectangle())) {
                 arrived = true;
             } else {
                 route = game.calculateRouteToNpcSpot(this);

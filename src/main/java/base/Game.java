@@ -6,6 +6,7 @@ import base.constants.VisibleText;
 import base.events.EventService;
 import base.gameobjects.*;
 import base.gameobjects.interactionzones.InteractionZone;
+import base.gameobjects.npc.*;
 import base.gameobjects.plants.Seed;
 import base.gameobjects.services.*;
 import base.gameobjects.storage.StorageCell;
@@ -13,6 +14,7 @@ import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
 import base.gui.*;
+import base.gui.shop.ShopService;
 import base.map.GameMap;
 import base.map.MapService;
 import base.map.Tile;
@@ -56,8 +58,8 @@ public class Game extends JFrame implements Runnable {
     private transient List<InteractionZone> interactionZones;
 
     private transient Player player;
-    private transient NpcLady npc;
-    private transient NpcMan vendorNpc;
+    private transient NpcAdoption npc;
+    private transient NpcVendor vendorNpc;
 
     private transient GameTips gameTips;
 
@@ -75,6 +77,7 @@ public class Game extends JFrame implements Runnable {
     private transient EventService eventService;
     private transient SpriteService spriteService;
     private transient StorageService storageService;
+    private transient ShopService shopService;
 
     // Gui
     private transient GUI[] tileButtonsArray;
@@ -150,6 +153,7 @@ public class Game extends JFrame implements Runnable {
         eventService = new EventService();
         spriteService = new SpriteService();
         storageService = new StorageService();
+        shopService = new ShopService();
         VisibleText.initializeTranslations();
     }
 
@@ -1310,23 +1314,28 @@ public class Game extends JFrame implements Runnable {
      * =================================== NPC DIALOG ======================================
      */
 
-    public void spawnNpc(Animal wantedAnimal) {
+    public void spawnAdoptionNpc(Animal wantedAnimal, String mapName) {
         logger.info("Spawning npc");
-        npc = new NpcLady(1408, 1600, wantedAnimal);
-
-        if (getGameMap(MAIN_MAP).getNpcs() == null) {
-            getGameMap(MAIN_MAP).setNpcs(new CopyOnWriteArrayList<>());
+        GameMap mapToSpawn = getGameMap(mapName);
+        NpcSpawnSpot spawnSpot = mapToSpawn.getNpcSpawnSpotByType(NpcType.ADOPTION);
+        if (spawnSpot != null) {
+            npc = new NpcAdoption(spawnSpot.getRectangle().getX(), spawnSpot.getRectangle().getY(), wantedAnimal);
+        } else {
+            npc = new NpcAdoption((mapToSpawn.getMapWidth() * TILE_SIZE) / 2, (mapToSpawn.getMapHeight() * TILE_SIZE) / 2, wantedAnimal);
         }
-        getGameMap(MAIN_MAP).addObject(npc);
 
-        npc.setCurrentMap(MAIN_MAP);
-        refreshCurrentMapCache();
+        if (mapToSpawn.getNpcs() == null) {
+            mapToSpawn.setNpcs(new CopyOnWriteArrayList<>());
+        }
+        mapToSpawn.addObject(npc);
+
+        npc.setCurrentMap(mapName);
         gameObjectsList.add(npc);
         interactionZones.add(npc.getInteractionZone());
     }
 
-    public NpcSpot getNpcSpot() {
-        return gameMaps.get(MAIN_MAP).getNpcSpot();
+    public NpcSpot getNpcSpot(NpcType npcType) {
+        return gameMaps.get(MAIN_MAP).getNpcSpot(npcType);
     }
 
     public void interact() {
@@ -1420,8 +1429,9 @@ public class Game extends JFrame implements Runnable {
 
     public void createVendorNpc() {
         logger.info("Spawning vendor npc");
-        Rectangle spot = getGameMap(CITY_MAP).getNpcSpot().getRectangle();
-        vendorNpc = new NpcMan(spot.getX(), spot.getY(), this);
+        Rectangle spot = getGameMap(CITY_MAP).getNpcSpot(NpcType.VENDOR).getRectangle();
+        vendorNpc = new NpcVendor(spot.getX(), spot.getY());
+        vendorNpc.setShopMenu(shopService.createShopMenu(this, vendorNpc.getRectangle()));
 
         if (getGameMap(CITY_MAP).getNpcs() == null) {
             getGameMap(CITY_MAP).setNpcs(new CopyOnWriteArrayList<>());
@@ -1518,11 +1528,11 @@ public class Game extends JFrame implements Runnable {
         return gameObjectsList.contains(npc);
     }
 
-    public NpcLady getAdoptionNpc() {
+    public NpcAdoption getAdoptionNpc() {
         return npc;
     }
 
-    public NpcMan getVendorNpc() {
+    public NpcVendor getVendorNpc() {
         return vendorNpc;
     }
 

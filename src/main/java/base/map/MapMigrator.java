@@ -1,6 +1,8 @@
 package base.map;
 
 import base.gameobjects.*;
+import base.gameobjects.npc.NpcSpot;
+import base.gameobjects.npc.NpcType;
 import base.gameobjects.plants.Corn;
 import base.gameobjects.services.PlantService;
 import base.graphicsservice.Rectangle;
@@ -246,7 +248,7 @@ public class MapMigrator {
             if (second) {
                 x = x + (firstMapWidth * CELL_SIZE);
             }
-            npcSpots.add(new NpcSpot(new Rectangle(x, y, TILE_SIZE, TILE_SIZE)));
+            npcSpots.add(new NpcSpot(new Rectangle(x, y, TILE_SIZE, TILE_SIZE), NpcType.ADOPTION));
             return true;
         }
         if (line.startsWith("portal")) {

@@ -1,6 +1,7 @@
-package base.gameobjects;
+package base.gameobjects.npc;
 
 import base.Game;
+import base.gameobjects.GameObject;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 
@@ -11,9 +12,11 @@ import static base.constants.Constants.ZOOM;
 public class NpcSpot implements GameObject {
 
     private final Rectangle rectangle;
+    private final NpcType npcType;
 
-    public NpcSpot(Rectangle rectangle) {
+    public NpcSpot(Rectangle rectangle, NpcType npcType) {
         this.rectangle = rectangle;
+        this.npcType = npcType;
         if (DEBUG_MODE) {
             rectangle.generateBorder(1, GREEN);
         }
@@ -48,5 +51,9 @@ public class NpcSpot implements GameObject {
 
     public Rectangle getRectangle() {
         return rectangle;
+    }
+
+    public NpcType getNpcType() {
+        return npcType;
     }
 }

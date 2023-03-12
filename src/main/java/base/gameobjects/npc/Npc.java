@@ -1,6 +1,9 @@
-package base.gameobjects;
+package base.gameobjects.npc;
 
 import base.Game;
+import base.gameobjects.AnimatedSprite;
+import base.gameobjects.GameObject;
+import base.gameobjects.Walking;
 import base.gameobjects.interactionzones.InteractionZone;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
@@ -20,6 +23,8 @@ import static base.navigationservice.Direction.STAY;
 public class Npc implements GameObject, Walking {
 
     private static final transient Logger logger = LoggerFactory.getLogger(Npc.class);
+
+    public NpcType type;
 
     protected final transient AnimatedSprite animatedSprite;
     protected final Rectangle rectangle;

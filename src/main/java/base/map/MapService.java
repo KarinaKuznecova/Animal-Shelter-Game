@@ -1,6 +1,8 @@
 package base.map;
 
 import base.gameobjects.*;
+import base.gameobjects.npc.NpcSpot;
+import base.gameobjects.npc.NpcType;
 import base.gameobjects.plants.Corn;
 import base.gameobjects.services.ItemService;
 import base.gameobjects.services.PlantService;
@@ -240,7 +242,7 @@ public class MapService {
             String[] splitLine = line.split(",");
             int x = Integer.parseInt(splitLine[1]);
             int y = Integer.parseInt(splitLine[2]);
-            gameMap.addObject(new NpcSpot(new Rectangle(x, y, TILE_SIZE, TILE_SIZE)));
+            gameMap.addObject(new NpcSpot(new Rectangle(x, y, TILE_SIZE, TILE_SIZE), NpcType.ADOPTION));
             return true;
         }
         if (line.startsWith("portal")) {

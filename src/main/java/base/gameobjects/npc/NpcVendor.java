@@ -1,65 +1,28 @@
-package base.gameobjects;
+package base.gameobjects.npc;
 
 import base.Game;
+import base.gameobjects.AnimatedSprite;
 import base.gameobjects.interactionzones.InteractionZoneFoodVendor;
-import base.gameobjects.services.PlantService;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
-import base.graphicsservice.Sprite;
-import base.gui.GUIButton;
-import base.gui.shop.ShopButton;
 import base.gui.shop.ShopMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static base.constants.Constants.*;
+import static base.constants.Constants.DEBUG_MODE;
 import static base.constants.FilePath.NPC_SHEET_PATH_MAN;
 
-public class NpcMan extends Npc {
+public class NpcVendor extends Npc {
 
-    private static final transient Logger logger = LoggerFactory.getLogger(NpcMan.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(NpcVendor.class);
 
     private transient ShopMenu shopMenu;
 
-    public NpcMan(int startX, int startY, Game game) {
+    public NpcVendor(int startX, int startY) {
         super(startX, startY);
+        type = NpcType.VENDOR;
         interactionZone = new InteractionZoneFoodVendor(startX + 32, startY + 32, 200);
-        initializeShop(game);
-    }
-
-    // TODO: move to service, issue #332
-    public void initializeShop(Game game) {
-        logger.info("initializing shop menu");
-
-        List<GUIButton> buttons = new ArrayList<>();
-
-        int rows = 2;
-        int columns = 7;
-        for (int i = 0; i < rows; i++) { // rows
-            for (int j = 0; j < columns; j++) { // columns
-                Rectangle buttonRectangle = new Rectangle(j * (CELL_SIZE + 2), i * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
-                String itemName = getItemName(i, j, columns);
-                Sprite itemSprite = game.getSpriteService().getPlantPreviewSprite(itemName);
-                buttons.add(new ShopButton(itemName, itemSprite, buttonRectangle, 1));
-            }
-        }
-        // (3 * CELL_SIZE) - half of the buttons; (CELL_SIZE / 2) - half of cell, to be in the middle; 100 - distance from npc to shop cells
-        shopMenu = new ShopMenu(buttons, rectangle.getX() - (3 * CELL_SIZE) + (CELL_SIZE / 2), rectangle.getY() - ((columns * TILE_SIZE)));
-    }
-
-    private String getItemName(int i, int j, int columns) {
-        int cellNumber = (i * columns) + j;       // 6 - columns in row
-        if (cellNumber < PlantService.plantTypes.size()) {
-            return PlantService.plantTypes.get(cellNumber);
-        }
-        else if (cellNumber < PlantService.plantTypes.size() * 2){
-            return "seed" + PlantService.plantTypes.get(cellNumber - PlantService.plantTypes.size());
-        }
-        return null;
     }
 
     @Override
@@ -106,6 +69,12 @@ public class NpcMan extends Npc {
             }
         }
         return false;
+    }
+
+    /** =================================== GETTERS & SETTERS ====================================== */
+
+    public void setShopMenu(ShopMenu shopMenu) {
+        this.shopMenu = shopMenu;
     }
 
     public ShopMenu getShopMenu() {

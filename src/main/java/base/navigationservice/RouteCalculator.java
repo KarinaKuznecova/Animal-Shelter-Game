@@ -1,6 +1,8 @@
 package base.navigationservice;
 
 import base.gameobjects.*;
+import base.gameobjects.npc.Npc;
+import base.gameobjects.npc.NpcSpot;
 import base.graphicsservice.Rectangle;
 import base.map.GameMap;
 import base.map.MapTile;
