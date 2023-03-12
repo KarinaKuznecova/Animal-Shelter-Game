@@ -327,7 +327,15 @@ public class GameMap {
         return pillows;
     }
 
-    public NpcSpot getNpcSpot() {
+    public NpcSpot getNpcSpot(NpcType type) {
+        if (npcSpots.isEmpty()) {
+            return null;
+        }
+        for (NpcSpot spot : npcSpots) {
+            if (spot.getNpcType() == type) {
+                return spot;
+            }
+        }
         return npcSpots.get(0);
     }
 

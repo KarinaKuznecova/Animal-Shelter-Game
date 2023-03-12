@@ -14,6 +14,7 @@ import java.util.Random;
 
 import static base.constants.FilePath.*;
 import static base.constants.MapConstants.MAIN_MAP;
+import static base.gameobjects.npc.NpcType.ADOPTION;
 import static base.navigationservice.Direction.*;
 
 public class NpcAdoption extends Npc {
@@ -26,7 +27,7 @@ public class NpcAdoption extends Npc {
 
     public NpcAdoption(int startX, int startY, Animal wantedAnimal) {
         super(startX, startY);
-        type = NpcType.ADOPTION;
+        type = ADOPTION;
         setWantedAnimal(wantedAnimal);
         interactionZone = new InteractionZoneAdoptionNpc(rectangle.getX() + 32, rectangle.getY() + 32, 100, wantedAnimal);
     }
@@ -37,7 +38,7 @@ public class NpcAdoption extends Npc {
         Direction nextDirection = direction;
 
         if (route.isEmpty() && !arrived) {
-            if (rectangle.intersects(game.getNpcSpot().getRectangle())) {
+            if (rectangle.intersects(game.getNpcSpot(ADOPTION).getRectangle())) {
                 arrived = true;
             } else {
                 route = game.calculateRouteToNpcSpot(this);

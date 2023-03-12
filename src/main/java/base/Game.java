@@ -1328,8 +1328,8 @@ public class Game extends JFrame implements Runnable {
         interactionZones.add(npc.getInteractionZone());
     }
 
-    public NpcSpot getNpcSpot() {
-        return gameMaps.get(MAIN_MAP).getNpcSpot();
+    public NpcSpot getNpcSpot(NpcType npcType) {
+        return gameMaps.get(MAIN_MAP).getNpcSpot(npcType);
     }
 
     public void interact() {
@@ -1423,7 +1423,7 @@ public class Game extends JFrame implements Runnable {
 
     public void createVendorNpc() {
         logger.info("Spawning vendor npc");
-        Rectangle spot = getGameMap(CITY_MAP).getNpcSpot().getRectangle();
+        Rectangle spot = getGameMap(CITY_MAP).getNpcSpot(NpcType.VENDOR).getRectangle();
         vendorNpc = new NpcMan(spot.getX(), spot.getY(), this);
 
         if (getGameMap(CITY_MAP).getNpcs() == null) {
