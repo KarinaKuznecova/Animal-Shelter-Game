@@ -1,11 +1,9 @@
 package base.map;
 
 import base.gameobjects.*;
-import base.gameobjects.interactionzones.InteractionZoneStorageChest;
 import base.gameobjects.plants.Corn;
 import base.gameobjects.services.ItemService;
 import base.gameobjects.services.PlantService;
-import base.gameobjects.storage.Storage;
 import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;

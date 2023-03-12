@@ -96,4 +96,8 @@ public class Tile {
             attributes.add(attribute);
         }
     }
+
+    public boolean isGrass() {
+        return attributes.contains(TileType.GRASS);
+    }
 }
