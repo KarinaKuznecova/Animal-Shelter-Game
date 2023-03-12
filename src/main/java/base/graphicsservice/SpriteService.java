@@ -39,6 +39,9 @@ public class SpriteService {
     }
 
     public Sprite getPlantPreviewSprite(String plantType) {
+        if (plantType == null) {
+            return null;
+        }
         if (plantType.startsWith("seed")) {
             plantType = plantType.substring(4);
             return getSeedSprite(plantType);

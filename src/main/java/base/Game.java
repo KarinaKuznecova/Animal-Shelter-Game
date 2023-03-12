@@ -14,6 +14,7 @@ import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
 import base.gui.*;
+import base.gui.shop.ShopService;
 import base.map.GameMap;
 import base.map.MapService;
 import base.map.Tile;
@@ -58,7 +59,7 @@ public class Game extends JFrame implements Runnable {
 
     private transient Player player;
     private transient NpcAdoption npc;
-    private transient NpcMan vendorNpc;
+    private transient NpcVendor vendorNpc;
 
     private transient GameTips gameTips;
 
@@ -76,6 +77,7 @@ public class Game extends JFrame implements Runnable {
     private transient EventService eventService;
     private transient SpriteService spriteService;
     private transient StorageService storageService;
+    private transient ShopService shopService;
 
     // Gui
     private transient GUI[] tileButtonsArray;
@@ -151,6 +153,7 @@ public class Game extends JFrame implements Runnable {
         eventService = new EventService();
         spriteService = new SpriteService();
         storageService = new StorageService();
+        shopService = new ShopService();
         VisibleText.initializeTranslations();
     }
 
@@ -1427,7 +1430,8 @@ public class Game extends JFrame implements Runnable {
     public void createVendorNpc() {
         logger.info("Spawning vendor npc");
         Rectangle spot = getGameMap(CITY_MAP).getNpcSpot(NpcType.VENDOR).getRectangle();
-        vendorNpc = new NpcMan(spot.getX(), spot.getY(), this);
+        vendorNpc = new NpcVendor(spot.getX(), spot.getY());
+        vendorNpc.setShopMenu(shopService.createShopMenu(this, vendorNpc.getRectangle()));
 
         if (getGameMap(CITY_MAP).getNpcs() == null) {
             getGameMap(CITY_MAP).setNpcs(new CopyOnWriteArrayList<>());
@@ -1528,7 +1532,7 @@ public class Game extends JFrame implements Runnable {
         return npc;
     }
 
-    public NpcMan getVendorNpc() {
+    public NpcVendor getVendorNpc() {
         return vendorNpc;
     }
 
