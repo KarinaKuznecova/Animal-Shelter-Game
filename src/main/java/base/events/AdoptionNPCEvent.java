@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static base.constants.MapConstants.MAIN_MAP;
+
 public class AdoptionNPCEvent extends Event {
 
     private static final Logger logger = LoggerFactory.getLogger(AdoptionNPCEvent.class);
@@ -60,7 +62,7 @@ public class AdoptionNPCEvent extends Event {
 
     @Override
     void startEvent(Game game) {
-        game.spawnNpc(pickAnimal(game));
+        game.spawnAdoptionNpc(pickAnimal(game), MAIN_MAP);
         happened = true;
         currentCoolDown = coolDown;
     }

@@ -6,10 +6,7 @@ import base.constants.VisibleText;
 import base.events.EventService;
 import base.gameobjects.*;
 import base.gameobjects.interactionzones.InteractionZone;
-import base.gameobjects.npc.Npc;
-import base.gameobjects.npc.NpcLady;
-import base.gameobjects.npc.NpcMan;
-import base.gameobjects.npc.NpcSpot;
+import base.gameobjects.npc.*;
 import base.gameobjects.plants.Seed;
 import base.gameobjects.services.*;
 import base.gameobjects.storage.StorageCell;
@@ -60,7 +57,7 @@ public class Game extends JFrame implements Runnable {
     private transient List<InteractionZone> interactionZones;
 
     private transient Player player;
-    private transient NpcLady npc;
+    private transient NpcAdoption npc;
     private transient NpcMan vendorNpc;
 
     private transient GameTips gameTips;
@@ -1314,17 +1311,19 @@ public class Game extends JFrame implements Runnable {
      * =================================== NPC DIALOG ======================================
      */
 
-    public void spawnNpc(Animal wantedAnimal) {
+    public void spawnAdoptionNpc(Animal wantedAnimal, String mapName) {
         logger.info("Spawning npc");
-        npc = new NpcLady(1408, 1600, wantedAnimal);
+        GameMap mapToSpawn = getGameMap(mapName);
+        NpcSpawnSpot spawnSpot = mapToSpawn.getNpcSpawnSpotByType(NpcType.ADOPTION);
 
-        if (getGameMap(MAIN_MAP).getNpcs() == null) {
-            getGameMap(MAIN_MAP).setNpcs(new CopyOnWriteArrayList<>());
+        npc = new NpcAdoption(spawnSpot.getRectangle().getX(), spawnSpot.getRectangle().getY(), wantedAnimal);
+
+        if (mapToSpawn.getNpcs() == null) {
+            mapToSpawn.setNpcs(new CopyOnWriteArrayList<>());
         }
-        getGameMap(MAIN_MAP).addObject(npc);
+        mapToSpawn.addObject(npc);
 
-        npc.setCurrentMap(MAIN_MAP);
-        refreshCurrentMapCache();
+        npc.setCurrentMap(mapName);
         gameObjectsList.add(npc);
         interactionZones.add(npc.getInteractionZone());
     }
@@ -1522,7 +1521,7 @@ public class Game extends JFrame implements Runnable {
         return gameObjectsList.contains(npc);
     }
 
-    public NpcLady getAdoptionNpc() {
+    public NpcAdoption getAdoptionNpc() {
         return npc;
     }
 

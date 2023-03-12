@@ -24,6 +24,8 @@ public class Npc implements GameObject, Walking {
 
     private static final transient Logger logger = LoggerFactory.getLogger(Npc.class);
 
+    public NpcType type;
+
     protected final transient AnimatedSprite animatedSprite;
     protected final Rectangle rectangle;
 

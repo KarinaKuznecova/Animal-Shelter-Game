@@ -28,6 +28,7 @@ public class NpcMan extends Npc {
 
     public NpcMan(int startX, int startY, Game game) {
         super(startX, startY);
+        type = NpcType.VENDOR;
         interactionZone = new InteractionZoneFoodVendor(startX + 32, startY + 32, 200);
         initializeShop(game);
     }

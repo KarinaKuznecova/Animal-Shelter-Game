@@ -4,6 +4,7 @@ import base.gameobjects.*;
 import base.gameobjects.npc.Npc;
 import base.gameobjects.npc.NpcSpawnSpot;
 import base.gameobjects.npc.NpcSpot;
+import base.gameobjects.npc.NpcType;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
 import base.map.bigobjects.Bookcase;
@@ -328,6 +329,18 @@ public class GameMap {
 
     public NpcSpot getNpcSpot() {
         return npcSpots.get(0);
+    }
+
+    public NpcSpawnSpot getNpcSpawnSpotByType(NpcType type) {
+        if (npcSpawnSpots.isEmpty()) {
+            return null;
+        }
+        for (NpcSpawnSpot spawnSpot : npcSpawnSpots) {
+            if (spawnSpot.getNpcType() == type) {
+                return spawnSpot;
+            }
+        }
+        return npcSpawnSpots.get(0);
     }
 
     public List<Plant> getWildPlants() {

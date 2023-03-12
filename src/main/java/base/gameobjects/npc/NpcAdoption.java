@@ -16,16 +16,17 @@ import static base.constants.FilePath.*;
 import static base.constants.MapConstants.MAIN_MAP;
 import static base.navigationservice.Direction.*;
 
-public class NpcLady extends Npc {
+public class NpcAdoption extends Npc {
 
-    private static final transient Logger logger = LoggerFactory.getLogger(NpcLady.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(NpcAdoption.class);
 
     private Animal wantedAnimal;
     private boolean isGoingAway;
     private boolean arrived;
 
-    public NpcLady(int startX, int startY, Animal wantedAnimal) {
+    public NpcAdoption(int startX, int startY, Animal wantedAnimal) {
         super(startX, startY);
+        type = NpcType.ADOPTION;
         setWantedAnimal(wantedAnimal);
         interactionZone = new InteractionZoneAdoptionNpc(rectangle.getX() + 32, rectangle.getY() + 32, 100, wantedAnimal);
     }

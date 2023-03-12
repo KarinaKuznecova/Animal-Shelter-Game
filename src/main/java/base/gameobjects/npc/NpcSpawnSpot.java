@@ -12,11 +12,11 @@ import static base.constants.Constants.ZOOM;
 public class NpcSpawnSpot implements GameObject {
 
     private final Rectangle rectangle;
-    private final Npc assignedNpc;
+    private final NpcType npcType;
 
-    public NpcSpawnSpot(Rectangle rectangle, Npc assignedNpc) {
+    public NpcSpawnSpot(Rectangle rectangle, NpcType npcType) {
         this.rectangle = rectangle;
-        this.assignedNpc = assignedNpc;
+        this.npcType = npcType;
         if (DEBUG_MODE) {
             rectangle.generateBorder(1, BLUE);
         }
@@ -53,4 +53,7 @@ public class NpcSpawnSpot implements GameObject {
         return rectangle;
     }
 
+    public NpcType getNpcType() {
+        return npcType;
+    }
 }
