@@ -1,6 +1,7 @@
-package base.gameobjects;
+package base.gameobjects.npc;
 
 import base.Game;
+import base.gameobjects.GameObject;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 

@@ -1,6 +1,7 @@
-package base.gameobjects;
+package base.gameobjects.npc;
 
 import base.Game;
+import base.gameobjects.AnimatedSprite;
 import base.gameobjects.interactionzones.InteractionZoneFoodVendor;
 import base.gameobjects.services.PlantService;
 import base.graphicsservice.ImageLoader;

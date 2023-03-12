@@ -1,6 +1,8 @@
 package base.map;
 
 import base.gameobjects.*;
+import base.gameobjects.npc.Npc;
+import base.gameobjects.npc.NpcSpot;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
 import base.map.bigobjects.Bookcase;

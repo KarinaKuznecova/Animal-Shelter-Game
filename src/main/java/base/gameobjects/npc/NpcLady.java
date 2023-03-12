@@ -1,6 +1,8 @@
-package base.gameobjects;
+package base.gameobjects.npc;
 
 import base.Game;
+import base.gameobjects.Animal;
+import base.gameobjects.AnimatedSprite;
 import base.gameobjects.interactionzones.InteractionZoneAdoptionNpc;
 import base.graphicsservice.ImageLoader;
 import base.navigationservice.Direction;

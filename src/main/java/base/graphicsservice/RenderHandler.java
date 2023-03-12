@@ -2,6 +2,7 @@ package base.graphicsservice;
 
 import base.Game;
 import base.gameobjects.*;
+import base.gameobjects.npc.NpcSpot;
 import base.gameobjects.storage.StorageChest;
 import base.gui.EditIcon;
 import base.map.GameMap;

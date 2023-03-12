@@ -1,6 +1,7 @@
 package base.map;
 
 import base.gameobjects.*;
+import base.gameobjects.npc.NpcSpot;
 import base.gameobjects.plants.Corn;
 import base.gameobjects.services.PlantService;
 import base.graphicsservice.Rectangle;
