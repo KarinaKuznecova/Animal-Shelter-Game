@@ -15,6 +15,8 @@ import static base.constants.ColorConstant.GREEN;
 import static base.constants.ColorConstant.YELLOW;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.IMAGES_PATH;
+import static base.constants.VisibleText.ANIMAL_TYPES;
+import static base.constants.VisibleText.named;
 import static base.gameobjects.AgeStage.ADULT;
 import static base.gameobjects.AgeStage.BABY;
 import static base.navigationservice.Direction.*;
@@ -42,6 +44,7 @@ public abstract class Animal implements GameObject, Walking {
     private int speed;
     private String color;
     protected String animalType;
+    protected String originalType;
     private String name;
     private boolean favorite;
 
@@ -65,6 +68,7 @@ public abstract class Animal implements GameObject, Walking {
 
     protected Animal(String animalType, int startX, int startY, int speed, int tileSize, int currentHunger, int currentThirst, int currentEnergy, AgeStage age, String name) {
         this.animalType = animalType;
+        this.originalType = animalType;
         this.tileSize = tileSize;
         this.speed = speed;
         this.currentHunger = currentHunger;
@@ -330,10 +334,9 @@ public abstract class Animal implements GameObject, Walking {
         walkingState.goAway(this, route);
     }
 
-    // TODO: should be different for each language - issue #300 on github
     @Override
     public String toString() {
-        return animalType + " named " + name;
+        return ANIMAL_TYPES.get(originalType) + " " + named + " " + name;
     }
 
     /**
