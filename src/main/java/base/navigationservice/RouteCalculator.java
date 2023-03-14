@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static base.constants.Constants.*;
 import static base.navigationservice.Direction.*;
+import static base.navigationservice.MapEdgesUtil.*;
 
 public class RouteCalculator {
 
@@ -239,28 +239,28 @@ public class RouteCalculator {
     }
 
     public Rectangle tryUp(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getY() >= -64 && canWalkThisDirection(gameMap, UP, rectangle, destination)) {
+        if (rectangle.getY() >= getNorthEdgePlusTile() && canWalkThisDirection(gameMap, UP, rectangle, destination)) {
             return new Rectangle(rectangle.getX(), rectangle.getY() - Math.abs(NavigationService.getPixelsToAdjustPosition(UP, rectangle.getX(), rectangle.getY())), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
 
     public Rectangle tryDown(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getY() + rectangle.getHeight() <= gameMap.getMapHeight() * CELL_SIZE && canWalkThisDirection(gameMap, DOWN, rectangle, destination)) {
+        if (rectangle.getY() <= getSouthEdgeMinus(gameMap.getMapHeight(), rectangle.getHeight()) && canWalkThisDirection(gameMap, DOWN, rectangle, destination)) {
             return new Rectangle(rectangle.getX(), rectangle.getY() + Math.abs(NavigationService.getPixelsToAdjustPosition(DOWN, rectangle.getX(), rectangle.getY())), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
 
     public Rectangle tryLeft(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getX() >= -64 && canWalkThisDirection(gameMap, LEFT, rectangle, destination)) {
+        if (rectangle.getX() >= getWestEdgePlusTile() && canWalkThisDirection(gameMap, LEFT, rectangle, destination)) {
             return new Rectangle(rectangle.getX() - Math.abs(NavigationService.getPixelsToAdjustPosition(LEFT, rectangle.getX(), rectangle.getY())), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
     }
 
     public Rectangle tryRight(GameMap gameMap, Rectangle rectangle, String destination) {
-        if (rectangle.getX() + rectangle.getWidth() <= gameMap.getMapWidth() * CELL_SIZE && canWalkThisDirection(gameMap, RIGHT, rectangle, destination)) {
+        if (rectangle.getX() <= getEastEdgeMinus(gameMap.getMapWidth(), rectangle.getWidth()) && canWalkThisDirection(gameMap, RIGHT, rectangle, destination)) {
             return new Rectangle(rectangle.getX() + Math.abs(NavigationService.getPixelsToAdjustPosition(RIGHT, rectangle.getX(), rectangle.getY())), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
         }
         return null;
@@ -309,7 +309,9 @@ public class RouteCalculator {
 
     private boolean isThereNpcSpot(GameMap gameMap, Rectangle rectangle) {
         for (NpcSpot npcSpot : gameMap.getNpcSpots()) {
-            return rectangle.intersects(npcSpot.getRectangle());
+            if (rectangle.intersects(npcSpot.getRectangle())) {
+                return true;
+            }
         }
         return false;
     }
@@ -339,7 +341,7 @@ public class RouteCalculator {
 
         if (gameMap.isTherePortal(rectangle, destination)) {
             return true;
-        } else if (x < -64 || y < -64 || x > gameMap.getMapWidth() * CELL_SIZE || y > gameMap.getMapHeight() * CELL_SIZE) {
+        } else if (x < getNorthEdgePlusTile() || y < getNorthEdgePlusTile() || x > getEastEdgeStrict(gameMap.getMapWidth()) || y > getSouthEdgeStrict(gameMap.getMapHeight())) {
             return false;
         }
 
