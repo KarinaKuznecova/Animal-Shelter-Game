@@ -3,9 +3,8 @@ package base.gameobjects.animalstates;
 import base.Game;
 import base.gameobjects.Animal;
 
-import static base.gameobjects.Animal.MAX_ENERGY;
+import static base.constants.Constants.MAX_ENERGY;
 import static base.navigationservice.Direction.*;
-import static base.navigationservice.Direction.WAKEUP_RIGHT;
 
 public class WakingUpState implements AnimalState {
 

@@ -3,7 +3,7 @@ package base.gameobjects.animals;
 import base.gameobjects.AgeStage;
 import base.gameobjects.Animal;
 
-import static base.constants.Constants.RAT_BLACK;
+import static base.constants.Constants.*;
 import static base.gameobjects.AgeStage.ADULT;
 
 public class Rat extends Animal {

@@ -49,6 +49,12 @@ public class Constants {
     public static int MAX_SCREEN_WIDTH = 21 * (CELL_SIZE);
     public static int MAX_SCREEN_HEIGHT = 21 * (CELL_SIZE);
 
+    public static final int GROWING_UP_TIME = 200_000;
+    public static final int MAX_HUNGER = 30_000;
+    public static final int MAX_THIRST = 25_000;
+    public static final int MAX_ENERGY = 40_000;
+    public static final int MIN_ENERGY = 1;
+
     public static final String CAT_BLACK = "cat-black";
     public static final String CAT_WHITE = "cat-white";
     public static final String CAT_BROWN = "cat-brown";

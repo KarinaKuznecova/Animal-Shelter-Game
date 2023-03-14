@@ -8,9 +8,8 @@ import base.gameobjects.WaterBowl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static base.gameobjects.AgeStage.BABY;
-import static base.gameobjects.Animal.MAX_HUNGER;
-import static base.gameobjects.Animal.MAX_THIRST;
+import static base.constants.Constants.MAX_HUNGER;
+import static base.constants.Constants.MAX_THIRST;
 import static base.navigationservice.Direction.*;
 
 public class EatingState implements AnimalState {
