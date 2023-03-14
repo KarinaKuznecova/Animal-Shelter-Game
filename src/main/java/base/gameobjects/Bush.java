@@ -119,7 +119,7 @@ public class Bush implements GameObject {
             animal.setHungerInPercent(random.nextInt(100));
             animal.setThirstInPercent(random.nextInt(100));
             animal.setEnergyInPercent(random.nextInt(100));
-            animal.setCurrentAge(random.nextInt(Animal.GROWING_UP_TIME));
+            animal.setCurrentAge(random.nextInt(GROWING_UP_TIME));
             game.getAnimalsOnMaps().get(game.getGameMap().getMapName()).add(animal);
             game.addAnimalToPanel(animal);
             game.saveMaps();

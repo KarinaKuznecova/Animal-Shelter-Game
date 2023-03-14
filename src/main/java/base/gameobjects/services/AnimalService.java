@@ -18,7 +18,6 @@ import static base.constants.FilePath.*;
 import static base.constants.MapConstants.*;
 import static base.gameobjects.AgeStage.ADULT;
 import static base.gameobjects.AgeStage.BABY;
-import static base.gameobjects.Animal.*;
 
 public class AnimalService {
 

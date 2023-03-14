@@ -3,7 +3,7 @@ package base.gameobjects.animals;
 import base.gameobjects.AgeStage;
 import base.gameobjects.Animal;
 
-import static base.constants.Constants.CAT_BLACK;
+import static base.constants.Constants.*;
 import static base.gameobjects.AgeStage.ADULT;
 
 public class Cat extends Animal {

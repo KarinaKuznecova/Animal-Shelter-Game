@@ -13,8 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.ColorConstant.YELLOW;
-import static base.constants.Constants.CELL_SIZE;
-import static base.constants.Constants.DEBUG_MODE;
+import static base.constants.Constants.*;
 import static base.constants.FilePath.IMAGES_PATH;
 import static base.gameobjects.AgeStage.ADULT;
 import static base.gameobjects.AgeStage.BABY;
@@ -47,17 +46,10 @@ public abstract class Animal implements GameObject, Walking {
     private boolean favorite;
 
     protected AgeStage age;
-    public static final int GROWING_UP_TIME = 200_000;
+
     private int currentAge;
-
-    public static final int MAX_HUNGER = 30_000;
     private int currentHunger;
-
-    public static final int MAX_THIRST = 25_000;
     private int currentThirst;
-
-    public static final int MAX_ENERGY = 40_000;
-    protected static final int MIN_ENERGY = 1;
     private int currentEnergy;
 
     protected final InteractionZonePetHeart interactionZone;
