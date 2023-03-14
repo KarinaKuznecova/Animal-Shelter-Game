@@ -1583,4 +1583,8 @@ public class Game extends JFrame implements Runnable {
     public SpriteService getSpriteService() {
         return spriteService;
     }
+
+    public ShopService getShopService() {
+        return shopService;
+    }
 }
