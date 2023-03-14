@@ -103,7 +103,7 @@ public class BackpackButton extends GUIButton implements Serializable {
 
     private void sellItem(Game game) {
         objectCount--;
-        game.getBackpackGui().addCoins(1);
+        game.getBackpackGui().addCoins(game.getShopService().getItemPrice(item));
         if (objectCount == 0) {
             makeEmpty();
         }

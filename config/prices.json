@@ -1,0 +1,72 @@
+[	
+	{
+		"itemName": "carrot",
+		"sellPrice": 3,
+		"buyPrice": 3
+	},
+	{
+		"itemName": "beet",
+		"sellPrice": 3,
+		"buyPrice": 3
+	},
+	{
+		"itemName": "tomato",
+		"sellPrice": 4,
+		"buyPrice": 4
+	},
+	{
+		"itemName": "strawberry",
+		"sellPrice": 4,
+		"buyPrice": 4
+	},
+	{
+		"itemName": "bellpepper",
+		"sellPrice": 5,
+		"buyPrice": 5
+	},
+	{
+		"itemName": "corn",
+		"sellPrice": 8,
+		"buyPrice": 8
+	},
+	{
+		"itemName": "potato",
+		"sellPrice": 2,
+		"buyPrice": 2
+	},
+	{
+		"itemName": "seedcarrot",
+		"sellPrice": 2,
+		"buyPrice": 2
+	},
+	{
+		"itemName": "seedbeet",
+		"sellPrice": 2,
+		"buyPrice": 2
+	},
+	{
+		"itemName": "seedtomato",
+		"sellPrice": 2,
+		"buyPrice": 2
+	},
+	{
+		"itemName": "seedstrawberry",
+		"sellPrice": 2,
+		"buyPrice": 2
+	},
+	{
+		"itemName": "seedbellpepper",
+		"sellPrice": 2,
+		"buyPrice": 2
+	},
+	{
+		"itemName": "seedcorn",
+		"sellPrice": 2,
+		"buyPrice": 2
+	},
+	{
+		"itemName": "seedpotato",
+		"sellPrice": 2,
+		"buyPrice": 2
+	}
+]
