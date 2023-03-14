@@ -16,6 +16,7 @@ import static base.constants.MapConstants.CITY_MAP;
 import static base.constants.MapConstants.FOREST_MAP;
 import static base.gameobjects.Animal.*;
 import static base.navigationservice.Direction.STAY;
+import static base.navigationservice.MapEdgesUtil.*;
 
 public class WalkingState implements AnimalState {
 
@@ -136,22 +137,22 @@ public class WalkingState implements AnimalState {
 
         switch (direction) {
             case LEFT:
-                if (animal.getRectangle().getX() > 0 || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
+                if (animal.getRectangle().getX() > getWestEdgeStrict() || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
                     animal.getRectangle().setX(animal.getRectangle().getX() - animal.getSpeed());
                 }
                 break;
             case RIGHT:
-                if (animal.getRectangle().getX() < (gameMap.getMapWidth() * CELL_SIZE - animal.getRectangle().getWidth()) || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
+                if (animal.getRectangle().getX() < (getEastEdgeMinus(gameMap.getMapWidth(), animal.getRectangle().getWidth())) || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
                     animal.getRectangle().setX(animal.getRectangle().getX() + animal.getSpeed());
                 }
                 break;
             case UP:
-                if (animal.getRectangle().getY() > 0 || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
+                if (animal.getRectangle().getY() > getNorthEdgeStrict() || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
                     animal.getRectangle().setY(animal.getRectangle().getY() - animal.getSpeed());
                 }
                 break;
             case DOWN:
-                if (animal.getRectangle().getY() < (gameMap.getMapHeight() * CELL_SIZE - animal.getRectangle().getHeight()) || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
+                if (animal.getRectangle().getY() < (getSouthEdgeMinus(gameMap.getMapHeight(), animal.getRectangle().getHeight())) || animal.nearPortal(gameMap.getPortals(), animal.getRectangle())) {
                     animal.getRectangle().setY(animal.getRectangle().getY() + animal.getSpeed());
                 }
                 break;

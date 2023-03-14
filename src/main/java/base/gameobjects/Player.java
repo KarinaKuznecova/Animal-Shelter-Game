@@ -14,6 +14,7 @@ import java.util.List;
 
 import static base.constants.Constants.*;
 import static base.navigationservice.Direction.*;
+import static base.navigationservice.MapEdgesUtil.*;
 
 public class Player implements GameObject {
 
@@ -98,22 +99,22 @@ public class Player implements GameObject {
 
         switch (direction) {
             case LEFT:
-                if (playerRectangle.getX() >= 0 || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getX() >= getWestEdgeStrict() || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setX(playerRectangle.getX() - speed);
                 }
                 break;
             case RIGHT:
-                if (playerRectangle.getX() <= (game.getGameMap().getMapWidth() * TILE_SIZE) * ZOOM || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getX() <= getEastEdgeStrict(game.getGameMap().getMapWidth()) || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setX(playerRectangle.getX() + speed);
                 }
                 break;
             case UP:
-                if (playerRectangle.getY() >= 0 || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getY() >= getNorthEdgeStrict() || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setY(playerRectangle.getY() - speed);
                 }
                 break;
             case DOWN:
-                if (playerRectangle.getY() <= (game.getGameMap().getMapHeight() * TILE_SIZE) * ZOOM || nearPortal(game.getGameMap().getPortals())) {
+                if (playerRectangle.getY() <= getSouthEdgeStrict(game.getGameMap().getMapHeight()) || nearPortal(game.getGameMap().getPortals())) {
                     playerRectangle.setY(playerRectangle.getY() + speed);
                 }
                 break;

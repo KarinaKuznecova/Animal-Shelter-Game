@@ -243,6 +243,11 @@ public class Game extends JFrame implements Runnable {
         addFocusListener(keyboardListener);
         addMouseListener(mouseEventListener);
         addMouseMotionListener(mouseEventListener);
+
+        canvas.addKeyListener(keyboardListener);
+        canvas.addFocusListener(keyboardListener);
+        canvas.addMouseListener(mouseEventListener);
+        canvas.addMouseMotionListener(mouseEventListener);
     }
 
     /**
