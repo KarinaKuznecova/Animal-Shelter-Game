@@ -182,6 +182,7 @@ public class Game extends JFrame implements Runnable {
         setLocationRelativeTo(null);
         add(canvas);
         setVisible(true);
+        setTitle("Animal shelter game");
         canvas.createBufferStrategy(3);
         renderer = new RenderHandler(getWidth(), getHeight());
     }
@@ -238,10 +239,10 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void addListeners() {
-        canvas.addKeyListener(keyboardListener);
-        canvas.addFocusListener(keyboardListener);
-        canvas.addMouseListener(mouseEventListener);
-        canvas.addMouseMotionListener(mouseEventListener);
+        addKeyListener(keyboardListener);
+        addFocusListener(keyboardListener);
+        addMouseListener(mouseEventListener);
+        addMouseMotionListener(mouseEventListener);
     }
 
     /**
