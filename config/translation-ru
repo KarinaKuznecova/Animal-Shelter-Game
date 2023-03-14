@@ -1,20 +1,30 @@
-Age:Возраст
-Backyard:Задний двор
-Bottom Left Map:Низ лево
-Bottom Center Map:Низ центр
-Bottom Right Map:Низ право
-City:Город
-Energy:Энергия
-Favorite:Любимый
-Forest:Лес
-Home 1:Дом
-Home 2:Дом 2
-Hunger:Сытость
-Island:Остров
-Location:Место
-Name:Имя
-New Name:Новое имя
-Second map:Двор слева
-Starting map:Стартовый двор
-Thirst:Жажда
-Adoption:Я хочу забрать %s, можно?
+Age:Р’РѕР·СЂР°СЃС‚
+Backyard:Р—Р°РґРЅРёР№ РґРІРѕСЂ
+Bottom Left Map:РќРёР· Р»РµРІРѕ
+Bottom Center Map:РќРёР· С†РµРЅС‚СЂ
+Bottom Right Map:РќРёР· РїСЂР°РІРѕ
+Bunny:РљСЂРѕР»РёРє
+Butterfly:Р‘Р°Р±РѕС‡РєР°
+Cat:РєРѕС‚
+Chicken:РљСѓСЂРёС†Р°
+City:Р“РѕСЂРѕРґ
+Dog:РЎРѕР±Р°РєР°
+Energy:Р­РЅРµСЂРіРёСЏ
+Favorite:Р›СЋР±РёРјС‹Р№
+Forest:Р›РµСЃ
+Home 1:Р”РѕРј
+Home 2:Р”РѕРј 2
+Hunger:РЎС‹С‚РѕСЃС‚СЊ
+Island:РћСЃС‚СЂРѕРІ
+Location:РњРµСЃС‚Рѕ
+Mouse:РњС‹С€СЊ
+Name:РРјСЏ
+Named:РїРѕ РёРјРµРЅРё
+New Name:РќРѕРІРѕРµ РёРјСЏ
+Pig:РЎРІРёРЅРєР°
+Rat:РљСЂС‹СЃР°
+Second map:Р”РІРѕСЂ СЃР»РµРІР°
+Starting map:РЎС‚Р°СЂС‚РѕРІС‹Р№ РґРІРѕСЂ
+Thirst:Р–Р°Р¶РґР°
+Wolf:Р’РѕР»Рє
+Adoption:РЇ С…РѕС‡Сѓ Р·Р°Р±СЂР°С‚СЊ %s, РјРѕР¶РЅРѕ?

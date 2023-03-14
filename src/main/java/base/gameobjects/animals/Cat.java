@@ -13,11 +13,13 @@ public class Cat extends Animal {
     public Cat(int startX, int startY, int speed, String color) {
         super(getName(color, ADULT), startX, startY, speed, 32, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, ADULT, "");
         setColor(color);
+        originalType = TYPE;
     }
 
     public Cat(int startX, int startY, int speed, String color, int hungerLevel, int currentThirst, int currentEnergy, AgeStage age, String name) {
         super(getName(color, age), startX, startY, speed, 32, hungerLevel, currentThirst, currentEnergy, age, name);
         setColor(color);
+        originalType = TYPE;
     }
 
 

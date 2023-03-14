@@ -3,7 +3,12 @@ Backyard:Backyard
 Bottom Left Map:Bottom Left
 Bottom Center Map:Bottom Center
 Bottom Right Map:Bottom Right
+Bunny:Bunny
+Butterfly:Butterfly
+Cat:Cat
+Chicken:Chicken
 City:City
+Dog:Dog
 Energy:Energy
 Favorite:Favorite
 Forest:Forest
@@ -12,9 +17,14 @@ Home 2:Home 2
 Hunger:Hunger
 Island:Island
 Location:Location
+Mouse:Mouse
 Name:Name
+Named:named
 New Name:New Name
+Pig:Pig
+Rat:Rat
 Second map:Second map
 Starting map:Starting map
 Thirst:Thirst
+Wolf:Wolf
 Adoption:I want to adopt %s, is it ok?
