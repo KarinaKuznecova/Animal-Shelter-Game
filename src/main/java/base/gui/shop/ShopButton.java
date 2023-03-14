@@ -8,8 +8,7 @@ import base.gui.GUIButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static base.constants.ColorConstant.BLUE;
-import static base.constants.ColorConstant.BROWN;
+import static base.constants.ColorConstant.*;
 
 public class ShopButton extends GUIButton {
 
@@ -17,6 +16,8 @@ public class ShopButton extends GUIButton {
 
     private final String item;
     private final int price;
+
+    private int highlightTimer = 0;
 
     public ShopButton(String item, Sprite tileSprite, Rectangle rectangle, int price) {
         super(tileSprite, rectangle, true);
@@ -32,6 +33,12 @@ public class ShopButton extends GUIButton {
         if (sprite != null) {
             renderer.renderSprite(sprite, this.rectangle.getX() + rectangle.getX(), this.rectangle.getY() + rectangle.getY(), zoom, false, price);
         }
+        if (highlightTimer > 0) {
+            highlightTimer--;
+            if (highlightTimer == 0) {
+                this.rectangle.generateBorder(3, BROWN, BLUE);
+            }
+        }
     }
 
     @Override
@@ -41,6 +48,8 @@ public class ShopButton extends GUIButton {
 
     @Override
     public void activate(Game game) {
+        highlightTimer = 30;
+        rectangle.generateBorder(3, YELLOW, BLUE);
         game.getItem(item, sprite);
         game.getBackpackGui().removeCoins(price);
     }
