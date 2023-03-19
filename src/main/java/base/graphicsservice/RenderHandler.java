@@ -69,6 +69,46 @@ public class RenderHandler {
 
     public void render(Game game, Graphics graphics) {
 
+        drawPreview(game);
+
+        graphics.drawImage(view.getSubimage(0, 0, camera.getWidth(), camera.getHeight()), 0, 0, camera.getWidth(), camera.getHeight(), null);
+
+        drawTemporaryText(graphics);
+
+        drawFixedTexts(graphics);
+        drawNonFixedTexts(graphics);
+    }
+
+    private void drawNonFixedTexts(Graphics graphics) {
+        for (Map.Entry<Position, String> entry : textToDrawNotFixed.entrySet()) {
+            Position linePosition = entry.getKey();
+            int xPosition = linePosition.getXPosition() - camera.getX();
+            int yPosition = linePosition.getYPosition() - camera.getY();
+            renderText(graphics, entry.getValue(), xPosition, yPosition);
+        }
+    }
+
+    private void drawFixedTexts(Graphics graphics) {
+        for (Map.Entry<Position, String> entry : textToDrawFixed.entrySet()) {
+            Position linePosition = entry.getKey();
+            renderText(graphics, entry.getValue(), linePosition.getXPosition(), linePosition.getYPosition());
+        }
+    }
+
+    private void drawTemporaryText(Graphics graphics) {
+        if (!textToDrawInCenter.isEmpty() && textCountdown != 1) {
+            renderText(graphics);
+            if (textCountdown > 1) {
+                textCountdown--;
+            }
+        }
+        if (!textToDrawInCenter.isEmpty() && textCountdown == 1) {
+            textCountdown = 0;
+            removeText();
+        }
+    }
+
+    private void drawPreview(Game game) {
         if (game.getSelectedTileId() != -1 && game.getMousePosition() != null) {
             try {
                 renderTilePreview(game);
@@ -86,30 +126,6 @@ public class RenderHandler {
                     logger.error("Exception with preview", e);
                 }
             }
-        }
-
-        graphics.drawImage(view.getSubimage(0, 0, camera.getWidth(), camera.getHeight()), 0, 0, camera.getWidth(), camera.getHeight(), null);
-
-        if (!textToDrawInCenter.isEmpty() && textCountdown != 1) {
-            renderText(graphics);
-            if (textCountdown > 1) {
-                textCountdown--;
-            }
-        }
-        if (!textToDrawInCenter.isEmpty() && textCountdown == 1) {
-            textCountdown = 0;
-            removeText();
-        }
-
-        for (Map.Entry<Position, String> entry : textToDrawFixed.entrySet()) {
-            Position linePosition = entry.getKey();
-            renderText(graphics, entry.getValue(), linePosition.getXPosition(), linePosition.getYPosition());
-        }
-        for (Map.Entry<Position, String> entry : textToDrawNotFixed.entrySet()) {
-            Position linePosition = entry.getKey();
-            int xPosition = linePosition.getXPosition() - camera.getX();
-            int yPosition = linePosition.getYPosition() - camera.getY();
-            renderText(graphics, entry.getValue(), xPosition, yPosition);
         }
     }
 
