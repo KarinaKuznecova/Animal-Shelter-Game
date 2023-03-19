@@ -911,6 +911,24 @@ public class Game extends JFrame implements Runnable {
                 stoppedChecking = item.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
+        for (Feather feather : gameMap.getFeathers()) {
+            if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = feather.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
+        for (Mushroom mushroom : gameMap.getMushrooms()) {
+            if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = mushroom.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
+        for (Wood wood : gameMap.getWoods()) {
+            if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = wood.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
         for (Animal animal : animalsOnMaps.get(gameMap.getMapName())) {
             if (!stoppedChecking) {
                 mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);

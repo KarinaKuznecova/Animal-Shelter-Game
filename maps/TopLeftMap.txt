@@ -61,9 +61,9 @@ plant-carrot,1152,1088,3,0,false,false
 plant-carrot,1152,1088,3,0,false,false
 //Items
 //type, xPosition, yPosition
-bowl,576,704,true
+bowl,576,704,false
 bowl,640,704,true
-bowl,704,704,true
+bowl,704,704,false
 water-bowl,192,320,true
 water-bowl,128,320,true
 portal,1280,640,Home

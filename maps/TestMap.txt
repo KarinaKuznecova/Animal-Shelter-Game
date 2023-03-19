@@ -1,16 +1,41 @@
 Game version:1.4.0
 Size:20:20
 Fill:14
+//Plants
+//type, xPosition, yPosition, growingStage, growingTicks, isWild, isRefreshable
+plant-tomato,192,192,3,0,false,true
+plant-tomato,320,192,3,0,false,true
+plant-tomato,448,192,3,0,false,true
+plant-tomato,576,192,3,0,false,true
+plant-tomato,640,448,3,0,false,true
+plant-tomato,384,448,3,0,false,true
+plant-tomato,256,384,3,0,false,true
+plant-tomato,384,256,3,0,false,true
+plant-tomato,448,64,3,0,false,true
+plant-tomato,704,192,3,0,false,true
+plant-potato,768,448,3,0,false,false
+plant-potato,640,320,3,0,false,false
+plant-potato,576,384,3,0,false,false
+plant-potato,640,512,3,0,false,false
+plant-strawberry,640,768,3,0,true,false
+plant-corn,768,0,3,0,true,false
 //Items
 //type, xPosition, yPosition
-item-beet,448,1088
 item-beet,576,1088
+item-carrot,960,320
 water-bowl,768,256,true
-water-bowl,896,896,false
+water-bowl,896,896,true
 portal,704,-64,Forest
 portal,1280,512,Forest
 portal,-64,512,Forest
 portal,832,1280,City
+storagechest,768,320,2054103103
+storagechest,704,320,1766077225
+feather,960,512
+mushroom,960,448
+wood,960,384
+wood,832,512
+wood,704,576
 //layer,tileId,xPos,yPos,regularTile,portalDirection
 0,14,10,8,n
 1,14,9,8,n
