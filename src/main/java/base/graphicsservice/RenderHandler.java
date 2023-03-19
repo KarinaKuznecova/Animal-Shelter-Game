@@ -370,7 +370,7 @@ public class RenderHandler {
         int xOffset = maxScreenWidth / 4;
         int yOffset = 20;
         for (int i = 0; i < textToDrawInCenter.size(); i++) {
-            renderText(graphics, textToDrawInCenter.get(i), xOffset, 200 + (yOffset * i));
+            renderText(graphics, textToDrawInCenter.get(i), xOffset, 300 + (yOffset * i));
         }
     }
 
