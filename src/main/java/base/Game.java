@@ -1280,6 +1280,7 @@ public class Game extends JFrame implements Runnable {
 
     public void drawNewEscMenu() {
         if (!guiList.contains(escMenu)) {
+            escMenu.updateSkillsInfo();
             guiList.add(escMenu);
         } else {
             removeEscMenu();
