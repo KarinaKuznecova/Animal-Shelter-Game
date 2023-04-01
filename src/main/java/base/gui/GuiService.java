@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static base.constants.ColorConstant.*;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.CANCEL_BUTTON_PATH;
 import static base.constants.FilePath.OK_BUTTON_PATH;
@@ -180,6 +181,30 @@ public class GuiService implements Serializable {
         rectangle.setY(y);
         rectangle.setWidth(width);
         rectangle.setHeight(height);
+    }
+
+    public EscMenu createEscMenu(int width, int height) {
+        int escWidth = 320;
+        return new EscMenu(getEscMenuButtons(escWidth), (width - escWidth) / 3, 180, escWidth + 4, height / 3 - 100, SOFT_PINK);
+    }
+
+    public List<GUIButton> getEscMenuButtons(int totalWidth) {
+        List<GUIButton> buttons = new ArrayList<>();
+
+        int buttonWidth = totalWidth / 2;
+        EscMenuButton button1 = new EscMenuButton(null, new Rectangle(4, 4, buttonWidth, 60), true, SOFT_PINK, "Game Tips");
+        buttons.add(button1);
+
+        EscMenuButton button2 = new EscMenuButton(null, new Rectangle(buttonWidth + 4, 4, buttonWidth, 60), true, PALE_GREEN, "Skills");
+        buttons.add(button2);
+
+        EscMenuButton button3 = new EscMenuButton(null, new Rectangle(buttonWidth * 2 + 4, 4, buttonWidth, 60), true, MUTED_LAVENDER, "Settings");
+        buttons.add(button3);
+
+        EscMenuButton button4 = new EscMenuButton(null, new Rectangle(buttonWidth * 3 + 4, 4, buttonWidth, 60), true, CREAMY_PEACH, "Exit Game");
+        buttons.add(button4);
+
+        return buttons;
     }
 
 }

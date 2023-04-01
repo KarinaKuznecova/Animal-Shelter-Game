@@ -63,6 +63,10 @@ public class StorageService {
 
     public void readFile(StorageChest storageChest) {
         File mapFile = new File(STORAGES_DIRECTORY + storageChest.getFileName());
+        if (!mapFile.exists()) {
+            saveStorageChest(storageChest);
+            return;
+        }
         try (Scanner scanner = new Scanner(mapFile)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();

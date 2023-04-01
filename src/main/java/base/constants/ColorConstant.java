@@ -18,4 +18,9 @@ public class ColorConstant {
     public static final int BROWN = 0x3e2b19;
 
     public static final int LIGHT_PURPLE = 0xe3d6f0;
+
+    public static final int SOFT_PINK = 0xE6C6CA;
+    public static final int PALE_GREEN = 0xB1E0C8;
+    public static final int MUTED_LAVENDER = 0xD7C4DD;
+    public static final int CREAMY_PEACH = 0xFFDEAD;
 }

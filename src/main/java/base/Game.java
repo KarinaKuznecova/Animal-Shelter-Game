@@ -14,6 +14,7 @@ import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
 import base.gui.*;
+import base.gui.EscMenu;
 import base.gui.shop.ShopService;
 import base.map.GameMap;
 import base.map.MapService;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static base.constants.ColorConstant.GREEN;
+import static base.constants.ColorConstant.*;
 import static base.constants.Constants.*;
 import static base.constants.MapConstants.*;
 import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
@@ -87,6 +88,7 @@ public class Game extends JFrame implements Runnable {
     private transient GUI plantsGui;
     private transient Backpack backpackGui;
     private transient DialogBox dialogBox;
+    private transient EscMenu escMenu;
 
     // Selected items
     private boolean regularTiles = true;
@@ -355,6 +357,12 @@ public class Game extends JFrame implements Runnable {
         loadPlantsPanel();
         loadBackpack();
         dialogBox = guiService.loadDialogBox();
+
+        createEscMenu();
+    }
+
+    private void createEscMenu() {
+        escMenu = guiService.createEscMenu(getWidth(), getHeight());
     }
 
     private void loadSDKGUI() {
@@ -524,6 +532,8 @@ public class Game extends JFrame implements Runnable {
             while (changeInSeconds >= 1) {
                 if (!paused) {
                     update();
+                } else {
+                    updatePausedElements();
                 }
                 changeInSeconds--;
             }
@@ -583,6 +593,12 @@ public class Game extends JFrame implements Runnable {
             }
         }
         eventService.update(this);
+    }
+
+    private void updatePausedElements() {
+        for (GameObject gui : guiList) {
+            gui.update(this);
+        }
     }
 
     /** =================================== In Game Activities ====================================== */
@@ -1260,6 +1276,24 @@ public class Game extends JFrame implements Runnable {
 
     public boolean isPaused() {
         return paused;
+    }
+
+    public void drawNewEscMenu() {
+        if (!guiList.contains(escMenu)) {
+            guiList.add(escMenu);
+        } else {
+            removeEscMenu();
+        }
+    }
+
+    public void removeEscMenu() {
+        guiList.remove(escMenu);
+        renderer.removeText();
+        renderer.clearRenderedText();
+    }
+
+    public void changeEscMenuColor(int newColor) {
+        escMenu.changeColor(newColor);
     }
 
     /**
