@@ -362,8 +362,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void createEscMenu() {
-        int escWidth = 400;
-        escMenu = new EscMenu(guiService.getEscMenuButtons(), (getWidth() - escWidth) / 4, 180, escWidth, getHeight() / 3 - 100, SOFT_PINK);
+        escMenu = guiService.createEscMenu(getWidth(), getHeight());
     }
 
     private void loadSDKGUI() {
@@ -533,6 +532,8 @@ public class Game extends JFrame implements Runnable {
             while (changeInSeconds >= 1) {
                 if (!paused) {
                     update();
+                } else {
+                    updatePausedElements();
                 }
                 changeInSeconds--;
             }
@@ -592,6 +593,12 @@ public class Game extends JFrame implements Runnable {
             }
         }
         eventService.update(this);
+    }
+
+    private void updatePausedElements() {
+        for (GameObject gui : guiList) {
+            gui.update(this);
+        }
     }
 
     /** =================================== In Game Activities ====================================== */
@@ -1263,6 +1270,7 @@ public class Game extends JFrame implements Runnable {
 
     public void removeEscMenu() {
         guiList.remove(escMenu);
+        renderer.removeText();
         renderer.clearRenderedText();
     }
 

@@ -31,7 +31,6 @@ public class KeyboardListener implements KeyListener, FocusListener {
         }
         if (keys[KeyEvent.VK_ESCAPE]) {
             game.drawNewEscMenu();
-            game.showTips();
             if (!game.isPaused()) {
                 game.pause();
             } else {

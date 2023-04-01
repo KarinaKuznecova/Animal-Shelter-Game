@@ -22,7 +22,7 @@ public class EscMenuButton extends GUIButton{
     public void render(RenderHandler renderer, int zoom, Rectangle rectangle) {
         renderer.renderRectangle(this.rectangle, rectangle, 1, fixed);
         if (text != null) {
-            renderer.renderText(text, new Position(this.rectangle.getX() + rectangle.getX() + (this.rectangle.getWidth() / 3) - 8,
+            renderer.renderText(text, new Position(this.rectangle.getX() + rectangle.getX() + (this.rectangle.getWidth() / 4),
                     this.rectangle.getY() + rectangle.getY() + (this.rectangle.getHeight() / 2) + 4));
         }
     }
