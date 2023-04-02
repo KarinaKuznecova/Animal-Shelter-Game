@@ -1,0 +1,10 @@
+{
+	"skills": {
+		"gardeningSkill": {
+			"name": "Gardening",
+			"maxLevel": 7,
+			"currentLevel": 1,
+			"experienceToLevel": 1999
+		}
+	}
+}

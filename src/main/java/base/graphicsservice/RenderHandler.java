@@ -4,6 +4,7 @@ import base.Game;
 import base.gameobjects.*;
 import base.gameobjects.npc.NpcSpawnSpot;
 import base.gameobjects.npc.NpcSpot;
+import base.gameobjects.player.Player;
 import base.gameobjects.storage.StorageChest;
 import base.gui.EditIcon;
 import base.map.GameMap;

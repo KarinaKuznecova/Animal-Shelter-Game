@@ -1,6 +1,9 @@
-package base.gameobjects;
+package base.gameobjects.player;
 
 import base.Game;
+import base.gameobjects.AnimatedSprite;
+import base.gameobjects.GameObject;
+import base.gameobjects.Portal;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.map.MapTile;
@@ -18,10 +21,11 @@ import static base.navigationservice.MapEdgesUtil.*;
 
 public class Player implements GameObject {
 
-    private final AnimatedSprite animatedSprite;
-    private final Rectangle playerRectangle;
-    private int speed = 5;
-    private Direction direction;
+    private transient AnimatedSprite animatedSprite;
+    private transient Rectangle playerRectangle;
+    private transient int speed = 5;
+    private transient Direction direction;
+    private Skills skills;
 
     private static final Logger logger = LoggerFactory.getLogger(Player.class);
 
@@ -31,6 +35,7 @@ public class Player implements GameObject {
         updateDirection();
         playerRectangle = new Rectangle(startX, startY, PLAYER_SPRITE_SIZE, PLAYER_SPRITE_SIZE);
         playerRectangle.generateBorder(1, 123);
+        skills = new Skills();
     }
 
     @Override
@@ -275,5 +280,21 @@ public class Player implements GameObject {
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public void setAnimatedSprite(AnimatedSprite animatedSprite) {
+        this.animatedSprite = animatedSprite;
+    }
+
+    public Skills getSkills() {
+        return skills;
+    }
+
+    public void setPlayerRectangle(Rectangle playerRectangle) {
+        this.playerRectangle = playerRectangle;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 }

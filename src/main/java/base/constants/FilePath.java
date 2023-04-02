@@ -56,6 +56,7 @@ public class FilePath {
     public static final String FEMALE_NAMES_FILE_PATH = "config/names-f.txt";
     public static final String MALE_NAMES_FILE_PATH = "config/names-m.txt";
     public static final String SHOP_PRICES_FILE_PATH = "config/prices.json";
+    public static final String PLAYER_CONFIG_FILE_PATH = "config/player.json";
 
     //maps
     public static final String MAPS_LIST_PATH = "maps/MapList.txt";

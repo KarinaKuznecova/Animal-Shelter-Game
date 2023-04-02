@@ -26,6 +26,7 @@ public class VisibleText {
     public static String energy = "Energy";
     public static String favorite = "Favorite";
     public static String forest = "Forest";
+    public static String gardening = "Gardening";
     public static String home = "Home";
     public static String home2 = "Home 2";
     public static String hunger = "Hunger";
@@ -168,6 +169,13 @@ public class VisibleText {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
                         forest = splitLine[1];
+                    }
+                    continue;
+                }
+                if (line.startsWith("Gardening:")) {
+                    String[] splitLine = line.split(":");
+                    if (splitLine.length > 1) {
+                        gardening = splitLine[1];
                     }
                     continue;
                 }
