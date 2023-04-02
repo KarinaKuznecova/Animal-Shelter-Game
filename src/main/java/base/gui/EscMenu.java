@@ -1,13 +1,13 @@
 package base.gui;
 
 import base.Game;
+import base.gameobjects.player.Skills;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.util.Arrays;
 import java.util.List;
 
 import static base.constants.ColorConstant.*;
@@ -58,7 +58,7 @@ public class EscMenu extends GUI {
         if (SOFT_PINK == color) {
             renderer.setTextToDrawInCenter(gameTips.getLines());
         } else if (PALE_GREEN == color) {
-            renderer.setTextToDrawInCenter(skillsInfo.getSkillsLines());
+            skillsInfo.render(renderer);
         } else {
             renderer.removeText();
         }
@@ -101,8 +101,8 @@ public class EscMenu extends GUI {
         backGroundRectangle.generateBorder(2, BROWN, color);
     }
 
-    public void updateSkillsInfo() {
+    public void updateSkillsInfo(Skills skills) {
         logger.info("Getting latest information about skills level");
-        skillsInfo.updateSkillsLevel();
+        skillsInfo.updateSkillsLevel(skills);
     }
 }

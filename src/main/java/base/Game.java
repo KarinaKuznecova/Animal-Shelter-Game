@@ -8,6 +8,7 @@ import base.gameobjects.*;
 import base.gameobjects.interactionzones.InteractionZone;
 import base.gameobjects.npc.*;
 import base.gameobjects.plants.Seed;
+import base.gameobjects.player.Player;
 import base.gameobjects.services.*;
 import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
@@ -79,6 +80,7 @@ public class Game extends JFrame implements Runnable {
     private transient SpriteService spriteService;
     private transient StorageService storageService;
     private transient ShopService shopService;
+    private transient PlayerService playerService;
 
     // Gui
     private transient GUI[] tileButtonsArray;
@@ -156,6 +158,7 @@ public class Game extends JFrame implements Runnable {
         spriteService = new SpriteService();
         storageService = new StorageService();
         shopService = new ShopService();
+        playerService = new PlayerService();
         VisibleText.initializeTranslations();
     }
 
@@ -481,7 +484,11 @@ public class Game extends JFrame implements Runnable {
     private void loadGameObjects(int startX, int startY) {
         gameObjectsList = new CopyOnWriteArrayList<>();
 
-        loadPlayer(startX, startY);
+        loadPlayerFromJson();
+        if (player == null) {
+            loadPlayer(startX, startY);
+            playerService.saveToFile(player);
+        }
 
         gameTips = new GameTips();
         cacheAllPlants();
@@ -506,6 +513,13 @@ public class Game extends JFrame implements Runnable {
         playerSheet.loadSprites(PLAYER_SPRITE_SIZE, PLAYER_SPRITE_SIZE, 0);
 
         return new AnimatedSprite(playerSheet, 5, true);
+    }
+
+    private void loadPlayerFromJson() {
+        player = playerService.readFromFile(getWidth() / 2, getHeight() / 2);
+        if (player != null) {
+            gameObjectsList.add(player);
+        }
     }
 
     private void cacheAllPlants() {
@@ -655,6 +669,7 @@ public class Game extends JFrame implements Runnable {
         }
         backpackService.saveBackpackToFile(backpackGui);
         tileService.saveTilesAsJson();
+        playerService.saveToFile(player);
     }
 
     public void refreshCurrentMapCache() {
@@ -956,11 +971,9 @@ public class Game extends JFrame implements Runnable {
             int smallerY = (int) Math.floor(yMapRelated / (32.0 * ZOOM));
             if (guiList.contains(plantsGui)) {
                 createNewPlant(selectedPlant, smallerX, smallerY);
-            }
-            else if (guiList.contains(possibleAnimalButtons)) {
+            } else if (guiList.contains(possibleAnimalButtons)) {
                 createNewAnimal(smallerX, smallerY);
-            }
-            else {
+            } else {
                 setNewTile(xMapRelated, yMapRelated, smallerX, smallerY);
             }
         }
@@ -984,8 +997,7 @@ public class Game extends JFrame implements Runnable {
                     StorageChest chest = new StorageChest(xAlligned, yAlligned, spriteService.getClosedChestSprite(), spriteService.getOpenChestSprite());
                     getGameMap().addStorageChest(chest);
                     gameMap.setTile(smallerX, smallerY, CHEST_TILE_ID, layer, regularTiles);
-                }
-                else {
+                } else {
                     gameMap.setTile(smallerX, smallerY, selectedTileId, layer, regularTiles);
                 }
             }
@@ -1066,6 +1078,7 @@ public class Game extends JFrame implements Runnable {
         if (mapService.isThereGrassOrDirt(gameMap, tileX, tileY) && mapService.isPlaceEmpty(gameMap, 1, tileX, tileY) && mapService.isInsideOfMap(gameMap, x, y)) {
             Plant plant = plantService.createPlant(spriteService, plantType, tileX, tileY);
             gameMap.addPlant(plant);
+            player.getSkills().getGardeningSkill().getExperienceSmall();
             return true;
         }
         return false;
@@ -1076,11 +1089,11 @@ public class Game extends JFrame implements Runnable {
         if (button == null) {
             putItemOnTheGround(plant.getRectangle().getX(), plant.getRectangle().getY(), plant.getPlantType(), true);
         } else {
-            int amount = 1 + random.nextInt(3);
+            int amount = player.getSkills().getGardeningSkill().getHarvestedAmount();
             pickUp(plant.getPlantType(), plant.getPreviewSprite(), button, amount);
         }
 
-        int seedAmount = 1 + random.nextInt(2);
+        int seedAmount = player.getSkills().getGardeningSkill().getSeedsAmount();
         Sprite seedSprite = spriteService.getSeedSprite(plant.getPlantType());
         GUIButton buttonForSeed = backpackGui.getButtonBySprite(seedSprite);
         if (buttonForSeed == null) {
@@ -1088,12 +1101,7 @@ public class Game extends JFrame implements Runnable {
         } else {
             pickUp("seed" + plant.getPlantType(), seedSprite, buttonForSeed, seedAmount);
         }
-        if (plant.isRefreshable()) {
-            if (random.nextInt(3) == 1) {
-                gameMap.removePlant(plant);
-                List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
-                plantList.remove(plant);
-            }
+        if (plant.isRefreshable() && player.getSkills().getGardeningSkill().keepPlant()) {
             plant.setGrowingStage(1);
             plant.setGrowingTicks(0);
         } else {
@@ -1101,6 +1109,10 @@ public class Game extends JFrame implements Runnable {
             List<Plant> plantList = plantsOnMaps.get(getGameMap().getMapName());
             plantList.remove(plant);
         }
+        if (plant.isWild()) {
+            player.getSkills().getGardeningSkill().getExperienceMedium();
+        }
+        player.getSkills().getGardeningSkill().getExperienceSmall();
     }
 
     public void pickUpItem(String itemName, Sprite sprite, Rectangle rectangle) {
@@ -1280,7 +1292,7 @@ public class Game extends JFrame implements Runnable {
 
     public void drawNewEscMenu() {
         if (!guiList.contains(escMenu)) {
-            escMenu.updateSkillsInfo();
+            escMenu.updateSkillsInfo(player.getSkills());
             guiList.add(escMenu);
         } else {
             removeEscMenu();
@@ -1291,6 +1303,7 @@ public class Game extends JFrame implements Runnable {
         guiList.remove(escMenu);
         renderer.removeText();
         renderer.clearRenderedText();
+        renderer.clear();
     }
 
     public void changeEscMenuColor(int newColor) {
