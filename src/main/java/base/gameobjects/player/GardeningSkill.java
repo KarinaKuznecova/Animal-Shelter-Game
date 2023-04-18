@@ -6,12 +6,13 @@ public class GardeningSkill extends Skill {
 
     public GardeningSkill() {
         setMaxLevel(7);
+        setCurrentLevel(1);
         resetExperienceToLevel();
         setName(gardening);
     }
 
     public int getHarvestedAmount() {
-        if (getCurrentLevel() <=2) {
+        if (getCurrentLevel() <= 2) {
             return 1;
         }
         return 1 + random.nextInt(3);

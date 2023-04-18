@@ -4,7 +4,13 @@
 			"name": "Gardening",
 			"maxLevel": 7,
 			"currentLevel": 1,
-			"experienceToLevel": 1999
+			"experienceToLevel": 1994
+		},
+		"cookingSkill": {
+			"name": "Cooking",
+			"maxLevel": 7,
+			"currentLevel": 1,
+			"experienceToLevel": 1969
 		}
 	}
 }

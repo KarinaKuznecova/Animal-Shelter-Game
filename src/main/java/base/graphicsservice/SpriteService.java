@@ -1,9 +1,6 @@
 package base.graphicsservice;
 
-import base.gameobjects.AnimatedSprite;
-import base.gameobjects.Feather;
-import base.gameobjects.Mushroom;
-import base.gameobjects.Wood;
+import base.gameobjects.*;
 import base.gameobjects.services.PlantService;
 import base.map.TileService;
 
@@ -193,8 +190,21 @@ public class SpriteService {
         else if (Mushroom.ITEM_NAME.equalsIgnoreCase(itemType)) {
             return tileService.getTiles().get(Mushroom.TILE_ID).getSprite();
         }
+        else if (PetFood.SIMPLE_MEAL.equalsIgnoreCase(itemType)) {
+            return tileService.getTiles().get(PetFood.SIMPLE_MEAL_SPRITE_ID).getSprite();
+        }
+        else if (PetFood.TASTY_MEAL.equalsIgnoreCase(itemType)) {
+            return tileService.getTiles().get(PetFood.TASTY_MEAL_SPRITE_ID).getSprite();
+        }
+        else if (PetFood.PERFECT_MEAL.equalsIgnoreCase(itemType)) {
+            return tileService.getTiles().get(PetFood.PERFECT_MEAL_SPRITE_ID).getSprite();
+        }
         return null;
     }
+
+    /**
+     * =================================== COOKING ======================================
+     */
 
     private Sprite cookingStoveSprite;
 
@@ -204,5 +214,33 @@ public class SpriteService {
 
     public Sprite getCookingStoveSprite() {
         return cookingStoveSprite;
+    }
+
+    private Sprite simpleMealSprite;
+    private Sprite tastyMealSprite;
+    private Sprite perfectMealSprite;
+
+    public Sprite getSimpleMealSprite() {
+        return simpleMealSprite;
+    }
+
+    public void setSimpleMealSprite(Sprite simpleMealSprite) {
+        this.simpleMealSprite = simpleMealSprite;
+    }
+
+    public Sprite getTastyMealSprite() {
+        return tastyMealSprite;
+    }
+
+    public void setTastyMealSprite(Sprite tastyMealSprite) {
+        this.tastyMealSprite = tastyMealSprite;
+    }
+
+    public Sprite getPerfectMealSprite() {
+        return perfectMealSprite;
+    }
+
+    public void setPerfectMealSprite(Sprite perfectMealSprite) {
+        this.perfectMealSprite = perfectMealSprite;
     }
 }

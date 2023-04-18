@@ -6,6 +6,7 @@ import base.constants.VisibleText;
 import base.events.EventService;
 import base.gameobjects.*;
 import base.gameobjects.interactionzones.InteractionZone;
+import base.gameobjects.interactionzones.InteractionZoneKitchen;
 import base.gameobjects.npc.*;
 import base.gameobjects.plants.Seed;
 import base.gameobjects.player.Player;
@@ -16,6 +17,7 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.*;
 import base.gui.*;
 import base.gui.EscMenu;
+import base.gui.cookingmenu.CookingMenu;
 import base.gui.shop.ShopService;
 import base.map.GameMap;
 import base.map.MapService;
@@ -39,6 +41,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.ColorConstant.*;
 import static base.constants.Constants.*;
+import static base.constants.FilePath.QUESTION_ICON_PATH;
 import static base.constants.MapConstants.*;
 import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 import static base.navigationservice.NavigationService.getNextPortalToGetToCenter;
@@ -91,6 +94,7 @@ public class Game extends JFrame implements Runnable {
     private transient Backpack backpackGui;
     private transient DialogBox dialogBox;
     private transient EscMenu escMenu;
+    private transient CookingMenu cookingMenu;
 
     // Selected items
     private boolean regularTiles = true;
@@ -180,6 +184,10 @@ public class Game extends JFrame implements Runnable {
         spriteService.loadOakSprite();
 
         spriteService.loadCookingStoveSprite(tileService.getTerrainTiles().get(CookingStove.TILE_ID).getSprite());
+
+        spriteService.setSimpleMealSprite(tileService.getTiles().get(PetFood.SIMPLE_MEAL_SPRITE_ID).getSprite());
+        spriteService.setTastyMealSprite(tileService.getTiles().get(PetFood.TASTY_MEAL_SPRITE_ID).getSprite());
+        spriteService.setPerfectMealSprite(tileService.getTiles().get(PetFood.PERFECT_MEAL_SPRITE_ID).getSprite());
     }
 
     private void loadUI() {
@@ -351,6 +359,10 @@ public class Game extends JFrame implements Runnable {
         for (CookingStove cookingStove : gameMap.getCookingStoves()) {
             cookingStove.setSprite(spriteService.getCookingStoveSprite());
             cookingStove.getRectangle().generateBorder(1, GREEN);
+            InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(cookingStove.getRectangle().getX() + 32, cookingStove.getRectangle().getY() + 32, 290);
+            cookingStove.setInteractionZone(interactionZone);
+            cookingStove.setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
+            interactionZones.add(interactionZone);
         }
     }
 
@@ -368,10 +380,15 @@ public class Game extends JFrame implements Runnable {
         dialogBox = guiService.loadDialogBox();
 
         createEscMenu();
+        createCookingMenu();
     }
 
     private void createEscMenu() {
         escMenu = guiService.createEscMenu(getWidth(), getHeight());
+    }
+
+    private void createCookingMenu() {
+        cookingMenu = guiService.createCookingMenu(getWidth(), getHeight(), spriteService);
     }
 
     private void loadSDKGUI() {
@@ -446,6 +463,10 @@ public class Game extends JFrame implements Runnable {
         deselectTile();
         logger.info(String.format("changing your selected plant to : %s", plantType));
         selectedPlant = plantType;
+    }
+
+    public void deselectItem() {
+        changeSelectedItem("");
     }
 
     public void changeSelectedItem(String item) {
@@ -609,6 +630,9 @@ public class Game extends JFrame implements Runnable {
             }
             for (Bush bush : gameMap.getBushes()) {
                 bush.update(this);
+            }
+            for (CookingStove cookingStove : gameMap.getCookingStoves()) {
+                cookingStove.update(this);
             }
         }
         eventService.update(this);
@@ -1032,6 +1056,10 @@ public class Game extends JFrame implements Runnable {
     private void putItemOnTheGround(int xAdjusted, int yAdjusted, String itemType, boolean justDrop) {
         int xAlligned = xAdjusted - (xAdjusted % CELL_SIZE);
         int yAlligned = yAdjusted - (yAdjusted % CELL_SIZE);
+        if (itemType.equalsIgnoreCase(PetFood.SIMPLE_MEAL) || itemType.equalsIgnoreCase(PetFood.TASTY_MEAL) || itemType.equalsIgnoreCase(PetFood.PERFECT_MEAL)) {
+            logger.info("Cannot put food on the ground, only in a bowl");
+            return;
+        }
         if (itemType.equalsIgnoreCase(Wood.ITEM_NAME)) {
             Wood wood = new Wood(xAlligned, yAlligned, spriteService.getWoodSprite());
             gameMap.addObject(wood);
@@ -1137,9 +1165,9 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    public void getItem(String itemName, Sprite sprite) {
+    public void getItem(String itemName, Sprite sprite, int amount) {
         GUIButton button = backpackGui.getButtonBySprite(sprite);
-        pickUp(itemName, sprite, button, 1);
+        pickUp(itemName, sprite, button, amount);
     }
 
     private boolean pickUp(String itemName, Sprite sprite, GUIButton button, int amount) {
@@ -1287,9 +1315,14 @@ public class Game extends JFrame implements Runnable {
         GUIButton button = backpackGui.findButtonByDefaultId(selectedItem);
         if (button instanceof BackpackButton) {
             String itemName = ((BackpackButton) button).getItemName();
-            return itemName.length() > 2;
+            return (PlantService.plantTypes.contains(itemName));
         }
         return false;
+    }
+
+    public boolean isPetFoodSelected() {
+        String itemName = getItemNameByButtonId();
+        return (PetFood.mealTypes.contains(itemName));
     }
 
     /**
@@ -1326,6 +1359,27 @@ public class Game extends JFrame implements Runnable {
 
     public void changeEscMenuColor(int newColor) {
         escMenu.changeColor(newColor);
+    }
+
+    public void showCookingMenu() {
+        if (!isCookingMenuOpen()) {
+            cookingMenu.updateCookingSkill(player.getSkills().getCookingSkill().getCurrentLevel());
+            guiList.add(cookingMenu);
+            if (!guiList.contains(backpackGui)) {
+                openBackpack();
+            }
+        } else {
+            hideCookingMenu();
+            closeBackpack();
+        }
+    }
+
+    public boolean isCookingMenuOpen() {
+        return guiList.contains(cookingMenu);
+    }
+
+    public void hideCookingMenu() {
+        guiList.remove(cookingMenu);
     }
 
     /**
@@ -1676,5 +1730,9 @@ public class Game extends JFrame implements Runnable {
 
     public ShopService getShopService() {
         return shopService;
+    }
+
+    public CookingMenu getCookingMenu() {
+        return cookingMenu;
     }
 }

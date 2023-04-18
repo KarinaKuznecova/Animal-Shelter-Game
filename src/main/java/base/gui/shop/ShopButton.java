@@ -50,7 +50,7 @@ public class ShopButton extends GUIButton {
     public void activate(Game game) {
         highlightTimer = 30;
         rectangle.generateBorder(3, YELLOW, BLUE);
-        game.getItem(item, sprite);
+        game.getItem(item, sprite, 1);
         game.getBackpackGui().removeCoins(price);
     }
 

@@ -15,10 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -399,13 +396,14 @@ public class MapMigrator {
      */
 
     public void checkMigration(GameMap gameMap) {
-        if (CURRENT_GAME_VERSION.equals("1.4.0")) {
+        if (CURRENT_GAME_VERSION.equals("1.4.2")) {
             migrateStove(gameMap);
+            migrateChairs(gameMap);
         }
     }
 
     /**
-     * =================================== 1.4.0 migration ======================================
+     * =================================== 1.4.2 migration ======================================
      */
 
     public void migrateStove(GameMap gameMap) {
@@ -429,5 +427,22 @@ public class MapMigrator {
                 gameMap.addObject(cookingStove);
             }
         }
+    }
+
+    private void migrateChairs(GameMap gameMap) {
+        if (gameMap.getTilesOnLayer(2) == null) {
+            return;
+        }
+        logger.info("Migrating chairs");
+        List<Integer> chairIds = Arrays.asList(18, 19, 20, 21);
+        List<MapTile> chairTiles = gameMap.getTilesOnLayer(2).stream()
+                .filter(t -> t.isRegularTile() && chairIds.contains(t.getId()))
+                .collect(Collectors.toList());
+
+        chairTiles.forEach(chair -> {
+            chair.setLayer(1);
+            gameMap.getTilesOnLayer(2).remove(chair);
+            gameMap.getTilesOnLayer(1).add(chair);
+        });
     }
 }

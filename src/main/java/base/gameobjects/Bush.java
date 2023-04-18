@@ -4,10 +4,7 @@ import base.Game;
 import base.gameobjects.animals.Wolf;
 import base.gameobjects.interactionzones.InteractionZoneBushWithAnimal;
 import base.gameobjects.services.AnimalService;
-import base.graphicsservice.Position;
-import base.graphicsservice.Rectangle;
-import base.graphicsservice.RenderHandler;
-import base.graphicsservice.Sprite;
+import base.graphicsservice.*;
 import base.gui.ContextClue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +13,7 @@ import java.util.Random;
 
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.*;
+import static base.constants.FilePath.HEART_ICON_PATH;
 import static base.constants.MapConstants.FOREST_MAP;
 
 public class Bush implements GameObject {
@@ -50,7 +48,7 @@ public class Bush implements GameObject {
         rectangle.generateBorder(1, GREEN);
         interactionZone = new InteractionZoneBushWithAnimal(rectangle.getX() + 96, rectangle.getY() + 82, 150);
 
-        contextClue = new ContextClue();
+        contextClue = new ContextClue(new Sprite(ImageLoader.loadImage(HEART_ICON_PATH)));
 
         isAnimalInside = false;
         maxInterval = BUSH_INTERVAL_BOUND + random.nextInt(BUSH_INTERVAL_BOUND);
@@ -62,7 +60,7 @@ public class Bush implements GameObject {
         random = new Random();
         this.canContainAnimal = random.nextBoolean();
         interactionZone = new InteractionZoneBushWithAnimal(rectangle.getX() + 96, rectangle.getY() + 82, 150);
-        contextClue = new ContextClue();
+        contextClue = new ContextClue(new Sprite(ImageLoader.loadImage(HEART_ICON_PATH)));
 
         isAnimalInside = false;
         maxInterval = BUSH_INTERVAL_BOUND + random.nextInt(BUSH_INTERVAL_BOUND);
@@ -79,7 +77,7 @@ public class Bush implements GameObject {
             interactionZone.render(renderer, zoom);
         }
         if (canContainAnimal && interactionZone.isPlayerInRange() && isAnimalInside) {
-            contextClue.render(renderer, 1);
+            contextClue.render(renderer, 1, true);
         }
     }
 

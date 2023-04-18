@@ -23,6 +23,7 @@ public class VisibleText {
     public static String bottomLeftMap = "Bottom Left Map";
     public static String bottomRightMap = "Bottom Right Map";
     public static String city = "City";
+    public static String cooking = "Cooking";
     public static String energy = "Energy";
     public static String favorite = "Favorite";
     public static String forest = "Forest";
@@ -141,6 +142,13 @@ public class VisibleText {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
                         city = splitLine[1];
+                    }
+                    continue;
+                }
+                if (line.startsWith("Cooking:")) {
+                    String[] splitLine = line.split(":");
+                    if (splitLine.length > 1) {
+                        cooking = splitLine[1];
                     }
                     continue;
                 }
