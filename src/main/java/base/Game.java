@@ -178,6 +178,8 @@ public class Game extends JFrame implements Runnable {
         spriteService.loadBushSprite();
         spriteService.loadSpruceSprite();
         spriteService.loadOakSprite();
+
+        spriteService.loadCookingStoveSprite(tileService.getTerrainTiles().get(CookingStove.TILE_ID).getSprite());
     }
 
     private void loadUI() {
@@ -346,6 +348,10 @@ public class Game extends JFrame implements Runnable {
             spruce.setSprite(spriteService.getSpruceSprite());
             spruce.getRectangle().generateBorder(1, GREEN);
         }
+        for (CookingStove cookingStove : gameMap.getCookingStoves()) {
+            cookingStove.setSprite(spriteService.getCookingStoveSprite());
+            cookingStove.getRectangle().generateBorder(1, GREEN);
+        }
     }
 
     /**
@@ -403,7 +409,6 @@ public class Game extends JFrame implements Runnable {
      * =================================== Defaults ======================================
      */
 
-    // TODO: only one item per all buttons should be selected - issue #325 on github
     private void enableDefaultGui() {
         deselectEverything();
 
@@ -960,6 +965,12 @@ public class Game extends JFrame implements Runnable {
                 stoppedChecking = wood.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
+        for (CookingStove cookingStove : gameMap.getCookingStoves()) {
+            if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = cookingStove.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
         for (Animal animal : animalsOnMaps.get(gameMap.getMapName())) {
             if (!stoppedChecking) {
                 mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -997,6 +1008,10 @@ public class Game extends JFrame implements Runnable {
                     StorageChest chest = new StorageChest(xAlligned, yAlligned, spriteService.getClosedChestSprite(), spriteService.getOpenChestSprite());
                     getGameMap().addStorageChest(chest);
                     gameMap.setTile(smallerX, smallerY, CHEST_TILE_ID, layer, regularTiles);
+                } else if (selectedTileId == CookingStove.TILE_ID) {
+                    CookingStove cookingStove = new CookingStove(xAlligned, yAlligned, spriteService.getCookingStoveSprite());
+                    getGameMap().addObject(cookingStove);
+                    gameMap.setTile(smallerX, smallerY, CookingStove.TILE_ID, layer, regularTiles);
                 } else {
                     gameMap.setTile(smallerX, smallerY, selectedTileId, layer, regularTiles);
                 }
@@ -1195,6 +1210,9 @@ public class Game extends JFrame implements Runnable {
             removed = getGameMap().removeBowl(waterBowl);
         } else if (CHEST_TILE_ID == selectedTileId) {
             removed = getGameMap().removeStorageChest(xAlligned, yAlligned);
+            gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
+        } else if (CookingStove.TILE_ID == selectedTileId) {
+            removed = getGameMap().removeCookingStove(xAlligned, yAlligned);
             gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
         } else {
             removed = gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);

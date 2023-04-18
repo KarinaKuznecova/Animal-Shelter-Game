@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static base.constants.Constants.*;
 
@@ -45,14 +46,6 @@ public class MapMigrator {
     private List<Portal> portals = new ArrayList<>();
 
     private Map<Integer, List<MapTile>> layeredTiles = new ConcurrentHashMap<>();
-
-    public static void main(String[] args) {
-        MapMigrator mapMigrator = new MapMigrator();
-
-//        mapMigrator.migrate("TopCenterMap", "maps/TopCenterMap.txt", "TopRightMap", "maps/TopRightMap.txt", "maps/migratedMap.txt");
-
-//        mapMigrator.backupFile("maps/TopRightMap.txt");
-    }
 
     public void migrate(String firstName, String firstFilePath, String secondName, String secondFilePath, String resultPath) {
         firstMapName = firstName;
@@ -395,49 +388,46 @@ public class MapMigrator {
      * =================================== Other ======================================
      */
 
-    public void backupFile(String oldMapPath) {
-        logger.info(String.format("Creating backup for file %s", oldMapPath));
-        String newMapPath = getNewMapPath(oldMapPath);
-        if (newMapPath == null) return;
-
-        File newFile = new File(newMapPath);
-        try {
-            PrintWriter printWriter = new PrintWriter(newFile);
-            File source = new File(oldMapPath);
-            Scanner scanner = new Scanner(source);
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-
-                printWriter.println(line);
-            }
-            scanner.close();
-            printWriter.close();
-        } catch (FileNotFoundException e) {
-            logger.error(String.format("Error with writing file %s", newMapPath));
-            e.printStackTrace();
-        }
-    }
-
-    private String getNewMapPath(String mapPath) {
-        String[] splitMapPath = mapPath.split("\\.");
-        if (splitMapPath.length != 2) {
-            logger.info("Something went wrong with file backup");
-            return null;
-        }
-        return splitMapPath[0] + "-backup." + splitMapPath[1];
-    }
-
-    public void deleteFile(String filePath) {
-        File fileToDelete = new File(filePath);
-        if (fileToDelete.exists()) {
-            boolean deleted = fileToDelete.delete();
-            logger.info(String.valueOf(deleted));
-        }
-    }
-
     public void renameFile(String filePath, String newPath) {
         File fileToRename = new File(filePath);
         boolean renamed = fileToRename.renameTo(new File(newPath));
         logger.info(String.valueOf(renamed));
+    }
+
+    /**
+     * =================================== check migration ======================================
+     */
+
+    public void checkMigration(GameMap gameMap) {
+        if (CURRENT_GAME_VERSION.equals("1.4.0")) {
+            migrateStove(gameMap);
+        }
+    }
+
+    /**
+     * =================================== 1.4.0 migration ======================================
+     */
+
+    public void migrateStove(GameMap gameMap) {
+        if (gameMap.getTilesOnLayer(3) == null) {
+            return;
+        }
+        List<MapTile> stoveTiles = gameMap.getTilesOnLayer(3).stream()
+                .filter(t -> !t.isRegularTile() && t.getId() == CookingStove.TILE_ID)
+                .collect(Collectors.toList());
+        for (MapTile stoveTile : stoveTiles) {
+            boolean exists = false;
+            for (CookingStove cookingStove : gameMap.getCookingStoves()) {
+                if (cookingStove.getRectangle().getX() == stoveTile.getX() * CELL_SIZE && cookingStove.getRectangle().getY() == stoveTile.getY() * CELL_SIZE) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                logger.info("Migrating cooking stove");
+                CookingStove cookingStove = new CookingStove(stoveTile.getX() * CELL_SIZE, stoveTile.getY() * CELL_SIZE);
+                gameMap.addObject(cookingStove);
+            }
+        }
     }
 }
