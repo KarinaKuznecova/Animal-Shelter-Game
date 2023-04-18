@@ -67,7 +67,7 @@ public class SpriteService {
 
     public void setBowlsSprites() {
         AnimatedSprite foodBowl = ImageLoader.getAnimatedSprite(FOOD_BOWL_PATH, TILE_SIZE);
-        foodBowl.setAnimationRange(0, 1);
+        foodBowl.setAnimationRange(0, 3);
         foodBowl.setVertical(false);
         this.foodBowlSprite = foodBowl;
 
@@ -194,5 +194,15 @@ public class SpriteService {
             return tileService.getTiles().get(Mushroom.TILE_ID).getSprite();
         }
         return null;
+    }
+
+    private Sprite cookingStoveSprite;
+
+    public void loadCookingStoveSprite(Sprite cookingStoveSprite) {
+        this.cookingStoveSprite = cookingStoveSprite;
+    }
+
+    public Sprite getCookingStoveSprite() {
+        return cookingStoveSprite;
     }
 }

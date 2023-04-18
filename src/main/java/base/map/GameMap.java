@@ -46,6 +46,7 @@ public class GameMap {
     private final List<Bush> bushes = new CopyOnWriteArrayList<>();
     private final List<Oak> oaks = new CopyOnWriteArrayList<>();
     private final List<Spruce> spruces = new CopyOnWriteArrayList<>();
+    private List<CookingStove> cookingStoves = new CopyOnWriteArrayList<>();
     private final List<NpcSpot> npcSpots = new CopyOnWriteArrayList<>();
     private final List<NpcSpawnSpot> npcSpawnSpots = new CopyOnWriteArrayList<>();
     private transient List<Npc> npcs = new CopyOnWriteArrayList<>();
@@ -188,6 +189,8 @@ public class GameMap {
             oaks.add((Oak) object);
         } else if (object instanceof Spruce) {
             spruces.add((Spruce) object);
+        } else if (object instanceof CookingStove) {
+            cookingStoves.add((CookingStove) object);
         } else if (object instanceof NpcSpot) {
             npcSpots.add((NpcSpot) object);
         } else if (object instanceof NpcSpawnSpot) {
@@ -287,6 +290,17 @@ public class GameMap {
         for (StorageChest chest : storageChests) {
             if (chest.getRectangle().intersects(rectangle)) {
                 storageChests.remove(chest);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean removeCookingStove(int xPosition, int yPosition) {
+        Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
+        for (CookingStove cookingStove : cookingStoves) {
+            if (cookingStove.getRectangle().intersects(rectangle)) {
+                cookingStoves.remove(cookingStove);
                 return true;
             }
         }
@@ -441,6 +455,13 @@ public class GameMap {
 
     public List<Spruce> getSpruces() {
         return spruces;
+    }
+
+    public List<CookingStove> getCookingStoves() {
+        if (cookingStoves == null) {
+            cookingStoves = new CopyOnWriteArrayList<>();
+        }
+        return cookingStoves;
     }
 
     public List<NpcSpot> getNpcSpots() {

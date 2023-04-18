@@ -360,6 +360,11 @@ public class RenderHandler {
                 portal.render(this, ZOOM);
             }
         }
+        for (CookingStove cookingStove : gameMap.getCookingStoves()) {
+            if (cookingStove.getLayer() == layer) {
+                cookingStove.render(this, ZOOM);
+            }
+        }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject.getLayer() == layer) {
                 gameObject.render(this, ZOOM);

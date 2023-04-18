@@ -80,6 +80,7 @@ public class MapService {
             Reader reader = new FileReader(JSON_MAPS_DIRECTORY + mapName);
             GameMap gameMap = gson.fromJson(reader, GameMap.class);
             reader.close();
+            mapMigrator.checkMigration(gameMap);
             return gameMap;
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,6 +88,7 @@ public class MapService {
         return loadGameMap(mapName, tileService);
     }
 
+    @Deprecated
     public GameMap loadGameMap(String mapName, TileService tileService) {
         GameMap gameMap = new GameMap(mapName);
         boolean migrationChecked = false;
@@ -156,6 +158,7 @@ public class MapService {
             return loadGameMap(mapName, tileService);
         }
         gameMap.sortInteractiveObjects();
+        mapMigrator.checkMigration(gameMap);
         return gameMap;
     }
 

@@ -24,11 +24,26 @@ public class FoodBowl extends Bowl {
             logger.info("Food bowl is clicked");
             if (!isFull && game.isFoodSelected()) {
                 logger.debug("Will fill food bowl");
-                fillBowl();
+                fillBowl(game.getSelectedItem());
                 game.removeItemFromInventory(game.getSelectedItem());
             }
             return true;
         }
         return false;
+    }
+
+    public void fillBowl(String item) {
+        if (sprite != null) {
+            if (item.equals("")) {
+                sprite.incrementSprite();
+                sprite.incrementSprite();
+                sprite.incrementSprite();
+            } else if (item.equals("")) {
+                sprite.incrementSprite();
+                sprite.incrementSprite();
+            }
+            sprite.incrementSprite();
+        }
+        isFull = true;
     }
 }
