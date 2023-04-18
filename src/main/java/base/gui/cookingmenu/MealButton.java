@@ -52,7 +52,7 @@ public abstract class MealButton extends GUIButton {
     }
 
     public void makeGreen() {
-        rectangle.generateBorder(3, GREEN, LIGHT_GRAY);
+        rectangle.generateBorder(3, GREEN, LIGHT_BLUE);
         isGreen = true;
     }
 

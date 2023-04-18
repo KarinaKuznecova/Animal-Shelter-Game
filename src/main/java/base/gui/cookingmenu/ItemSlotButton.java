@@ -56,7 +56,7 @@ public class ItemSlotButton extends GUIButton {
             this.item = selectedItem;
             sprite = game.getSpriteService().getPlantPreviewSprite(item);
             game.removeItemFromInventory(game.getSelectedItem());
-            rectangle.generateBorder(3, GREEN, LIGHT_GRAY);
+            rectangle.generateBorder(3, GREEN, LIGHT_BLUE);
         }
     }
 
