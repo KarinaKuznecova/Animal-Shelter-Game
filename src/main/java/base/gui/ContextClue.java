@@ -1,10 +1,11 @@
 package base.gui;
 
-import base.graphicsservice.*;
+import base.graphicsservice.Position;
+import base.graphicsservice.Rectangle;
+import base.graphicsservice.RenderHandler;
+import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static base.constants.FilePath.HEART_ICON_PATH;
 
 public class ContextClue {
 
@@ -13,8 +14,8 @@ public class ContextClue {
 
     protected static final Logger logger = LoggerFactory.getLogger(ContextClue.class);
 
-    public ContextClue() {
-        sprite = new Sprite(ImageLoader.loadImage(HEART_ICON_PATH));
+    public ContextClue(Sprite sprite) {
+        this.sprite = sprite;
         rectangle = new Rectangle();
     }
 
@@ -22,8 +23,8 @@ public class ContextClue {
         rectangle = new Rectangle(position.getXPosition() - 3, position.getYPosition() - 3, 20, 20);
     }
 
-    public void render(RenderHandler renderer, int zoom) {
-        renderer.renderSprite(sprite, rectangle.getX() + 2, rectangle.getY() + 2, zoom, true);
+    public void render(RenderHandler renderer, int zoom, boolean fixed) {
+        renderer.renderSprite(sprite, rectangle.getX() + 2, rectangle.getY() + 2, zoom, fixed);
     }
 
     public Rectangle getRectangle() {

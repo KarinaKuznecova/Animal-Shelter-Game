@@ -1,20 +1,25 @@
 package base.gameobjects;
 
 import base.Game;
-import base.graphicsservice.Rectangle;
-import base.graphicsservice.RenderHandler;
-import base.graphicsservice.Sprite;
+import base.gameobjects.interactionzones.InteractionZone;
+import base.gameobjects.interactionzones.InteractionZoneKitchen;
+import base.graphicsservice.*;
+import base.gui.ContextClue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static base.constants.Constants.TILE_SIZE;
-import static base.constants.Constants.ZOOM;
+import static base.constants.Constants.*;
+import static base.constants.FilePath.HEART_ICON_PATH;
+import static base.constants.FilePath.QUESTION_ICON_PATH;
 
 public class CookingStove implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(CookingStove.class);
 
     public static final int TILE_ID = 152;
+
+    private transient InteractionZone interactionZone;
+    private transient ContextClue contextClue;
 
     private transient Sprite sprite;
     private final int xPosition;
@@ -24,13 +29,16 @@ public class CookingStove implements GameObject {
     public CookingStove(int xPosition, int yPosition, Sprite sprite) {
         this(xPosition, yPosition);
         this.sprite = sprite;
+        interactionZone = new InteractionZoneKitchen(xPosition + 32, yPosition + 32, 290);
+        setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
     }
 
     public CookingStove(int xPosition, int yPosition) {
-        logger.info("CREATIN STOVE");
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.rectangle = new Rectangle(xPosition, yPosition, TILE_SIZE, TILE_SIZE);
+        interactionZone = new InteractionZoneKitchen(xPosition + 32, yPosition + 32, 290);
+        setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
     }
 
     @Override
@@ -38,11 +46,21 @@ public class CookingStove implements GameObject {
         if (sprite != null) {
             renderer.renderSprite(sprite, xPosition, yPosition, ZOOM, false);
         }
+        if (DEBUG_MODE) {
+            interactionZone.render(renderer, zoom);
+        }
+        if (interactionZone.isPlayerInRange()) {
+            contextClue.render(renderer, 1, false);
+        }
     }
 
     @Override
     public void update(Game game) {
-
+        interactionZone.update(game);
+        if (!interactionZone.isPlayerInRange() && game.isCookingMenuOpen()) {
+            game.hideCookingMenu();
+            game.closeBackpack();
+        }
     }
 
     @Override
@@ -53,8 +71,9 @@ public class CookingStove implements GameObject {
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
-            logger.info("Stove is clicked, cooking menu coming soon");
-            // open cooking menu
+            if (interactionZone.isPlayerInRange()) {
+                game.showCookingMenu();
+            }
             return true;
         }
         return false;
@@ -67,5 +86,15 @@ public class CookingStove implements GameObject {
 
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
+    }
+
+    public void setInteractionZone(InteractionZone interactionZone) {
+        this.interactionZone = interactionZone;
+    }
+
+    public void setContextClue(ContextClue contextClue) {
+        this.contextClue = contextClue;
+        Position contextCluPosition = new Position(xPosition + (TILE_SIZE / 2), yPosition);
+        contextClue.changePosition(contextCluPosition);
     }
 }

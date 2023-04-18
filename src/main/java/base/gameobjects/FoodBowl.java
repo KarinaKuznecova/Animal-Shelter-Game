@@ -5,6 +5,8 @@ import base.graphicsservice.Rectangle;
 
 public class FoodBowl extends Bowl {
 
+    private String foodType;
+
     public FoodBowl(int x, int y) {
         super(x, y);
     }
@@ -22,28 +24,37 @@ public class FoodBowl extends Bowl {
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
             logger.info("Food bowl is clicked");
-            if (!isFull && game.isFoodSelected()) {
+            if (!isFull && game.isPetFoodSelected()) {
                 logger.debug("Will fill food bowl");
-                fillBowl(game.getSelectedItem());
+                fillBowl(game.getItemNameByButtonId());
                 game.removeItemFromInventory(game.getSelectedItem());
+                return true;
             }
-            return true;
         }
         return false;
     }
 
     public void fillBowl(String item) {
         if (sprite != null) {
-            if (item.equals("")) {
+            if (item.equals(PetFood.PERFECT_MEAL)) {
                 sprite.incrementSprite();
                 sprite.incrementSprite();
                 sprite.incrementSprite();
-            } else if (item.equals("")) {
+                isFull = true;
+            } else if (item.equals(PetFood.TASTY_MEAL)) {
                 sprite.incrementSprite();
                 sprite.incrementSprite();
+                isFull = true;
+            } else if (item.equals(PetFood.SIMPLE_MEAL)) {
+                sprite.incrementSprite();
+                isFull = true;
             }
-            sprite.incrementSprite();
+            foodType = item;
         }
-        isFull = true;
+    }
+
+    public void emptyBowl() {
+        super.emptyBowl();
+        foodType = null;
     }
 }

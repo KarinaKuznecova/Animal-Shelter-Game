@@ -77,4 +77,8 @@ public abstract class Skill {
     public void setName(String name) {
         this.name = name;
     }
+
+    public void setCurrentLevel(int currentLevel) {
+        this.currentLevel = currentLevel;
+    }
 }

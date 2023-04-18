@@ -28,7 +28,8 @@ public class SkillsInfo {
     private int getSkillProgressInPercents(Skill skill) {
         int experienceToLevel = skill.getExperienceToLevel();
         int onePercent = Skill.EXPERIENCE_TO_LEVEL / 100;
-        return 100 - (experienceToLevel / onePercent) - 1;
+        int result = 100 - (experienceToLevel / onePercent) - 1;
+        return Math.max(result, 0);
     }
 
     public void render(RenderHandler renderer) {

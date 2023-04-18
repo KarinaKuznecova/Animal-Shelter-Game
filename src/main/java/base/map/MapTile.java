@@ -2,7 +2,7 @@ package base.map;
 
 public class MapTile {
 
-    private final int layer;
+    private int layer;
     private int id;
     private final int x;
     private final int y;
@@ -60,5 +60,9 @@ public class MapTile {
 
     public void setRegularTile(boolean regularTile) {
         this.regularTile = regularTile;
+    }
+
+    public void setLayer(int layer) {
+        this.layer = layer;
     }
 }

@@ -1,9 +1,6 @@
 package base.gameobjects.services;
 
-import base.gameobjects.Feather;
-import base.gameobjects.Item;
-import base.gameobjects.Mushroom;
-import base.gameobjects.Wood;
+import base.gameobjects.*;
 import base.gameobjects.plants.*;
 import base.graphicsservice.SpriteService;
 
@@ -14,7 +11,7 @@ public class ItemService {
 
     public static final List<String> STACKABLE_ITEMS = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME, Corn.NAME, Potato.NAME,
             "seed" + Carrot.NAME, "seed" + Beet.NAME, "seed" + Tomato.NAME, "seed" + Strawberry.NAME, "seed" + Bellpepper.NAME, "seed" + Corn.NAME, "seed" + Potato.NAME,
-            Wood.ITEM_NAME, Feather.ITEM_NAME, Mushroom.ITEM_NAME);
+            Wood.ITEM_NAME, Feather.ITEM_NAME, Mushroom.ITEM_NAME, PetFood.SIMPLE_MEAL, PetFood.TASTY_MEAL, PetFood.PERFECT_MEAL);
 
     public Item createNewItem(SpriteService spriteService, String itemType, int x, int y) {
         Item item = createNewItem(itemType, x, y);

@@ -70,6 +70,7 @@ public class FilePath {
     public static final String MONEY_ICON_PATH = "img/coins.png";
     public static final String OK_BUTTON_PATH = "img/button-ok.png";
     public static final String CANCEL_BUTTON_PATH = "img/button-cancel.png";
+    public static final String QUESTION_ICON_PATH = "img/question.png";
 
     //tiles
     public static final String SPRITES_PATH = "img/tiles-new.png";

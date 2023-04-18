@@ -2,9 +2,14 @@ package base.gui;
 
 import base.Game;
 import base.gameobjects.Animal;
+import base.gameobjects.plants.Carrot;
+import base.gameobjects.plants.Potato;
+import base.gameobjects.plants.Tomato;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.Sprite;
+import base.graphicsservice.SpriteService;
+import base.gui.cookingmenu.*;
 import base.map.Tile;
 
 import java.io.Serializable;
@@ -203,6 +208,85 @@ public class GuiService implements Serializable {
 
         EscMenuButton button4 = new EscMenuButton(null, new Rectangle(buttonWidth * 3 + 4, 4, buttonWidth, 60), true, CREAMY_PEACH, "Exit Game");
         buttons.add(button4);
+
+        return buttons;
+    }
+
+    public CookingMenu createCookingMenu(int screenWidth, int screenHeight, SpriteService spriteService) {
+        int menuWidth = 220;
+        return new CookingMenu(getCookingMenuButtons2(menuWidth, spriteService), (screenWidth - menuWidth) / 3, 180, menuWidth + 4, screenHeight / 3 - 200);
+    }
+
+    public List<GUIButton> getCookingMenuButtons(int totalWidth, SpriteService spriteService) {
+        List<GUIButton> buttons = new ArrayList<>();
+
+        int buttonWidth = 60;
+        int gap = 40;
+        ItemSlotButton activeButton = new ItemSlotButton(null, new Rectangle(gap, gap, buttonWidth, 60));
+        buttons.add(activeButton);
+
+        SimpleMealButton activeButton3 = new SimpleMealButton(spriteService.getSimpleMealSprite(), new Rectangle(buttonWidth * 3 + (gap * 4), gap, buttonWidth, 60));
+        buttons.add(activeButton3);
+
+        // tasty
+        ItemSlotButton tastySlotButton = new ItemSlotButton(null, new Rectangle(gap, gap * 2 + gap, buttonWidth, 60));
+        buttons.add(tastySlotButton);
+
+        ItemSlotButton tastySlotButton2 = new ItemSlotButton(null, new Rectangle(buttonWidth + (gap * 2), gap * 2 + gap, buttonWidth, 60));
+        buttons.add(tastySlotButton2);
+
+        TastyMealButton tastyMealButton = new TastyMealButton(spriteService.getTastyMealSprite(), new Rectangle(buttonWidth * 3 + (gap * 4), gap * 2 + gap, buttonWidth, 60));
+        buttons.add(tastyMealButton);
+
+        //perfect
+        ItemSlotButton perfectSlotButton = new ItemSlotButton(null, new Rectangle(gap, gap * 4 + gap, buttonWidth, 60));
+        buttons.add(perfectSlotButton);
+
+        ItemSlotButton perfectSlotButton2 = new ItemSlotButton(null, new Rectangle(buttonWidth + (gap * 2), gap * 4 + gap, buttonWidth, 60));
+        buttons.add(perfectSlotButton2);
+
+        ItemSlotButton perfectSlotButton3 = new ItemSlotButton(null, new Rectangle(buttonWidth * 2 + (gap * 3), gap * 4 + gap, buttonWidth, 60));
+        buttons.add(perfectSlotButton3);
+
+        PerfectMealButton perfectMealButton = new PerfectMealButton(spriteService.getPerfectMealSprite(), new Rectangle(buttonWidth * 3 + (gap * 4), gap * 4 + gap, buttonWidth, 60));
+        buttons.add(perfectMealButton);
+
+        return buttons;
+    }
+
+    public List<GUIButton> getCookingMenuButtons2(int totalWidth, SpriteService spriteService) {
+        List<GUIButton> buttons = new ArrayList<>();
+
+        int buttonWidth = 60;
+        int gap = 40;
+        int gap2 = totalWidth / 3;
+
+        // meals
+        SimpleMealButton activeButton3 = new SimpleMealButton(spriteService.getSimpleMealSprite(), new Rectangle(gap2, gap, buttonWidth, 60));
+        buttons.add(activeButton3);
+
+        TastyMealButton tastyMealButton = new TastyMealButton(spriteService.getTastyMealSprite(), new Rectangle(buttonWidth + (gap2 * 2), gap, buttonWidth, 60));
+        buttons.add(tastyMealButton);
+
+        PerfectMealButton perfectMealButton = new PerfectMealButton(spriteService.getPerfectMealSprite(), new Rectangle(buttonWidth * 2 + (gap2 * 3), gap, buttonWidth, 60));
+        buttons.add(perfectMealButton);
+
+        int gap3 = 25;
+        //items
+        ItemSlotButton perfectSlotButton = new ItemSlotButton(null, new Rectangle(gap3, gap * 2 + gap, buttonWidth, 60));
+        buttons.add(perfectSlotButton);
+
+        ItemSlotButton perfectSlotButton2 = new ItemSlotButton(null, new Rectangle(buttonWidth + (gap3 * 2), gap * 2 + gap, buttonWidth, 60));
+        buttons.add(perfectSlotButton2);
+
+        ItemSlotButton perfectSlotButton3 = new ItemSlotButton(null, new Rectangle(buttonWidth * 2 + (gap3 * 3), gap * 2 + gap, buttonWidth, 60));
+        buttons.add(perfectSlotButton3);
+
+        ItemSlotButton perfectSlotButton4 = new ItemSlotButton(null, new Rectangle(buttonWidth * 3 + (gap3 * 4), gap * 2 + gap, buttonWidth, 60));
+        buttons.add(perfectSlotButton4);
+
+        ItemSlotButton perfectSlotButton5 = new ItemSlotButton(null, new Rectangle(buttonWidth * 4 + (gap3 * 5), gap * 2 + gap, buttonWidth, 60));
+        buttons.add(perfectSlotButton5);
 
         return buttons;
     }
