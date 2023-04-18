@@ -25,7 +25,7 @@ public class TastyMealButton extends MealButton {
         if (isGreen()) {
             int amount = game.getPlayer().getSkills().getCookingSkill().getTastyMealAmount();
             game.getItem(PetFood.TASTY_MEAL, game.getSpriteService().getTastyMealSprite(), amount);
-            game.getCookingMenu().useItems(1);
+            game.getCookingMenu().useItems(2);
             if (amount == 1) {
                 game.getPlayer().getSkills().getCookingSkill().getExperienceSmall();
             } else {

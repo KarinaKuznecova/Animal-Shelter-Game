@@ -26,7 +26,7 @@ public class PerfectMealButton extends MealButton {
         if (isGreen()) {
             int amount = game.getPlayer().getSkills().getCookingSkill().getPerfectMealAmount();
             game.getItem(PetFood.PERFECT_MEAL, game.getSpriteService().getPerfectMealSprite(), amount);
-            game.getCookingMenu().useItems(1);
+            game.getCookingMenu().useItems(3);
             if (amount == 1) {
                 game.getPlayer().getSkills().getCookingSkill().getExperienceSmall();
             } else {
