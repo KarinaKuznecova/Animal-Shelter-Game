@@ -1,6 +1,9 @@
 package base.gameobjects.player;
 
+import base.graphicsservice.RenderHandler;
+
 import static base.constants.VisibleText.gardening;
+import static base.constants.VisibleText.levelUpLine;
 
 public class GardeningSkill extends Skill {
 
@@ -39,5 +42,12 @@ public class GardeningSkill extends Skill {
             return random.nextBoolean();
         }
         return true;
+    }
+
+    @Override
+    public void levelUp(RenderHandler renderHandler) {
+        super.levelUp(renderHandler);
+        String lineToDraw = String.format(levelUpLine, gardening, getCurrentLevel());
+        renderHandler.setTextToDraw(lineToDraw, 170);
     }
 }

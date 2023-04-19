@@ -56,10 +56,10 @@ public class CookingMenu extends GUI {
         knownCookingSkill = cookingSkillLevel;
         for (GUIButton button : buttons) {
             if (button instanceof MealButton) {
-                if (button instanceof TastyMealButton && cookingSkillLevel >= 2) {
+                if (button instanceof TastyMealButton && cookingSkillLevel >= 3) {
                     ((TastyMealButton) button).unlock();
                 }
-                if (button instanceof PerfectMealButton && cookingSkillLevel >= 3) {
+                if (button instanceof PerfectMealButton && cookingSkillLevel >= 6) {
                     ((PerfectMealButton) button).unlock();
                 }
             }

@@ -68,5 +68,20 @@
 		"itemName": "seedpotato",
 		"sellPrice": 2,
 		"buyPrice": 2
+	},
+		{
+		"itemName": "simpleMeal",
+		"sellPrice": 5,
+		"buyPrice": 0
+	},
+	{
+		"itemName": "tastyMeal",
+		"sellPrice": 10,
+		"buyPrice": 0
+	},
+	{
+		"itemName": "perfectMeal",
+		"sellPrice": 15,
+		"buyPrice": 0
 	}
 ]

@@ -2,6 +2,7 @@ package base.gui;
 
 import base.gameobjects.player.Skill;
 import base.gameobjects.player.Skills;
+import base.graphicsservice.Position;
 import base.graphicsservice.RenderHandler;
 
 import java.util.ArrayList;
@@ -13,6 +14,14 @@ import static base.constants.Constants.DEBUG_MODE;
 public class SkillsInfo {
 
     List<String> lines = new ArrayList<>();
+
+    private int xPosition;
+    private int yPosition;
+
+    public SkillsInfo(int xPosition, int yPosition) {
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+    }
 
     public void updateSkillsLevel(Skills skills) {
         lines.clear();
@@ -33,7 +42,14 @@ public class SkillsInfo {
     }
 
     public void render(RenderHandler renderer) {
-        renderer.setTextToDrawInCenter(getSkillsLines());
+        int interval = 40;
+        int spacingToSides = 80;
+        int buttonHeight = 60;
+        for (int i = 0; i < getSkillsLines().size(); i++) {
+            int yPos = yPosition + spacingToSides + buttonHeight + (interval * i);
+            int xPos = xPosition + spacingToSides;
+            renderer.renderText(getSkillsLines().get(i), new Position(xPos, yPos));
+        }
     }
 
     private List<String> getSkillsLines() {

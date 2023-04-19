@@ -2,6 +2,7 @@ package base.gui;
 
 import base.Game;
 import base.gameobjects.player.Skills;
+import base.graphicsservice.Position;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import org.slf4j.Logger;
@@ -27,8 +28,8 @@ public class EscMenu extends GUI {
     public EscMenu(List<GUIButton> buttons, int x, int y, int width, int height, int color) {
         super(buttons, x, y, true);
         this.color = color;
-        gameTips = new GameTips();
-        skillsInfo = new SkillsInfo();
+        gameTips = new GameTips(x, y);
+        skillsInfo = new SkillsInfo(x, y);
 
         backGroundRectangle = new Rectangle(x, y, width, height);
         backGroundRectangle.generateBorder(2, BROWN, color);
@@ -51,12 +52,13 @@ public class EscMenu extends GUI {
         super.render(renderer, zoom);
         renderer.renderRectangle(backGroundRectangle, zoom, true);
 
+        renderer.clearRenderedText();
         for (GUIButton button : buttons) {
             button.render(renderer, zoom, rectangle);
         }
 
         if (SOFT_PINK == color) {
-            renderer.setTextToDrawInCenter(gameTips.getLines());
+           gameTips.render(renderer);
         } else if (PALE_GREEN == color) {
             skillsInfo.render(renderer);
         } else {

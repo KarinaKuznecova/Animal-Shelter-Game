@@ -70,7 +70,7 @@ public class BackpackButton extends GUIButton implements Serializable {
     @Override
     public void activate(Game game) {
         String selectedItem = game.getItemNameByButtonId();
-        if (game.getVendorNpc() != null && game.getVendorNpc().getShopMenu().isVisible()) {
+        if (game.getVendorNpc() != null && game.getVendorNpc().getShopMenu().isVisible() && game.getShopService().getItemPrice(item) != 0) {
             sellItem(game);
             return;
         }

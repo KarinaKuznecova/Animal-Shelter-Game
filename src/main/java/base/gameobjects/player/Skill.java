@@ -1,9 +1,12 @@
 package base.gameobjects.player;
 
+import base.graphicsservice.RenderHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
+
+import static base.constants.VisibleText.levelUpLine;
 
 public abstract class Skill {
 
@@ -19,35 +22,40 @@ public abstract class Skill {
 
     protected final transient Random random = new Random();
 
-    public void getExperienceSmall() {
+    public void getExperienceSmall(RenderHandler renderHandler) {
         int amount = random.nextInt(5) + 5;
-        getExperience(amount);
+        getExperience(amount, renderHandler);
+        renderHandler.setTextToDraw("+ " + amount + " exp", 70);
     }
 
-    public void getExperienceMedium() {
+    public void getExperienceMedium(RenderHandler renderHandler) {
         int amount = random.nextInt(10) + 20;
-        getExperience(amount);
+        getExperience(amount, renderHandler);
+        renderHandler.setTextToDraw("+ " + amount + " exp", 70);
     }
 
-    public void getExperienceLarge() {
+    public void getExperienceLarge(RenderHandler renderHandler) {
         int amount = random.nextInt(15) + 35;
-        getExperience(amount);
+        getExperience(amount, renderHandler);
+        renderHandler.setTextToDraw("+ " + amount + " exp", 70);
     }
 
-    private void getExperience(int amount) {
+    private void getExperience(int amount, RenderHandler renderHandler) {
         logger.info(String.format("Adding %s exp to %s skill", amount, name));
         if (currentLevel >= maxLevel) {
             return;
         }
         experienceToLevel -= amount;
         if (experienceToLevel <= 0) {
-            levelUp();
+            levelUp(renderHandler);
             resetExperienceToLevel();
         }
     }
 
-    public void levelUp() {
+    public void levelUp(RenderHandler renderHandler) {
         currentLevel++;
+        String lineToDraw = String.format(levelUpLine, name, getCurrentLevel());
+        renderHandler.setTextToDraw(lineToDraw, 170);
     }
 
     public void resetExperienceToLevel() {

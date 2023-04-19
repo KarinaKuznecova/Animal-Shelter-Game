@@ -66,8 +66,6 @@ public class Game extends JFrame implements Runnable {
     private transient NpcAdoption npc;
     private transient NpcVendor vendorNpc;
 
-    private transient GameTips gameTips;
-
     // Services
     private transient Properties gameProperties;
     private transient RenderHandler renderer;
@@ -183,7 +181,9 @@ public class Game extends JFrame implements Runnable {
         spriteService.loadSpruceSprite();
         spriteService.loadOakSprite();
 
-        spriteService.loadCookingStoveSprite(tileService.getTerrainTiles().get(CookingStove.TILE_ID).getSprite());
+        for (int cookingStoveId : CookingStove.TILE_IDS) {
+            spriteService.loadCookingStoveSprite(cookingStoveId, tileService.getTerrainTiles().get(cookingStoveId).getSprite());
+        }
 
         spriteService.setSimpleMealSprite(tileService.getTiles().get(PetFood.SIMPLE_MEAL_SPRITE_ID).getSprite());
         spriteService.setTastyMealSprite(tileService.getTiles().get(PetFood.TASTY_MEAL_SPRITE_ID).getSprite());
@@ -322,7 +322,11 @@ public class Game extends JFrame implements Runnable {
             plant.setAnimatedSprite(spriteService.getPlantAnimatedSprite(plant.getPlantType()));
         }
         for (Item item : gameMap.getItems()) {
-            item.setSprite(spriteService.getPlantPreviewSprite(item.getItemName()));
+            if (item.getItemName().contains("Meal")) {
+                item.setSprite(spriteService.getMealSprite(item.getItemName()));
+            } else {
+                item.setSprite(spriteService.getPlantPreviewSprite(item.getItemName()));
+            }
         }
         for (WaterBowl waterBowl : gameMap.getWaterBowls()) {
             waterBowl.setSprite(spriteService.getWaterBowlAnimatedSprite());
@@ -357,11 +361,18 @@ public class Game extends JFrame implements Runnable {
             spruce.getRectangle().generateBorder(1, GREEN);
         }
         for (CookingStove cookingStove : gameMap.getCookingStoves()) {
-            cookingStove.setSprite(spriteService.getCookingStoveSprite());
+            cookingStove.setSprite(spriteService.getCookingStoveSprite(cookingStove.getTileId()));
             cookingStove.getRectangle().generateBorder(1, GREEN);
             InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(cookingStove.getRectangle().getX() + 32, cookingStove.getRectangle().getY() + 32, 290);
             cookingStove.setInteractionZone(interactionZone);
             cookingStove.setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
+            interactionZones.add(interactionZone);
+        }
+        for (Fridge fridge : gameMap.getFridges()) {
+            fridge.getRectangle().generateBorder(1, GREEN);
+            InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(fridge.getRectangle().getX() + 32, fridge.getRectangle().getY() + 32, 290);
+            fridge.setInteractionZone(interactionZone);
+            fridge.setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
             interactionZones.add(interactionZone);
         }
     }
@@ -516,7 +527,6 @@ public class Game extends JFrame implements Runnable {
             playerService.saveToFile(player);
         }
 
-        gameTips = new GameTips();
         cacheAllPlants();
 
         if (!TEST_MAP_MODE) {
@@ -633,6 +643,9 @@ public class Game extends JFrame implements Runnable {
             }
             for (CookingStove cookingStove : gameMap.getCookingStoves()) {
                 cookingStove.update(this);
+            }
+            for (Fridge fridge : gameMap.getFridges()) {
+                fridge.update(this);
             }
         }
         eventService.update(this);
@@ -909,6 +922,27 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
+    public void showCookingMenu() {
+        if (!isCookingMenuOpen()) {
+            cookingMenu.updateCookingSkill(player.getSkills().getCookingSkill().getCurrentLevel());
+            guiList.add(cookingMenu);
+            if (!guiList.contains(backpackGui)) {
+                openBackpack();
+            }
+        } else {
+            hideCookingMenu();
+            closeBackpack();
+        }
+    }
+
+    public boolean isCookingMenuOpen() {
+        return guiList.contains(cookingMenu);
+    }
+
+    public void hideCookingMenu() {
+        guiList.remove(cookingMenu);
+    }
+
     /**
      * =================================== Left Mouse Click ======================================
      */
@@ -995,6 +1029,12 @@ public class Game extends JFrame implements Runnable {
                 stoppedChecking = cookingStove.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
+        for (Fridge fridge : gameMap.getFridges()) {
+            if (!stoppedChecking) {
+                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                stoppedChecking = fridge.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
+            }
+        }
         for (Animal animal : animalsOnMaps.get(gameMap.getMapName())) {
             if (!stoppedChecking) {
                 mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -1032,10 +1072,16 @@ public class Game extends JFrame implements Runnable {
                     StorageChest chest = new StorageChest(xAlligned, yAlligned, spriteService.getClosedChestSprite(), spriteService.getOpenChestSprite());
                     getGameMap().addStorageChest(chest);
                     gameMap.setTile(smallerX, smallerY, CHEST_TILE_ID, layer, regularTiles);
-                } else if (selectedTileId == CookingStove.TILE_ID) {
-                    CookingStove cookingStove = new CookingStove(xAlligned, yAlligned, spriteService.getCookingStoveSprite());
+                } else if (CookingStove.TILE_IDS.contains(selectedTileId)) {
+                    CookingStove cookingStove = new CookingStove(xAlligned, yAlligned, spriteService.getCookingStoveSprite(selectedTileId), selectedTileId);
                     getGameMap().addObject(cookingStove);
-                    gameMap.setTile(smallerX, smallerY, CookingStove.TILE_ID, layer, regularTiles);
+                    interactionZones.add(cookingStove.getInteractionZone());
+                    gameMap.setTile(smallerX, smallerY, selectedTileId, layer, regularTiles);
+                } else if (Fridge.TILE_ID == selectedTileId) {
+                    Fridge fridge = new Fridge(xAlligned, yAlligned);
+                    getGameMap().addObject(fridge);
+                    interactionZones.add(fridge.getInteractionZone());
+                    gameMap.setTile(smallerX, smallerY, selectedTileId, layer, regularTiles);
                 } else {
                     gameMap.setTile(smallerX, smallerY, selectedTileId, layer, regularTiles);
                 }
@@ -1056,10 +1102,6 @@ public class Game extends JFrame implements Runnable {
     private void putItemOnTheGround(int xAdjusted, int yAdjusted, String itemType, boolean justDrop) {
         int xAlligned = xAdjusted - (xAdjusted % CELL_SIZE);
         int yAlligned = yAdjusted - (yAdjusted % CELL_SIZE);
-        if (itemType.equalsIgnoreCase(PetFood.SIMPLE_MEAL) || itemType.equalsIgnoreCase(PetFood.TASTY_MEAL) || itemType.equalsIgnoreCase(PetFood.PERFECT_MEAL)) {
-            logger.info("Cannot put food on the ground, only in a bowl");
-            return;
-        }
         if (itemType.equalsIgnoreCase(Wood.ITEM_NAME)) {
             Wood wood = new Wood(xAlligned, yAlligned, spriteService.getWoodSprite());
             gameMap.addObject(wood);
@@ -1121,7 +1163,7 @@ public class Game extends JFrame implements Runnable {
         if (mapService.isThereGrassOrDirt(gameMap, tileX, tileY) && mapService.isPlaceEmpty(gameMap, 1, tileX, tileY) && mapService.isInsideOfMap(gameMap, x, y)) {
             Plant plant = plantService.createPlant(spriteService, plantType, tileX, tileY);
             gameMap.addPlant(plant);
-            player.getSkills().getGardeningSkill().getExperienceSmall();
+            player.getSkills().getGardeningSkill().getExperienceSmall(getRenderer());
             return true;
         }
         return false;
@@ -1153,9 +1195,10 @@ public class Game extends JFrame implements Runnable {
             plantList.remove(plant);
         }
         if (plant.isWild()) {
-            player.getSkills().getGardeningSkill().getExperienceMedium();
+            player.getSkills().getGardeningSkill().getExperienceMedium(getRenderer());
+        } else {
+            player.getSkills().getGardeningSkill().getExperienceSmall(getRenderer());
         }
-        player.getSkills().getGardeningSkill().getExperienceSmall();
     }
 
     public void pickUpItem(String itemName, Sprite sprite, Rectangle rectangle) {
@@ -1239,8 +1282,11 @@ public class Game extends JFrame implements Runnable {
         } else if (CHEST_TILE_ID == selectedTileId) {
             removed = getGameMap().removeStorageChest(xAlligned, yAlligned);
             gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
-        } else if (CookingStove.TILE_ID == selectedTileId) {
+        } else if (CookingStove.TILE_IDS.contains(selectedTileId)) {
             removed = getGameMap().removeCookingStove(xAlligned, yAlligned);
+            gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
+        } else if (Fridge.TILE_ID == selectedTileId) {
+            removed = getGameMap().removeFridge(xAlligned, yAlligned);
             gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
         } else {
             removed = gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
@@ -1284,16 +1330,6 @@ public class Game extends JFrame implements Runnable {
         logger.info("Animal removed");
     }
 
-    public void showTips() {
-        if (renderer.getTextToDrawInCenter().isEmpty()) {
-            logger.info("will start drawing text");
-            renderer.setTextToDrawInCenter(gameTips.getLines());
-        } else {
-            logger.debug("removing text");
-            renderer.removeText();
-        }
-    }
-
     public void editAnimalName(Animal animal) {
         ChangeAnimalNameWindow changeAnimalNameWindow = new ChangeAnimalNameWindow(getWidth() / 5 * 3, getHeight() / 3);
         changeAnimalNameWindow.editAnimalName(this, animal);
@@ -1311,18 +1347,23 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    public boolean isFoodSelected() {
-        GUIButton button = backpackGui.findButtonByDefaultId(selectedItem);
-        if (button instanceof BackpackButton) {
-            String itemName = ((BackpackButton) button).getItemName();
-            return (PlantService.plantTypes.contains(itemName));
-        }
-        return false;
-    }
-
     public boolean isPetFoodSelected() {
         String itemName = getItemNameByButtonId();
         return (PetFood.mealTypes.contains(itemName));
+    }
+
+    public boolean isAnyKitchenContextClueVisible() {
+        for (Fridge fridge : gameMap.getFridges()) {
+            if (fridge.getContextClue().isVisible()) {
+                return true;
+            }
+        }
+        for (CookingStove cookingStove : gameMap.getCookingStoves()) {
+            if (cookingStove.getContextClue().isVisible()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1344,7 +1385,7 @@ public class Game extends JFrame implements Runnable {
     public void drawNewEscMenu() {
         if (!guiList.contains(escMenu)) {
             escMenu.updateSkillsInfo(player.getSkills());
-            guiList.add(escMenu);
+            guiList.add(0, escMenu);
         } else {
             removeEscMenu();
         }
@@ -1359,27 +1400,6 @@ public class Game extends JFrame implements Runnable {
 
     public void changeEscMenuColor(int newColor) {
         escMenu.changeColor(newColor);
-    }
-
-    public void showCookingMenu() {
-        if (!isCookingMenuOpen()) {
-            cookingMenu.updateCookingSkill(player.getSkills().getCookingSkill().getCurrentLevel());
-            guiList.add(cookingMenu);
-            if (!guiList.contains(backpackGui)) {
-                openBackpack();
-            }
-        } else {
-            hideCookingMenu();
-            closeBackpack();
-        }
-    }
-
-    public boolean isCookingMenuOpen() {
-        return guiList.contains(cookingMenu);
-    }
-
-    public void hideCookingMenu() {
-        guiList.remove(cookingMenu);
     }
 
     /**
@@ -1482,14 +1502,6 @@ public class Game extends JFrame implements Runnable {
         return gameMaps.get(MAIN_MAP).getNpcSpot(npcType);
     }
 
-    public void interact() {
-        for (InteractionZone zone : interactionZones) {
-            if (zone.isPlayerInRange()) {
-                zone.action(this);
-            }
-        }
-    }
-
     public void switchDialogBox() {
         if (!guiList.contains(dialogBox)) {
             showDialogBox();
@@ -1586,6 +1598,27 @@ public class Game extends JFrame implements Runnable {
         refreshCurrentMapCache();
         gameObjectsList.add(vendorNpc);
         interactionZones.add(vendorNpc.getInteractionZone());
+    }
+
+    /**
+     * =================================== INTERACTION ZONES ======================================
+     */
+
+    public void interact() {
+        for (InteractionZone zone : interactionZones) {
+            if (zone.isPlayerInRange()) {
+                zone.action(this);
+            }
+        }
+    }
+
+    public boolean isInRangeOfAnyKitchen() {
+        for (InteractionZone zone : interactionZones) {
+            if (zone instanceof InteractionZoneKitchen && zone.isPlayerInRange()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

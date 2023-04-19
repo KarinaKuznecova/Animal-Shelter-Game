@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static base.constants.Constants.CELL_SIZE;
 import static base.constants.Constants.TILE_SIZE;
@@ -91,7 +92,11 @@ public class ShopService {
 
         int currentRow = 0;
         int currentColumn = 0;
-        for (ShopItem shopItem : shopItemList) {
+        List<ShopItem> itemsForSale = shopItemList.stream()
+                .filter(shopItem -> shopItem.getBuyPrice() > 0)
+                .collect(Collectors.toList());
+
+        for (ShopItem shopItem : itemsForSale) {
             Rectangle buttonRectangle = new Rectangle(currentColumn * (CELL_SIZE + 2), currentRow * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
             Sprite itemSprite = game.getSpriteService().getPlantPreviewSprite(shopItem.getItemName());
             buttons.add(new ShopButton(shopItem.getItemName(), itemSprite, buttonRectangle, shopItem.getBuyPrice()));
@@ -112,6 +117,6 @@ public class ShopService {
                 return price.getSellPrice();
             }
         }
-        return 1;
+        return 0;
     }
 }

@@ -47,6 +47,7 @@ public class GameMap {
     private final List<Oak> oaks = new CopyOnWriteArrayList<>();
     private final List<Spruce> spruces = new CopyOnWriteArrayList<>();
     private List<CookingStove> cookingStoves = new CopyOnWriteArrayList<>();
+    private List<Fridge> fridges = new CopyOnWriteArrayList<>();
     private final List<NpcSpot> npcSpots = new CopyOnWriteArrayList<>();
     private final List<NpcSpawnSpot> npcSpawnSpots = new CopyOnWriteArrayList<>();
     private transient List<Npc> npcs = new CopyOnWriteArrayList<>();
@@ -191,12 +192,15 @@ public class GameMap {
             spruces.add((Spruce) object);
         } else if (object instanceof CookingStove) {
             cookingStoves.add((CookingStove) object);
+        } else if (object instanceof Fridge) {
+            fridges.add((Fridge) object);
         } else if (object instanceof NpcSpot) {
             npcSpots.add((NpcSpot) object);
         } else if (object instanceof NpcSpawnSpot) {
             npcSpawnSpots.add((NpcSpawnSpot) object);
         } else if (object instanceof Npc) {
             npcs.add((Npc) object);
+            interactiveObjects.add(object);
         } else {
             interactiveObjects.add(object);
         }
@@ -301,6 +305,17 @@ public class GameMap {
         for (CookingStove cookingStove : cookingStoves) {
             if (cookingStove.getRectangle().intersects(rectangle)) {
                 cookingStoves.remove(cookingStove);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean removeFridge(int xPosition, int yPosition) {
+        Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
+        for (Fridge fridge : fridges) {
+            if (fridge.getRectangle().intersects(rectangle)) {
+                fridges.remove(fridge);
                 return true;
             }
         }
@@ -462,6 +477,17 @@ public class GameMap {
             cookingStoves = new CopyOnWriteArrayList<>();
         }
         return cookingStoves;
+    }
+
+    public List<Fridge> getFridges() {
+        if (fridges == null) {
+            fridges = new CopyOnWriteArrayList<>();
+        }
+        return fridges;
+    }
+
+    public void setFridges(List<Fridge> fridges) {
+        this.fridges = fridges;
     }
 
     public List<NpcSpot> getNpcSpots() {

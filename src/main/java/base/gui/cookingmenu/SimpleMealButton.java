@@ -29,9 +29,9 @@ public class SimpleMealButton extends MealButton {
             game.getItem(PetFood.SIMPLE_MEAL, game.getSpriteService().getSimpleMealSprite(), amount);
             game.getCookingMenu().useItems(1);
             if (amount == 1) {
-                game.getPlayer().getSkills().getCookingSkill().getExperienceSmall();
+                game.getPlayer().getSkills().getCookingSkill().getExperienceMedium(game.getRenderer());
             } else {
-                game.getPlayer().getSkills().getCookingSkill().getExperienceMedium();
+                game.getPlayer().getSkills().getCookingSkill().getExperienceLarge(game.getRenderer());
             }
         }
     }

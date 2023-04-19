@@ -32,6 +32,7 @@ public class VisibleText {
     public static String home2 = "Home 2";
     public static String hunger = "Hunger";
     public static String island = "Island";
+    public static String levelUpLine = "Level up! %s is level %s!";
     public static String location = "Location";
     public static String name = "Name";
     public static String named = "named";
@@ -212,6 +213,13 @@ public class VisibleText {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
                         island = splitLine[1];
+                    }
+                    continue;
+                }
+                if (line.startsWith("LevelUpLine:")) {
+                    String[] splitLine = line.split(":");
+                    if (splitLine.length > 1) {
+                        levelUpLine = splitLine[1];
                     }
                     continue;
                 }

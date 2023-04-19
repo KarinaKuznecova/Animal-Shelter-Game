@@ -20,7 +20,7 @@ import java.awt.image.DataBufferInt;
 import java.util.List;
 import java.util.*;
 
-import static base.constants.ColorConstant.ALPHA;
+import static base.constants.ColorConstant.*;
 import static base.constants.Constants.*;
 import static base.constants.MultiOptionalObjects.bookcases;
 
@@ -85,14 +85,14 @@ public class RenderHandler {
             Position linePosition = entry.getKey();
             int xPosition = linePosition.getXPosition() - camera.getX();
             int yPosition = linePosition.getYPosition() - camera.getY();
-            renderText(graphics, entry.getValue(), xPosition, yPosition);
+            renderText(graphics, entry.getValue(), xPosition, yPosition, Color.BLACK, 20);
         }
     }
 
     private void drawFixedTexts(Graphics graphics) {
         for (Map.Entry<Position, String> entry : textToDrawFixed.entrySet()) {
             Position linePosition = entry.getKey();
-            renderText(graphics, entry.getValue(), linePosition.getXPosition(), linePosition.getYPosition());
+            renderText(graphics, entry.getValue(), linePosition.getXPosition(), linePosition.getYPosition(), Color.BLACK, 20);
         }
     }
 
@@ -365,6 +365,11 @@ public class RenderHandler {
                 cookingStove.render(this, ZOOM);
             }
         }
+        for (Fridge fridge : gameMap.getFridges()) {
+            if (fridge.getLayer() == layer) {
+                fridge.render(this, ZOOM);
+            }
+        }
         for (GameObject gameObject : gameMap.getInteractiveObjects()) {
             if (gameObject.getLayer() == layer) {
                 gameObject.render(this, ZOOM);
@@ -373,16 +378,21 @@ public class RenderHandler {
     }
 
     private void renderText(Graphics graphics) {
-        int xOffset = maxScreenWidth / 4;
+        int xOffset = maxScreenWidth / 3;
         int yOffset = 20;
         for (int i = 0; i < textToDrawInCenter.size(); i++) {
-            renderText(graphics, textToDrawInCenter.get(i), xOffset, 300 + (yOffset * i));
+            Color color = new Color(0xB3FFFFFF, true);
+            renderText(graphics, textToDrawInCenter.get(i), xOffset, maxScreenHeight / 3 + (yOffset * i), color, 24);
         }
     }
 
-    private void renderText(Graphics graphics, String line, int x, int y) {
-        graphics.setColor(Color.black);
-        graphics.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+    private void renderText(Graphics graphics, String line, int x, int y, Color color, int fontSize) {
+        graphics.setColor(color);
+        if (fontSize > 20) {
+            graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, fontSize));
+        } else {
+            graphics.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, fontSize));
+        }
         graphics.drawString(line, x, y);
     }
 
