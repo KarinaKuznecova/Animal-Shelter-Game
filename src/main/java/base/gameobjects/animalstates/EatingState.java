@@ -44,6 +44,9 @@ public class EatingState implements AnimalState {
     }
 
     private int getSaturationAmount(String foodType) {
+        if (foodType == null){
+            return 0;
+        }
         switch (foodType) {
             case PetFood.SIMPLE_MEAL:
                 return 50;
