@@ -14,7 +14,9 @@ public class EatingState implements AnimalState {
     protected static final Logger logger = LoggerFactory.getLogger(EatingState.class);
 
     private int movingTicks = 0;
-    private String foodTypeEating = "";
+
+    private final String RAW_MEAL = "rawMeal";
+    private String foodTypeEating = RAW_MEAL;
 
     @Override
     public void update(Animal animal, Game game) {
@@ -49,8 +51,10 @@ public class EatingState implements AnimalState {
                 return 75;
             case PetFood.PERFECT_MEAL:
                 return 100;
-            default:
+            case RAW_MEAL:
                 return 25;
+            default:
+                return 0;
         }
 
     }
@@ -67,6 +71,7 @@ public class EatingState implements AnimalState {
         for (Item item : game.getGameMap(animal.getCurrentMap()).getItems()) {
             if (item != null && animal.getRectangle().intersects(item.getRectangle())) {
                 game.getGameMap(animal.getCurrentMap()).removeItem(item.getItemName(), item.getRectangle());
+                foodTypeEating = RAW_MEAL;
                 return true;
             }
         }
