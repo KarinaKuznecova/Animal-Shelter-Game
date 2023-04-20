@@ -57,4 +57,8 @@ public class FoodBowl extends Bowl {
         super.emptyBowl();
         foodType = null;
     }
+
+    public String getFoodType() {
+        return foodType;
+    }
 }

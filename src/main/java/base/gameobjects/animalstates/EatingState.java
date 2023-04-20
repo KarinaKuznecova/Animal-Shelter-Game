@@ -1,10 +1,7 @@
 package base.gameobjects.animalstates;
 
 import base.Game;
-import base.gameobjects.Animal;
-import base.gameobjects.FoodBowl;
-import base.gameobjects.Item;
-import base.gameobjects.WaterBowl;
+import base.gameobjects.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,10 +15,13 @@ public class EatingState implements AnimalState {
 
     private int movingTicks = 0;
 
+    private final String RAW_MEAL = "rawMeal";
+    private String foodTypeEating = RAW_MEAL;
+
     @Override
     public void update(Animal animal, Game game) {
         if (isHungerLow(animal) && isNearFood(game, animal)) {
-            eatFood(animal);
+            eatFood(animal, getSaturationAmount(foodTypeEating));
             updateEatingDirection(animal);
             movingTicks = (10 * animal.getAnimatedSprite().getSpeed());
         } else if (isThirstLow(animal) && isNearWater(game, animal)) {
@@ -43,6 +43,25 @@ public class EatingState implements AnimalState {
         }
     }
 
+    private int getSaturationAmount(String foodType) {
+        if (foodType == null){
+            return 0;
+        }
+        switch (foodType) {
+            case PetFood.SIMPLE_MEAL:
+                return 50;
+            case PetFood.TASTY_MEAL:
+                return 75;
+            case PetFood.PERFECT_MEAL:
+                return 100;
+            case RAW_MEAL:
+                return 25;
+            default:
+                return 0;
+        }
+
+    }
+
     public boolean isHungerLow(Animal animal) {
         return animal.getCurrentHunger() < MAX_HUNGER / 100 * 70;
     }
@@ -55,11 +74,13 @@ public class EatingState implements AnimalState {
         for (Item item : game.getGameMap(animal.getCurrentMap()).getItems()) {
             if (item != null && animal.getRectangle().intersects(item.getRectangle())) {
                 game.getGameMap(animal.getCurrentMap()).removeItem(item.getItemName(), item.getRectangle());
+                foodTypeEating = RAW_MEAL;
                 return true;
             }
         }
         for (FoodBowl bowl : game.getGameMap(animal.getCurrentMap()).getFoodBowls()) {
             if (bowl.isFull() && animal.getRectangle().intersects(bowl.getRectangle())) {
+                foodTypeEating = bowl.getFoodType();
                 bowl.emptyBowl();
                 return true;
             }
@@ -67,9 +88,9 @@ public class EatingState implements AnimalState {
         return false;
     }
 
-    private void eatFood(Animal animal) {
+    private void eatFood(Animal animal, int amount) {
         logger.info(String.format("%s ate food", animal));
-        int hungerInPercent = animal.getCurrentHungerInPercent() >= 50 ? 100 : animal.getCurrentHungerInPercent() + 50;
+        int hungerInPercent = Math.min(animal.getCurrentHungerInPercent() + amount, 100);
         animal.setHungerInPercent(hungerInPercent);
         logger.debug(String.format("Hunger level for %s is %d percent", animal, animal.getCurrentHungerInPercent()));
     }
