@@ -27,7 +27,7 @@ public class NpcVendor extends Npc {
 
     @Override
     protected AnimatedSprite getAnimatedSprite() {
-        return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_MAN, 64);
+        return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_MAN, 64, 10);
     }
 
     @Override

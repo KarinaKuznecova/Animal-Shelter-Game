@@ -30,18 +30,18 @@ public class ImageLoader {
         return null;
     }
 
-    public static AnimatedSprite getAnimatedSprite(String path, int tileSize) {
-        return getAnimatedSprite(path, tileSize, tileSize);
+    public static AnimatedSprite getAnimatedSprite(String path, int tileSize, int animationSpeed) {
+        return getAnimatedSprite(path, tileSize, tileSize, animationSpeed);
     }
 
-    public static AnimatedSprite getAnimatedSprite(String path, int tileWidth, int tileHeight) {
+    public static AnimatedSprite getAnimatedSprite(String path, int tileWidth, int tileHeight, int animationSpeed) {
         if (path == null) {
             return null;
         }
         BufferedImage sheetImage = loadImage(path);
         SpriteSheet animalSheet = new SpriteSheet(sheetImage);
         animalSheet.loadSprites(tileWidth, tileHeight, 0);
-        return new AnimatedSprite(animalSheet, 10, false);
+        return new AnimatedSprite(animalSheet, animationSpeed, false);
     }
 
     public static Sprite getPreviewSprite(String previewPath) {

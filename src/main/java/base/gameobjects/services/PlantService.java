@@ -123,11 +123,10 @@ public class PlantService {
         for (String plantType : plantTypes) {
             AnimatedSprite animatedSprite;
             if (plantType.equalsIgnoreCase(Corn.NAME)) {
-                animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(plantType), 32, 64);
+                animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(plantType), 32, 64, 0);
             } else {
-                animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(plantType), TILE_SIZE);
+                animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(plantType), TILE_SIZE, 0);
             }
-            animatedSprite.setSpeed(0);
             animatedSprite.setAnimationRange(0, 4);
             animatedSprites.put(plantType, animatedSprite);
         }

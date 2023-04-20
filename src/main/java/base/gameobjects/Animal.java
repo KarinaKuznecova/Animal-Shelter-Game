@@ -97,7 +97,7 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     protected void loadAnimatedSprite() {
-        animatedSprite = ImageLoader.getAnimatedSprite(IMAGES_PATH + animalType + ".png", tileSize);
+        animatedSprite = ImageLoader.getAnimatedSprite(IMAGES_PATH + animalType + ".png", tileSize, 10);
     }
 
     protected void setPreviewSprite() {

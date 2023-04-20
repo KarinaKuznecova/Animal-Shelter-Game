@@ -49,7 +49,7 @@ public class Npc implements GameObject, Walking {
     }
 
     protected AnimatedSprite getAnimatedSprite() {
-       return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64);
+       return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64, 3);
     }
 
     @Override
