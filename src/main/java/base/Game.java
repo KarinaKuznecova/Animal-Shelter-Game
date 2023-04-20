@@ -1523,11 +1523,6 @@ public class Game extends JFrame implements Runnable {
         dialogBox.setDialogText(text);
     }
 
-    public void sendNpcAway() {
-        Route route = calculateRouteToCity(npc);
-        npc.goAway(route);
-    }
-
     public void removeNpc(Npc npc) {
         logger.info("Removing npc");
         gameObjectsList.remove(npc);
@@ -1541,7 +1536,7 @@ public class Game extends JFrame implements Runnable {
     public void giveAnimal() {
         Animal adoptedAnimal = npc.getWantedAnimal();
         if (adoptedAnimal == null) {
-            npc.goAway(calculateRouteToCity(npc));
+            sendNpcAway();
             return;
         }
         Route route = calculateRouteToNpc(adoptedAnimal);
@@ -1550,9 +1545,9 @@ public class Game extends JFrame implements Runnable {
 
     public void sendAnimalAway(Animal adoptedAnimal) {
         logger.info(String.format("%s is going AWAY with NPC", adoptedAnimal));
+        adoptedAnimal.setSpeed(2);
         Route route = routeCalculator.calculateRoute(getGameMap(adoptedAnimal.getCurrentMap()), adoptedAnimal, "city");
         adoptedAnimal.goAway(route);
-        adoptedAnimal.setSpeed(2);
         sendNpcAway();
         int randomDrop = random.nextInt(2);
         if (randomDrop == 1) {
@@ -1560,6 +1555,11 @@ public class Game extends JFrame implements Runnable {
         } else {
             dropRandomFood();
         }
+    }
+
+    public void sendNpcAway() {
+        Route route = calculateRouteToCity(npc);
+        npc.goAway(route);
     }
 
     public void dropRandomFood() {
