@@ -24,8 +24,16 @@ public class InteractionZoneAdoptionNpc extends InteractionZone {
 
     @Override
     public void action(Game game) {
+        game.getAdoptionNpc().checkWantedAnimal(game);
         game.switchDialogBox();
-        game.setDialogText(getAdoptionDialog(wantedAnimal));
+        if (wantedAnimal == null) {
+            game.setDialogText("Nevermind, I see you don't have any animals for adoption");
+        } else {
+            game.setDialogText(getAdoptionDialog(wantedAnimal));
+        }
     }
 
+    public void setWantedAnimal(Animal wantedAnimal) {
+        this.wantedAnimal = wantedAnimal;
+    }
 }

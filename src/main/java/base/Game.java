@@ -1540,6 +1540,10 @@ public class Game extends JFrame implements Runnable {
 
     public void giveAnimal() {
         Animal adoptedAnimal = npc.getWantedAnimal();
+        if (adoptedAnimal == null) {
+            npc.goAway(calculateRouteToCity(npc));
+            return;
+        }
         Route route = calculateRouteToNpc(adoptedAnimal);
         adoptedAnimal.sendToNpc(route);
     }

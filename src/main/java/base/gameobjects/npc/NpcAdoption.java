@@ -113,11 +113,11 @@ public class NpcAdoption extends Npc {
         this.wantedAnimal = wantedAnimal;
     }
 
-    public boolean isGoingAway() {
-        return isGoingAway;
-    }
-
-    public boolean isArrived() {
-        return arrived;
+    public void checkWantedAnimal(Game game) {
+        if (!game.getAnimalService().isAnimalAvailableForAdoption(wantedAnimal)) {
+            wantedAnimal = game.getAnimalService().pickAvailableAnimal(game);
+            InteractionZoneAdoptionNpc zone = (InteractionZoneAdoptionNpc) interactionZone;
+            zone.setWantedAnimal(wantedAnimal);
+        }
     }
 }

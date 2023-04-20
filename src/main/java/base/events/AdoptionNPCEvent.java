@@ -62,20 +62,8 @@ public class AdoptionNPCEvent extends Event {
 
     @Override
     void startEvent(Game game) {
-        game.spawnAdoptionNpc(pickAnimal(game), MAIN_MAP);
+        game.spawnAdoptionNpc(game.getAnimalService().pickAvailableAnimal(game), MAIN_MAP);
         happened = true;
         currentCoolDown = coolDown;
-    }
-
-    public Animal pickAnimal(Game game) {
-        List<Animal> availableAnimals = new ArrayList<>();
-        for (List<Animal> animalList : game.getAnimalsOnMaps().values()) {
-            for (Animal animal : animalList) {
-                if (!animal.isFavorite()) {
-                    availableAnimals.add(animal);
-                }
-            }
-        }
-        return availableAnimals.get(random.nextInt(availableAnimals.size()));
     }
 }
