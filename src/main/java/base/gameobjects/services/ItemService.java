@@ -15,7 +15,11 @@ public class ItemService {
 
     public Item createNewItem(SpriteService spriteService, String itemType, int x, int y) {
         Item item = createNewItem(itemType, x, y);
-        item.setSprite(spriteService.getPlantPreviewSprite(itemType));
+        if (item instanceof PetFood) {
+            item.setSprite(spriteService.getMealSprite(itemType));
+        } else {
+            item.setSprite(spriteService.getPlantPreviewSprite(itemType));
+        }
         return item;
     }
 
@@ -25,6 +29,8 @@ public class ItemService {
             return new Seed(itemType, x, y);
         } else if (PlantService.plantTypes.contains(itemType)) {
             return new Item(x, y, itemType);
+        } else if (itemType.equalsIgnoreCase(PetFood.SIMPLE_MEAL) || itemType.equalsIgnoreCase(PetFood.TASTY_MEAL) || itemType.equalsIgnoreCase(PetFood.PERFECT_MEAL)) {
+            return new PetFood(x, y, itemType);
         }
         return null;
     }

@@ -145,7 +145,7 @@ public class GuiService implements Serializable {
         button.setObjectCount(button.getObjectCount() - 1);
         if (button.getObjectCount() <= 0) {
             button.makeEmpty();
-            game.changeSelectedItem(button.getDefaultId());
+            game.deselectItem();
         }
     }
 

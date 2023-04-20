@@ -11,6 +11,7 @@ public class ContextClue {
 
     private final transient Sprite sprite;
     private Rectangle rectangle;
+    private boolean isVisible;
 
     protected static final Logger logger = LoggerFactory.getLogger(ContextClue.class);
 
@@ -24,10 +25,20 @@ public class ContextClue {
     }
 
     public void render(RenderHandler renderer, int zoom, boolean fixed) {
-        renderer.renderSprite(sprite, rectangle.getX() + 2, rectangle.getY() + 2, zoom, fixed);
+        if (isVisible) {
+            renderer.renderSprite(sprite, rectangle.getX() + 2, rectangle.getY() + 2, zoom, fixed);
+        }
     }
 
     public Rectangle getRectangle() {
         return rectangle;
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
     }
 }

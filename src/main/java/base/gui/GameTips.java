@@ -1,5 +1,7 @@
 package base.gui;
 
+import base.graphicsservice.Position;
+import base.graphicsservice.RenderHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +17,14 @@ public class GameTips {
 
     protected static final Logger logger = LoggerFactory.getLogger(GameTips.class);
 
-    List<String> lines;
+    private List<String> lines;
 
-    public GameTips() {
+    private int xPosition;
+    private int yPosition;
+
+    public GameTips(int xPosition, int yPosition) {
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
         lines = readFromFile();
     }
 
@@ -45,5 +52,16 @@ public class GameTips {
 
     public List<String> getLines() {
         return lines;
+    }
+
+    public void render(RenderHandler renderHandler) {
+        int interval = 20;
+        int spacingToSides = 40;
+        int buttonHeight = 60;
+        for (int i = 0; i < getLines().size(); i++) {
+            int yPos = yPosition + spacingToSides + buttonHeight + (interval * i);
+            int xPos = xPosition + spacingToSides;
+            renderHandler.renderText(getLines().get(i), new Position(xPos, yPos));
+        }
     }
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.FilePath.*;
+import static base.gameobjects.PetFood.*;
 import static base.graphicsservice.ImageLoader.getPreviewSprite;
 
 public class SpriteService {
@@ -190,14 +191,14 @@ public class SpriteService {
         else if (Mushroom.ITEM_NAME.equalsIgnoreCase(itemType)) {
             return tileService.getTiles().get(Mushroom.TILE_ID).getSprite();
         }
-        else if (PetFood.SIMPLE_MEAL.equalsIgnoreCase(itemType)) {
-            return tileService.getTiles().get(PetFood.SIMPLE_MEAL_SPRITE_ID).getSprite();
+        else if (SIMPLE_MEAL.equalsIgnoreCase(itemType)) {
+            return tileService.getTiles().get(SIMPLE_MEAL_SPRITE_ID).getSprite();
         }
-        else if (PetFood.TASTY_MEAL.equalsIgnoreCase(itemType)) {
-            return tileService.getTiles().get(PetFood.TASTY_MEAL_SPRITE_ID).getSprite();
+        else if (TASTY_MEAL.equalsIgnoreCase(itemType)) {
+            return tileService.getTiles().get(TASTY_MEAL_SPRITE_ID).getSprite();
         }
-        else if (PetFood.PERFECT_MEAL.equalsIgnoreCase(itemType)) {
-            return tileService.getTiles().get(PetFood.PERFECT_MEAL_SPRITE_ID).getSprite();
+        else if (PERFECT_MEAL.equalsIgnoreCase(itemType)) {
+            return tileService.getTiles().get(PERFECT_MEAL_SPRITE_ID).getSprite();
         }
         return null;
     }
@@ -206,19 +207,31 @@ public class SpriteService {
      * =================================== COOKING ======================================
      */
 
-    private Sprite cookingStoveSprite;
+    private Map<Integer, Sprite> cookingStoveSprites = new HashMap<>();
 
-    public void loadCookingStoveSprite(Sprite cookingStoveSprite) {
-        this.cookingStoveSprite = cookingStoveSprite;
+    public void loadCookingStoveSprite(int id, Sprite cookingStoveSprite) {
+        cookingStoveSprites.put(id, cookingStoveSprite);
     }
 
-    public Sprite getCookingStoveSprite() {
-        return cookingStoveSprite;
+    public Sprite getCookingStoveSprite(int id) {
+        return cookingStoveSprites.get(id);
     }
 
     private Sprite simpleMealSprite;
     private Sprite tastyMealSprite;
     private Sprite perfectMealSprite;
+
+    public Sprite getMealSprite(String itemType) {
+        switch (itemType) {
+            case SIMPLE_MEAL:
+                return getSimpleMealSprite();
+            case TASTY_MEAL:
+                return getTastyMealSprite();
+            case PERFECT_MEAL:
+                return getPerfectMealSprite();
+        }
+        return null;
+    }
 
     public Sprite getSimpleMealSprite() {
         return simpleMealSprite;

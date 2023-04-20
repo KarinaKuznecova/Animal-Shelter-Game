@@ -27,9 +27,9 @@ public class TastyMealButton extends MealButton {
             game.getItem(PetFood.TASTY_MEAL, game.getSpriteService().getTastyMealSprite(), amount);
             game.getCookingMenu().useItems(2);
             if (amount == 1) {
-                game.getPlayer().getSkills().getCookingSkill().getExperienceSmall();
+                game.getPlayer().getSkills().getCookingSkill().getExperienceMedium(game.getRenderer());
             } else {
-                game.getPlayer().getSkills().getCookingSkill().getExperienceMedium();
+                game.getPlayer().getSkills().getCookingSkill().getExperienceLarge(game.getRenderer());
             }
         }
     }

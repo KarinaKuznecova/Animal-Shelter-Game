@@ -1,6 +1,8 @@
 package base.gameobjects.player;
 
-import static base.constants.VisibleText.gardening;
+import base.graphicsservice.RenderHandler;
+
+import static base.constants.VisibleText.*;
 
 public class CookingSkill extends Skill {
 
@@ -34,5 +36,12 @@ public class CookingSkill extends Skill {
             return 1;
         }
         return random.nextInt(2) + 1;
+    }
+
+    @Override
+    public void levelUp(RenderHandler renderHandler) {
+        super.levelUp(renderHandler);
+        String lineToDraw = String.format(levelUpLine, cooking, getCurrentLevel());
+        renderHandler.setTextToDraw(lineToDraw, 170);
     }
 }
