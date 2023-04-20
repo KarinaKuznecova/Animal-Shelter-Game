@@ -4,6 +4,7 @@ import base.Game;
 import base.gameobjects.Animal;
 
 import static base.constants.VisibleText.getAdoptionDialog;
+import static base.constants.VisibleText.noAnimalToAdopt;
 
 public class InteractionZoneAdoptionNpc extends InteractionZone {
 
@@ -27,7 +28,7 @@ public class InteractionZoneAdoptionNpc extends InteractionZone {
         game.getAdoptionNpc().checkWantedAnimal(game);
         game.switchDialogBox();
         if (wantedAnimal == null) {
-            game.setDialogText("Nevermind, I see you don't have any animals for adoption");
+            game.setDialogText(noAnimalToAdopt);
         } else {
             game.setDialogText(getAdoptionDialog(wantedAnimal));
         }

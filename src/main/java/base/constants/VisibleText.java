@@ -37,6 +37,7 @@ public class VisibleText {
     public static String name = "Name";
     public static String named = "named";
     public static String newName = "New Name";
+    public static String noAnimalToAdopt = "Nevermind, I see you don't have any animals for adoption";
     public static String secondMap = "Second map";
     public static String startingMap = "Starting map";
     public static String thirst = "Thirst";
@@ -255,6 +256,13 @@ public class VisibleText {
                     String[] splitLine = line.split(":");
                     if (splitLine.length > 1) {
                         newName = splitLine[1];
+                    }
+                    continue;
+                }
+                if (line.startsWith("No Animal To Adopt:")) {
+                    String[] splitLine = line.split(":");
+                    if (splitLine.length > 1) {
+                        noAnimalToAdopt = splitLine[1];
                     }
                     continue;
                 }
