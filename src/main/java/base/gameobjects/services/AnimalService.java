@@ -1,5 +1,6 @@
 package base.gameobjects.services;
 
+import base.Game;
 import base.gameobjects.AgeStage;
 import base.gameobjects.Animal;
 import base.gameobjects.animals.*;
@@ -368,5 +369,25 @@ public class AnimalService {
         } else {
             return maleNamesList.get(random.nextInt(maleNamesList.size()));
         }
+    }
+
+    public Animal pickAvailableAnimal(Game game) {
+        List<Animal> availableAnimals = new ArrayList<>();
+        for (List<Animal> animalList : game.getAnimalsOnMaps().values()) {
+            for (Animal animal : animalList) {
+                if (isAnimalAvailableForAdoption(animal)) {
+                    availableAnimals.add(animal);
+                }
+            }
+        }
+        if (availableAnimals.isEmpty()) {
+            return null;
+        }
+        return availableAnimals.get(random.nextInt(availableAnimals.size()));
+    }
+
+
+    public boolean isAnimalAvailableForAdoption(Animal animal) {
+        return animal != null && !animal.isFavorite();
     }
 }
