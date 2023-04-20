@@ -88,15 +88,15 @@ public class NpcAdoption extends Npc {
         int randomNumber = new Random().nextInt(4);
         switch (randomNumber) {
             case 0:
-                return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64);
+                return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64, 3);
             case 1:
-                return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY1, 64);
+                return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY1, 64, 3);
             case 2:
-                return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY2, 64);
+                return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY2, 64, 3);
             case 3:
-                return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY3, 64);
+                return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY3, 64, 3);
         }
-        return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64);
+        return ImageLoader.getAnimatedSprite(NPC_SHEET_PATH_LADY, 64, 3);
     }
 
     public void goAway(Route route) {

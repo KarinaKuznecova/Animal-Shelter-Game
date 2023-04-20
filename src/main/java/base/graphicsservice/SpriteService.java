@@ -64,12 +64,12 @@ public class SpriteService {
     private AnimatedSprite foodBowlSprite;
 
     public void setBowlsSprites() {
-        AnimatedSprite foodBowl = ImageLoader.getAnimatedSprite(FOOD_BOWL_PATH, TILE_SIZE);
+        AnimatedSprite foodBowl = ImageLoader.getAnimatedSprite(FOOD_BOWL_PATH, TILE_SIZE, 0);
         foodBowl.setAnimationRange(0, 3);
         foodBowl.setVertical(false);
         this.foodBowlSprite = foodBowl;
 
-        AnimatedSprite waterBowl = ImageLoader.getAnimatedSprite(WATER_BOWL_PATH, TILE_SIZE);
+        AnimatedSprite waterBowl = ImageLoader.getAnimatedSprite(WATER_BOWL_PATH, TILE_SIZE, 0);
         waterBowl.setAnimationRange(0, 1);
         waterBowl.setVertical(false);
         this.waterBowlSprite = waterBowl;
