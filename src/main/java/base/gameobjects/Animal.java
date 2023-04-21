@@ -344,20 +344,25 @@ public abstract class Animal implements GameObject, Walking {
      */
 
     public void setWalkingState() {
+        walkingState.resetMovingTicks();
         state = walkingState;
     }
 
     public void setWaitingState() {
+        updateDirection();
         state = new WaitingState();
     }
 
     public void setWaitingState(int howLong) {
+        updateDirection();
         waitingState.setWaiting(howLong);
+        animatedSprite.reset();
         state = waitingState;
     }
 
     public void setEatingState() {
         state = eatingState;
+        animatedSprite.reset();
     }
 
     public void setSleepingState() {
@@ -365,6 +370,7 @@ public abstract class Animal implements GameObject, Walking {
     }
 
     public void setWakingUpState() {
+        wakingUpState.initializeWakingUp(this);
         state = wakingUpState;
     }
 
