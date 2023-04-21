@@ -23,15 +23,11 @@ public class EatingState implements AnimalState {
         if (isHungerLow(animal) && isNearFood(game, animal)) {
             eatFood(animal, getSaturationAmount(foodTypeEating));
             updateEatingDirection(animal);
-            movingTicks = (10 * animal.getAnimatedSprite().getSpeed());
+            movingTicks = (16 * animal.getAnimatedSprite().getSpeed());
         } else if (isThirstLow(animal) && isNearWater(game, animal)) {
             drink(animal);
             updateEatingDirection(animal);
-            movingTicks = (12 * animal.getAnimatedSprite().getSpeed());
-        }
-
-        if (!animal.isHungerLow() && !animal.isThirstLow()) {
-            resetSpeedToDefault(animal);
+            movingTicks = (16 * animal.getAnimatedSprite().getSpeed());
         }
 
         movingTicks--;
@@ -39,7 +35,7 @@ public class EatingState implements AnimalState {
         if (movingTicks > 0) {
             animal.getAnimatedSprite().update(game);
         } else {
-            animal.setWaitingState();
+            animal.setWaitingState(20);
         }
     }
 
@@ -131,9 +127,5 @@ public class EatingState implements AnimalState {
             animal.setDirection(STAY);
         }
         animal.updateDirection();
-    }
-
-    protected void resetSpeedToDefault(Animal animal) {
-        animal.setSpeed(2);
     }
 }

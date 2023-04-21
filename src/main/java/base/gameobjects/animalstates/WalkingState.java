@@ -283,4 +283,8 @@ public class WalkingState implements AnimalState {
         }
         return false;
     }
+
+    public void resetMovingTicks() {
+        movingTicks = 0;
+    }
 }

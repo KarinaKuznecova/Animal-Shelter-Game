@@ -12,17 +12,22 @@ public class WakingUpState implements AnimalState {
 
     @Override
     public void update(Animal animal, Game game) {
-        if (movingTicks == 0) {
-            initializeWakingUp(animal);
-        } else if (movingTicks == 1) {
-            movingTicks--;
-            animal.setWaitingState();
+        if (movingTicks >= 1) {
+            animal.getAnimatedSprite().update(game);
         } else {
-            movingTicks--;
+            if (animal.getDirection() == WAKEUP_LEFT) {
+                animal.setDirection(LEFT);
+            }
+            if (animal.getDirection() == WAKEUP_RIGHT) {
+                animal.setDirection(RIGHT);
+            }
+            animal.getAnimatedSprite().setSpeed(10);
+            animal.setWaitingState(20);
         }
+        movingTicks--;
     }
 
-    private void initializeWakingUp(Animal animal) {
+    public void initializeWakingUp(Animal animal) {
         animal.setCurrentEnergy(MAX_ENERGY);
         if (animal.getDirection() == SLEEP_LEFT) {
             animal.setDirection(WAKEUP_LEFT);
@@ -31,6 +36,8 @@ public class WakingUpState implements AnimalState {
             animal.setDirection(WAKEUP_RIGHT);
         }
         animal.updateDirection();
-        movingTicks = (3 * animal.getAnimatedSprite().getSpeed()) + 1;
+        animal.getAnimatedSprite().reset();
+        animal.getAnimatedSprite().setSpeed(20);
+        movingTicks = (4 * animal.getAnimatedSprite().getSpeed()) - 1;
     }
 }
