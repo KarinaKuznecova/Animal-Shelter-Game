@@ -14,9 +14,9 @@ import static base.constants.FilePath.MALE_NAMES_FILE_PATH;
 
 public class AnimalNamingService {
 
-    private List<String> femaleNamesList = new ArrayList<>();
-    private List<String> maleNamesList = new ArrayList<>();
-    private Random random = new Random();
+    private final List<String> femaleNamesList = new ArrayList<>();
+    private final List<String> maleNamesList = new ArrayList<>();
+    private final Random random = new Random();
 
     public AnimalNamingService(){
         cacheNames();
