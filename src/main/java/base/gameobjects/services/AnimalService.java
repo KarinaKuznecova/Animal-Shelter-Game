@@ -23,44 +23,14 @@ import static base.gameobjects.AgeStage.BABY;
 public class AnimalService {
 
     public static final List<String> ANIMAL_TYPES = Arrays.asList(Rat.TYPE, Mouse.TYPE, Chicken.TYPE, Butterfly.TYPE, Cat.TYPE, Pig.TYPE, Bunny.TYPE, Dog.TYPE, Wolf.TYPE);
-    private List<String> femaleNamesList = new ArrayList<>();
-    private List<String> maleNamesList = new ArrayList<>();
-
     private Random random = new Random();
 
     protected static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
+    private AnimalNamingService animalNamingService = new AnimalNamingService();
 
     public AnimalService() {
-        cacheNames();
-    }
 
-    private void cacheNames() {
-        File femaleNames = new File(FEMALE_NAMES_FILE_PATH);
-        File maleNames = new File(MALE_NAMES_FILE_PATH);
-        readFromFile(femaleNames, true);
-        readFromFile(maleNames, false);
     }
-
-    private void readFromFile(File file, boolean female) {
-        try (Scanner scanner = new Scanner(file)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] splitLine = line.split(":");
-                if (splitLine[0].equalsIgnoreCase(LANGUAGE)) {
-                    String[] names = splitLine[1].split(",");
-                    if (female) {
-                        femaleNamesList.addAll(Arrays.asList(names));
-                    } else {
-                        maleNamesList.addAll(Arrays.asList(names));
-                    }
-                    break;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
     public Map<String, Sprite> getAnimalPreviewSprites() {
         Map<String, Sprite> previews = new HashMap<>();
         for (String animalName : ANIMAL_TYPES) {
@@ -74,9 +44,9 @@ public class AnimalService {
             String[] split = animalType.split("-");
             String name = split[0];
             String color = split[1];
-            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, getRandomName(random.nextBoolean()));
+            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, animalNamingService.getRandomName(random.nextBoolean()));
         }
-        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, getRandomName(random.nextBoolean()));
+        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, animalNamingService.getRandomName(random.nextBoolean()));
     }
 
     public Animal createAnimal(String animalType, int startX, int startY, String mapName, String color, int hunger, int thirst, int energy, AgeStage age, String name) {
@@ -361,14 +331,6 @@ public class AnimalService {
             animalType = RAT_COLORS.get(ratType);
         }
         return animalType;
-    }
-
-    private String getRandomName(boolean female) {
-        if (female) {
-            return femaleNamesList.get(random.nextInt(femaleNamesList.size()));
-        } else {
-            return maleNamesList.get(random.nextInt(maleNamesList.size()));
-        }
     }
 
     public Animal pickAvailableAnimal(Game game) {
