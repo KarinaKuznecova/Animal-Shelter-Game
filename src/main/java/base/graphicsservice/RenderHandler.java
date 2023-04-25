@@ -474,11 +474,8 @@ public class RenderHandler {
         textToDrawFixed.put(textPosition, text);
     }
 
-    public void renderCustomizableText(String text, String customizable, Position textPosition, EditIcon editIcon) {
+    public void renderCustomizableText(String text, Position textPosition, EditIcon editIcon) {
         textToDrawFixed.put(textPosition, text);
-
-        Position customTextPosition = new Position(textPosition.getXPosition() + text.length() * 10, textPosition.getYPosition());
-        textToDrawFixed.put(customTextPosition, customizable);
 
         Position editIconPosition = new Position(textPosition.getXPosition() - 20, textPosition.getYPosition() - 15);
         editIcon.changePosition(editIconPosition);

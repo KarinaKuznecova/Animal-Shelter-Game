@@ -37,7 +37,7 @@ public class AnimalStats {
         }
         statsRectangle.generateBorder(2, BROWN, LIGHT_BLUE);
         renderer.renderRectangle(statsRectangle, rectangle, 1, true);
-        renderer.renderCustomizableText(name + ": ", animal.getName(), new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 30), editIcon);
+        renderer.renderCustomizableText(name + ": " + animal.getName(), new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 30), editIcon);
         renderer.renderText(hunger + ": " + animal.getCurrentHungerInPercent() + "%", new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 50));
         renderer.renderText(thirst + ": " + animal.getCurrentThirstInPercent() + "%", new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 70));
         renderer.renderText(energy + ": " + animal.getCurrentEnergyInPercent() + "%", new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 90));
