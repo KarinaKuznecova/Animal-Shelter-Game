@@ -76,9 +76,7 @@ public class Bush implements GameObject {
             renderer.renderRectangle(rectangle, ZOOM, false);
             interactionZone.render(renderer, zoom);
         }
-        if (canContainAnimal && interactionZone.isPlayerInRange() && isAnimalInside) {
-            contextClue.render(renderer, 1, true);
-        }
+        contextClue.render(renderer, 1, true);
     }
 
     @Override
@@ -93,6 +91,8 @@ public class Bush implements GameObject {
         if (!isAnimalInside) {
             currentInterval--;
         }
+        contextClue.setVisible(canContainAnimal && interactionZone.isPlayerInRange() && isAnimalInside);
+
         interactionZone.update(game);
         int xPosition = getX() - game.getRenderer().getCamera().getX() + 85;
         int yPosition = getY() - game.getRenderer().getCamera().getY() - 30;
