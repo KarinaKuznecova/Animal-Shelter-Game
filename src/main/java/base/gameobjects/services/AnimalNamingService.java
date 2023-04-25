@@ -3,6 +3,8 @@ package base.gameobjects.services;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,17 +20,20 @@ public class AnimalNamingService {
     private final List<String> maleNamesList = new ArrayList<>();
     private final Random random = new Random();
 
-    public AnimalNamingService(){
+    protected static final Logger logger = LoggerFactory.getLogger(AnimalNamingService.class);
+
+    public AnimalNamingService() {
         cacheNames();
     }
 
-    private void cacheNames()  {
+    private void cacheNames() {
         readJsonFile(FEMALE_NAMES_FILE_PATH, true);
         readJsonFile(MALE_NAMES_FILE_PATH, false);
 
     }
-    private void readJsonFile(String path, boolean female){
-        try(BufferedReader reader = new BufferedReader(new FileReader(path))){
+
+    private void readJsonFile(String path, boolean female) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             Gson gson = new Gson();
             JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
 
@@ -41,7 +46,8 @@ public class AnimalNamingService {
             } else {
                 maleNamesList.addAll(names);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
+            logger.error("Unable to read name files");
             e.printStackTrace();
         }
     }
@@ -53,6 +59,5 @@ public class AnimalNamingService {
             return maleNamesList.get(random.nextInt(maleNamesList.size()));
         }
     }
-
 
 }

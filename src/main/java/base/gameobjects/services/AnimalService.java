@@ -23,14 +23,11 @@ import static base.gameobjects.AgeStage.BABY;
 public class AnimalService {
 
     public static final List<String> ANIMAL_TYPES = Arrays.asList(Rat.TYPE, Mouse.TYPE, Chicken.TYPE, Butterfly.TYPE, Cat.TYPE, Pig.TYPE, Bunny.TYPE, Dog.TYPE, Wolf.TYPE);
-    private Random random = new Random();
+    private final Random random = new Random();
 
     protected static final Logger logger = LoggerFactory.getLogger(AnimalService.class);
-    private AnimalNamingService animalNamingService = new AnimalNamingService();
+    private final AnimalNamingService animalNamingService = new AnimalNamingService();
 
-    public AnimalService() {
-
-    }
     public Map<String, Sprite> getAnimalPreviewSprites() {
         Map<String, Sprite> previews = new HashMap<>();
         for (String animalName : ANIMAL_TYPES) {
