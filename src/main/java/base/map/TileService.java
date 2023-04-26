@@ -12,7 +12,6 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import static base.constants.Constants.TILE_SIZE;
 import static base.constants.FilePath.*;
@@ -41,12 +40,8 @@ public class TileService {
     private void loadTerrainTiles() {
         logger.info("Loading technical terrain tiles");
         SpriteSheet spriteSheet = loadSpriteSheets(TERRAIN_SPRITES_PATH);
-        terrainTiles = loadTilesAsJson(TERRAIN_TILE_LIST_PATH + ".json");
-        if (terrainTiles == null) {
-            terrainTiles = getTilesFromFile(CONFIG_DIRECTORY + TERRAIN_TILE_LIST_PATH + ".txt", spriteSheet);
-        } else {
-            addSpritesToTerrainTiles(spriteSheet);
-        }
+        terrainTiles = loadTilesAsJson(TERRAIN_TILE_LIST_PATH);
+        addSpritesToTerrainTiles(spriteSheet);
     }
 
     private SpriteSheet loadSpriteSheets(String path) {
@@ -62,32 +57,6 @@ public class TileService {
 
         logger.info("Sprite sheet loading done");
         return spriteSheet;
-    }
-
-    @Deprecated //soon only json config will be used
-    public List<Tile> getTilesFromFile(String tilesFile, SpriteSheet spriteSheet) {
-        List<Tile> tiles = new ArrayList<>();
-        File file = new File(tilesFile);
-        try (Scanner scanner = new Scanner(file)) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (!line.startsWith("//")) {
-                    String[] splitLine = line.split("-");
-                    String tileName = splitLine[0];
-                    int spriteXPosition = Integer.parseInt(splitLine[1]);
-                    int spriteYPosition = Integer.parseInt(splitLine[2]);
-                    int layer = Integer.parseInt(splitLine[3]);
-                    Tile tile = new Tile(tileName, spriteSheet.getSprite(spriteXPosition, spriteYPosition), layer, spriteXPosition, spriteYPosition);
-                    if (splitLine.length > 4) {
-                        tile.setVisibleInMenu(false);
-                    }
-                    tiles.add(tile);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return tiles;
     }
 
     public List<Tile> getTiles() {
@@ -126,12 +95,12 @@ public class TileService {
             if (!directory.exists() && !directory.mkdirs()) {
                 logger.error("Error while saving storage to json file - cannot create directory");
             }
-            FileWriter writer = new FileWriter(CONFIG_DIRECTORY + TILE_LIST_PATH + ".json");
+            FileWriter writer = new FileWriter(CONFIG_DIRECTORY + TILE_LIST_PATH);
             gson.toJson(tileList, writer);
             writer.flush();
             writer.close();
 
-            FileWriter writer2 = new FileWriter(CONFIG_DIRECTORY + TERRAIN_TILE_LIST_PATH + ".json");
+            FileWriter writer2 = new FileWriter(CONFIG_DIRECTORY + TERRAIN_TILE_LIST_PATH);
             gson.toJson(terrainTiles, writer2);
             writer2.flush();
             writer2.close();

@@ -76,7 +76,7 @@ public class FilePath {
     public static final String SPRITES_PATH = "img/tiles-new.png";
     public static final String TERRAIN_SPRITES_PATH = "img/terrain-tiles.png";
     public static final String TILE_LIST_PATH = "Tiles.json";
-    public static final String TERRAIN_TILE_LIST_PATH = "Tile-terrain";
+    public static final String TERRAIN_TILE_LIST_PATH = "Tile-terrain.json";
 
     public static final String IMAGES_PATH = "img/";
     public static final String ANIMALS_DIR_PATH = "animals/";
