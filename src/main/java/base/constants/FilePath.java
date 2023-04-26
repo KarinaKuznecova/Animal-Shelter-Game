@@ -53,8 +53,8 @@ public class FilePath {
     public static final String CONFIG_DIRECTORY = "config/";
     public static final String TIPS_FILE_PATH = "config/tips"+ "-" + LANGUAGE + ".txt";
     public static final String TRANSLATION_FILE_PATH = "config/translation" + "-" + LANGUAGE;
-    public static final String FEMALE_NAMES_FILE_PATH = "config/names-f.txt";
-    public static final String MALE_NAMES_FILE_PATH = "config/names-m.txt";
+    public static final String FEMALE_NAMES_FILE_PATH = "config/names-f.json";
+    public static final String MALE_NAMES_FILE_PATH = "config/names-m.json";
     public static final String SHOP_PRICES_FILE_PATH = "config/prices.json";
     public static final String PLAYER_CONFIG_FILE_PATH = "config/player.json";
 
