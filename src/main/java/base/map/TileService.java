@@ -32,12 +32,9 @@ public class TileService {
     private void loadRegularTiles() {
         logger.info("Loading regular tiles");
         SpriteSheet spriteSheet = loadSpriteSheets(SPRITES_PATH);
-        tileList = loadTilesAsJson(TILE_LIST_PATH + ".json");
-        if (tileList.isEmpty()) {
-            tileList = getTilesFromFile(CONFIG_DIRECTORY + TILE_LIST_PATH + ".txt", spriteSheet);
-        } else {
-            addSpritesToTiles(spriteSheet);
-        }
+        tileList = loadTilesAsJson(TILE_LIST_PATH);
+        addSpritesToTiles(spriteSheet);
+
         logger.info(String.format("Loaded %d tiles", tileList.size()));
     }
 
@@ -126,10 +123,8 @@ public class TileService {
         Gson gson = new Gson();
         try {
             File directory = new File(CONFIG_DIRECTORY);
-            if (!directory.exists()) {
-                if (!directory.mkdirs()) {
-                    logger.error("Error while saving storage to json file - cannot create directory");
-                }
+            if (!directory.exists() && !directory.mkdirs()) {
+                logger.error("Error while saving storage to json file - cannot create directory");
             }
             FileWriter writer = new FileWriter(CONFIG_DIRECTORY + TILE_LIST_PATH + ".json");
             gson.toJson(tileList, writer);

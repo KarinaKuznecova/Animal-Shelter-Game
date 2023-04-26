@@ -72,25 +72,23 @@ public class EscMenu extends GUI {
         popupWindow.setSize(250, 100);
         popupWindow.setLocationRelativeTo(null);
 
-        // Create two buttons and add them to the pop-up window
         JLabel jLabel = new JLabel("Are you sure you want to exit?");
         jLabel.setHorizontalAlignment(JLabel.CENTER);
         popupWindow.add(jLabel, "North");
-        JButton button1 = new JButton("Yes");
-        JButton button2 = new JButton("No");
+        JButton yesButton = new JButton("Yes");
+        JButton noButton = new JButton("No");
         JPanel panel = new JPanel();
 
-        panel.add(button1);
-        panel.add(button2);
+        panel.add(yesButton);
+        panel.add(noButton);
         popupWindow.add(panel, "Center");
 
-        // Add action listeners to the buttons
-        button1.addActionListener(e -> {
+        yesButton.addActionListener(e -> {
             popupWindow.dispose();
             game.dispose();
         });
 
-        button2.addActionListener(e -> {
+        noButton.addActionListener(e -> {
             changeColor(SOFT_PINK);
             popupWindow.dispose();
         });

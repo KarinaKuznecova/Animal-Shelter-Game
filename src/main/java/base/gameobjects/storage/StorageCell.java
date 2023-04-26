@@ -17,7 +17,7 @@ import static base.gameobjects.storage.Storage.BORDER_SIZE;
 
 public class StorageCell extends BackpackButton {
 
-    protected static final transient Logger logger = LoggerFactory.getLogger(StorageCell.class);
+    protected static final Logger logger = LoggerFactory.getLogger(StorageCell.class);
 
     public StorageCell(Rectangle rectangle, String item, Sprite itemSprite, String defaultId) {
         super(item, itemSprite, rectangle, defaultId);

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Backpack extends GUI {
 
-    MoneyIcon moneyIcon;
+    private final MoneyIcon moneyIcon;
     private int coins;
 
     public Backpack(List<GUIButton> buttons, int xPosition, int yPosition, int coins) {

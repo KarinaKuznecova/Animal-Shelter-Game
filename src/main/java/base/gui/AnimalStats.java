@@ -54,18 +54,6 @@ public class AnimalStats {
         }
     }
 
-    public void update(Game game) {
-        if (animal == game.getYourSelectedAnimal()) {
-            if (!isVisible) {
-                isVisible = true;
-            }
-        } else {
-            if (isVisible) {
-                isVisible = false;
-            }
-        }
-    }
-
     public boolean handleMouseClick(Rectangle mouseRectangle, Game game) {
         if (isVisible) {
             return editIcon.handleMouseClick(mouseRectangle, game, animal);

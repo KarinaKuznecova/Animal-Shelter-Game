@@ -61,7 +61,6 @@ public class AnimalIcon extends GUIButton {
                 stats.setVisible(false);
             }
         }
-        stats.update(game);
     }
 
     @Override

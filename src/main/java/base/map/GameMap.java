@@ -96,10 +96,6 @@ public class GameMap {
         return Arrays.asList(0, 2, 6, 8, 71, 72, 1, 3, 5, 7);
     }
 
-    public void sortInteractiveObjects() {
-        interactiveObjects.sort(Comparator.comparingInt(o -> o.getRectangle().getY()));
-    }
-
     /**
      * =================================== Setters with some logic ======================================
      */
@@ -279,11 +275,9 @@ public class GameMap {
             interactiveObjects.remove(object);
             return true;
         }
-        if (object instanceof Npc) {
-            if (npcs.contains(object)) {
-                npcs.remove(object);
-                return true;
-            }
+        if (object instanceof Npc && npcs.contains(object)) {
+            npcs.remove(object);
+            return true;
         }
         return false;
     }

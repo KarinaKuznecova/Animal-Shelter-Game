@@ -175,6 +175,7 @@ public class Game extends JFrame implements Runnable {
     private void loadGameObjects() {
         gameObjectsList = new CopyOnWriteArrayList<>();
         loadingService.getPlayerLoadingService().loadPlayer(this);
+        loadingService.getShopLoadingService().loadShop(this);
         loadingService.getNpcLoadingService().loadVendorNpc(this);
         cacheAllPlants();
     }
