@@ -36,7 +36,7 @@ public class NpcLoadingService {
         NpcVendor vendorNpc;
         Rectangle spot = game.getGameMap(CITY_MAP).getNpcSpot(NpcType.VENDOR).getRectangle();
         vendorNpc = new NpcVendor(spot.getX(), spot.getY());
-        vendorNpc.setShopMenu(game.getShopService().createShopMenu(game, vendorNpc.getRectangle()));
+        vendorNpc.setShopMenu(game.getLoadingService().getShopLoadingService().createShopMenuFromJsonPrices(game, vendorNpc.getRectangle()));
         vendorNpc.setCurrentMap(CITY_MAP);
 
         return vendorNpc;

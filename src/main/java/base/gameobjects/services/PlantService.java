@@ -132,21 +132,4 @@ public class PlantService {
         }
         return animatedSprites;
     }
-
-    @Deprecated
-    public Sprite getPlantSprite(String plantName) {
-        if (plantName == null) {
-            return null;
-        }
-        if (plantName.startsWith("seed")) {
-            plantName = plantName.substring(4);
-            return getSeedSprite(plantName);
-        }
-        return ImageLoader.getPreviewSprite(plantMapping.get(plantName));
-    }
-
-    @Deprecated
-    public Sprite getSeedSprite(String plantName) {
-        return ImageLoader.getPreviewSprite(seedMapping.get(plantName));
-    }
 }

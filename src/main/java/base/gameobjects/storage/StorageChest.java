@@ -44,17 +44,6 @@ public class StorageChest implements GameObject {
         isOpen = false;
     }
 
-    public StorageChest(int x, int y, String fileName) {
-        this.x = x;
-        this.y = y;
-        rectangle = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
-        interactionZone = new InteractionZoneStorageChest(x + 32, y + 32, 90);
-        storage = new Storage(6, rectangle, fileName);
-        this.fileName = fileName;
-
-        isOpen = false;
-    }
-
     @Override
     public void render(RenderHandler renderer, int zoom) {
         if (!isOpen && spriteClosed != null) {

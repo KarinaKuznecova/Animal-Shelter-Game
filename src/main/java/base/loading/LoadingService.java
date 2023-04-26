@@ -10,6 +10,7 @@ public class LoadingService {
     private final GuiElementsLoadingService guiElementsLoadingService;
     private final NpcLoadingService npcLoadingService;
     private final PlayerLoadingService playerLoadingService;
+    private final ShopLoadingService shopLoadingService;
 
     public LoadingService() {
         gamePropertiesLoadingService = new GamePropertiesLoadingService();
@@ -20,6 +21,7 @@ public class LoadingService {
         guiElementsLoadingService = new GuiElementsLoadingService();
         npcLoadingService = new NpcLoadingService();
         playerLoadingService = new PlayerLoadingService();
+        shopLoadingService = new ShopLoadingService();
     }
 
     public GamePropertiesLoadingService getGamePropertiesLoadingService() {
@@ -52,5 +54,9 @@ public class LoadingService {
 
     public PlayerLoadingService getPlayerLoadingService() {
         return playerLoadingService;
+    }
+
+    public ShopLoadingService getShopLoadingService() {
+        return shopLoadingService;
     }
 }

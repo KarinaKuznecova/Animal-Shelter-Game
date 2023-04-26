@@ -17,10 +17,10 @@ public class GameTips {
 
     protected static final Logger logger = LoggerFactory.getLogger(GameTips.class);
 
-    private List<String> lines;
+    private final List<String> lines;
 
-    private int xPosition;
-    private int yPosition;
+    private final int xPosition;
+    private final int yPosition;
 
     public GameTips(int xPosition, int yPosition) {
         this.xPosition = xPosition;
