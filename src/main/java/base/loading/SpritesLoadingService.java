@@ -1,0 +1,108 @@
+package base.loading;
+
+import base.Game;
+import base.gameobjects.*;
+import base.gameobjects.interactionzones.InteractionZoneKitchen;
+import base.gameobjects.services.PlantService;
+import base.gameobjects.storage.StorageChest;
+import base.graphicsservice.ImageLoader;
+import base.graphicsservice.Sprite;
+import base.graphicsservice.SpriteService;
+import base.gui.ContextClue;
+import base.map.GameMap;
+import base.map.TileService;
+
+import static base.constants.ColorConstant.GREEN;
+import static base.constants.Constants.CELL_SIZE;
+import static base.constants.Constants.CHEST_TILE_ID;
+import static base.constants.FilePath.QUESTION_ICON_PATH;
+
+public class SpritesLoadingService {
+
+    public void cacheSprites(SpriteService spriteService, PlantService plantService, TileService tileService) {
+        spriteService.setPlantPreview(plantService.getPreviews());
+        spriteService.setPlantAnimatedSprites(plantService.getAnimatedSprites());
+        spriteService.setSeedSprites(plantService.getSeedSprites());
+
+        spriteService.setBowlsSprites();
+
+        spriteService.setStorageChestSprites(tileService.getTiles().get(37).getSprite(), tileService.getTiles().get(36).getSprite());
+
+        spriteService.setFeatherSprite(tileService.getTiles().get(Feather.TILE_ID).getSprite());
+        spriteService.setMushroomSprite(tileService.getTiles().get(Mushroom.TILE_ID).getSprite());
+        spriteService.setWoodSprite(tileService.getTiles().get(Wood.TILE_ID).getSprite());
+
+        spriteService.loadBushSprite();
+        spriteService.loadSpruceSprite();
+        spriteService.loadOakSprite();
+
+        for (int cookingStoveId : CookingStove.TILE_IDS) {
+            spriteService.loadCookingStoveSprite(cookingStoveId, tileService.getTerrainTiles().get(cookingStoveId).getSprite());
+        }
+
+        spriteService.setSimpleMealSprite(tileService.getTiles().get(PetFood.SIMPLE_MEAL_SPRITE_ID).getSprite());
+        spriteService.setTastyMealSprite(tileService.getTiles().get(PetFood.TASTY_MEAL_SPRITE_ID).getSprite());
+        spriteService.setPerfectMealSprite(tileService.getTiles().get(PetFood.PERFECT_MEAL_SPRITE_ID).getSprite());
+    }
+
+    public void setSpritesToGameMapObjects(Game game, GameMap gameMap) {
+        for (Plant plant : gameMap.getPlants()) {
+            plant.setPreviewSprite(game.getSpriteService().getPlantPreviewSprite(plant.getPlantType()));
+            plant.setAnimatedSprite(game.getSpriteService().getPlantAnimatedSprite(plant.getPlantType()));
+        }
+        for (Item item : gameMap.getItems()) {
+            if (item.getItemName().contains("Meal")) {
+                item.setSprite(game.getSpriteService().getMealSprite(item.getItemName()));
+            } else {
+                item.setSprite(game.getSpriteService().getPlantPreviewSprite(item.getItemName()));
+            }
+        }
+        for (WaterBowl waterBowl : gameMap.getWaterBowls()) {
+            waterBowl.setSprite(game.getSpriteService().getWaterBowlAnimatedSprite());
+        }
+        for (FoodBowl foodBowl : gameMap.getFoodBowls()) {
+            foodBowl.setSprite(game.getSpriteService().getFoodBowlAnimatedSprite());
+        }
+        for (StorageChest storageChest : gameMap.getStorageChests()) {
+            storageChest.setSpriteClosed(game.getSpriteService().getClosedChestSprite());
+            storageChest.setSpriteOpen(game.getSpriteService().getOpenChestSprite());
+            gameMap.setTile(storageChest.getX() / CELL_SIZE, storageChest.getY() / CELL_SIZE, CHEST_TILE_ID, 2, true);
+        }
+        for (Feather feather : gameMap.getFeathers()) {
+            feather.setSprite(game.getSpriteService().getFeatherSprite());
+        }
+        for (Mushroom mushroom : gameMap.getMushrooms()) {
+            mushroom.setSprite(game.getSpriteService().getMushroomSprite());
+        }
+        for (Wood wood : gameMap.getWoods()) {
+            wood.setSprite(game.getSpriteService().getWoodSprite());
+        }
+        for (Bush bush : gameMap.getBushes()) {
+            bush.setSprite(game.getSpriteService().getBushSprite());
+            bush.startBush();
+        }
+        for (Oak oak : gameMap.getOaks()) {
+            oak.setSprite(game.getSpriteService().getOakSprite());
+            oak.getRectangle().generateBorder(1, GREEN);
+        }
+        for (Spruce spruce : gameMap.getSpruces()) {
+            spruce.setSprite(game.getSpriteService().getSpruceSprite());
+            spruce.getRectangle().generateBorder(1, GREEN);
+        }
+        for (CookingStove cookingStove : gameMap.getCookingStoves()) {
+            cookingStove.setSprite(game.getSpriteService().getCookingStoveSprite(cookingStove.getTileId()));
+            cookingStove.getRectangle().generateBorder(1, GREEN);
+            InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(cookingStove.getRectangle().getX() + 32, cookingStove.getRectangle().getY() + 32, 290);
+            cookingStove.setInteractionZone(interactionZone);
+            cookingStove.setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
+            game.addToInteractionZones(interactionZone);
+        }
+        for (Fridge fridge : gameMap.getFridges()) {
+            fridge.getRectangle().generateBorder(1, GREEN);
+            InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(fridge.getRectangle().getX() + 32, fridge.getRectangle().getY() + 32, 290);
+            fridge.setInteractionZone(interactionZone);
+            fridge.setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
+            game.addToInteractionZones(interactionZone);
+        }
+    }
+}

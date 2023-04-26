@@ -1,6 +1,5 @@
 package base;
 
-import base.constants.FilePath;
 import base.constants.MapConstants;
 import base.constants.VisibleText;
 import base.events.EventService;
@@ -14,14 +13,15 @@ import base.gameobjects.services.*;
 import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
 import base.graphicsservice.Rectangle;
-import base.graphicsservice.*;
+import base.graphicsservice.RenderHandler;
+import base.graphicsservice.Sprite;
+import base.graphicsservice.SpriteService;
 import base.gui.*;
-import base.gui.EscMenu;
 import base.gui.cookingmenu.CookingMenu;
 import base.gui.shop.ShopService;
+import base.loading.LoadingService;
 import base.map.GameMap;
 import base.map.MapService;
-import base.map.Tile;
 import base.map.TileService;
 import base.navigationservice.*;
 import org.slf4j.Logger;
@@ -29,20 +29,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static base.constants.ColorConstant.*;
 import static base.constants.Constants.*;
-import static base.constants.FilePath.QUESTION_ICON_PATH;
-import static base.constants.MapConstants.*;
+import static base.constants.MapConstants.CITY_MAP;
+import static base.constants.MapConstants.MAIN_MAP;
 import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 import static base.navigationservice.NavigationService.getNextPortalToGetToCenter;
 import static base.navigationservice.RouteCalculator.*;
@@ -64,10 +58,8 @@ public class Game extends JFrame implements Runnable {
 
     private transient Player player;
     private transient NpcAdoption npc;
-    private transient NpcVendor vendorNpc;
 
     // Services
-    private transient Properties gameProperties;
     private transient RenderHandler renderer;
     private transient TileService tileService;
     private transient AnimalService animalService;
@@ -82,12 +74,13 @@ public class Game extends JFrame implements Runnable {
     private transient StorageService storageService;
     private transient ShopService shopService;
     private transient PlayerService playerService;
+    private final transient LoadingService loadingService;
 
     // Gui
     private transient GUI[] tileButtonsArray;
     private transient GUI[] terrainButtonsArray;
-    private transient GUI yourAnimalButtons;
-    private transient GUI possibleAnimalButtons;
+    private transient GUI yourAnimalsPanel;
+    private transient GUI possibleAnimalPanel;
     private transient GUI plantsGui;
     private transient Backpack backpackGui;
     private transient DialogBox dialogBox;
@@ -111,15 +104,16 @@ public class Game extends JFrame implements Runnable {
     private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
 
     public Game() {
+        loadingService = new LoadingService();
         loadGameProperties();
         initializeServices();
         cacheSprites();
         loadUI();
         loadControllers();
-        loadMap();
+        loadGameMap();
         loadGuiElements();
         enableDefaultGui();
-        loadGameObjects(getWidth() / 2, getHeight() / 2);
+        loadGameObjects();
     }
 
     public static void main(String[] args) {
@@ -128,19 +122,12 @@ public class Game extends JFrame implements Runnable {
         gameThread.start();
     }
 
+    /**
+     * =================================== Loading ======================================
+     */
+
     private void loadGameProperties() {
-        gameProperties = new Properties();
-
-        try {
-            gameProperties.load(new FileInputStream("config/application.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        DEBUG_MODE = Boolean.parseBoolean(gameProperties.getProperty(DEBUG_MODE_PROPERTY));
-        CHEATS_MODE = Boolean.parseBoolean(gameProperties.getProperty(CHEATS_MODE_PROPERTY));
-        TEST_MAP_MODE = Boolean.parseBoolean(gameProperties.getProperty(TEST_MAP_PROPERTY));
-        LANGUAGE = gameProperties.getProperty(LANGUAGE_PROPERTY);
+        loadingService.getGamePropertiesLoadingService().loadGameProperties();
     }
 
     private void initializeServices() {
@@ -165,272 +152,39 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void cacheSprites() {
-        spriteService.setPlantPreview(plantService.getPreviews());
-        spriteService.setPlantAnimatedSprites(plantService.getAnimatedSprites());
-        spriteService.setSeedSprites(plantService.getSeedSprites());
-
-        spriteService.setBowlsSprites();
-
-        spriteService.setStorageChestSprites(tileService.getTiles().get(37).getSprite(), tileService.getTiles().get(36).getSprite());
-
-        spriteService.setFeatherSprite(tileService.getTiles().get(Feather.TILE_ID).getSprite());
-        spriteService.setMushroomSprite(tileService.getTiles().get(Mushroom.TILE_ID).getSprite());
-        spriteService.setWoodSprite(tileService.getTiles().get(Wood.TILE_ID).getSprite());
-
-        spriteService.loadBushSprite();
-        spriteService.loadSpruceSprite();
-        spriteService.loadOakSprite();
-
-        for (int cookingStoveId : CookingStove.TILE_IDS) {
-            spriteService.loadCookingStoveSprite(cookingStoveId, tileService.getTerrainTiles().get(cookingStoveId).getSprite());
-        }
-
-        spriteService.setSimpleMealSprite(tileService.getTiles().get(PetFood.SIMPLE_MEAL_SPRITE_ID).getSprite());
-        spriteService.setTastyMealSprite(tileService.getTiles().get(PetFood.TASTY_MEAL_SPRITE_ID).getSprite());
-        spriteService.setPerfectMealSprite(tileService.getTiles().get(PetFood.PERFECT_MEAL_SPRITE_ID).getSprite());
+        loadingService.getSpritesLoadingService().cacheSprites(spriteService, plantService, tileService);
     }
 
     private void loadUI() {
-        setSizeBasedOnScreenSize();
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setBounds(0, 0, MAX_SCREEN_WIDTH - 5, MAX_SCREEN_HEIGHT - 5);
-        setLocationRelativeTo(null);
-        add(canvas);
-        setVisible(true);
-        setTitle("Animal shelter game");
-        canvas.createBufferStrategy(3);
+        loadingService.getGameUILoadingService().loadUI(this, canvas);
         renderer = new RenderHandler(getWidth(), getHeight());
     }
 
-    private void setSizeBasedOnScreenSize() {
-        GraphicsDevice[] graphicsDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        for (GraphicsDevice device : graphicsDevices) {
-            if (MAX_SCREEN_WIDTH > device.getDisplayMode().getWidth()) {
-                MAX_SCREEN_WIDTH = device.getDisplayMode().getWidth();
-            }
-            if (MAX_SCREEN_HEIGHT > device.getDisplayMode().getHeight()) {
-                MAX_SCREEN_HEIGHT = device.getDisplayMode().getHeight();
-            }
-        }
-        logger.info(String.format("Screen size will be %d by %d", MAX_SCREEN_WIDTH, MAX_SCREEN_HEIGHT));
-    }
-
     private void loadControllers() {
-        addListeners();
-
-        canvas.addComponentListener(new ComponentListener() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int newWidth = canvas.getWidth();
-                int newHeight = canvas.getHeight();
-
-                if (newWidth > renderer.getMaxWidth())
-                    newWidth = renderer.getMaxWidth();
-
-                if (newHeight > renderer.getMaxHeight())
-                    newHeight = renderer.getMaxHeight();
-
-                renderer.getCamera().setWidth(newWidth);
-                renderer.getCamera().setHeight(newHeight);
-                canvas.setSize(newWidth, newHeight);
-                pack();
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-                //not going to use it now
-            }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-                //not going to use it now
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-                //not going to use it now
-            }
-        });
+        loadingService.getControllersLoadingService().loadControllers(this, canvas, renderer);
     }
 
-    private void addListeners() {
-        addKeyListener(keyboardListener);
-        addFocusListener(keyboardListener);
-        addMouseListener(mouseEventListener);
-        addMouseMotionListener(mouseEventListener);
-
-        canvas.addKeyListener(keyboardListener);
-        canvas.addFocusListener(keyboardListener);
-        canvas.addMouseListener(mouseEventListener);
-        canvas.addMouseMotionListener(mouseEventListener);
+    private void loadGameMap() {
+        gameMap = loadingService.getGameMapLoadingService().loadMap(this);
     }
-
-    /**
-     * =================================== Load Map ======================================
-     */
-
-    private void loadMap() {
-        logger.info("Game map loading started");
-
-        if (TEST_MAP_MODE) {
-            gameMap = mapService.loadGameMapFromJson(TEST_MAP, tileService);
-            gameMaps.put(TEST_MAP, gameMap);
-        } else {
-            gameMap = mapService.loadGameMapFromJson(MAIN_MAP, tileService);
-
-        }
-        storageService.loadStorageChests(gameMap);
-        loadSprites(gameMap);
-        loadAnimalsOnMaps();
-
-        if (!TEST_MAP_MODE) {
-            initialCacheMaps();
-        }
-        storageService.cleanUpDisconnectedChests();
-        logger.info("Game map loaded");
-    }
-
-    private void loadAnimalsOnMaps() {
-        List<String> mapNames = mapService.getAllMapsNames();
-        for (String mapName : mapNames) {
-            animalsOnMaps.put(mapName, new CopyOnWriteArrayList<>());
-        }
-        List<Animal> animals = animalService.loadAllAnimals();
-        for (Animal animal : animals) {
-            if (animalsOnMaps.get(animal.getCurrentMap()) != null) {
-                animalsOnMaps.get(animal.getCurrentMap()).add(animal);
-            } else {
-                List<Animal> listForMap = new CopyOnWriteArrayList<>();
-                listForMap.add(animal);
-                animalsOnMaps.put(animal.getCurrentMap(), listForMap);
-            }
-        }
-    }
-
-    private void initialCacheMaps() {
-        for (String mapName : mapService.getAllMapsNames()) {
-            GameMap map = mapService.loadGameMapFromJson(mapName, tileService);
-            loadSprites(map);
-            storageService.loadStorageChests(map);
-            gameMaps.put(mapName, map);
-        }
-    }
-
-    private void loadSprites(GameMap gameMap) {
-        for (Plant plant : gameMap.getPlants()) {
-            plant.setPreviewSprite(spriteService.getPlantPreviewSprite(plant.getPlantType()));
-            plant.setAnimatedSprite(spriteService.getPlantAnimatedSprite(plant.getPlantType()));
-        }
-        for (Item item : gameMap.getItems()) {
-            if (item.getItemName().contains("Meal")) {
-                item.setSprite(spriteService.getMealSprite(item.getItemName()));
-            } else {
-                item.setSprite(spriteService.getPlantPreviewSprite(item.getItemName()));
-            }
-        }
-        for (WaterBowl waterBowl : gameMap.getWaterBowls()) {
-            waterBowl.setSprite(spriteService.getWaterBowlAnimatedSprite());
-        }
-        for (FoodBowl foodBowl : gameMap.getFoodBowls()) {
-            foodBowl.setSprite(spriteService.getFoodBowlAnimatedSprite());
-        }
-        for (StorageChest storageChest : gameMap.getStorageChests()) {
-            storageChest.setSpriteClosed(spriteService.getClosedChestSprite());
-            storageChest.setSpriteOpen(spriteService.getOpenChestSprite());
-            gameMap.setTile(storageChest.getX() / CELL_SIZE, storageChest.getY() / CELL_SIZE, CHEST_TILE_ID, 2, true);
-        }
-        for (Feather feather : gameMap.getFeathers()) {
-            feather.setSprite(spriteService.getFeatherSprite());
-        }
-        for (Mushroom mushroom : gameMap.getMushrooms()) {
-            mushroom.setSprite(spriteService.getMushroomSprite());
-        }
-        for (Wood wood : gameMap.getWoods()) {
-            wood.setSprite(spriteService.getWoodSprite());
-        }
-        for (Bush bush : gameMap.getBushes()) {
-            bush.setSprite(spriteService.getBushSprite());
-            bush.startBush();
-        }
-        for (Oak oak : gameMap.getOaks()) {
-            oak.setSprite(spriteService.getOakSprite());
-            oak.getRectangle().generateBorder(1, GREEN);
-        }
-        for (Spruce spruce : gameMap.getSpruces()) {
-            spruce.setSprite(spriteService.getSpruceSprite());
-            spruce.getRectangle().generateBorder(1, GREEN);
-        }
-        for (CookingStove cookingStove : gameMap.getCookingStoves()) {
-            cookingStove.setSprite(spriteService.getCookingStoveSprite(cookingStove.getTileId()));
-            cookingStove.getRectangle().generateBorder(1, GREEN);
-            InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(cookingStove.getRectangle().getX() + 32, cookingStove.getRectangle().getY() + 32, 290);
-            cookingStove.setInteractionZone(interactionZone);
-            cookingStove.setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
-            interactionZones.add(interactionZone);
-        }
-        for (Fridge fridge : gameMap.getFridges()) {
-            fridge.getRectangle().generateBorder(1, GREEN);
-            InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(fridge.getRectangle().getX() + 32, fridge.getRectangle().getY() + 32, 290);
-            fridge.setInteractionZone(interactionZone);
-            fridge.setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
-            interactionZones.add(interactionZone);
-        }
-    }
-
-    /**
-     * =================================== GUI Elements ======================================
-     */
 
     private void loadGuiElements() {
-        loadSDKGUI();
-        loadTerrainGui();
-        loadYourAnimals();
-        loadPossibleAnimalsPanel();
-        loadPlantsPanel();
-        loadBackpack();
-        dialogBox = guiService.loadDialogBox();
-
-        createEscMenu();
-        createCookingMenu();
+        loadingService.getGuiElementsLoadingService().loadGuiElements(this);
     }
 
-    private void createEscMenu() {
-        escMenu = guiService.createEscMenu(getWidth(), getHeight());
+    private void loadGameObjects() {
+        gameObjectsList = new CopyOnWriteArrayList<>();
+        loadingService.getPlayerLoadingService().loadPlayer(this);
+        loadingService.getNpcLoadingService().loadVendorNpc(this);
+        cacheAllPlants();
     }
 
-    private void createCookingMenu() {
-        cookingMenu = guiService.createCookingMenu(getWidth(), getHeight(), spriteService);
-    }
-
-    private void loadSDKGUI() {
-        List<Tile> tiles = tileService.getTiles();
-        tileButtonsArray = guiService.loadTerrainGui(tiles, 10);
-    }
-
-    void loadTerrainGui() {
-        List<Tile> tiles = tileService.getTerrainTiles();
-        terrainButtonsArray = guiService.loadTerrainGui(tiles, 18);
-    }
-
-    private void loadYourAnimals() {
-        yourAnimalButtons = guiService.loadYourAnimals(this);
-    }
-
-    void loadPossibleAnimalsPanel() {
-        Map<String, Sprite> previews = animalService.getAnimalPreviewSprites();
-        possibleAnimalButtons = guiService.loadPossibleAnimalsPanel(this, previews);
-    }
-
-    void loadPlantsPanel() {
-        Map<String, Sprite> previews = plantService.getPreviews();
-        plantsGui = guiService.loadPlantsPanel(this, previews);
-    }
-
-    void loadBackpack() {
-        backpackGui = backpackService.loadBackpackFromFile(this);
-        if (backpackGui == null) {
-            backpackGui = guiService.loadEmptyBackpack(this);
+    private void cacheAllPlants() {
+        logger.info("Caching plants");
+        for (GameMap map : gameMaps.values()) {
+            plantsOnMaps.put(map.getMapName(), map.getPlants());
         }
+        logger.info("Caching plants finished");
     }
 
     /**
@@ -442,7 +196,7 @@ public class Game extends JFrame implements Runnable {
 
         guiList = new CopyOnWriteArrayList<>();
         guiList.add(tileButtonsArray[0]);
-        guiList.add(yourAnimalButtons);
+        guiList.add(yourAnimalsPanel);
     }
 
     private void deselectEverything() {
@@ -512,58 +266,6 @@ public class Game extends JFrame implements Runnable {
 
     private void deselectPlant() {
         selectedPlant = "";
-    }
-
-    /**
-     * =================================== Game Objects ======================================
-     */
-
-    private void loadGameObjects(int startX, int startY) {
-        gameObjectsList = new CopyOnWriteArrayList<>();
-
-        loadPlayerFromJson();
-        if (player == null) {
-            loadPlayer(startX, startY);
-            playerService.saveToFile(player);
-        }
-
-        cacheAllPlants();
-
-        if (!TEST_MAP_MODE) {
-            createVendorNpc();
-        }
-    }
-
-    private void loadPlayer(int startX, int startY) {
-        AnimatedSprite playerAnimations = loadPlayerAnimatedImages();
-        logger.info("Player animations loaded");
-        player = new Player(playerAnimations, startX, startY);
-        gameObjectsList.add(player);
-    }
-
-    private AnimatedSprite loadPlayerAnimatedImages() {
-        logger.info("Loading player animations");
-
-        BufferedImage playerSheetImage = ImageLoader.loadImage(FilePath.PLAYER_SHEET_PATH);
-        SpriteSheet playerSheet = new SpriteSheet(playerSheetImage);
-        playerSheet.loadSprites(PLAYER_SPRITE_SIZE, PLAYER_SPRITE_SIZE, 0);
-
-        return new AnimatedSprite(playerSheet, 5, true);
-    }
-
-    private void loadPlayerFromJson() {
-        player = playerService.readFromFile(getWidth() / 2, getHeight() / 2);
-        if (player != null) {
-            gameObjectsList.add(player);
-        }
-    }
-
-    private void cacheAllPlants() {
-        logger.info("Caching plants");
-        for (GameMap map : gameMaps.values()) {
-            plantsOnMaps.put(map.getMapName(), map.getPlants());
-        }
-        logger.info("Caching plants finished");
     }
 
     /**
@@ -657,8 +359,6 @@ public class Game extends JFrame implements Runnable {
         }
     }
 
-    /** =================================== In Game Activities ====================================== */
-
     /**
      * =================================== Load another map ======================================
      */
@@ -672,7 +372,7 @@ public class Game extends JFrame implements Runnable {
         logger.debug(String.format("Previous map name: %s", previousMapName));
 
         if (getGameMap(mapName) == null) {
-            gameMap = mapService.loadGameMap(mapName, tileService);
+            gameMap = loadingService.getGameMapLoadingService().loadMap(this, mapName);
         } else {
             gameMap = getGameMap(mapName);
         }
@@ -726,7 +426,7 @@ public class Game extends JFrame implements Runnable {
         if (portalToPrevious != null) {
             int previousMapPortalX = mapService.getSpawnPoint(portalToPrevious, true, player.getDirection(), gameMap);
             int previousMapPortalY = mapService.getSpawnPoint(portalToPrevious, false, player.getDirection(), gameMap);
-            logger.info("Will teleport player to x:" + previousMapPortalX + ", y: " + previousMapPortalY);
+            logger.info(String.format("Will teleport player to x: %d, y: %d", previousMapPortalX, previousMapPortalY));
             player.teleportTo(previousMapPortalX, previousMapPortalY);
         } else {
             player.teleportToCenter(this);
@@ -828,9 +528,11 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void showYourAnimals() {
-        if (!guiList.contains(yourAnimalButtons)) {
-            yourAnimalButtons = guiService.loadYourAnimals(this);
-            guiList.add(yourAnimalButtons);
+        if (!guiList.contains(yourAnimalsPanel)) {
+            if (yourAnimalsPanel == null) {
+                loadingService.getGuiElementsLoadingService().loadYourAnimals(this);
+            }
+            guiList.add(yourAnimalsPanel);
         }
     }
 
@@ -843,9 +545,9 @@ public class Game extends JFrame implements Runnable {
     }
 
     private void showNewAnimalsPanel() {
-        if (!guiList.contains(possibleAnimalButtons)) {
+        if (!guiList.contains(possibleAnimalPanel)) {
             guiList.clear();
-            guiList.add(possibleAnimalButtons);
+            guiList.add(possibleAnimalPanel);
             regularTiles = true;
         }
     }
@@ -1046,7 +748,7 @@ public class Game extends JFrame implements Runnable {
             int smallerY = (int) Math.floor(yMapRelated / (32.0 * ZOOM));
             if (guiList.contains(plantsGui)) {
                 createNewPlant(selectedPlant, smallerX, smallerY);
-            } else if (guiList.contains(possibleAnimalButtons)) {
+            } else if (guiList.contains(possibleAnimalPanel)) {
                 createNewAnimal(smallerX, smallerY);
             } else {
                 setNewTile(xMapRelated, yMapRelated, smallerX, smallerY);
@@ -1059,26 +761,26 @@ public class Game extends JFrame implements Runnable {
             if (player.getRectangle().intersects(xMapRelated, yMapRelated, TILE_SIZE, TILE_SIZE)) {
                 logger.warn("Can't place tile under player");
             } else {
-                int xAlligned = xMapRelated - (xMapRelated % CELL_SIZE);
-                int yAlligned = yMapRelated - (yMapRelated % CELL_SIZE);
+                int xAligned = xMapRelated - (xMapRelated % CELL_SIZE);
+                int yAligned = yMapRelated - (yMapRelated % CELL_SIZE);
                 int layer = tileService.getLayerById(selectedTileId, regularTiles);
                 if (selectedTileId == BOWL_TILE_ID) {
-                    FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned, spriteService.getFoodBowlAnimatedSprite());
+                    FoodBowl foodBowl = new FoodBowl(xAligned, yAligned, spriteService.getFoodBowlAnimatedSprite());
                     getGameMap().addFoodBowl(foodBowl);
                 } else if (selectedTileId == WATER_BOWL_TILE_ID) {
-                    WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned, spriteService.getWaterBowlAnimatedSprite());
+                    WaterBowl waterBowl = new WaterBowl(xAligned, yAligned, spriteService.getWaterBowlAnimatedSprite());
                     getGameMap().addWaterBowl(waterBowl);
                 } else if (selectedTileId == CHEST_TILE_ID) {
-                    StorageChest chest = new StorageChest(xAlligned, yAlligned, spriteService.getClosedChestSprite(), spriteService.getOpenChestSprite());
+                    StorageChest chest = new StorageChest(xAligned, yAligned, spriteService.getClosedChestSprite(), spriteService.getOpenChestSprite());
                     getGameMap().addStorageChest(chest);
                     gameMap.setTile(smallerX, smallerY, CHEST_TILE_ID, layer, regularTiles);
                 } else if (CookingStove.TILE_IDS.contains(selectedTileId)) {
-                    CookingStove cookingStove = new CookingStove(xAlligned, yAlligned, spriteService.getCookingStoveSprite(selectedTileId), selectedTileId);
+                    CookingStove cookingStove = new CookingStove(xAligned, yAligned, spriteService.getCookingStoveSprite(selectedTileId), selectedTileId);
                     getGameMap().addObject(cookingStove);
                     interactionZones.add(cookingStove.getInteractionZone());
                     gameMap.setTile(smallerX, smallerY, selectedTileId, layer, regularTiles);
                 } else if (Fridge.TILE_ID == selectedTileId) {
-                    Fridge fridge = new Fridge(xAlligned, yAlligned);
+                    Fridge fridge = new Fridge(xAligned, yAligned);
                     getGameMap().addObject(fridge);
                     interactionZones.add(fridge.getInteractionZone());
                     gameMap.setTile(smallerX, smallerY, selectedTileId, layer, regularTiles);
@@ -1098,31 +800,30 @@ public class Game extends JFrame implements Runnable {
         putItemOnTheGround(xAdjusted, yAdjusted, selectedItem, false);
     }
 
-    // TODO: change this when refactoring sprites and objects, issue #316
     private void putItemOnTheGround(int xAdjusted, int yAdjusted, String itemType, boolean justDrop) {
-        int xAlligned = xAdjusted - (xAdjusted % CELL_SIZE);
-        int yAlligned = yAdjusted - (yAdjusted % CELL_SIZE);
+        int xAligned = xAdjusted - (xAdjusted % CELL_SIZE);
+        int yAligned = yAdjusted - (yAdjusted % CELL_SIZE);
         if (itemType.equalsIgnoreCase(Wood.ITEM_NAME)) {
-            Wood wood = new Wood(xAlligned, yAlligned, spriteService.getWoodSprite());
+            Wood wood = new Wood(xAligned, yAligned, spriteService.getWoodSprite());
             gameMap.addObject(wood);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }
         if (itemType.equalsIgnoreCase(Feather.ITEM_NAME)) {
-            Feather feather = new Feather(xAlligned, yAlligned, spriteService.getFeatherSprite());
+            Feather feather = new Feather(xAligned, yAligned, spriteService.getFeatherSprite());
             gameMap.addObject(feather);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }
         if (itemType.equalsIgnoreCase(Mushroom.ITEM_NAME)) {
-            Mushroom mushroom = new Mushroom(xAlligned, yAlligned, spriteService.getMushroomSprite());
+            Mushroom mushroom = new Mushroom(xAligned, yAligned, spriteService.getMushroomSprite());
             gameMap.addObject(mushroom);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }
-        Item item = itemService.createNewItem(spriteService, itemType, xAlligned, yAlligned);
+        Item item = itemService.createNewItem(spriteService, itemType, xAligned, yAligned);
         if (item instanceof Seed) {
-            if (justDrop || !createNewPlant(((Seed) item).getPlantType(), xAlligned / 64, yAlligned / 64)) {
+            if (justDrop || !createNewPlant(((Seed) item).getPlantType(), xAligned / 64, yAligned / 64)) {
                 gameMap.addItem(item);
             }
         } else {
@@ -1147,11 +848,11 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void addAnimalToPanel(Animal animal) {
-        int i = yourAnimalButtons.getButtonCount();
+        int i = yourAnimalsPanel.getButtonCount();
         Rectangle tileRectangle = new Rectangle(this.getWidth() - (CELL_SIZE + TILE_SIZE), i * (CELL_SIZE + 2), CELL_SIZE, CELL_SIZE);
 
         AnimalIcon animalIcon = new AnimalIcon(this, animal, animal.getPreviewSprite(), tileRectangle);
-        yourAnimalButtons.addButton(animalIcon);
+        yourAnimalsPanel.addButton(animalIcon);
     }
 
     private boolean createNewPlant(String plantType, int x, int y) {
@@ -1266,27 +967,27 @@ public class Game extends JFrame implements Runnable {
 
         int xMapRelated = x + renderer.getCamera().getX();
         int yMapRelated = y + renderer.getCamera().getY();
-        int xAlligned = xMapRelated - (xMapRelated % CELL_SIZE);
-        int yAlligned = yMapRelated - (yMapRelated % CELL_SIZE);
+        int xAligned = xMapRelated - (xMapRelated % CELL_SIZE);
+        int yAligned = yMapRelated - (yMapRelated % CELL_SIZE);
         if (!selectedItem.isEmpty()) {
             deselectBagItem();
             return;
         }
         boolean removed;
         if (BOWL_TILE_ID == selectedTileId) {
-            FoodBowl foodBowl = new FoodBowl(xAlligned, yAlligned);
+            FoodBowl foodBowl = new FoodBowl(xAligned, yAligned);
             removed = getGameMap().removeBowl(foodBowl);
         } else if (WATER_BOWL_TILE_ID == selectedTileId) {
-            WaterBowl waterBowl = new WaterBowl(xAlligned, yAlligned);
+            WaterBowl waterBowl = new WaterBowl(xAligned, yAligned);
             removed = getGameMap().removeBowl(waterBowl);
         } else if (CHEST_TILE_ID == selectedTileId) {
-            removed = getGameMap().removeStorageChest(xAlligned, yAlligned);
+            removed = getGameMap().removeStorageChest(xAligned, yAligned);
             gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
         } else if (CookingStove.TILE_IDS.contains(selectedTileId)) {
-            removed = getGameMap().removeCookingStove(xAlligned, yAlligned);
+            removed = getGameMap().removeCookingStove(xAligned, yAligned);
             gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
         } else if (Fridge.TILE_ID == selectedTileId) {
-            removed = getGameMap().removeFridge(xAlligned, yAlligned);
+            removed = getGameMap().removeFridge(xAligned, yAligned);
             gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
         } else {
             removed = gameMap.removeTile(xAdjusted, yAdjusted, tileService.getLayerById(selectedTileId, regularTiles), regularTiles, selectedTileId);
@@ -1310,7 +1011,6 @@ public class Game extends JFrame implements Runnable {
         logger.info("Starting game map loaded");
 
         renderer.adjustCamera(this, player);
-        loadSDKGUI();
     }
 
     public void deleteAnimal() {
@@ -1340,7 +1040,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void updateAnimalIcon(Animal animal) {
-        for (GUIButton animalIcon : yourAnimalButtons.getButtons()) {
+        for (GUIButton animalIcon : yourAnimalsPanel.getButtons()) {
             if (animalIcon instanceof AnimalIcon && ((AnimalIcon) animalIcon).getAnimal().equals(animal)) {
                 animalIcon.update(this);
             }
@@ -1565,7 +1265,7 @@ public class Game extends JFrame implements Runnable {
     public void dropRandomFood() {
         int xPosition = npc.getRectangle().getX();
         int yPosition = npc.getRectangle().getY();
-        String plantType = plantService.plantTypes.get(random.nextInt(plantService.plantTypes.size()));
+        String plantType = PlantService.plantTypes.get(random.nextInt(PlantService.plantTypes.size()));
         Sprite sprite = spriteService.getPlantPreviewSprite(plantType);
         Item item = new Item(xPosition, yPosition, plantType, sprite);
         getGameMap(MAIN_MAP).addItem(item);
@@ -1585,23 +1285,6 @@ public class Game extends JFrame implements Runnable {
         animalsOnMaps.get(map).remove(animal);
         animalService.saveAllAnimals(animalsOnMaps.get(map));
         refreshGuiPanels();
-    }
-
-    public void createVendorNpc() {
-        logger.info("Spawning vendor npc");
-        Rectangle spot = getGameMap(CITY_MAP).getNpcSpot(NpcType.VENDOR).getRectangle();
-        vendorNpc = new NpcVendor(spot.getX(), spot.getY());
-        vendorNpc.setShopMenu(shopService.createShopMenu(this, vendorNpc.getRectangle()));
-
-        if (getGameMap(CITY_MAP).getNpcs() == null) {
-            getGameMap(CITY_MAP).setNpcs(new CopyOnWriteArrayList<>());
-        }
-        getGameMap(CITY_MAP).addObject(vendorNpc);
-
-        vendorNpc.setCurrentMap(CITY_MAP);
-        refreshCurrentMapCache();
-        gameObjectsList.add(vendorNpc);
-        interactionZones.add(vendorNpc.getInteractionZone());
     }
 
     /**
@@ -1657,6 +1340,10 @@ public class Game extends JFrame implements Runnable {
         return keyboardListener;
     }
 
+    public MouseEventListener getMouseEventListener() {
+        return mouseEventListener;
+    }
+
     public RenderHandler getRenderer() {
         return renderer;
     }
@@ -1697,10 +1384,6 @@ public class Game extends JFrame implements Runnable {
         return plantService;
     }
 
-    public ItemService getItemService() {
-        return itemService;
-    }
-
     public BackpackService getBackpackService() {
         return backpackService;
     }
@@ -1714,7 +1397,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     public NpcVendor getVendorNpc() {
-        return vendorNpc;
+        return (NpcVendor) getGameMap(CITY_MAP).getNpcs().get(0);
     }
 
     public String getItemNameByButtonId() {
@@ -1771,5 +1454,66 @@ public class Game extends JFrame implements Runnable {
 
     public CookingMenu getCookingMenu() {
         return cookingMenu;
+    }
+
+    public Map<String, GameMap> getGameMaps() {
+        return gameMaps;
+    }
+
+    public StorageService getStorageService() {
+        return storageService;
+    }
+
+    public void addToInteractionZones(InteractionZone interactionZone) {
+        interactionZones.add(interactionZone);
+    }
+
+    public LoadingService getLoadingService() {
+        return loadingService;
+    }
+
+    public void setTileButtonsArray(GUI[] tileButtonsArray) {
+        this.tileButtonsArray = tileButtonsArray;
+    }
+
+    public void setTerrainButtonsArray(GUI[] terrainButtonsArray) {
+        this.terrainButtonsArray = terrainButtonsArray;
+    }
+
+    public void setYourAnimalsPanel(GUI yourAnimalsPanel) {
+        this.yourAnimalsPanel = yourAnimalsPanel;
+    }
+
+    public void setPossibleAnimalPanel(GUI possibleAnimalPanel) {
+        this.possibleAnimalPanel = possibleAnimalPanel;
+    }
+
+    public void setPlantsGui(GUI plantsGui) {
+        this.plantsGui = plantsGui;
+    }
+
+    public void setBackpackGui(Backpack backpackGui) {
+        this.backpackGui = backpackGui;
+    }
+
+    public void setDialogBox(DialogBox dialogBox) {
+        this.dialogBox = dialogBox;
+    }
+
+    public void setEscMenu(EscMenu escMenu) {
+        this.escMenu = escMenu;
+    }
+
+    public void setCookingMenu(CookingMenu cookingMenu) {
+        this.cookingMenu = cookingMenu;
+    }
+
+    public void setPlayer(Player player) {
+        gameObjectsList.add(player);
+        this.player = player;
+    }
+
+    public List<GameObject> getGameObjectsList() {
+        return gameObjectsList;
     }
 }

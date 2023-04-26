@@ -15,7 +15,7 @@ public class CancelButton extends GUIButton{
 
     private final Rectangle buttonRegion;
 
-    protected CancelButton(Sprite sprite, Rectangle region) {
+    public CancelButton(Sprite sprite, Rectangle region) {
         super(sprite, region, true);
         buttonRegion = new Rectangle();
         buttonRegion.setX(region.getX() + (region.getWidth() * ZOOM) - 70);

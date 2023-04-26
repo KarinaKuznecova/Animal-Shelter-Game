@@ -15,7 +15,7 @@ public class OkButton extends GUIButton {
 
     private final Rectangle buttonRegion;
 
-    protected OkButton(Sprite sprite, Rectangle region) {
+    public OkButton(Sprite sprite, Rectangle region) {
         super(sprite, region, true);
         buttonRegion = new Rectangle();
         buttonRegion.setX(region.getX() + (region.getWidth() * ZOOM) - 100);
