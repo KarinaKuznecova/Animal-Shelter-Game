@@ -29,17 +29,17 @@ public class CookingStove implements GameObject {
     private final int yPosition;
     private final Rectangle rectangle;
 
-    public CookingStove(int xPosition, int yPosition, Sprite sprite, int tileId) {
-        this(xPosition, yPosition, tileId);
+    public CookingStove(String mapName, int xPosition, int yPosition, Sprite sprite, int tileId) {
+        this(mapName, xPosition, yPosition, tileId);
         this.sprite = sprite;
     }
 
-    public CookingStove(int xPosition, int yPosition, int tileId) {
+    public CookingStove(String mapName, int xPosition, int yPosition, int tileId) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.tileId = tileId;
         this.rectangle = new Rectangle(xPosition, yPosition, TILE_SIZE, TILE_SIZE);
-        interactionZone = new InteractionZoneKitchen(xPosition + 32, yPosition + 32, 290);
+        interactionZone = new InteractionZoneKitchen(mapName, xPosition + 32, yPosition + 32, 290);
         setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
     }
 

@@ -5,6 +5,7 @@ import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
 
+import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
 
 public class Flower implements GameObject{
@@ -13,12 +14,14 @@ public class Flower implements GameObject{
     private final int xPosition;
     private final int yPosition;
     private final String mapName;
+    private final Rectangle rectangle;
 
     private static final int GROWING_LIMIT = 3000;
     private int currentTick;
 
     public Flower(Sprite sprite, int xPosition, int yPosition, String mapName) {
         this.sprite = sprite;
+        this.rectangle = new Rectangle(xPosition, yPosition, TILE_SIZE, TILE_SIZE);
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.mapName = mapName;
@@ -49,7 +52,7 @@ public class Flower implements GameObject{
 
     @Override
     public Rectangle getRectangle() {
-        return null;
+        return rectangle;
     }
 
     public int getxPosition() {

@@ -315,7 +315,7 @@ public class AnimalService {
     public String getRandomAnimalType() {
         int animalId = random.nextInt(ANIMAL_TYPES.size());
         String animalType = ANIMAL_TYPES.get(animalId);
-        if (animalType.equalsIgnoreCase(Butterfly.TYPE)) {
+        if (Butterfly.TYPE.equalsIgnoreCase(animalType)) {
             logger.debug("Skipping butterfly");
             return getRandomAnimalType();
         }

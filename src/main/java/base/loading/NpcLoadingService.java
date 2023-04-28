@@ -19,10 +19,6 @@ public class NpcLoadingService {
     public void loadVendorNpc(Game game) {
         if (!TEST_MAP_MODE) {
             NpcVendor vendor = createVendorNpc(game);
-
-            if (game.getGameMap(CITY_MAP).getNpcs() == null) {
-                game.getGameMap(CITY_MAP).setNpcs(new CopyOnWriteArrayList<>());
-            }
             game.getGameMap(CITY_MAP).addObject(vendor);
             game.refreshCurrentMapCache();
             game.getGameObjectsList().add(vendor);

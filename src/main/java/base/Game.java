@@ -57,7 +57,6 @@ public class Game extends JFrame implements Runnable {
     private transient List<InteractionZone> interactionZones;
 
     private transient Player player;
-    private transient NpcAdoption npc;
 
     // Services
     private transient RenderHandler renderer;
@@ -326,29 +325,14 @@ public class Game extends JFrame implements Runnable {
                 animal.update(this);
             }
         }
-        for (List<Plant> plants : plantsOnMaps.values()) {
-            for (Plant plant : plants) {
-                plant.update(this);
-            }
-        }
-        for (StorageChest chest : gameMap.getStorageChests()) {
-            chest.update(this);
+        Iterator<GameObject> gameObjectIterator = gameMap.getGameMapObjects().iterator();
+        while (gameObjectIterator.hasNext()) {
+            gameObjectIterator.next().update(this);
         }
         for (GameMap map : gameMaps.values()) {
-            for (GameObject object : map.getInteractiveObjects()) {
-                object.update(this);
-            }
-            for (GameObject object : new ArrayList<>(map.getItems())) {
-                object.update(this);
-            }
-            for (Bush bush : gameMap.getBushes()) {
-                bush.update(this);
-            }
-            for (CookingStove cookingStove : gameMap.getCookingStoves()) {
-                cookingStove.update(this);
-            }
-            for (Fridge fridge : gameMap.getFridges()) {
-                fridge.update(this);
+            Iterator<GameObject> iterator = map.getGameMapObjects().iterator();
+            while (iterator.hasNext()) {
+                iterator.next().update(this);
             }
         }
         eventService.update(this);
@@ -378,10 +362,6 @@ public class Game extends JFrame implements Runnable {
             gameMap = getGameMap(mapName);
         }
 
-        if (plantsOnMaps.containsKey(gameMap.getMapName())) {
-            gameMap.setPlants(plantsOnMaps.get(gameMap.getMapName()));
-        }
-        addPlantsToCache();
         logger.info(String.format("Game map %s loaded", gameMap.getMapName()));
 
         Portal portalToPrevious = mapService.getPortalTo(gameMap, previousMapName);
@@ -419,10 +399,6 @@ public class Game extends JFrame implements Runnable {
         gameMaps.put(gameMap.getMapName(), gameMap);
     }
 
-    private void addPlantsToCache() {
-        plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
-    }
-
     private void adjustPlayerPosition(Portal portalToPrevious) {
         if (portalToPrevious != null) {
             int previousMapPortalX = mapService.getSpawnPoint(portalToPrevious, true, player.getDirection(), gameMap);
@@ -438,6 +414,7 @@ public class Game extends JFrame implements Runnable {
         boolean backpackOpen = guiList.contains(backpackGui);
         boolean dialogBoxOpen = guiList.contains(dialogBox);
         guiList.clear();
+        loadingService.getGuiElementsLoadingService().loadYourAnimals(this);
         switchTopPanel(selectedPanel);
         if (backpackOpen) {
             guiList.add(backpackGui);
@@ -666,76 +643,10 @@ public class Game extends JFrame implements Runnable {
         if (!stoppedChecking) {
             deselectAnimal();
         }
-        for (GameObject gameObject : new ArrayList<>(gameMap.getPlants())) {
+        for (GameObject gameObject : getGameMap().getGameMapObjects()) {
             if (!stoppedChecking) {
                 Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (GameObject gameObject : getGameMap().getInteractiveObjects()) {
-            if (!stoppedChecking) {
-                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (GameObject gameObject : getGameMap().getFoodBowls()) {
-            if (!stoppedChecking) {
-                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (GameObject gameObject : getGameMap().getWaterBowls()) {
-            if (!stoppedChecking) {
-                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (GameObject gameObject : getGameMap().getStorageChests()) {
-            if (!stoppedChecking) {
-                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (GameObject gameObject : getGameMap().getBushes()) {
-            if (!stoppedChecking) {
-                Rectangle newMouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = gameObject.handleMouseClick(newMouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (Item item : gameMap.getItems()) {
-            if (!stoppedChecking) {
-                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = item.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (Feather feather : gameMap.getFeathers()) {
-            if (!stoppedChecking) {
-                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = feather.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (Mushroom mushroom : gameMap.getMushrooms()) {
-            if (!stoppedChecking) {
-                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = mushroom.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (Wood wood : gameMap.getWoods()) {
-            if (!stoppedChecking) {
-                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = wood.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (CookingStove cookingStove : gameMap.getCookingStoves()) {
-            if (!stoppedChecking) {
-                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = cookingStove.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
-            }
-        }
-        for (Fridge fridge : gameMap.getFridges()) {
-            if (!stoppedChecking) {
-                mouseRectangle = new Rectangle(xMapRelated - TILE_SIZE, yMapRelated - TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                stoppedChecking = fridge.handleMouseClick(mouseRectangle, renderer.getCamera(), ZOOM, this);
             }
         }
         for (Animal animal : animalsOnMaps.get(gameMap.getMapName())) {
@@ -776,12 +687,12 @@ public class Game extends JFrame implements Runnable {
                     getGameMap().addStorageChest(chest);
                     gameMap.setTile(smallerX, smallerY, CHEST_TILE_ID, layer, regularTiles);
                 } else if (CookingStove.TILE_IDS.contains(selectedTileId)) {
-                    CookingStove cookingStove = new CookingStove(xAligned, yAligned, spriteService.getCookingStoveSprite(selectedTileId), selectedTileId);
+                    CookingStove cookingStove = new CookingStove(gameMap.getMapName(), xAligned, yAligned, spriteService.getCookingStoveSprite(selectedTileId), selectedTileId);
                     getGameMap().addObject(cookingStove);
                     interactionZones.add(cookingStove.getInteractionZone());
                     gameMap.setTile(smallerX, smallerY, selectedTileId, layer, regularTiles);
                 } else if (Fridge.TILE_ID == selectedTileId) {
-                    Fridge fridge = new Fridge(xAligned, yAligned);
+                    Fridge fridge = new Fridge(gameMap.getMapName(), xAligned, yAligned);
                     getGameMap().addObject(fridge);
                     interactionZones.add(fridge.getInteractionZone());
                     gameMap.setTile(smallerX, smallerY, selectedTileId, layer, regularTiles);
@@ -804,19 +715,19 @@ public class Game extends JFrame implements Runnable {
     private void putItemOnTheGround(int xAdjusted, int yAdjusted, String itemType, boolean justDrop) {
         int xAligned = xAdjusted - (xAdjusted % CELL_SIZE);
         int yAligned = yAdjusted - (yAdjusted % CELL_SIZE);
-        if (itemType.equalsIgnoreCase(Wood.ITEM_NAME)) {
+        if (Wood.ITEM_NAME.equalsIgnoreCase(itemType)) {
             Wood wood = new Wood(xAligned, yAligned, spriteService.getWoodSprite());
             gameMap.addObject(wood);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }
-        if (itemType.equalsIgnoreCase(Feather.ITEM_NAME)) {
+        if (Feather.ITEM_NAME.equalsIgnoreCase(itemType)) {
             Feather feather = new Feather(xAligned, yAligned, spriteService.getFeatherSprite());
             gameMap.addObject(feather);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
             return;
         }
-        if (itemType.equalsIgnoreCase(Mushroom.ITEM_NAME)) {
+        if (Mushroom.ITEM_NAME.equalsIgnoreCase(itemType)) {
             Mushroom mushroom = new Mushroom(xAligned, yAligned, spriteService.getMushroomSprite());
             gameMap.addObject(mushroom);
             guiService.decreaseNumberOnButton(this, getSelectedButton());
@@ -1116,7 +1027,7 @@ public class Game extends JFrame implements Runnable {
         if (!route.isEmpty()) {
             return route;
         }
-        if (animal.getCurrentMap().equalsIgnoreCase(MAIN_MAP)) {
+        if (MAIN_MAP.equalsIgnoreCase(animal.getCurrentMap())) {
             return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, LAKE_WATER);
         } else {
             return calculateRouteToOtherMap(animal, getNextPortalToGetToCenter(animal.getCurrentMap()));
@@ -1128,7 +1039,8 @@ public class Game extends JFrame implements Runnable {
     }
 
     public Route calculateRouteToNpc(Animal animal) {
-        if (animal.getCurrentMap().equalsIgnoreCase(npc.getCurrentMap())) {
+        NpcAdoption npcAdoption = getGameMap(MAIN_MAP).getAdoptionNpc();
+        if (animal.getCurrentMap().equalsIgnoreCase(npcAdoption.getCurrentMap())) {
             return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, NPC);
         }
         return calculateRouteToOtherMap(animal, getNextPortalToGetToCenter(animal.getCurrentMap()));
@@ -1183,19 +1095,15 @@ public class Game extends JFrame implements Runnable {
         logger.info("Spawning npc");
         GameMap mapToSpawn = getGameMap(mapName);
         NpcSpawnSpot spawnSpot = mapToSpawn.getNpcSpawnSpotByType(NpcType.ADOPTION);
+        NpcAdoption npc;
         if (spawnSpot != null) {
             npc = new NpcAdoption(spawnSpot.getRectangle().getX(), spawnSpot.getRectangle().getY(), wantedAnimal);
         } else {
             npc = new NpcAdoption((mapToSpawn.getMapWidth() * TILE_SIZE) / 2, (mapToSpawn.getMapHeight() * TILE_SIZE) / 2, wantedAnimal);
         }
-
-        if (mapToSpawn.getNpcs() == null) {
-            mapToSpawn.setNpcs(new CopyOnWriteArrayList<>());
-        }
         mapToSpawn.addObject(npc);
 
         npc.setCurrentMap(mapName);
-        gameObjectsList.add(npc);
         interactionZones.add(npc.getInteractionZone());
     }
 
@@ -1235,9 +1143,10 @@ public class Game extends JFrame implements Runnable {
     }
 
     public void giveAnimal() {
-        Animal adoptedAnimal = npc.getWantedAnimal();
+        NpcAdoption adoptionNpc = getGameMap(MAIN_MAP).getAdoptionNpc();
+        Animal adoptedAnimal = adoptionNpc.getWantedAnimal();
         if (adoptedAnimal == null) {
-            sendNpcAway();
+            sendNpcAway(adoptionNpc);
             return;
         }
         Route route = calculateRouteToNpc(adoptedAnimal);
@@ -1249,21 +1158,22 @@ public class Game extends JFrame implements Runnable {
         adoptedAnimal.setSpeed(2);
         Route route = routeCalculator.calculateRoute(getGameMap(adoptedAnimal.getCurrentMap()), adoptedAnimal, "city");
         adoptedAnimal.goAway(route);
-        sendNpcAway();
+        NpcAdoption adoptionNpc = getGameMap(MAIN_MAP).getAdoptionNpc();
+        sendNpcAway(adoptionNpc);
         int randomDrop = random.nextInt(2);
         if (randomDrop == 1) {
-            dropRandomCoins();
+            dropRandomCoins(adoptionNpc);
         } else {
-            dropRandomFood();
+            dropRandomFood(adoptionNpc);
         }
     }
 
-    public void sendNpcAway() {
+    public void sendNpcAway(NpcAdoption npc) {
         Route route = calculateRouteToCity(npc);
         npc.goAway(route);
     }
 
-    public void dropRandomFood() {
+    public void dropRandomFood(NpcAdoption npc) {
         int xPosition = npc.getRectangle().getX();
         int yPosition = npc.getRectangle().getY();
         String plantType = PlantService.plantTypes.get(random.nextInt(PlantService.plantTypes.size()));
@@ -1272,7 +1182,7 @@ public class Game extends JFrame implements Runnable {
         getGameMap(MAIN_MAP).addItem(item);
     }
 
-    public void dropRandomCoins() {
+    public void dropRandomCoins(NpcAdoption npc) {
         int xPosition = npc.getRectangle().getX();
         int yPosition = npc.getRectangle().getY();
         Coin coin = new Coin(xPosition, yPosition, random.nextInt(4) + 1);
@@ -1390,11 +1300,11 @@ public class Game extends JFrame implements Runnable {
     }
 
     public boolean isThereNpc() {
-        return gameObjectsList.contains(npc);
+        return !getGameMap(MAIN_MAP).getNpcs().isEmpty();
     }
 
-    public NpcAdoption getAdoptionNpc() {
-        return npc;
+    public NpcAdoption getAdoptionNpc(String mapName) {
+        return getGameMap(mapName).getAdoptionNpc();
     }
 
     public NpcVendor getVendorNpc() {

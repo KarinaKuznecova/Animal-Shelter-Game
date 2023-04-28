@@ -3,6 +3,8 @@ package base.loading;
 import base.Game;
 import base.gameobjects.Animal;
 import base.map.GameMap;
+import base.map.GameMapConverter;
+import base.map.GameMapDTO;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,7 @@ public class GameMapLoadingService {
     private static final Logger logger = LoggerFactory.getLogger(GameMapLoadingService.class);
 
     private final MapMigrator mapMigrator = new MapMigrator();
+    private final GameMapConverter gameMapConverter = new GameMapConverter();
 
     public GameMap loadMap(Game game) {
         GameMap gameMap;
@@ -57,6 +60,7 @@ public class GameMapLoadingService {
     }
 
     private GameMap loadGameMapFromJson(String mapName) {
+        GameMapDTO gameMapDTO;
         GameMap gameMap = null;
         File directory = new File(JSON_MAPS_DIRECTORY);
         if (directory.listFiles() == null || directory.listFiles().length == 0) {
@@ -65,9 +69,10 @@ public class GameMapLoadingService {
         try {
             Gson gson = new Gson();
             Reader reader = new FileReader(JSON_MAPS_DIRECTORY + mapName);
-            gameMap = gson.fromJson(reader, GameMap.class);
+            gameMapDTO = gson.fromJson(reader, GameMapDTO.class);
+            gameMap = gameMapConverter.getGameMap(gameMapDTO);
             reader.close();
-            mapMigrator.checkMigration(gameMap);
+            mapMigrator.checkMigration(gameMap, gameMapDTO.getGameVersion());
         } catch (IOException e) {
             e.printStackTrace();
         }

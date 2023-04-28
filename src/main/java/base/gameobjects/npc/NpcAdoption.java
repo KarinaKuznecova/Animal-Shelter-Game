@@ -19,7 +19,7 @@ import static base.navigationservice.Direction.*;
 
 public class NpcAdoption extends Npc {
 
-    private static final transient Logger logger = LoggerFactory.getLogger(NpcAdoption.class);
+    private static final Logger logger = LoggerFactory.getLogger(NpcAdoption.class);
 
     private Animal wantedAnimal;
     private boolean isGoingAway;

@@ -83,5 +83,20 @@
 		"itemName": "perfectMeal",
 		"sellPrice": 15,
 		"buyPrice": 0
+	},
+	{
+		"itemName": "feather",
+		"sellPrice": 1,
+		"buyPrice": 0
+	},
+		{
+		"itemName": "mushroom",
+		"sellPrice": 2,
+		"buyPrice": 0
+	},
+		{
+		"itemName": "wood",
+		"sellPrice": 3,
+		"buyPrice": 0
 	}
 ]

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static base.constants.Constants.ZOOM;
+import static base.constants.MapConstants.MAIN_MAP;
 
 public class CancelButton extends GUIButton{
 
@@ -39,7 +40,7 @@ public class CancelButton extends GUIButton{
         if (mouseRectangle.intersects(buttonRegion)) {
             activate(game);
             game.hideDialogBox();
-            game.sendNpcAway();
+            game.sendNpcAway(game.getGameMap(MAIN_MAP).getAdoptionNpc());
             return true;
         }
         return false;

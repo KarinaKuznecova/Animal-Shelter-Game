@@ -24,6 +24,8 @@ public class MapService {
 
     protected static final Logger logger = LoggerFactory.getLogger(MapService.class);
 
+    private GameMapConverter gameMapConverter = new GameMapConverter();
+
     public MapService() {
         logger.info("Loading maps list");
         loadMapList();
@@ -64,7 +66,8 @@ public class MapService {
                 return;
             }
             FileWriter writer = new FileWriter(JSON_MAPS_DIRECTORY + gameMap.getMapName());
-            gson.toJson(gameMap, writer);
+            GameMapDTO gameMapDTO = gameMapConverter.getGameMapDTO(gameMap);
+            gson.toJson(gameMapDTO, writer);
             writer.flush();
             writer.close();
         }

@@ -13,8 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import static base.constants.Constants.CELL_SIZE;
-import static base.constants.Constants.PILLOW_TILE_ID;
+import static base.constants.Constants.*;
 import static base.constants.MultiOptionalObjects.bookcases;
 
 public class GameMap {
@@ -22,35 +21,15 @@ public class GameMap {
     private static final Logger logger = LoggerFactory.getLogger(GameMap.class);
 
     private final String mapName;
+    private String mapVersion;
 
     private int backGroundTileId = -1;
     private int mapWidth = -1;
     private int mapHeight = -1;
     private int maxLayer = -1;
 
-    private final Map<Integer, List<MapTile>> layeredTiles = new ConcurrentHashMap<>();
-    // every plant type separate?
-    private List<Plant> plants = new CopyOnWriteArrayList<>();
-    // every type separate?
-    private final List<Item> items = new CopyOnWriteArrayList<>();
-    // maybe water and food separate?
-    private final List<FoodBowl> foodBowls = new CopyOnWriteArrayList<>();
-    private final List<WaterBowl> waterBowls = new CopyOnWriteArrayList<>();
-    private final List<StorageChest> storageChests = new CopyOnWriteArrayList<>();
-    private final List<Feather> feathers = new CopyOnWriteArrayList<>();
-    private final List<Mushroom> mushrooms = new CopyOnWriteArrayList<>();
-    private final List<Wood> woods = new CopyOnWriteArrayList<>();
-    private final List<Bush> bushes = new CopyOnWriteArrayList<>();
-    private final List<Oak> oaks = new CopyOnWriteArrayList<>();
-    private final List<Spruce> spruces = new CopyOnWriteArrayList<>();
-    private List<CookingStove> cookingStoves = new CopyOnWriteArrayList<>();
-    private List<Fridge> fridges = new CopyOnWriteArrayList<>();
-    private final List<NpcSpot> npcSpots = new CopyOnWriteArrayList<>();
-    private final List<NpcSpawnSpot> npcSpawnSpots = new CopyOnWriteArrayList<>();
-    private transient List<Npc> npcs = new CopyOnWriteArrayList<>();
-
-    private transient List<GameObject> interactiveObjects = new CopyOnWriteArrayList<>();
-    private final List<Portal> portals = new ArrayList<>();
+    private Map<Integer, List<MapTile>> layeredTiles = new ConcurrentHashMap<>();
+    private final List<GameObject> gameMapObjects = new CopyOnWriteArrayList<>();
 
     public GameMap(String mapName) {
         this.mapName = mapName;
@@ -166,65 +145,29 @@ public class GameMap {
     }
 
     public void addObject(GameObject object) {
-        if (interactiveObjects == null) {
-            interactiveObjects = new CopyOnWriteArrayList<>();
-        }
-        if (object instanceof Portal) {
-            addPortal((Portal) object);
-        } else if (object instanceof Feather) {
-            feathers.add((Feather) object);
-        } else if (object instanceof Mushroom) {
-            mushrooms.add((Mushroom) object);
-        } else if (object instanceof Wood) {
-            woods.add((Wood) object);
-        } else if (object instanceof Bush) {
-            bushes.add((Bush) object);
-        } else if (object instanceof Oak) {
-            oaks.add((Oak) object);
-        } else if (object instanceof Spruce) {
-            spruces.add((Spruce) object);
-        } else if (object instanceof CookingStove) {
-            cookingStoves.add((CookingStove) object);
-        } else if (object instanceof Fridge) {
-            fridges.add((Fridge) object);
-        } else if (object instanceof NpcSpot) {
-            npcSpots.add((NpcSpot) object);
-        } else if (object instanceof NpcSpawnSpot) {
-            npcSpawnSpots.add((NpcSpawnSpot) object);
-        } else if (object instanceof Npc) {
-            npcs.add((Npc) object);
-            if (object instanceof NpcVendor) {
-                interactiveObjects.add(object);
-            }
-        } else {
-            interactiveObjects.add(object);
-        }
-    }
-
-    private void addPortal(Portal portal) {
-        portals.add(portal);
+        gameMapObjects.add(object);
     }
 
     public void addItem(Item item) {
         logger.debug("Adding item to the list");
-        items.add(item);
         item.setMapName(mapName);
+        gameMapObjects.add(item);
     }
 
     public void addPlant(Plant plant) {
-        plants.add(plant);
+        gameMapObjects.add(plant);
     }
 
     public void addFoodBowl(FoodBowl bowl) {
-        foodBowls.add(bowl);
+        gameMapObjects.add(bowl);
     }
 
     public void addWaterBowl(WaterBowl bowl) {
-        waterBowls.add(bowl);
+        gameMapObjects.add(bowl);
     }
 
     public void addStorageChest(StorageChest storageChest) {
-        storageChests.add(storageChest);
+        gameMapObjects.add(storageChest);
     }
 
     /**
@@ -248,93 +191,87 @@ public class GameMap {
     private boolean tileRemoved(int tileX, int tileY, int layer, boolean regularTiles, int selectedTile) {
         for (MapTile mapTile : layeredTiles.get(layer)) {
             if (mapTile.getX() == tileX && mapTile.getY() == tileY && mapTile.isRegularTile() == regularTiles && mapTile.getId() == selectedTile) {
-                layeredTiles.get(layer).remove(mapTile);
-                return true;
+                return layeredTiles.get(layer).remove(mapTile);
             }
         }
         return false;
     }
 
-    //TODO: refactor not to mention every item type separately
     public void removeItem(String itemName, Rectangle rectangle) {
-        items.removeIf(item -> itemName.equals(item.getItemName()) && rectangle.intersects(item.getRectangle()));
-
-        if (itemName.equalsIgnoreCase(Wood.ITEM_NAME)) {
-            woods.removeIf(wood -> rectangle.intersects(wood.getRectangle()));
-        }
-        if (itemName.equalsIgnoreCase(Feather.ITEM_NAME)) {
-            feathers.removeIf(feather -> rectangle.intersects(feather.getRectangle()));
-        }
-        if (itemName.equalsIgnoreCase(Mushroom.ITEM_NAME)) {
-            mushrooms.removeIf(mushroom -> rectangle.intersects(mushroom.getRectangle()));
+        List<GameObject> gameObjects = getGameObjectFromPosition(rectangle);
+        for (GameObject gameObject : gameObjects) {
+            if (!CHEATS_MODE &&
+                    (gameObject instanceof Spruce || gameObject instanceof Oak || gameObject instanceof Bush)) {
+                continue;
+            }
+            if ((gameObject instanceof Item && ((Item) gameObject).getItemName().equalsIgnoreCase(itemName))
+                    || (gameObject instanceof Wood || gameObject instanceof Feather || gameObject instanceof Mushroom)) {
+                gameMapObjects.remove(gameObject);
+                break;
+            }
         }
     }
 
     public boolean removeObject(GameObject object) {
-        if (interactiveObjects.contains(object)) {
-            interactiveObjects.remove(object);
-            return true;
-        }
-        if (object instanceof Npc && npcs.contains(object)) {
-            npcs.remove(object);
-            return true;
-        }
-        return false;
+        return gameMapObjects.remove(object);
     }
 
     public boolean removeStorageChest(int xPosition, int yPosition) {
-        Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
-        for (StorageChest chest : storageChests) {
-            if (chest.getRectangle().intersects(rectangle)) {
-                storageChests.remove(chest);
-                return true;
+        List<GameObject> gameObjects = getGameObjectFromPosition(xPosition, yPosition);
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject instanceof StorageChest) {
+                return gameMapObjects.remove(gameObject);
             }
         }
         return false;
     }
 
     public boolean removeCookingStove(int xPosition, int yPosition) {
-        Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
-        for (CookingStove cookingStove : cookingStoves) {
-            if (cookingStove.getRectangle().intersects(rectangle)) {
-                cookingStoves.remove(cookingStove);
-                return true;
+        List<GameObject> gameObjects = getGameObjectFromPosition(xPosition, yPosition);
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject instanceof CookingStove) {
+                return gameMapObjects.remove(gameObject);
             }
         }
         return false;
     }
 
     public boolean removeFridge(int xPosition, int yPosition) {
-        Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
-        for (Fridge fridge : fridges) {
-            if (fridge.getRectangle().intersects(rectangle)) {
-                fridges.remove(fridge);
-                return true;
+        List<GameObject> gameObjects = getGameObjectFromPosition(xPosition, yPosition);
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject instanceof Fridge) {
+                return gameMapObjects.remove(gameObject);
             }
         }
         return false;
     }
 
     public void removePlant(Plant plant) {
-        plants.remove(plant);
+        gameMapObjects.remove(plant);
     }
 
-    // TODO: check by x and y instead of full object
     public boolean removeBowl(Bowl bowl) {
-        if (foodBowls.contains(bowl)) {
-            foodBowls.remove(bowl);
-            return true;
-        }
-        if (waterBowls.contains(bowl)) {
-            waterBowls.remove(bowl);
-            return true;
-        }
-        return false;
+        return gameMapObjects.remove(bowl);
     }
 
     /**
      * =================================== Getters with some logic ======================================
      */
+
+    public List<GameObject> getGameObjectFromPosition(int xPosition, int yPosition) {
+        Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
+        return getGameObjectFromPosition(rectangle);
+    }
+
+    public List<GameObject> getGameObjectFromPosition(Rectangle rectangle) {
+        List<GameObject> objectsInPosition = new ArrayList<>();
+        for (GameObject gameObject : gameMapObjects) {
+            if (gameObject.getRectangle().intersects(rectangle)) {
+                objectsInPosition.add(gameObject);
+            }
+        }
+        return objectsInPosition;
+    }
 
     public List<MapTile> getPillows() {
         List<MapTile> pillows = new ArrayList<>();
@@ -350,31 +287,29 @@ public class GameMap {
     }
 
     public NpcSpot getNpcSpot(NpcType type) {
-        if (npcSpots.isEmpty()) {
-            return null;
-        }
-        for (NpcSpot spot : npcSpots) {
-            if (spot.getNpcType() == type) {
-                return spot;
+        for (GameObject gameObject : gameMapObjects) {
+                if (gameObject instanceof NpcSpot) {
+                    return (NpcSpot) gameObject;
+                }
             }
-        }
-        return npcSpots.get(0);
+        return null;
     }
 
     public NpcSpawnSpot getNpcSpawnSpotByType(NpcType type) {
-        if (npcSpawnSpots.isEmpty()) {
-            return null;
-        }
-        for (NpcSpawnSpot spawnSpot : npcSpawnSpots) {
-            if (spawnSpot.getNpcType() == type) {
-                return spawnSpot;
+        for (GameObject gameObject : gameMapObjects) {
+                if (gameObject instanceof NpcSpawnSpot && ((NpcSpawnSpot) gameObject).getNpcType() == type) {
+                    return (NpcSpawnSpot) gameObject;
+                }
             }
-        }
-        return npcSpawnSpots.get(0);
+        return null;
     }
 
     public List<Plant> getWildPlants() {
-        return plants.stream().filter(Plant::isWild).collect(Collectors.toList());
+        return gameMapObjects.stream()
+                    .filter(Plant.class::isInstance)
+                    .filter(gameObject -> ((Plant) gameObject).isWild())
+                    .map(Plant.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<MapTile> getTilesOnLayer(int layer) {
@@ -382,8 +317,10 @@ public class GameMap {
     }
 
     public List<Item> getItems() {
-        items.removeIf(Objects::isNull);
-        return items;
+        return gameMapObjects.stream()
+                    .filter(Item.class::isInstance)
+                    .map(Item.class::cast)
+                    .collect(Collectors.toList());
     }
 
     /**
@@ -410,93 +347,128 @@ public class GameMap {
         return mapHeight;
     }
 
-    public List<GameObject> getInteractiveObjects() {
-        if (interactiveObjects == null) {
-            interactiveObjects = new CopyOnWriteArrayList<>();
-        }
-        return interactiveObjects;
+    public List<GameObject> getGameMapObjects() {
+        return gameMapObjects;
     }
 
     public List<Plant> getPlants() {
-        return plants;
-    }
-
-    public void setPlants(List<Plant> plants) {
-        this.plants = plants;
+        return gameMapObjects.stream()
+                    .filter(Plant.class::isInstance)
+                    .map(Plant.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<FoodBowl> getFoodBowls() {
-        return foodBowls;
+        return gameMapObjects.stream()
+                    .filter(FoodBowl.class::isInstance)
+                    .map(FoodBowl.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<WaterBowl> getWaterBowls() {
-        return waterBowls;
+        return gameMapObjects.stream()
+                    .filter(WaterBowl.class::isInstance)
+                    .map(WaterBowl.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<Portal> getPortals() {
-        return portals;
+        return gameMapObjects.stream()
+                    .filter(Portal.class::isInstance)
+                    .map(Portal.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<StorageChest> getStorageChests() {
-        return storageChests;
+        return gameMapObjects.stream()
+                    .filter(StorageChest.class::isInstance)
+                    .map(StorageChest.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<Wood> getWoods() {
-        return woods;
+        return gameMapObjects.stream()
+                    .filter(Wood.class::isInstance)
+                    .map(Wood.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<Feather> getFeathers() {
-        return feathers;
+        return gameMapObjects.stream()
+                    .filter(Feather.class::isInstance)
+                    .map(Feather.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<Mushroom> getMushrooms() {
-        return mushrooms;
+        return gameMapObjects.stream()
+                    .filter(Mushroom.class::isInstance)
+                    .map(Mushroom.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<Bush> getBushes() {
-        return bushes;
+        return gameMapObjects.stream()
+                    .filter(Bush.class::isInstance)
+                    .map(Bush.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<Oak> getOaks() {
-        return oaks;
+        return gameMapObjects.stream()
+                    .filter(Oak.class::isInstance)
+                    .map(Oak.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<Spruce> getSpruces() {
-        return spruces;
+        return gameMapObjects.stream()
+                    .filter(Spruce.class::isInstance)
+                    .map(Spruce.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<CookingStove> getCookingStoves() {
-        if (cookingStoves == null) {
-            cookingStoves = new CopyOnWriteArrayList<>();
-        }
-        return cookingStoves;
+        return gameMapObjects.stream()
+                    .filter(CookingStove.class::isInstance)
+                    .map(CookingStove.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<Fridge> getFridges() {
-        if (fridges == null) {
-            fridges = new CopyOnWriteArrayList<>();
-        }
-        return fridges;
-    }
-
-    public void setFridges(List<Fridge> fridges) {
-        this.fridges = fridges;
+        return gameMapObjects.stream()
+                    .filter(Fridge.class::isInstance)
+                    .map(Fridge.class::cast)
+                    .collect(Collectors.toList());
     }
 
     public List<NpcSpot> getNpcSpots() {
-        return npcSpots;
+        return gameMapObjects.stream()
+                    .filter(NpcSpot.class::isInstance)
+                    .map(NpcSpot.class::cast)
+                    .collect(Collectors.toList());
+    }
+
+    public NpcAdoption getAdoptionNpc() {
+        return getNpcs().stream()
+                .filter(NpcAdoption.class::isInstance)
+                .map(NpcAdoption.class::cast)
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Npc> getNpcs() {
-        return npcs;
+        return gameMapObjects.stream()
+                .filter(Npc.class::isInstance)
+                .map(Npc.class::cast)
+                .collect(Collectors.toList());
     }
 
     public List<NpcSpawnSpot> getNpcSpawnSpots() {
-        return npcSpawnSpots;
-    }
-
-    public void setNpcs(List<Npc> npcs) {
-        this.npcs = npcs;
+        return gameMapObjects.stream()
+                .filter(NpcSpawnSpot.class::isInstance)
+                .map(NpcSpawnSpot.class::cast)
+                .collect(Collectors.toList());
     }
 
     public Map<Integer, List<MapTile>> getLayeredTiles() {
@@ -517,5 +489,21 @@ public class GameMap {
 
     public void setMapHeight(int mapHeight) {
         this.mapHeight = mapHeight;
+    }
+
+    public void setLayeredTiles(Map<Integer, List<MapTile>> layeredTiles) {
+        this.layeredTiles = layeredTiles;
+    }
+
+    public void addGameObjects(List<? extends GameObject> gameObjects) {
+        gameMapObjects.addAll(gameObjects);
+    }
+
+    public String getMapVersion() {
+        return mapVersion;
+    }
+
+    public void setMapVersion(String mapVersion) {
+        this.mapVersion = mapVersion;
     }
 }

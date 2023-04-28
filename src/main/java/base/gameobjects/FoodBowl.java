@@ -36,16 +36,16 @@ public class FoodBowl extends Bowl {
 
     public void fillBowl(String item) {
         if (sprite != null) {
-            if (item.equals(PetFood.PERFECT_MEAL)) {
+            if (PetFood.PERFECT_MEAL.equals(item)) {
                 sprite.incrementSprite();
                 sprite.incrementSprite();
                 sprite.incrementSprite();
                 isFull = true;
-            } else if (item.equals(PetFood.TASTY_MEAL)) {
+            } else if (PetFood.TASTY_MEAL.equals(item)) {
                 sprite.incrementSprite();
                 sprite.incrementSprite();
                 isFull = true;
-            } else if (item.equals(PetFood.SIMPLE_MEAL)) {
+            } else if (PetFood.SIMPLE_MEAL.equals(item)) {
                 sprite.incrementSprite();
                 isFull = true;
             }

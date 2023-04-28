@@ -11,7 +11,6 @@ import static base.constants.Constants.TILE_SIZE;
 import static base.constants.Constants.ZOOM;
 import static base.constants.MapConstants.FOREST_MAP;
 
-// TODO: extends Item? And refactor item
 public class Wood implements GameObject {
 
     protected static final Logger logger = LoggerFactory.getLogger(Wood.class);
