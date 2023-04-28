@@ -22,7 +22,7 @@ public class NewAnimalButton extends GUIButton {
         this.sprite = sprite;
         this.animalType = animalType;
         rectangle.generateBorder(3, BROWN, BLUE);
-        if (animalType.equalsIgnoreCase(Cat.TYPE) || animalType.equalsIgnoreCase(Rat.TYPE)) {
+        if (Cat.TYPE.equalsIgnoreCase(animalType) || Rat.TYPE.equalsIgnoreCase(animalType)) {
             multipleOptions = true;
         }
     }

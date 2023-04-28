@@ -2,6 +2,7 @@ package base.gameobjects.animalstates;
 
 import base.Game;
 import base.gameobjects.*;
+import base.gameobjects.npc.NpcAdoption;
 import base.graphicsservice.Rectangle;
 import base.map.GameMap;
 import base.map.MapTile;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import static base.constants.Constants.*;
 import static base.constants.MapConstants.CITY_MAP;
 import static base.constants.MapConstants.FOREST_MAP;
-import static base.gameobjects.Animal.*;
 import static base.navigationservice.Direction.STAY;
 import static base.navigationservice.MapEdgesUtil.*;
 
@@ -160,21 +160,28 @@ public class WalkingState implements AnimalState {
     }
 
     private void checkIfNeedToGoToDifferentLocation(Game game, Animal animal) {
-        if (animal.getRoute().isEmpty() && (animal.getCurrentMap().equalsIgnoreCase(FOREST_MAP) || animal.getCurrentMap().equalsIgnoreCase(CITY_MAP))) {
+        if (animal.getRoute().isEmpty() && (FOREST_MAP.equalsIgnoreCase(animal.getCurrentMap()) || CITY_MAP.equalsIgnoreCase(animal.getCurrentMap()))) {
             animal.setRoute(game.calculateRouteToOtherMap(animal, NavigationService.getNextPortalToGetToCenter(animal.getCurrentMap())));
         }
     }
 
     private void checkPortal(Game game, Animal animal) {
         Portal portal = animal.getPortalTile(game, animal.getCurrentMap(), animal.getRectangle());
-        if (portal != null && !(portal.getDirection().equalsIgnoreCase(FOREST_MAP) || portal.getDirection().equalsIgnoreCase(CITY_MAP))) {
+        if (portal != null && !(FOREST_MAP.equalsIgnoreCase(portal.getDirection()) || CITY_MAP.equalsIgnoreCase(portal.getDirection()))) {
             game.moveAnimalToAnotherMap(animal, portal);
             arrivingCooldown = 15;
         }
     }
 
     private boolean isArrivedToNpc(Game game, Animal animal) {
-        if (!animal.getRectangle().intersects(game.getAdoptionNpc().getRectangle())) {
+        NpcAdoption adoptionNpc = game.getAdoptionNpc(animal.getCurrentMap());
+        if (adoptionNpc == null) {
+            isGoingAway = false;
+            isGoingToNpc = false;
+            return false;
+        }
+        Rectangle npcRectangle = adoptionNpc.getRectangle();
+        if (!animal.getRectangle().intersects(npcRectangle)) {
             animal.setRoute(game.calculateRouteToNpc(animal));
             return false;
         } else {

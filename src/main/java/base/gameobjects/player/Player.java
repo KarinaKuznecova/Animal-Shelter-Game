@@ -180,23 +180,12 @@ public class Player implements GameObject {
                 }
             }
         }
-        List<GameObject> gameObjects = new ArrayList<>();
-        gameObjects.addAll(game.getGameMap().getSpruces());
-        gameObjects.addAll(game.getGameMap().getOaks());
-        gameObjects.addAll(game.getGameMap().getItems());
-        gameObjects.addAll(game.getGameMap().getPlants());
-        gameObjects.addAll(game.getGameMap().getFoodBowls());
-        gameObjects.addAll(game.getGameMap().getStorageChests());
-        gameObjects.addAll(game.getGameMap().getNpcSpots());
-        gameObjects.addAll(game.getGameMap().getBushes());
-        if (!gameObjects.isEmpty()) {
-            Rectangle potentialRectangle = new Rectangle(xPosition, yPosition, playerRectangle.getWidth(), playerRectangle.getHeight());
-            for (GameObject gameObject : gameObjects) {
+        Rectangle potentialRectangle = new Rectangle(xPosition, yPosition, playerRectangle.getWidth(), playerRectangle.getHeight());
+            for (GameObject gameObject : game.getGameMap().getGameMapObjects()) {
                 if (gameObject.getLayer() == getLayer() && potentialRectangle.intersects(gameObject.getRectangle())) {
                     return true;
                 }
             }
-        }
         return false;
     }
 

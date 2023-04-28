@@ -148,7 +148,7 @@ public abstract class Animal implements GameObject, Walking {
     public void render(RenderHandler renderer, int zoom) {
         int xForSprite = rectangle.getX();
         int yForSprite = rectangle.getY();
-        if (BABY.equals(age) && !animalType.contains("baby") || animalType.equals("chicken-baby")) {
+        if (BABY.equals(age) && !animalType.contains("baby") || "chicken-baby".equals(animalType)) {
             zoom = 1;
             xForSprite = rectangle.getX() + rectangle.getWidth();
             yForSprite = rectangle.getY() + (rectangle.getHeight() + 5);

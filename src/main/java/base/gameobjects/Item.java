@@ -15,10 +15,10 @@ import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 
 public class Item implements GameObject {
 
-    protected static final transient Logger logger = LoggerFactory.getLogger(Item.class);
+    protected static final Logger logger = LoggerFactory.getLogger(Item.class);
     private final int x;
     private final int y;
-    private final String itemName;
+    private String itemName;
     private transient Sprite sprite;
     private final Rectangle rectangle;
     private boolean stackable;
@@ -55,14 +55,14 @@ public class Item implements GameObject {
         if (mapName != null && !mapName.isEmpty()) {
             freshness--;
             if (freshness < 1) {
-                game.getGameMap().removeItem(itemName, rectangle);
+                game.getGameMap(mapName).removeItem(itemName, rectangle);
             }
         }
     }
 
     @Override
     public int getLayer() {
-        return 2;
+        return 1;
     }
 
     @Override
@@ -117,5 +117,9 @@ public class Item implements GameObject {
 
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 }

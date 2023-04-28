@@ -23,7 +23,7 @@ public interface Walking {
 
     default boolean nearPortal(List<Portal> portals, Rectangle rectangle) {
         for (Portal portal : portals) {
-            if (this instanceof Animal && (portal.getDirection().equalsIgnoreCase(FOREST_MAP) || portal.getDirection().equalsIgnoreCase(CITY_MAP))) {
+            if (this instanceof Animal && (FOREST_MAP.equalsIgnoreCase(portal.getDirection()) || CITY_MAP.equalsIgnoreCase(portal.getDirection()))) {
                 // don't check this portal, animal should not use it
                 continue;
             }

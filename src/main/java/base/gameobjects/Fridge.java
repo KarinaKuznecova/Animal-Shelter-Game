@@ -9,6 +9,8 @@ import base.map.bigobjects.Bookcase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.QUESTION_ICON_PATH;
@@ -25,13 +27,13 @@ public class Fridge extends Bookcase implements GameObject {
     private final int xPosition;
     private final int yPosition;
 
-    public Fridge(int xPosition, int yPosition) {
+    public Fridge(String mapName, int xPosition, int yPosition) {
         super(xPosition, yPosition, 0,1);
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.rectangle = new Rectangle(xPosition, yPosition - CELL_SIZE, TILE_SIZE, CELL_SIZE + TILE_SIZE);
         rectangle.generateBorder(1, GREEN);
-        interactionZone = new InteractionZoneKitchen(xPosition + 32, yPosition + 32, 290);
+        interactionZone = new InteractionZoneKitchen(mapName, xPosition + 32, yPosition + 32, 290);
         setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
     }
 
@@ -99,5 +101,19 @@ public class Fridge extends Bookcase implements GameObject {
 
     public InteractionZone getInteractionZone() {
         return interactionZone;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Fridge fridge = (Fridge) o;
+        return xPosition == fridge.xPosition && yPosition == fridge.yPosition && Objects.equals(rectangle, fridge.rectangle);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), rectangle, xPosition, yPosition);
     }
 }

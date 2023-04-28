@@ -29,7 +29,7 @@ public class ItemService {
             return new Seed(itemType, x, y);
         } else if (PlantService.plantTypes.contains(itemType)) {
             return new Item(x, y, itemType);
-        } else if (itemType.equalsIgnoreCase(PetFood.SIMPLE_MEAL) || itemType.equalsIgnoreCase(PetFood.TASTY_MEAL) || itemType.equalsIgnoreCase(PetFood.PERFECT_MEAL)) {
+        } else if (PetFood.SIMPLE_MEAL.equalsIgnoreCase(itemType) || PetFood.TASTY_MEAL.equalsIgnoreCase(itemType) || PetFood.PERFECT_MEAL.equalsIgnoreCase(itemType)) {
             return new PetFood(x, y, itemType);
         }
         return null;

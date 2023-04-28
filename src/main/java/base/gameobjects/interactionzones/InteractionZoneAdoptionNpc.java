@@ -3,6 +3,7 @@ package base.gameobjects.interactionzones;
 import base.Game;
 import base.gameobjects.Animal;
 
+import static base.constants.MapConstants.MAIN_MAP;
 import static base.constants.VisibleText.getAdoptionDialog;
 import static base.constants.VisibleText.noAnimalToAdopt;
 
@@ -25,7 +26,7 @@ public class InteractionZoneAdoptionNpc extends InteractionZone {
 
     @Override
     public void action(Game game) {
-        game.getAdoptionNpc().checkWantedAnimal(game);
+        game.getAdoptionNpc(MAIN_MAP).checkWantedAnimal(game);
         game.switchDialogBox();
         if (wantedAnimal == null) {
             game.setDialogText(noAnimalToAdopt);

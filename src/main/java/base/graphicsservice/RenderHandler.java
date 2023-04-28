@@ -278,25 +278,15 @@ public class RenderHandler {
     }
 
     private void renderGameObjects(Game game, GameMap gameMap, int layer) {
-        List<Animal> animalsOnCurrentMap = game.getAnimalsOnMaps().get(gameMap.getMapName());
-        for (Animal animal : animalsOnCurrentMap) {
-            if (animal.getLayer() == layer) {
-                animal.render(this, ZOOM);
-            }
-        }
-        for (GameObject gameObject : new ArrayList<>(gameMap.getItems())) {
+        for (GameObject gameObject : gameMap.getGameMapObjects()) {
             if (gameObject != null && gameObject.getLayer() == layer) {
                 gameObject.render(this, ZOOM);
             }
         }
-        for (Plant plant : new ArrayList<>(gameMap.getPlants())) {
-            if (plant.getLayer() == layer) {
-                plant.render(this, ZOOM);
-            }
-        }
-        for (StorageChest chest : gameMap.getStorageChests()) {
-            if (chest.getLayer() == layer) {
-                chest.render(this, ZOOM);
+        List<Animal> animalsOnCurrentMap = game.getAnimalsOnMaps().get(gameMap.getMapName());
+        for (Animal animal : animalsOnCurrentMap) {
+            if (animal.getLayer() == layer) {
+                animal.render(this, ZOOM);
             }
         }
         if (game.getPlayer().getLayer() == layer) {
@@ -304,76 +294,6 @@ public class RenderHandler {
         }
         if (game.getGameMap().getNpcs() != null && !game.getGameMap().getNpcs().isEmpty() && game.getGameMap().getNpcs().get(0).getLayer() == layer) {
             game.getGameMap().getNpcs().get(0).render(this, ZOOM);
-        }
-        for (Bowl bowl : gameMap.getFoodBowls()) {
-            if (bowl.getLayer() == layer) {
-                bowl.render(this, ZOOM);
-            }
-        }
-        for (Bowl bowl : gameMap.getWaterBowls()) {
-            if (bowl.getLayer() == layer) {
-                bowl.render(this, ZOOM);
-            }
-        }
-        for (Feather feather : gameMap.getFeathers()) {
-            if (feather.getLayer() == layer) {
-                feather.render(this, ZOOM);
-            }
-        }
-        for (Mushroom mushroom : gameMap.getMushrooms()) {
-            if (mushroom.getLayer() == layer) {
-                mushroom.render(this, ZOOM);
-            }
-        }
-        for (Wood wood : gameMap.getWoods()) {
-            if (wood.getLayer() == layer) {
-                wood.render(this, ZOOM);
-            }
-        }
-        for (Bush bush : gameMap.getBushes()) {
-            if (bush.getLayer() == layer) {
-                bush.render(this, ZOOM);
-            }
-        }
-        for (Oak oak : gameMap.getOaks()) {
-            if (oak.getLayer() == layer) {
-                oak.render(this, ZOOM);
-            }
-        }
-        for (Spruce spruce : gameMap.getSpruces()) {
-            if (spruce.getLayer() == layer) {
-                spruce.render(this, ZOOM);
-            }
-        }
-        for (NpcSpot npcSpot : gameMap.getNpcSpots()) {
-            if (npcSpot.getLayer() == layer) {
-                npcSpot.render(this, ZOOM);
-            }
-        }
-        for (NpcSpawnSpot npcSpawnSpot : gameMap.getNpcSpawnSpots()) {
-            if (npcSpawnSpot.getLayer() == layer) {
-                npcSpawnSpot.render(this, ZOOM);
-            }
-        }
-        for (Portal portal : gameMap.getPortals()) {
-            if (portal.getLayer() == layer) {
-                portal.render(this, ZOOM);
-            }
-        }
-        for (CookingStove cookingStove : gameMap.getCookingStoves()) {
-            if (cookingStove.getLayer() == layer) {
-                cookingStove.render(this, ZOOM);
-            }
-        }
-        for (Fridge fridge : gameMap.getFridges()) {
-            if (fridge.getLayer() == layer) {
-                fridge.render(this, ZOOM);
-            }
-        }
-        for (GameObject gameObject : gameMap.getInteractiveObjects()) {
-            if (gameObject.getLayer() == layer) {
-                gameObject.render(this, ZOOM);
-            }
         }
     }
 

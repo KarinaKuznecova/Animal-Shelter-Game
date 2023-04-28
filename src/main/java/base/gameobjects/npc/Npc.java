@@ -22,7 +22,7 @@ import static base.navigationservice.Direction.STAY;
 
 public class Npc implements GameObject, Walking {
 
-    private static final transient Logger logger = LoggerFactory.getLogger(Npc.class);
+    private static final Logger logger = LoggerFactory.getLogger(Npc.class);
 
     public NpcType type;
 
@@ -40,7 +40,7 @@ public class Npc implements GameObject, Walking {
     public Npc(int startX, int startY) {
         animatedSprite = getAnimatedSprite();
         logger.info("Loaded npc sprite");
-        speed = 2;
+        speed = 1;
         route = new Route();
         direction = DOWN;
 
@@ -140,14 +140,6 @@ public class Npc implements GameObject, Walking {
         return "Npc";
     }
 
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        logger.info(String.format("changing npc speed from %d to %d", this.speed, speed));
-        this.speed = speed;
-    }
 
     public void setDirection(Direction direction) {
         this.direction = direction;

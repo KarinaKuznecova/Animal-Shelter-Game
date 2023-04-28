@@ -1,7 +1,9 @@
 package base.loading;
 
 import base.gameobjects.CookingStove;
+import base.gameobjects.FoodBowl;
 import base.gameobjects.Fridge;
+import base.gameobjects.WaterBowl;
 import base.map.GameMap;
 import base.map.MapTile;
 import org.slf4j.Logger;
@@ -9,25 +11,33 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import static base.constants.Constants.CELL_SIZE;
-import static base.constants.Constants.CURRENT_GAME_VERSION;
+import static base.constants.Constants.TILE_SIZE;
 
 public class MapMigrator {
+
+    public static final String VERSION_1_4_2 = "1.4.2";
+    public static final String VERSION_1_4_3 = "1.4.3";
+
     protected static final Logger logger = LoggerFactory.getLogger(MapMigrator.class);
 
     /**
      * =================================== check migration ======================================
      */
 
-    public void checkMigration(GameMap gameMap) {
-        if (CURRENT_GAME_VERSION.equals("1.4.2")) {
+    public void checkMigration(GameMap gameMap, String mapVersion) {
+        if (mapVersion == null || VERSION_1_4_2.equals(mapVersion)) {
             migrateStove(gameMap);
             migrateChairs(gameMap);
-            createFridgeList(gameMap);
             migrateFridges(gameMap);
+
+            gameMap.setMapVersion(VERSION_1_4_3);
+        }
+
+        if (VERSION_1_4_3.equals(mapVersion) || VERSION_1_4_3.equals(gameMap.getMapVersion())) {
+            migrateBowls(gameMap);
         }
     }
 
@@ -58,7 +68,7 @@ public class MapMigrator {
             }
             if (!exists) {
                 logger.info("Migrating cooking stove");
-                CookingStove cookingStove = new CookingStove(stoveTile.getX() * CELL_SIZE, stoveTile.getY() * CELL_SIZE, stoveTile.getId());
+                CookingStove cookingStove = new CookingStove(gameMap.getMapName(), stoveTile.getX() * CELL_SIZE, stoveTile.getY() * CELL_SIZE, stoveTile.getId());
                 gameMap.addObject(cookingStove);
             }
         }
@@ -81,12 +91,6 @@ public class MapMigrator {
         });
     }
 
-    private void createFridgeList(GameMap gameMap) {
-        if (gameMap.getFridges() == null) {
-            gameMap.setFridges(new CopyOnWriteArrayList<>());
-        }
-    }
-
     public void migrateFridges(GameMap gameMap) {
         if (gameMap.getTilesOnLayer(2) == null) {
             return;
@@ -97,15 +101,35 @@ public class MapMigrator {
         for (MapTile fridgeTile : fridgeTiles) {
             boolean exists = false;
             for (Fridge fridge : gameMap.getFridges()) {
-                if (fridge.getRectangle().getX() == fridgeTile.getX() * CELL_SIZE && fridge.getRectangle().getY() == fridgeTile.getY() * CELL_SIZE) {
+                if (fridge.getRectangle().getX() == fridgeTile.getX() * CELL_SIZE && fridge.getRectangle().getY() == fridgeTile.getY() * CELL_SIZE - CELL_SIZE) {
                     exists = true;
                     break;
                 }
             }
             if (!exists) {
                 logger.info("Migrating fridge");
-                Fridge fridge = new Fridge(fridgeTile.getX() * CELL_SIZE, fridgeTile.getY() * CELL_SIZE);
+                Fridge fridge = new Fridge(gameMap.getMapName(), fridgeTile.getX() * CELL_SIZE, fridgeTile.getY() * CELL_SIZE);
                 gameMap.addObject(fridge);
+            }
+        }
+    }
+
+    private void migrateBowls(GameMap gameMap) {
+        for (FoodBowl bowl : gameMap.getFoodBowls()) {
+            if (bowl.getRectangle().getWidth() == TILE_SIZE) {
+                bowl.getRectangle().setWidth(CELL_SIZE);
+            }
+            if (bowl.getRectangle().getHeight() == TILE_SIZE) {
+                bowl.getRectangle().setHeight(CELL_SIZE);
+            }
+        }
+
+        for (WaterBowl bowl : gameMap.getWaterBowls()) {
+            if (bowl.getRectangle().getWidth() == TILE_SIZE) {
+                bowl.getRectangle().setWidth(CELL_SIZE);
+            }
+            if (bowl.getRectangle().getHeight() == TILE_SIZE) {
+                bowl.getRectangle().setHeight(CELL_SIZE);
             }
         }
     }

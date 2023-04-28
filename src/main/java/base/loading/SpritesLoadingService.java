@@ -50,8 +50,17 @@ public class SpritesLoadingService {
             plant.setPreviewSprite(game.getSpriteService().getPlantPreviewSprite(plant.getPlantType()));
             plant.setAnimatedSprite(game.getSpriteService().getPlantAnimatedSprite(plant.getPlantType()));
         }
+        for (Feather feather : gameMap.getFeathers()) {
+            feather.setSprite(game.getSpriteService().getFeatherSprite());
+        }
+        for (Mushroom mushroom : gameMap.getMushrooms()) {
+            mushroom.setSprite(game.getSpriteService().getMushroomSprite());
+        }
+        for (Wood wood : gameMap.getWoods()) {
+            wood.setSprite(game.getSpriteService().getWoodSprite());
+        }
         for (Item item : gameMap.getItems()) {
-            if (item.getItemName().contains("Meal")) {
+            if (item.getItemName() != null && item.getItemName().contains("Meal")) {
                 item.setSprite(game.getSpriteService().getMealSprite(item.getItemName()));
             } else {
                 item.setSprite(game.getSpriteService().getPlantPreviewSprite(item.getItemName()));
@@ -68,15 +77,6 @@ public class SpritesLoadingService {
             storageChest.setSpriteOpen(game.getSpriteService().getOpenChestSprite());
             gameMap.setTile(storageChest.getX() / CELL_SIZE, storageChest.getY() / CELL_SIZE, CHEST_TILE_ID, 2, true);
         }
-        for (Feather feather : gameMap.getFeathers()) {
-            feather.setSprite(game.getSpriteService().getFeatherSprite());
-        }
-        for (Mushroom mushroom : gameMap.getMushrooms()) {
-            mushroom.setSprite(game.getSpriteService().getMushroomSprite());
-        }
-        for (Wood wood : gameMap.getWoods()) {
-            wood.setSprite(game.getSpriteService().getWoodSprite());
-        }
         for (Bush bush : gameMap.getBushes()) {
             bush.setSprite(game.getSpriteService().getBushSprite());
             bush.startBush();
@@ -92,14 +92,14 @@ public class SpritesLoadingService {
         for (CookingStove cookingStove : gameMap.getCookingStoves()) {
             cookingStove.setSprite(game.getSpriteService().getCookingStoveSprite(cookingStove.getTileId()));
             cookingStove.getRectangle().generateBorder(1, GREEN);
-            InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(cookingStove.getRectangle().getX() + 32, cookingStove.getRectangle().getY() + 32, 290);
+            InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(gameMap.getMapName(), cookingStove.getRectangle().getX() + 32, cookingStove.getRectangle().getY() + 32, 290);
             cookingStove.setInteractionZone(interactionZone);
             cookingStove.setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
             game.addToInteractionZones(interactionZone);
         }
         for (Fridge fridge : gameMap.getFridges()) {
             fridge.getRectangle().generateBorder(1, GREEN);
-            InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(fridge.getRectangle().getX() + 32, fridge.getRectangle().getY() + 32, 290);
+            InteractionZoneKitchen interactionZone = new InteractionZoneKitchen(gameMap.getMapName(), fridge.getRectangle().getX() + 32, fridge.getRectangle().getY() + 32, 290);
             fridge.setInteractionZone(interactionZone);
             fridge.setContextClue(new ContextClue(new Sprite(ImageLoader.loadImage(QUESTION_ICON_PATH))));
             game.addToInteractionZones(interactionZone);

@@ -122,7 +122,7 @@ public class PlantService {
         Map<String, AnimatedSprite> animatedSprites = new HashMap<>();
         for (String plantType : plantTypes) {
             AnimatedSprite animatedSprite;
-            if (plantType.equalsIgnoreCase(Corn.NAME)) {
+            if (Corn.NAME.equalsIgnoreCase(plantType)) {
                 animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(plantType), 32, 64, 0);
             } else {
                 animatedSprite = ImageLoader.getAnimatedSprite(plantAnimations.get(plantType), TILE_SIZE, 0);
