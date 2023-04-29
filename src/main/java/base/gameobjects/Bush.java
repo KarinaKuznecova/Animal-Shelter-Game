@@ -44,9 +44,9 @@ public class Bush implements GameObject {
         this.y = y;
         this.mapName = mapName;
         this.canContainAnimal = random.nextBoolean();
-        rectangle = new Rectangle(x, y, 96, 82);
+        rectangle = new Rectangle(x + 48, y + 75, 96, 82);
         rectangle.generateBorder(1, GREEN);
-        interactionZone = new InteractionZoneBushWithAnimal(rectangle.getX() + 96, rectangle.getY() + 82, 150);
+        interactionZone = new InteractionZoneBushWithAnimal(x + 96, y + 82, 150);
 
         contextClue = new ContextClue(new Sprite(ImageLoader.loadImage(HEART_ICON_PATH)));
 
@@ -59,7 +59,7 @@ public class Bush implements GameObject {
         rectangle.generateBorder(1, GREEN);
         random = new Random();
         this.canContainAnimal = random.nextBoolean();
-        interactionZone = new InteractionZoneBushWithAnimal(rectangle.getX() + 96, rectangle.getY() + 82, 150);
+        interactionZone = new InteractionZoneBushWithAnimal(x + 96, y + 82, 150);
         contextClue = new ContextClue(new Sprite(ImageLoader.loadImage(HEART_ICON_PATH)));
 
         isAnimalInside = false;
@@ -73,7 +73,7 @@ public class Bush implements GameObject {
             renderer.renderSprite(sprite, x, y, zoom, false);
         }
         if (DEBUG_MODE) {
-            renderer.renderRectangle(rectangle, ZOOM, false);
+            renderer.renderRectangle(rectangle, 1, false);
             interactionZone.render(renderer, zoom);
         }
         contextClue.render(renderer, 1, true);

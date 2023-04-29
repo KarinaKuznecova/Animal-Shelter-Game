@@ -8,6 +8,7 @@ import java.util.List;
 public class Tile {
 
     private String tileName;
+    public int tileId;
     private transient Sprite sprite;
     private int layer;
     private boolean visibleInMenu;

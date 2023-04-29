@@ -73,6 +73,7 @@ public class GameMapLoadingService {
             gameMap = gameMapConverter.getGameMap(gameMapDTO);
             reader.close();
             mapMigrator.checkMigration(gameMap, gameMapDTO.getGameVersion());
+            gameMap.sortGameObjects();
         } catch (IOException e) {
             e.printStackTrace();
         }
