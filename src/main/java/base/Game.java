@@ -12,6 +12,7 @@ import base.gameobjects.player.Player;
 import base.gameobjects.services.*;
 import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
+import base.gameobjects.tree.TreeType;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
@@ -23,6 +24,7 @@ import base.loading.LoadingService;
 import base.map.GameMap;
 import base.map.MapService;
 import base.map.TileService;
+import base.mapgenerator.ForestMapGenerator;
 import base.navigationservice.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,6 +105,9 @@ public class Game extends JFrame implements Runnable {
     private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
 
     public Game() {
+        ForestMapGenerator mapGenerator = new ForestMapGenerator();
+        mapGenerator.generateMap(30, 30, TreeType.SPRUCE);
+
         loadingService = new LoadingService();
         loadGameProperties();
         initializeServices();

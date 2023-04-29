@@ -3,6 +3,9 @@ package base.map;
 import base.gameobjects.*;
 import base.gameobjects.npc.*;
 import base.gameobjects.storage.StorageChest;
+import base.gameobjects.tree.Oak;
+import base.gameobjects.tree.Spruce;
+import base.gameobjects.tree.Tree;
 import base.graphicsservice.Rectangle;
 import base.map.bigobjects.Bookcase;
 import org.slf4j.Logger;
@@ -144,6 +147,17 @@ public class GameMap {
         return null;
     }
 
+    public MapTile getExistingTile(int tileX, int tileY) {
+        for (List<MapTile> mapTiles : layeredTiles.values()) {
+            for (MapTile tile : mapTiles) {
+                if (tile.getX() == tileX && tile.getY() == tileY) {
+                    return tile;
+                }
+            }
+        }
+        return null;
+    }
+
     public void addObject(GameObject object) {
         gameMapObjects.add(object);
     }
@@ -257,6 +271,11 @@ public class GameMap {
     /**
      * =================================== Getters with some logic ======================================
      */
+
+    public List<GameObject> getGameObjectsNearPosition(int xPosition, int yPosition) {
+        Rectangle rectangle = new Rectangle(xPosition - (CELL_SIZE), yPosition - (CELL_SIZE * 2), CELL_SIZE * 2, CELL_SIZE * 4);
+        return getGameObjectFromPosition(rectangle);
+    }
 
     public List<GameObject> getGameObjectFromPosition(int xPosition, int yPosition) {
         Rectangle rectangle = new Rectangle(xPosition, yPosition, CELL_SIZE, CELL_SIZE);
@@ -505,5 +524,9 @@ public class GameMap {
 
     public void setMapVersion(String mapVersion) {
         this.mapVersion = mapVersion;
+    }
+
+    public void sortGameObjects() {
+        gameMapObjects.sort(Comparator.comparingInt(o -> (o.getRectangle().getY() + (o.getRectangle().getHeight() * ZOOM))));
     }
 }

@@ -4,6 +4,7 @@ import base.Game;
 import base.gameobjects.AnimatedSprite;
 import base.gameobjects.GameObject;
 import base.gameobjects.Portal;
+import base.gameobjects.tree.Tree;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.map.MapTile;
@@ -12,7 +13,6 @@ import base.navigationservice.KeyboardListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static base.constants.Constants.*;
@@ -183,6 +183,9 @@ public class Player implements GameObject {
         Rectangle potentialRectangle = new Rectangle(xPosition, yPosition, playerRectangle.getWidth(), playerRectangle.getHeight());
             for (GameObject gameObject : game.getGameMap().getGameMapObjects()) {
                 if (gameObject.getLayer() == getLayer() && potentialRectangle.intersects(gameObject.getRectangle())) {
+                    return true;
+                }
+                if (gameObject instanceof Tree && potentialRectangle.intersects(gameObject.getRectangle())) {
                     return true;
                 }
             }

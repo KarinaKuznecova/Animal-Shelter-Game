@@ -5,6 +5,8 @@ import base.gameobjects.*;
 import base.gameobjects.interactionzones.InteractionZoneKitchen;
 import base.gameobjects.services.PlantService;
 import base.gameobjects.storage.StorageChest;
+import base.gameobjects.tree.Oak;
+import base.gameobjects.tree.Spruce;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Sprite;
 import base.graphicsservice.SpriteService;

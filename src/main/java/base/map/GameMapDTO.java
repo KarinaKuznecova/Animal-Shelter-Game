@@ -4,6 +4,8 @@ import base.gameobjects.*;
 import base.gameobjects.npc.NpcSpawnSpot;
 import base.gameobjects.npc.NpcSpot;
 import base.gameobjects.storage.StorageChest;
+import base.gameobjects.tree.Oak;
+import base.gameobjects.tree.Spruce;
 
 import java.util.ArrayList;
 import java.util.HashMap;
