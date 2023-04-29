@@ -18,6 +18,7 @@ import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.CELL_SIZE;
 import static base.constants.Constants.CHEST_TILE_ID;
 import static base.constants.FilePath.QUESTION_ICON_PATH;
+import static base.constants.MapConstants.TEST_MAP;
 
 public class SpritesLoadingService {
 
@@ -81,7 +82,12 @@ public class SpritesLoadingService {
         }
         for (Bush bush : gameMap.getBushes()) {
             bush.setSprite(game.getSpriteService().getBushSprite());
-            bush.startBush();
+            // TODO: change later to "Forest Generated" and flip equals
+            if (gameMap.getMapName().equals(TEST_MAP)) {
+                bush.startOneTimeBush();
+            } else {
+                bush.startBush();
+            }
         }
         for (Oak oak : gameMap.getOaks()) {
             oak.setSprite(game.getSpriteService().getOakSprite());
