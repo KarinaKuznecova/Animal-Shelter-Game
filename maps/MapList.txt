@@ -4,3 +4,4 @@ City:maps/City.txt
 Forest:maps/Forest.txt
 Home:maps/Home.txt
 TestMap:maps/TestMap.txt
+ForestGenerated:maps/maps-json/ForestGenerated

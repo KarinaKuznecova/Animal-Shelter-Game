@@ -13,6 +13,7 @@ public class MapConstants {
     public static final String HOME_MAP = "Home";
     public static final String FOREST_MAP = "Forest";
     public static final String CITY_MAP = "City";
+    public static final String FOREST_GENERATED_MAP = "ForestGenerated";
 
     public static final String TEST_MAP = "TestMap";
 
