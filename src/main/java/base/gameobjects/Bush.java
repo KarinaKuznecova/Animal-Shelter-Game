@@ -26,6 +26,7 @@ public class Bush implements GameObject {
     private final Rectangle rectangle;
     private final String mapName;
     private transient boolean canContainAnimal;
+    private transient boolean oneTimeSpawn;
     private transient Random random = new Random();
 
     private transient boolean isAnimalInside;
@@ -67,6 +68,21 @@ public class Bush implements GameObject {
         currentInterval = maxInterval;
     }
 
+    public void startOneTimeBush() {
+        rectangle.generateBorder(1, GREEN);
+        random = new Random();
+        interactionZone = new InteractionZoneBushWithAnimal(x + 96, y + 82, 150);
+        contextClue = new ContextClue(new Sprite(ImageLoader.loadImage(HEART_ICON_PATH)));
+
+        int randomNum = random.nextInt(10);
+        if (randomNum != 5) {
+            oneTimeSpawn = true;
+            canContainAnimal = true;
+            maxInterval = 100;
+            currentInterval = 0;
+        }
+    }
+
     @Override
     public void render(RenderHandler renderer, int zoom) {
         if (sprite != null) {
@@ -88,14 +104,14 @@ public class Bush implements GameObject {
             createAnimalInside(game);
             currentInterval = maxInterval;
         }
-        if (!isAnimalInside) {
+        if (!isAnimalInside && !oneTimeSpawn) {
             currentInterval--;
         }
         contextClue.setVisible(canContainAnimal && interactionZone.isPlayerInRange() && isAnimalInside);
 
         interactionZone.update(game);
-        int xPosition = getX() - game.getRenderer().getCamera().getX() + 85;
-        int yPosition = getY() - game.getRenderer().getCamera().getY() - 30;
+        int xPosition = getX() - game.getRenderer().getCamera().getX() + 35;
+        int yPosition = getY() - game.getRenderer().getCamera().getY() - 105;
         Position contextCluPosition = new Position(xPosition, yPosition);
         contextClue.changePosition(contextCluPosition);
     }

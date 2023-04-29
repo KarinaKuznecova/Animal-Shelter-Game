@@ -60,7 +60,7 @@ public class ForestMapGenerator {
 
         fillTrees(gameMap, treeType);
 
-        fillMapWithBushes(gameMap, 10);
+        fillMapWithBushes(gameMap, 4);
 
         sortGameObjects(gameMap);
 
@@ -75,7 +75,7 @@ public class ForestMapGenerator {
         fillMapWithBottomRowOfTrees(gameMap, treeType);
         fillMapWithLeftRowOfTrees(gameMap, treeType);
         fillMapWithRightRowOfTrees(gameMap, treeType);
-        fillMapWithTrees(gameMap, 80, treeType);
+        fillMapWithTrees(gameMap, 70, treeType);
     }
 
     private void defineMaxAndMin(int width, int height, float[][] noiseResult) {

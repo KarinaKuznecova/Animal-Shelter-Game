@@ -5,7 +5,6 @@ import base.gameobjects.npc.*;
 import base.gameobjects.storage.StorageChest;
 import base.gameobjects.tree.Oak;
 import base.gameobjects.tree.Spruce;
-import base.gameobjects.tree.Tree;
 import base.graphicsservice.Rectangle;
 import base.map.bigobjects.Bookcase;
 import org.slf4j.Logger;
@@ -36,6 +35,14 @@ public class GameMap {
 
     public GameMap(String mapName) {
         this.mapName = mapName;
+
+        fillLayeredTiles(3);
+    }
+
+    private void fillLayeredTiles(int levels) {
+        for (int i = 0; i <= levels; i++) {
+            layeredTiles.put(i, new CopyOnWriteArrayList<>());
+        }
     }
 
     boolean isThereAPortal(int x, int y) {
