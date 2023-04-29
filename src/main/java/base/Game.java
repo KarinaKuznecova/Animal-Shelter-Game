@@ -37,8 +37,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
-import static base.constants.MapConstants.CITY_MAP;
-import static base.constants.MapConstants.MAIN_MAP;
+import static base.constants.MapConstants.*;
 import static base.gameobjects.services.ItemService.STACKABLE_ITEMS;
 import static base.navigationservice.NavigationService.getNextPortalToGetToCenter;
 import static base.navigationservice.RouteCalculator.*;
@@ -106,7 +105,7 @@ public class Game extends JFrame implements Runnable {
 
     public Game() {
         ForestMapGenerator mapGenerator = new ForestMapGenerator();
-        mapGenerator.generateMap(30, 30, TreeType.SPRUCE);
+        mapGenerator.generateMap(30, 30, FOREST_GENERATED_MAP);
 
         loadingService = new LoadingService();
         loadGameProperties();
@@ -360,6 +359,11 @@ public class Game extends JFrame implements Runnable {
 
         String previousMapName = gameMap.getMapName();
         logger.debug(String.format("Previous map name: %s", previousMapName));
+
+        if (mapName.startsWith(FOREST_GENERATED_MAP)) {
+            ForestMapGenerator mapGenerator = new ForestMapGenerator();
+            mapGenerator.generateMap(30, 30, mapName);
+        }
 
         if (getGameMap(mapName) == null) {
             gameMap = loadingService.getGameMapLoadingService().loadMap(this, mapName);

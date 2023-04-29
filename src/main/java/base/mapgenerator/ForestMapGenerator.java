@@ -32,8 +32,8 @@ public class ForestMapGenerator {
     private TileService tileService = new TileService();
     float maxNumber = -1;
     float minNumber = 1;
-    private String mapName = "TestMap";
-//    private String mapName = "ForestGenerated";
+//    private String mapName = "TestMap";
+    private String mapName = "ForestGenerated";
 
     public ForestMapGenerator() {
         int seed = random.nextInt();
@@ -43,7 +43,7 @@ public class ForestMapGenerator {
         noiseGenerator = new NoiseGenerator(seed, 3);
     }
 
-    public GameMap generateMap(int width, int height, TreeType treeType) {
+    public GameMap generateMap(int width, int height, String mapName) {
         logger.info("Generating forest map");
 
         float[][] noiseResult = noiseGenerator.getNoiseMap(width, height);
@@ -58,6 +58,7 @@ public class ForestMapGenerator {
 
         fillMapWithBackgroundTiles(noiseResult, gameMap);
 
+        TreeType treeType = getTreeType(mapName);
         fillTrees(gameMap, treeType);
 
         fillMapWithBushes(gameMap, 4);
@@ -68,6 +69,18 @@ public class ForestMapGenerator {
 
         logger.info("Generating forest map done");
         return gameMap;
+    }
+
+    private static TreeType getTreeType(String mapName) {
+        TreeType treeType;
+        if (mapName.contains("oak")) {
+            treeType = TreeType.OAK;
+        } else if (mapName.contains("spruce")) {
+            treeType = TreeType.SPRUCE;
+        } else {
+            treeType = TreeType.MIX;
+        }
+        return treeType;
     }
 
     private void fillTrees(GameMap gameMap, TreeType treeType) {
@@ -197,7 +210,11 @@ public class ForestMapGenerator {
         }
     }
 
-    private void putTree2(GameMap gameMap, int yPosition, int xPosition, TreeType treeType) {
+    private void putTree(GameMap gameMap, int yPosition, int xPosition, TreeType treeType) {
+        if (treeType == TreeType.MIX) {
+            putTreeRandom(gameMap, yPosition, xPosition);
+            return;
+        }
         Tree tree;
         if (TreeType.OAK == treeType) {
             tree = new Oak(xPosition, yPosition);
@@ -207,7 +224,7 @@ public class ForestMapGenerator {
         gameMap.addObject((GameObject) tree);
     }
 
-    private void putTree(GameMap gameMap, int yPosition, int xPosition, TreeType treeType) {
+    private void putTreeRandom(GameMap gameMap, int yPosition, int xPosition) {
         boolean type = random.nextBoolean();
         Tree tree;
         if (type) {

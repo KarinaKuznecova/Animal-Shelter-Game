@@ -18,8 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.TEST_MAP_MODE;
 import static base.constants.FilePath.JSON_MAPS_DIRECTORY;
-import static base.constants.MapConstants.MAIN_MAP;
-import static base.constants.MapConstants.TEST_MAP;
+import static base.constants.MapConstants.*;
 
 public class GameMapLoadingService {
 
@@ -49,11 +48,12 @@ public class GameMapLoadingService {
 
         GameMap gameMap = loadGameMapFromJson(mapName);
 
-        game.getStorageService().loadStorageChests(gameMap);
-        game.getLoadingService().getSpritesLoadingService().setSpritesToGameMapObjects(game, gameMap);
+        if (!FOREST_GENERATED_MAP.equals(mapName)) {
+            game.getStorageService().loadStorageChests(gameMap);
+            game.getStorageService().cleanUpDisconnectedChests();
+        }
         loadAnimalsOnMaps(game);
-        game.getStorageService().cleanUpDisconnectedChests();
-
+        game.getLoadingService().getSpritesLoadingService().setSpritesToGameMapObjects(game, gameMap);
         logger.info("Game map loaded");
 
         return gameMap;

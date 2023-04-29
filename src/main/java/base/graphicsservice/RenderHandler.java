@@ -284,9 +284,11 @@ public class RenderHandler {
             }
         }
         List<Animal> animalsOnCurrentMap = game.getAnimalsOnMaps().get(gameMap.getMapName());
-        for (Animal animal : animalsOnCurrentMap) {
-            if (animal.getLayer() == layer) {
-                animal.render(this, ZOOM);
+        if (animalsOnCurrentMap != null) {
+            for (Animal animal : animalsOnCurrentMap) {
+                if (animal.getLayer() == layer) {
+                    animal.render(this, ZOOM);
+                }
             }
         }
         if (game.getPlayer().getLayer() == layer) {
