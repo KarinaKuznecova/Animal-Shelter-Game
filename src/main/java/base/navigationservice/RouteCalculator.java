@@ -3,6 +3,7 @@ package base.navigationservice;
 import base.gameobjects.*;
 import base.gameobjects.npc.Npc;
 import base.gameobjects.npc.NpcSpot;
+import base.gameobjects.tree.Tree;
 import base.graphicsservice.Rectangle;
 import base.map.GameMap;
 import base.map.MapTile;
@@ -358,6 +359,16 @@ public class RouteCalculator {
                     return true;
                 }
                 return false;
+            }
+        }
+        Rectangle potentialRectangle = new Rectangle(x, y, 32, 32);
+
+        for (GameObject gameObject : gameMap.getGameMapObjects()) {
+            if (gameObject.getLayer() == 2 && potentialRectangle.intersects(gameObject.getRectangle())) {
+                return true;
+            }
+            if (gameObject instanceof Tree && potentialRectangle.intersects(gameObject.getRectangle())) {
+                return true;
             }
         }
         return true;

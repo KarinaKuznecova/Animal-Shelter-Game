@@ -2,10 +2,12 @@ package base.mapgenerator;
 
 import base.gameobjects.Bush;
 import base.gameobjects.GameObject;
+import base.gameobjects.Portal;
 import base.gameobjects.tree.Oak;
 import base.gameobjects.tree.Spruce;
 import base.gameobjects.tree.Tree;
 import base.gameobjects.tree.TreeType;
+import base.graphicsservice.Rectangle;
 import base.map.*;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -20,20 +22,19 @@ import java.util.Random;
 
 import static base.constants.Constants.CELL_SIZE;
 import static base.constants.FilePath.JSON_MAPS_DIRECTORY;
+import static base.constants.MapConstants.FOREST_MAP;
 
 public class ForestMapGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(ForestMapGenerator.class);
 
-    private Random random = new Random();
+    private final Random random = new Random();
     private final GameMapConverter gameMapConverter = new GameMapConverter();
     private final NoiseGenerator noiseGenerator;
-    private List<Tile> listOfTiles = new ArrayList<>();
-    private TileService tileService = new TileService();
+    private final List<Tile> listOfTiles = new ArrayList<>();
+    private final TileService tileService = new TileService();
     float maxNumber = -1;
     float minNumber = 1;
-//    private String mapName = "TestMap";
-    private String mapName = "ForestGenerated";
 
     public ForestMapGenerator() {
         int seed = random.nextInt();
@@ -46,7 +47,7 @@ public class ForestMapGenerator {
     public GameMap generateMap(int width, int height, String mapName) {
         logger.info("Generating forest map");
 
-        float[][] noiseResult = noiseGenerator.getNoiseMap(width, height);
+        float[][] noiseResult = noiseGenerator.getNoiseMap(height, height);
 
         defineMaxAndMin(width, height, noiseResult);
         fillListOfTiles();
@@ -61,7 +62,7 @@ public class ForestMapGenerator {
         TreeType treeType = getTreeType(mapName);
         fillTrees(gameMap, treeType);
 
-        fillMapWithBushes(gameMap, 4);
+        fillMapWithBushes(gameMap, 3);
 
         sortGameObjects(gameMap);
 
@@ -71,7 +72,7 @@ public class ForestMapGenerator {
         return gameMap;
     }
 
-    private static TreeType getTreeType(String mapName) {
+    private TreeType getTreeType(String mapName) {
         TreeType treeType;
         if (mapName.contains("oak")) {
             treeType = TreeType.OAK;
@@ -88,7 +89,13 @@ public class ForestMapGenerator {
         fillMapWithBottomRowOfTrees(gameMap, treeType);
         fillMapWithLeftRowOfTrees(gameMap, treeType);
         fillMapWithRightRowOfTrees(gameMap, treeType);
-        fillMapWithTrees(gameMap, 70, treeType);
+        fillMapWithTrees(gameMap, calculateNumberOfTrees(gameMap), treeType);
+    }
+
+    private int calculateNumberOfTrees(GameMap gameMap) {
+        int numberOfTrees = gameMap.getMapHeight() + gameMap.getMapWidth() + Math.max(gameMap.getMapHeight(), gameMap.getMapWidth());
+        logger.info(String.format("There will be %s number of trees", numberOfTrees));
+        return numberOfTrees;
     }
 
     private void defineMaxAndMin(int width, int height, float[][] noiseResult) {
@@ -157,11 +164,11 @@ public class ForestMapGenerator {
 
     private void fillMapWithTrees(GameMap gameMap, int numberOfTrees, TreeType treeType) {
         for (int i = 0; i < numberOfTrees; i++) {
-            int xRandom = random.nextInt(gameMap.getMapWidth()) + 1;
-            int yRandom = random.nextInt(gameMap.getMapHeight());
+            int xRandom = random.nextInt(gameMap.getMapWidth() - 2) + 3;
+            int yRandom = random.nextInt(gameMap.getMapHeight() - 3);
 
-            if (!gameMap.getGameObjectFromPosition(xRandom * CELL_SIZE, yRandom * CELL_SIZE).isEmpty()) {
-                logger.info("Skipping tree");
+            if (!gameMap.getGameObjectsNearPosition(xRandom * CELL_SIZE, yRandom * CELL_SIZE).isEmpty()) {
+                logger.debug("Skipping tree");
                 i--;
                 continue;
             }
@@ -176,8 +183,33 @@ public class ForestMapGenerator {
             int xPosition = i * CELL_SIZE;
             int yPosition = (random.nextInt(2) - 2) * CELL_SIZE;
 
+            if (treeType == TreeType.SPRUCE && (i < (gameMap.getMapWidth() / 2) + 3 && i > (gameMap.getMapWidth() / 2))) {
+                logger.info("Adding portal on the top");
+                int xPortal = xPosition + 32;
+                int yPortal = -64;
+                Rectangle portalRectangle = new Rectangle(xPortal, yPortal, CELL_SIZE, CELL_SIZE);
+                gameMap.addObject(new Portal(portalRectangle, FOREST_MAP));
+                addPathOnTop(gameMap, xPortal, yPortal);
+                continue;
+            }
+
             putTree(gameMap, yPosition, xPosition, treeType);
         }
+    }
+
+    private void addPathOnTop(GameMap gameMap, int xPosition, int yPosition) {
+        logger.info("Adding path on top");
+        int smallerX = xPosition / CELL_SIZE;
+        int smallerY = yPosition / CELL_SIZE;
+        gameMap.setTile(smallerX, smallerY, 28, 1, false);
+        gameMap.setTile(smallerX, smallerY + 1, 28, 1, false);
+        gameMap.setTile(smallerX, smallerY + 2, 28, 1, false);
+        gameMap.setTile(smallerX, smallerY + 3, 31, 1, false);
+
+        gameMap.setTile(smallerX + 1, smallerY, 30, 1, false);
+        gameMap.setTile(smallerX + 1, smallerY + 1, 30, 1, false);
+        gameMap.setTile(smallerX + 1, smallerY + 2, 30, 1, false);
+        gameMap.setTile(smallerX + 1, smallerY + 3, 33, 1, false);
     }
 
     private void fillMapWithBottomRowOfTrees(GameMap gameMap, TreeType treeType) {
@@ -186,8 +218,33 @@ public class ForestMapGenerator {
             int xPosition = i * CELL_SIZE;
             int yPosition = (gameMap.getMapHeight() * CELL_SIZE) - ((random.nextInt(2)) * CELL_SIZE) - CELL_SIZE;
 
+            if (treeType == TreeType.OAK && (i < (gameMap.getMapWidth() / 2) + 3 && i > (gameMap.getMapWidth() / 2))) {
+                logger.info("Adding portal on the bottom");
+                int xPortal = xPosition + 32;
+                int yPortal = gameMap.getMapHeight() * CELL_SIZE;
+                Rectangle portalRectangle = new Rectangle(xPortal, yPortal, CELL_SIZE, CELL_SIZE);
+                gameMap.addObject(new Portal(portalRectangle, FOREST_MAP));
+                addPathOnBottom(gameMap, xPortal, yPortal);
+                continue;
+            }
+
             putTree(gameMap, yPosition, xPosition, treeType);
         }
+    }
+
+    private void addPathOnBottom(GameMap gameMap, int xPosition, int yPosition) {
+        logger.info("Adding path on the bottom");
+        int smallerX = xPosition / CELL_SIZE;
+        int smallerY = yPosition / CELL_SIZE;
+        gameMap.setTile(smallerX, smallerY, 28, 1, false);
+        gameMap.setTile(smallerX, smallerY - 1, 28, 1, false);
+        gameMap.setTile(smallerX, smallerY - 2, 28, 1, false);
+        gameMap.setTile(smallerX, smallerY - 3, 25, 1, false);
+
+        gameMap.setTile(smallerX + 1, smallerY, 30, 1, false);
+        gameMap.setTile(smallerX + 1, smallerY - 1, 30, 1, false);
+        gameMap.setTile(smallerX + 1, smallerY - 2, 30, 1, false);
+        gameMap.setTile(smallerX + 1, smallerY - 3, 27, 1, false);
     }
 
     private void fillMapWithLeftRowOfTrees(GameMap gameMap, TreeType treeType) {
@@ -196,8 +253,33 @@ public class ForestMapGenerator {
             int yPosition = i * CELL_SIZE;
             int xPosition = (random.nextInt(2) - 2) * CELL_SIZE;
 
+            if (treeType == TreeType.MIX && (i < (gameMap.getMapHeight() / 2) + 2 && i > (gameMap.getMapHeight() / 2) - 1)) {
+                logger.info("Adding portal on the left");
+                int xPortal = -64;
+                int yPortal = i * CELL_SIZE + 56;
+                Rectangle portalRectangle = new Rectangle(xPortal, yPortal, CELL_SIZE, CELL_SIZE);
+                gameMap.addObject(new Portal(portalRectangle, FOREST_MAP));
+                addPathOnLeft(gameMap, xPortal, yPortal);
+                continue;
+            }
+
             putTree(gameMap, yPosition, xPosition, treeType);
         }
+    }
+
+    private void addPathOnLeft(GameMap gameMap, int xPosition, int yPosition) {
+        logger.info("Adding path on the left");
+        int smallerX = xPosition / CELL_SIZE;
+        int smallerY = yPosition / CELL_SIZE;
+        gameMap.setTile(smallerX, smallerY, 26, 1, false);
+        gameMap.setTile(smallerX + 1, smallerY, 26, 1, false);
+        gameMap.setTile(smallerX + 2, smallerY, 26, 1, false);
+        gameMap.setTile(smallerX + 3, smallerY, 27, 1, false);
+
+        gameMap.setTile(smallerX, smallerY + 1, 32, 1, false);
+        gameMap.setTile(smallerX + 1, smallerY + 1, 32, 1, false);
+        gameMap.setTile(smallerX + 2, smallerY + 1, 32, 1, false);
+        gameMap.setTile(smallerX + 3, smallerY + 1, 33, 1, false);
     }
 
     private void fillMapWithRightRowOfTrees(GameMap gameMap, TreeType treeType) {
@@ -241,19 +323,18 @@ public class ForestMapGenerator {
             int yRandom = random.nextInt(gameMap.getMapHeight());
 
             if (!gameMap.getGameObjectsNearPosition(xRandom * CELL_SIZE, yRandom * CELL_SIZE).isEmpty()) {
-                logger.info("Skipping bush");
+                logger.debug("Skipping bush");
                 i--;
                 continue;
             }
-
             putBush(gameMap, yRandom * CELL_SIZE, xRandom * CELL_SIZE);
         }
     }
 
 
     private void putBush(GameMap gameMap, int yPosition, int xPosition) {
-        Bush spruce = new Bush(xPosition, yPosition, "");
-        gameMap.addObject(spruce);
+        Bush bush = new Bush(xPosition, yPosition, gameMap.getMapName());
+        gameMap.addObject(bush);
     }
 
     private void sortGameObjects(GameMap gameMap) {

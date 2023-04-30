@@ -479,6 +479,11 @@ public class RenderHandler {
             camera.setX(mapEnd + CELL_SIZE - game.getWidth());
         }
 
+        if (mapEnd < camera.getX() + camera.getWidth()) {
+            logger.info("Adjustment will be on the right side");
+            camera.setX(mapEnd + CELL_SIZE - game.getWidth());
+        }
+
         if (playerRect.getX() < CELL_SIZE + TILE_SIZE) {
             logger.info("Adjustment will be on the left side");
             camera.setX(-CELL_SIZE);

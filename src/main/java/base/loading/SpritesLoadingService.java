@@ -83,7 +83,7 @@ public class SpritesLoadingService {
         }
         for (Bush bush : gameMap.getBushes()) {
             bush.setSprite(game.getSpriteService().getBushSprite());
-            if (FOREST_GENERATED_MAP.equals(gameMap.getMapName())) {
+            if (gameMap.getMapName().startsWith(FOREST_GENERATED_MAP)) {
                 bush.startOneTimeBush();
             } else {
                 bush.startBush();

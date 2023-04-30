@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Random;
 
-import static base.constants.Constants.*;
+import static base.constants.Constants.CELL_SIZE;
 import static base.constants.MapConstants.CITY_MAP;
 import static base.constants.MapConstants.FOREST_MAP;
 import static base.navigationservice.Direction.*;

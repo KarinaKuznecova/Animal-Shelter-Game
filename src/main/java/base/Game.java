@@ -12,7 +12,6 @@ import base.gameobjects.player.Player;
 import base.gameobjects.services.*;
 import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
-import base.gameobjects.tree.TreeType;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;
@@ -34,6 +33,7 @@ import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static base.constants.Constants.*;
@@ -104,9 +104,6 @@ public class Game extends JFrame implements Runnable {
     private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
 
     public Game() {
-        ForestMapGenerator mapGenerator = new ForestMapGenerator();
-        mapGenerator.generateMap(30, 30, FOREST_GENERATED_MAP);
-
         loadingService = new LoadingService();
         loadGameProperties();
         initializeServices();
@@ -142,10 +139,10 @@ public class Game extends JFrame implements Runnable {
         backpackService = new BackpackService();
         routeCalculator = new RouteCalculator();
         mapService = new MapService();
-        plantsOnMaps = new HashMap<>();
-        animalsOnMaps = new HashMap<>();
-        interactionZones = new ArrayList<>();
-        gameMaps = new HashMap<>();
+        plantsOnMaps = new ConcurrentHashMap<>();
+        animalsOnMaps = new ConcurrentHashMap<>();
+        interactionZones = new CopyOnWriteArrayList<>();
+        gameMaps = new ConcurrentHashMap<>();
         eventService = new EventService();
         spriteService = new SpriteService();
         storageService = new StorageService();
@@ -325,8 +322,9 @@ public class Game extends JFrame implements Runnable {
             gui.update(this);
         }
         for (List<Animal> animals : animalsOnMaps.values()) {
-            for (Animal animal : animals) {
-                animal.update(this);
+            Iterator<Animal> animalIterator = animals.iterator();
+            while (animalIterator.hasNext()) {
+                animalIterator.next().update(this);
             }
         }
         Iterator<GameObject> gameObjectIterator = gameMap.getGameMapObjects().iterator();
@@ -362,10 +360,10 @@ public class Game extends JFrame implements Runnable {
 
         if (mapName.startsWith(FOREST_GENERATED_MAP)) {
             ForestMapGenerator mapGenerator = new ForestMapGenerator();
-            mapGenerator.generateMap(30, 30, mapName);
+            mapGenerator.generateMap(40, 40, mapName);
         }
 
-        if (getGameMap(mapName) == null) {
+        if (getGameMap(mapName) == null || mapName.startsWith(FOREST_GENERATED_MAP)) {
             gameMap = loadingService.getGameMapLoadingService().loadMap(this, mapName);
         } else {
             gameMap = getGameMap(mapName);

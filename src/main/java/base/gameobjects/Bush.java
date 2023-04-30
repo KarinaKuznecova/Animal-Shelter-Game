@@ -129,7 +129,11 @@ public class Bush implements GameObject {
         if (mouseRectangle.intersects(rectangle) && isAnimalInside && interactionZone.isPlayerInRange()) {
             isAnimalInside = false;
             Animal animal = animalService.createAnimal(rectangle.getX(), rectangle.getY(), animalType, mapName);
-            animal.setCurrentMap(game.getGameMap().getMapName());
+            if (oneTimeSpawn) {
+                animal.setCurrentMap(mapName);
+            } else {
+                animal.setCurrentMap(game.getGameMap().getMapName());
+            }
             animal.setHungerInPercent(random.nextInt(100));
             animal.setThirstInPercent(random.nextInt(100));
             animal.setEnergyInPercent(random.nextInt(100));
