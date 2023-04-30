@@ -13,8 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static base.constants.Constants.*;
-import static base.constants.MapConstants.CITY_MAP;
-import static base.constants.MapConstants.FOREST_MAP;
+import static base.constants.MapConstants.*;
 import static base.navigationservice.Direction.STAY;
 import static base.navigationservice.MapEdgesUtil.*;
 
@@ -160,14 +159,14 @@ public class WalkingState implements AnimalState {
     }
 
     private void checkIfNeedToGoToDifferentLocation(Game game, Animal animal) {
-        if (animal.getRoute().isEmpty() && (FOREST_MAP.equalsIgnoreCase(animal.getCurrentMap()) || CITY_MAP.equalsIgnoreCase(animal.getCurrentMap()))) {
+        if (animal.getRoute().isEmpty() && (FOREST_MAP.equalsIgnoreCase(animal.getCurrentMap()) || CITY_MAP.equalsIgnoreCase(animal.getCurrentMap()) || animal.getCurrentMap().startsWith(FOREST_GENERATED_MAP))) {
             animal.setRoute(game.calculateRouteToOtherMap(animal, NavigationService.getNextPortalToGetToCenter(animal.getCurrentMap())));
         }
     }
 
     private void checkPortal(Game game, Animal animal) {
         Portal portal = animal.getPortalTile(game, animal.getCurrentMap(), animal.getRectangle());
-        if (portal != null && !(FOREST_MAP.equalsIgnoreCase(portal.getDirection()) || CITY_MAP.equalsIgnoreCase(portal.getDirection()))) {
+        if (portal != null && !(portal.getDirection().startsWith(FOREST_GENERATED_MAP) || CITY_MAP.equalsIgnoreCase(portal.getDirection()))) {
             game.moveAnimalToAnotherMap(animal, portal);
             arrivingCooldown = 15;
         }

@@ -48,9 +48,11 @@ public class GameMapLoadingService {
 
         GameMap gameMap = loadGameMapFromJson(mapName);
 
-        if (!FOREST_GENERATED_MAP.equals(mapName)) {
+        if (!mapName.startsWith(FOREST_GENERATED_MAP)) {
             game.getStorageService().loadStorageChests(gameMap);
             game.getStorageService().cleanUpDisconnectedChests();
+        } else {
+            game.getAnimalsOnMaps().put(mapName, new CopyOnWriteArrayList<>());
         }
         loadAnimalsOnMaps(game);
         game.getLoadingService().getSpritesLoadingService().setSpritesToGameMapObjects(game, gameMap);

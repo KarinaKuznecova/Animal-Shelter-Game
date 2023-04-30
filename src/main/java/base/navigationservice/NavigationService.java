@@ -11,6 +11,8 @@ public class NavigationService {
     public static String getNextPortalToGetToCenter(String mapName) {
         if (TOP_LEFT_MAP.equalsIgnoreCase(mapName)) {
             return HOME_MAP;
+        } else if (mapName.startsWith(FOREST_GENERATED_MAP)) {
+            return FOREST_MAP;
         }
         return MAIN_MAP;
     }

@@ -181,14 +181,14 @@ public class Player implements GameObject {
             }
         }
         Rectangle potentialRectangle = new Rectangle(xPosition, yPosition, playerRectangle.getWidth(), playerRectangle.getHeight());
-            for (GameObject gameObject : game.getGameMap().getGameMapObjects()) {
-                if (gameObject.getLayer() == getLayer() && potentialRectangle.intersects(gameObject.getRectangle())) {
-                    return true;
-                }
-                if (gameObject instanceof Tree && potentialRectangle.intersects(gameObject.getRectangle())) {
-                    return true;
-                }
+        for (GameObject gameObject : game.getGameMap().getGameMapObjects()) {
+            if (gameObject.getLayer() == getLayer() && potentialRectangle.intersects(gameObject.getRectangle())) {
+                return true;
             }
+            if (gameObject instanceof Tree && potentialRectangle.intersects(gameObject.getRectangle())) {
+                return true;
+            }
+        }
         return false;
     }
 
