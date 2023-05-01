@@ -66,8 +66,6 @@ public class ForestMapGenerator {
 
         sortGameObjects(gameMap);
 
-        saveMapToJson(gameMap);
-
         logger.info("Generating forest map done");
         return gameMap;
     }

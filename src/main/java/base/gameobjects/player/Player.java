@@ -148,7 +148,7 @@ public class Player implements GameObject {
         if (portals != null) {
             for (Portal portal : portals) {
                 if (playerRectangle.intersects(portal.getRectangle())) {
-                    game.loadSecondaryMap(portal.getDirection());
+                    game.loadSecondaryMap(portal);
                 }
             }
         }
