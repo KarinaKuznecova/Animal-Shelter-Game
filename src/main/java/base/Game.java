@@ -350,20 +350,18 @@ public class Game extends JFrame implements Runnable {
      * =================================== Load another map ======================================
      */
 
-    public void loadSecondaryMap(String mapName) {
+    public void loadSecondaryMap(Portal portal) {
         logger.info("Game map loading started");
-        saveMaps();
-        refreshCurrentMapCache();
+        String mapName = portal.getDirection();
 
         String previousMapName = gameMap.getMapName();
         logger.debug(String.format("Previous map name: %s", previousMapName));
 
         if (mapName.startsWith(FOREST_GENERATED_MAP)) {
             ForestMapGenerator mapGenerator = new ForestMapGenerator();
-            mapGenerator.generateMap(40, 40, mapName);
-        }
-
-        if (getGameMap(mapName) == null || mapName.startsWith(FOREST_GENERATED_MAP)) {
+            gameMap = mapGenerator.generateMap(40, 40, mapName);
+            loadingService.getGameMapLoadingService().finalizeLoadingMap(this, gameMap);
+        } else if (getGameMap(mapName) == null) {
             gameMap = loadingService.getGameMapLoadingService().loadMap(this, mapName);
         } else {
             gameMap = getGameMap(mapName);
@@ -373,6 +371,17 @@ public class Game extends JFrame implements Runnable {
 
         Portal portalToPrevious = mapService.getPortalTo(gameMap, previousMapName);
         adjustPlayerPosition(portalToPrevious);
+        if (previousMapName.startsWith(FOREST_GENERATED_MAP)) {
+            List<Animal> animals = animalsOnMaps.get(previousMapName);
+            if (animals != null && !animals.isEmpty()) {
+                for (Animal animal : animals) {
+                    moveAnimalToAnotherMap(animal, portal);
+                }
+            }
+            gameMaps.remove(previousMapName);
+        }
+        saveMaps();
+        refreshCurrentMapCache();
         renderer.adjustCamera(this, player);
         refreshGuiPanels();
     }
@@ -383,6 +392,9 @@ public class Game extends JFrame implements Runnable {
         refreshCurrentMapCache();
         plantsOnMaps.put(gameMap.getMapName(), gameMap.getPlants());
         for (GameMap map : gameMaps.values()) {
+            if (map.getMapName().startsWith(FOREST_GENERATED_MAP)) {
+                continue;
+            }
             mapService.saveMapToJson(map);
             storageService.saveStorages(map.getStorageChests());
         }

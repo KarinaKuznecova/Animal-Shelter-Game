@@ -47,6 +47,12 @@ public class GameMapLoadingService {
         logger.info("Game map loading started");
 
         GameMap gameMap = loadGameMapFromJson(mapName);
+        return finalizeLoadingMap(game, gameMap);
+    }
+
+    public GameMap finalizeLoadingMap(Game game, GameMap gameMap) {
+        logger.info("Finalizing loading game map");
+        String mapName = gameMap.getMapName();
 
         if (!mapName.startsWith(FOREST_GENERATED_MAP)) {
             game.getStorageService().loadStorageChests(gameMap);
