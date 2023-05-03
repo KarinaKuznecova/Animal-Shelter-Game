@@ -303,8 +303,7 @@ public abstract class Animal implements GameObject, Walking {
     @Override
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
-            logger.info("Click on Animal: ");
-            moveAnimalToCenter(game.getGameMap());
+            logger.info("Click on Animal: " + this);
             return true;
         }
         return false;
