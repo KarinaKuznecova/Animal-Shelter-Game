@@ -1,7 +1,7 @@
 package base.gameobjects.npc;
 
 import base.Game;
-import base.gameobjects.AnimatedSprite;
+import base.graphicsservice.AnimatedSprite;
 import base.gameobjects.interactionzones.InteractionZoneFoodVendor;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;

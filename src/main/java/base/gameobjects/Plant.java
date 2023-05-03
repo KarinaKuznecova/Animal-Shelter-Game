@@ -1,6 +1,7 @@
 package base.gameobjects;
 
 import base.Game;
+import base.graphicsservice.AnimatedSprite;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.graphicsservice.Sprite;

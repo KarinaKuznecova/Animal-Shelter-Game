@@ -62,7 +62,9 @@ public class WalkingState implements AnimalState {
         animal.getAnimatedSprite().update(game);
         animal.getInteractionZone().changePosition(animal.getRectangle().getX() + 8, animal.getRectangle().getY() + 8);
 
-        checkIfNeedToGoToDifferentLocation(game, animal);
+        if (!animal.isFeral()) {
+            checkIfNeedToGoToDifferentLocation(game, animal);
+        }
         if (arrivingCooldown <= 0) {
             checkPortal(game, animal);
         }
@@ -79,7 +81,7 @@ public class WalkingState implements AnimalState {
             lookForWater(animal, game);
         }
         if (isSleepy(animal) && animal.getRoute().isEmpty() && !makingLastRouteMove) {
-            if (animal.getRoute().isEmpty() && isTherePillow(game, animal)) {
+            if ((animal.getRoute().isEmpty() && isTherePillow(game, animal)) || animal.isFeral()) {
                 animal.setFallingAsleepState();
                 return;
             }

@@ -2,7 +2,7 @@ package base.loading;
 
 import base.Game;
 import base.constants.FilePath;
-import base.gameobjects.AnimatedSprite;
+import base.graphicsservice.AnimatedSprite;
 import base.gameobjects.player.Player;
 import base.graphicsservice.ImageLoader;
 import base.graphicsservice.Rectangle;

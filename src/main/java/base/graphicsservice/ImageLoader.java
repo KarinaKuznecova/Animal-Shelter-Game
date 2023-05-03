@@ -1,7 +1,6 @@
 package base.graphicsservice;
 
 import base.Game;
-import base.gameobjects.AnimatedSprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

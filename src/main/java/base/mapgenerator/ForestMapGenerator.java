@@ -1,5 +1,7 @@
 package base.mapgenerator;
 
+import base.Game;
+import base.gameobjects.Animal;
 import base.gameobjects.Bush;
 import base.gameobjects.GameObject;
 import base.gameobjects.Portal;
@@ -20,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static base.constants.Constants.CELL_SIZE;
+import static base.constants.Constants.*;
 import static base.constants.FilePath.JSON_MAPS_DIRECTORY;
 import static base.constants.MapConstants.FOREST_MAP;
 
@@ -36,7 +38,10 @@ public class ForestMapGenerator {
     float maxNumber = -1;
     float minNumber = 1;
 
-    public ForestMapGenerator() {
+    private Game game;
+
+    public ForestMapGenerator(Game game) {
+        this.game = game;
         int seed = random.nextInt();
         float octaves = random.nextFloat();
         float persistence = random.nextFloat();
@@ -64,10 +69,44 @@ public class ForestMapGenerator {
 
         fillMapWithBushes(gameMap, 3);
 
+        createRandomAnimal(gameMap);
+
         sortGameObjects(gameMap);
 
         logger.info("Generating forest map done");
         return gameMap;
+    }
+
+    private void createRandomAnimal(GameMap gameMap) {
+        logger.info("Creating random animal");
+        int randomX = getRandomX(gameMap);
+        int randomY = getRandomY(gameMap);
+        if (foundPlaceForAnimal(gameMap, randomX, randomY)) {
+            logger.info("Creating animal in generated forest at x: " + randomX + ", y: " + randomY);
+            Animal animal = game.getAnimalService().createAnimal(randomX, randomY, game.getAnimalService().getRandomAnimalType(), gameMap.getMapName());
+            animal.setFeral(true);
+            animal.setCurrentEnergy(Integer.MIN_VALUE);
+            animal.setCurrentAge(0);
+            animal.setCurrentHunger(MAX_HUNGER);
+            animal.setCurrentThirst(MAX_THIRST);
+
+            gameMap.addObject(animal);
+        } else {
+            logger.info("Place for animal was taken, will try again");
+            createRandomAnimal(gameMap);
+        }
+    }
+
+    private boolean foundPlaceForAnimal(GameMap gameMap, int randomX, int randomY) {
+        return !gameMap.getGameObjectsNearPosition(randomX, randomY).isEmpty();
+    }
+
+    private int getRandomY(GameMap gameMap) {
+        return random.nextInt(gameMap.getMapHeight() * CELL_SIZE - (CELL_SIZE * 6)) + (CELL_SIZE * 3);
+    }
+
+    private int getRandomX(GameMap gameMap) {
+        return random.nextInt(gameMap.getMapWidth() * CELL_SIZE - (CELL_SIZE * 6)) + (CELL_SIZE * 3);
     }
 
     private TreeType getTreeType(String mapName) {

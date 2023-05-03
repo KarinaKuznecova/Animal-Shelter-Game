@@ -1,6 +1,6 @@
 package base.gameobjects.services;
 
-import base.gameobjects.AnimatedSprite;
+import base.graphicsservice.AnimatedSprite;
 import base.gameobjects.Plant;
 import base.gameobjects.plants.*;
 import base.graphicsservice.ImageLoader;

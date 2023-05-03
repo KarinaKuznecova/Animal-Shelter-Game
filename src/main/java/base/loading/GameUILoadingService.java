@@ -4,6 +4,7 @@ import base.Game;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.awt.*;
 
 import static base.constants.Constants.MAX_SCREEN_HEIGHT;
@@ -17,6 +18,7 @@ public class GameUILoadingService {
     public void loadUI(Game game, Canvas canvas) {
         setSizeBasedOnScreenSize();
         game.setDefaultCloseOperation(EXIT_ON_CLOSE);
+//        game.setExtendedState(JFrame.MAXIMIZED_BOTH);
         game.setBounds(0, 0, MAX_SCREEN_WIDTH - 5, MAX_SCREEN_HEIGHT - 5);
         game.setLocationRelativeTo(null);
         game.add(canvas);

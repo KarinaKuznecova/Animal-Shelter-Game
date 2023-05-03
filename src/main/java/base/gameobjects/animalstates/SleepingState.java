@@ -10,7 +10,9 @@ public class SleepingState implements AnimalState {
 
     @Override
     public void update(Animal animal, Game game) {
-        animal.setCurrentEnergy(animal.getCurrentEnergy() + SLEEPING_SPEED);
+        if (!animal.isFeral()) {
+            animal.setCurrentEnergy(animal.getCurrentEnergy() + SLEEPING_SPEED);
+        }
         if (animal.getCurrentEnergy() >= MAX_ENERGY) {
             animal.setWakingUpState();
         }

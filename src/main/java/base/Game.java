@@ -12,10 +12,8 @@ import base.gameobjects.player.Player;
 import base.gameobjects.services.*;
 import base.gameobjects.storage.StorageCell;
 import base.gameobjects.storage.StorageChest;
+import base.graphicsservice.*;
 import base.graphicsservice.Rectangle;
-import base.graphicsservice.RenderHandler;
-import base.graphicsservice.Sprite;
-import base.graphicsservice.SpriteService;
 import base.gui.*;
 import base.gui.cookingmenu.CookingMenu;
 import base.gui.shop.ShopService;
@@ -103,6 +101,8 @@ public class Game extends JFrame implements Runnable {
     private final transient KeyboardListener keyboardListener = new KeyboardListener(this);
     private final transient MouseEventListener mouseEventListener = new MouseEventListener(this);
 
+        Environment environment;
+
     public Game() {
         loadingService = new LoadingService();
         loadGameProperties();
@@ -114,6 +114,9 @@ public class Game extends JFrame implements Runnable {
         loadGuiElements();
         enableDefaultGui();
         loadGameObjects();
+        if (isEnvironmentOn()) {
+//        environment = new Environment(this);
+        }
     }
 
     public static void main(String[] args) {
@@ -309,8 +312,13 @@ public class Game extends JFrame implements Runnable {
 
         renderer.render(this, graphics);
 
+        if (isEnvironmentOn()) {
+            environment.draw(graphics);
+        }
+
         graphics.dispose();
         bufferStrategy.show();
+
         renderer.clear();
     }
 
@@ -358,7 +366,7 @@ public class Game extends JFrame implements Runnable {
         logger.debug(String.format("Previous map name: %s", previousMapName));
 
         if (mapName.startsWith(FOREST_GENERATED_MAP)) {
-            ForestMapGenerator mapGenerator = new ForestMapGenerator();
+            ForestMapGenerator mapGenerator = new ForestMapGenerator(this);
             gameMap = mapGenerator.generateMap(40, 40, mapName);
             loadingService.getGameMapLoadingService().finalizeLoadingMap(this, gameMap);
         } else if (getGameMap(mapName) == null) {
@@ -1445,5 +1453,9 @@ public class Game extends JFrame implements Runnable {
 
     public List<GameObject> getGameObjectsList() {
         return gameObjectsList;
+    }
+
+    private boolean isEnvironmentOn() {
+        return false;
     }
 }

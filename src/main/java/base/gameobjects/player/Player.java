@@ -1,7 +1,7 @@
 package base.gameobjects.player;
 
 import base.Game;
-import base.gameobjects.AnimatedSprite;
+import base.graphicsservice.AnimatedSprite;
 import base.gameobjects.GameObject;
 import base.gameobjects.Portal;
 import base.gameobjects.tree.Tree;

@@ -59,6 +59,7 @@ public abstract class Animal implements GameObject, Walking {
     protected final HeartIcon heartIcon;
 
     protected boolean isSelected;
+    private boolean isFeral;
 
     protected static final Logger logger = LoggerFactory.getLogger(Animal.class);
 
@@ -304,6 +305,16 @@ public abstract class Animal implements GameObject, Walking {
     public boolean handleMouseClick(Rectangle mouseRectangle, Rectangle camera, int zoom, Game game) {
         if (mouseRectangle.intersects(rectangle)) {
             logger.info("Click on Animal: " + this);
+            if (isFeral) {
+                isFeral = false;
+                game.getGameMap().removeObject(this);
+                game.addAnimalToPanel(this);
+                game.getAnimalsOnMaps().get(game.getGameMap().getMapName()).add(this);
+                setCurrentEnergy(MAX_ENERGY);
+                setCurrentMap(game.getGameMap().getMapName());
+                game.saveMaps();
+                logger.info("Animal is no longer feral");
+            }
             return true;
         }
         return false;
@@ -545,5 +556,13 @@ public abstract class Animal implements GameObject, Walking {
 
     public void setRoute(Route route) {
         this.route = route;
+    }
+
+    public boolean isFeral() {
+        return isFeral;
+    }
+
+    public void setFeral(boolean feral) {
+        isFeral = feral;
     }
 }
