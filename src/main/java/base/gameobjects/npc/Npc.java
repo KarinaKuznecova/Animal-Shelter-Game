@@ -1,7 +1,7 @@
 package base.gameobjects.npc;
 
 import base.Game;
-import base.gameobjects.AnimatedSprite;
+import base.graphicsservice.AnimatedSprite;
 import base.gameobjects.GameObject;
 import base.gameobjects.Walking;
 import base.gameobjects.interactionzones.InteractionZone;

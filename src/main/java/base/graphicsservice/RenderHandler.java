@@ -1,11 +1,10 @@
 package base.graphicsservice;
 
 import base.Game;
-import base.gameobjects.*;
-import base.gameobjects.npc.NpcSpawnSpot;
-import base.gameobjects.npc.NpcSpot;
+import base.gameobjects.Animal;
+import base.gameobjects.GameObject;
+import base.gameobjects.Item;
 import base.gameobjects.player.Player;
-import base.gameobjects.storage.StorageChest;
 import base.gui.EditIcon;
 import base.map.GameMap;
 import base.map.MapTile;
@@ -20,7 +19,7 @@ import java.awt.image.DataBufferInt;
 import java.util.List;
 import java.util.*;
 
-import static base.constants.ColorConstant.*;
+import static base.constants.ColorConstant.ALPHA;
 import static base.constants.Constants.*;
 import static base.constants.MultiOptionalObjects.bookcases;
 

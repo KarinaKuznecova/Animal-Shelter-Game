@@ -1,10 +1,7 @@
-package base.gameobjects;
+package base.graphicsservice;
 
 import base.Game;
-import base.graphicsservice.Rectangle;
-import base.graphicsservice.RenderHandler;
-import base.graphicsservice.Sprite;
-import base.graphicsservice.SpriteSheet;
+import base.gameobjects.GameObject;
 
 public class AnimatedSprite extends Sprite implements GameObject {
 
