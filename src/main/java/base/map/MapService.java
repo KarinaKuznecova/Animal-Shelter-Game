@@ -145,7 +145,7 @@ public class MapService {
     }
 
     private List<Integer> getGrassTileIds() {
-        return Arrays.asList(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 158, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173);
+        return Arrays.asList(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 158, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175);
     }
 
     public boolean isPlaceEmpty(GameMap gameMap, int layer, int x, int y) {

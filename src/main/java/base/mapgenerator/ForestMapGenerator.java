@@ -1,15 +1,14 @@
 package base.mapgenerator;
 
 import base.Game;
-import base.gameobjects.Animal;
-import base.gameobjects.Bush;
-import base.gameobjects.GameObject;
-import base.gameobjects.Portal;
+import base.gameobjects.*;
+import base.gameobjects.services.PlantService;
 import base.gameobjects.tree.Oak;
 import base.gameobjects.tree.Spruce;
 import base.gameobjects.tree.Tree;
 import base.gameobjects.tree.TreeType;
 import base.graphicsservice.Rectangle;
+import base.graphicsservice.Sprite;
 import base.map.*;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -70,6 +69,8 @@ public class ForestMapGenerator {
         fillMapWithBushes(gameMap, 3);
 
         createRandomAnimal(gameMap);
+        createRandomItems(gameMap, 5);
+        createRandomPlants(gameMap, 5);
 
         sortGameObjects(gameMap);
 
@@ -82,7 +83,7 @@ public class ForestMapGenerator {
         int randomX = getRandomX(gameMap);
         int randomY = getRandomY(gameMap);
         if (foundPlaceForAnimal(gameMap, randomX, randomY)) {
-            logger.info("Creating animal in generated forest at x: " + randomX + ", y: " + randomY);
+            logger.info(String.format("Creating animal in generated forest at x: %d, y: %d", randomX, randomY));
             Animal animal = game.getAnimalService().createAnimal(randomX, randomY, game.getAnimalService().getRandomAnimalType(), gameMap.getMapName());
             animal.setFeral(true);
             animal.setCurrentEnergy(Integer.MIN_VALUE);
@@ -372,6 +373,91 @@ public class ForestMapGenerator {
     private void putBush(GameMap gameMap, int yPosition, int xPosition) {
         Bush bush = new Bush(xPosition, yPosition, gameMap.getMapName());
         gameMap.addObject(bush);
+    }
+
+    private void createRandomItems(GameMap gameMap, int maxNumber) {
+        logger.info("Creating random items in the forest");
+        while (maxNumber > 0) {
+            if (addRandomFeather(gameMap)) {
+                maxNumber--;
+            }
+            if (addRandomMushroom(gameMap)) {
+                maxNumber--;
+            }
+            if (addRandomWood(gameMap)) {
+                maxNumber--;
+            }
+        }
+    }
+
+    private boolean addRandomWood(GameMap gameMap) {
+        int x = random.nextInt(gameMap.getMapWidth());
+        int y = random.nextInt(gameMap.getMapHeight());
+        int bigX = x  * CELL_SIZE;
+        int bigY = y  * CELL_SIZE;
+        if (gameMap.getGameObjectsNearPosition(bigX, bigY).isEmpty()) {
+            logger.info("Place was empty, will add wood");
+            Sprite sprite = game.getSpriteService().getWoodSprite();
+            gameMap.addObject(new Wood(bigX, bigY, sprite));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean addRandomMushroom(GameMap gameMap) {
+        int x = random.nextInt(gameMap.getMapWidth());
+        int y = random.nextInt(gameMap.getMapHeight());
+        int bigX = x  * CELL_SIZE;
+        int bigY = y  * CELL_SIZE;
+        if (gameMap.getGameObjectsNearPosition(bigX, bigY).isEmpty()) {
+            logger.info("Place was empty, will add mushroom");
+            Sprite sprite = game.getSpriteService().getMushroomSprite();
+            gameMap.addObject(new Mushroom(bigX, bigY, sprite));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean addRandomFeather(GameMap gameMap) {
+        int x = random.nextInt(gameMap.getMapWidth());
+        int y = random.nextInt(gameMap.getMapHeight());
+        int bigX = x * CELL_SIZE;
+        int bigY = y * CELL_SIZE;
+        if (gameMap.getGameObjectsNearPosition(bigX, bigY).isEmpty()) {
+            logger.info("Place was empty, will add feather");
+            Sprite sprite = game.getSpriteService().getFeatherSprite();
+            gameMap.addObject(new Feather(bigX, bigY, sprite));
+            return true;
+        }
+        return false;
+    }
+
+    private void createRandomPlants(GameMap gameMap, int maxNumber) {
+        logger.info("Creating random plants in the forest");
+        while (maxNumber > 0) {
+            if (addPlant(gameMap)) {
+                maxNumber--;
+            }
+        }
+    }
+
+    private boolean addPlant(GameMap gameMap) {
+        int x = random.nextInt(gameMap.getMapWidth());
+        int y = random.nextInt(gameMap.getMapHeight());
+        int bigX = x  * CELL_SIZE;
+        int bigY = y  * CELL_SIZE;
+        logger.info(String.format("Random plant will appear at %d and %d", x, y));
+        if (game.getMapService().isThereGrassOrDirt(gameMap, bigX, bigY) && gameMap.getGameObjectsNearPosition(bigX, bigY).isEmpty()) {
+            int plantId = random.nextInt(PlantService.plantTypes.size());
+            logger.info(String.format("Place was empty, will add plant with id %d", plantId));
+            Plant plant = game.getPlantService().createPlant(game.getSpriteService(), PlantService.plantTypes.get(plantId), bigX, bigY);
+            plant.setWild(true);
+            plant.setRefreshable(false);
+            plant.setGrowingStage(3);
+            gameMap.addPlant(plant);
+            return true;
+        }
+        return false;
     }
 
     private void sortGameObjects(GameMap gameMap) {
