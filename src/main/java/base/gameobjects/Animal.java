@@ -15,6 +15,8 @@ import static base.constants.ColorConstant.GREEN;
 import static base.constants.ColorConstant.YELLOW;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.IMAGES_PATH;
+import static base.constants.MapConstants.FOREST_GENERATED_MAP;
+import static base.constants.MapConstants.FOREST_MAP;
 import static base.constants.VisibleText.ANIMAL_TYPES;
 import static base.constants.VisibleText.named;
 import static base.gameobjects.AgeStage.ADULT;
@@ -169,7 +171,8 @@ public abstract class Animal implements GameObject, Walking {
         if (isSelected && !DEBUG_MODE) {
             interactionZone.render(renderer, zoom);
         }
-        if (interactionZone.isPlayerInRange()) {
+        if (interactionZone.isPlayerInRange() || (!isFeral && getCurrentMap().startsWith(FOREST_MAP))) {
+            logger.info("rendering heart");
             heartIcon.render(renderer, 1);
         }
     }
@@ -187,7 +190,7 @@ public abstract class Animal implements GameObject, Walking {
             game.updateAnimalIcon(this);
         }
         interactionZone.update(game);
-        if (interactionZone.isPlayerInRange()) {
+        if (interactionZone.isPlayerInRange() || (!isFeral && getCurrentMap().startsWith(FOREST_MAP))) {
             updateHeart(game);
         }
 
@@ -312,6 +315,7 @@ public abstract class Animal implements GameObject, Walking {
                 game.getAnimalsOnMaps().get(game.getGameMap().getMapName()).add(this);
                 setCurrentEnergy(MAX_ENERGY);
                 setCurrentMap(game.getGameMap().getMapName());
+                logger.info("Setting map name - " + game.getGameMap().getMapName());
                 game.saveMaps();
                 logger.info("Animal is no longer feral");
             }
