@@ -7,6 +7,7 @@ import base.graphicsservice.RenderHandler;
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.ColorConstant.YELLOW;
 import static base.constants.Constants.DEBUG_MODE;
+import static base.constants.MapConstants.FOREST_MAP;
 import static base.gameobjects.AgeStage.BABY;
 
 public class Mouse extends Animal {
@@ -41,7 +42,7 @@ public class Mouse extends Animal {
         if (isSelected && !DEBUG_MODE) {
             interactionZone.render(renderer, zoom);
         }
-        if (interactionZone.isPlayerInRange()) {
+        if (interactionZone.isPlayerInRange()|| (!isFeral()) && getCurrentMap().startsWith(FOREST_MAP)) {
             heartIcon.render(renderer, 1);
         }
     }
