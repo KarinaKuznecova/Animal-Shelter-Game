@@ -22,6 +22,7 @@ public class GameUILoadingService {
         game.setBounds(0, 0, MAX_SCREEN_WIDTH - 5, MAX_SCREEN_HEIGHT - 5);
         game.setLocationRelativeTo(null);
         game.add(canvas);
+        game.setResizable(false);
         game.setVisible(true);
         game.setTitle("Animal shelter game");
         canvas.createBufferStrategy(3);
