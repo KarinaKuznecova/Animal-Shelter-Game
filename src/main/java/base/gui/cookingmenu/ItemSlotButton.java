@@ -52,7 +52,7 @@ public class ItemSlotButton extends GUIButton {
 
     private void putItemInCookingSlot(Game game) {
         String selectedItem = game.getItemNameByButtonId();
-        if (PlantService.plantTypes.contains(selectedItem)) {
+        if (CookingMenu.foodTypes.contains(selectedItem)) {
             this.item = selectedItem;
             sprite = game.getSpriteService().getPlantPreviewSprite(item);
             game.removeItemFromInventory(game.getSelectedItem());

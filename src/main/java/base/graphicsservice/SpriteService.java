@@ -44,6 +44,9 @@ public class SpriteService {
             plantType = plantType.substring(4);
             return getSeedSprite(plantType);
         }
+        if (Mushroom.ITEM_NAME.equalsIgnoreCase(plantType)) {
+            return getMushroomSprite();
+        }
         return plantPreview.get(plantType);
     }
 
