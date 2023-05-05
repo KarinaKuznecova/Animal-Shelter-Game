@@ -46,7 +46,7 @@ public class GameMapLoadingService {
     public GameMap loadMap(Game game, String mapName) {
         logger.info("Game map loading started");
 
-        GameMap gameMap = loadGameMapFromJson(mapName);
+        GameMap gameMap = loadGameMapFromJson(game, mapName);
         return finalizeLoadingMap(game, gameMap);
     }
 
@@ -67,7 +67,7 @@ public class GameMapLoadingService {
         return gameMap;
     }
 
-    private GameMap loadGameMapFromJson(String mapName) {
+    private GameMap loadGameMapFromJson(Game game, String mapName) {
         GameMapDTO gameMapDTO;
         GameMap gameMap = null;
         File directory = new File(JSON_MAPS_DIRECTORY);
@@ -80,7 +80,7 @@ public class GameMapLoadingService {
             gameMapDTO = gson.fromJson(reader, GameMapDTO.class);
             gameMap = gameMapConverter.getGameMap(gameMapDTO);
             reader.close();
-            mapMigrator.checkMigration(gameMap, gameMapDTO.getGameVersion());
+            mapMigrator.checkMigration(game, gameMap, gameMapDTO.getGameVersion());
             gameMap.sortGameObjects();
         } catch (IOException e) {
             e.printStackTrace();
@@ -107,7 +107,7 @@ public class GameMapLoadingService {
 
     private void initialCacheMaps(Game game) {
         for (String mapName : game.getMapService().getAllMapsNames()) {
-            GameMap map = loadGameMapFromJson(mapName);
+            GameMap map = loadGameMapFromJson(game, mapName);
             game.getLoadingService().getSpritesLoadingService().setSpritesToGameMapObjects(game, map);
             game.getStorageService().loadStorageChests(map);
             game.getGameMaps().put(mapName, map);

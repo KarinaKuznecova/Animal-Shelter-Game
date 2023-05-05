@@ -1,5 +1,6 @@
 package base.loading;
 
+import base.Game;
 import base.gameobjects.CookingStove;
 import base.gameobjects.FoodBowl;
 import base.gameobjects.Fridge;
@@ -15,11 +16,13 @@ import java.util.stream.Collectors;
 
 import static base.constants.Constants.CELL_SIZE;
 import static base.constants.Constants.TILE_SIZE;
+import static base.constants.MapConstants.FOREST_MAP;
 
 public class MapMigrator {
 
     public static final String VERSION_1_4_2 = "1.4.2";
     public static final String VERSION_1_4_3 = "1.4.3";
+    public static final String VERSION_1_5_0 = "1.5.0";
 
     protected static final Logger logger = LoggerFactory.getLogger(MapMigrator.class);
 
@@ -27,7 +30,7 @@ public class MapMigrator {
      * =================================== check migration ======================================
      */
 
-    public void checkMigration(GameMap gameMap, String mapVersion) {
+    public void checkMigration(Game game, GameMap gameMap, String mapVersion) {
         if (mapVersion == null || VERSION_1_4_2.equals(mapVersion)) {
             migrateStove(gameMap);
             migrateChairs(gameMap);
@@ -38,6 +41,11 @@ public class MapMigrator {
 
         if (VERSION_1_4_3.equals(mapVersion) || VERSION_1_4_3.equals(gameMap.getMapVersion())) {
             migrateBowls(gameMap);
+            if (gameMap.getMapName().equalsIgnoreCase(FOREST_MAP)) {
+                migrateForest(game, gameMap);
+            }
+
+//            gameMap.setMapVersion(VERSION_1_5_0);
         }
     }
 
@@ -114,6 +122,10 @@ public class MapMigrator {
         }
     }
 
+    /**
+     * =================================== 1.4.3 migration ======================================
+     */
+
     private void migrateBowls(GameMap gameMap) {
         for (FoodBowl bowl : gameMap.getFoodBowls()) {
             if (bowl.getRectangle().getWidth() == TILE_SIZE) {
@@ -131,6 +143,17 @@ public class MapMigrator {
             if (bowl.getRectangle().getHeight() == TILE_SIZE) {
                 bowl.getRectangle().setHeight(CELL_SIZE);
             }
+        }
+    }
+
+    private void migrateForest(Game game, GameMap forest) {
+        logger.info("Will migrate forest map");
+        GameMap updatedForest = game.getLoadingService().getGameMapLoadingService().loadMap(game, "ForestUpdated");
+        if (updatedForest != null) {
+            forest.setLayeredTiles(updatedForest.getLayeredTiles());
+            forest.getGameMapObjects().clear();
+            forest.addGameObjects(updatedForest.getGameMapObjects());
+            logger.info("Migrating forest map done");
         }
     }
 }
