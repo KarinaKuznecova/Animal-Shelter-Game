@@ -1,17 +1,22 @@
 package base.gui.cookingmenu;
 
 import base.Game;
+import base.gameobjects.Mushroom;
+import base.gameobjects.plants.*;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 import base.gui.GUI;
 import base.gui.GUIButton;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static base.constants.ColorConstant.BROWN;
 import static base.constants.ColorConstant.SOFT_PINK;
 
 public class CookingMenu extends GUI {
+
+    public static List<String> foodTypes = Arrays.asList(Carrot.NAME, Beet.NAME, Tomato.NAME, Strawberry.NAME, Bellpepper.NAME, Corn.NAME, Potato.NAME, Mushroom.ITEM_NAME);
 
     private Rectangle backGroundRectangle;
     private int knownCookingSkill;

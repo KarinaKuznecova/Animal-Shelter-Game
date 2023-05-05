@@ -225,7 +225,7 @@ public class GameMap {
                     (gameObject instanceof Spruce || gameObject instanceof Oak || gameObject instanceof Bush)) {
                 continue;
             }
-            if ((gameObject instanceof Item && ((Item) gameObject).getItemName().equalsIgnoreCase(itemName))
+            if ((gameObject instanceof Item && !(gameObject instanceof Mushroom) && ((Item) gameObject).getItemName().equalsIgnoreCase(itemName))
                     || (gameObject instanceof Wood || gameObject instanceof Feather || gameObject instanceof Mushroom)) {
                 gameMapObjects.remove(gameObject);
                 break;
@@ -344,9 +344,10 @@ public class GameMap {
 
     public List<Item> getItems() {
         return gameMapObjects.stream()
-                    .filter(Item.class::isInstance)
-                    .map(Item.class::cast)
-                    .collect(Collectors.toList());
+                .filter(Item.class::isInstance)
+                .filter(obj -> !(obj instanceof Mushroom))
+                .map(Item.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**

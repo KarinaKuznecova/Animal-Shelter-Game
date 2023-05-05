@@ -59,6 +59,7 @@ public class SpritesLoadingService {
         }
         for (Mushroom mushroom : gameMap.getMushrooms()) {
             mushroom.setSprite(game.getSpriteService().getMushroomSprite());
+            mushroom.setItemName(Mushroom.ITEM_NAME);
         }
         for (Wood wood : gameMap.getWoods()) {
             wood.setSprite(game.getSpriteService().getWoodSprite());
