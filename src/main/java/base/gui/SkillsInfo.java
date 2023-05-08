@@ -15,8 +15,8 @@ public class SkillsInfo {
 
     List<String> lines = new ArrayList<>();
 
-    private int xPosition;
-    private int yPosition;
+    private final int xPosition;
+    private final int yPosition;
 
     public SkillsInfo(int xPosition, int yPosition) {
         this.xPosition = xPosition;

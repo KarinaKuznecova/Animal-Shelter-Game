@@ -172,7 +172,6 @@ public abstract class Animal implements GameObject, Walking {
             interactionZone.render(renderer, zoom);
         }
         if (interactionZone.isPlayerInRange() || (!isFeral && getCurrentMap().startsWith(FOREST_MAP))) {
-            logger.info("rendering heart");
             heartIcon.render(renderer, 1);
         }
     }
