@@ -113,6 +113,11 @@ public class AnimalService {
 
         File animalFile = new File(path);
         try {
+            File directory = new File(ANIMALS_DIR_PATH);
+            if (!directory.exists() && !directory.mkdir()) {
+                logger.error(String.format("Unable to create file: %s", animalFile));
+                throw new IllegalArgumentException();
+            }
             if (!animalFile.createNewFile()) {
                 logger.error(String.format("Unable to create file: %s", animalFile));
                 throw new IllegalArgumentException();

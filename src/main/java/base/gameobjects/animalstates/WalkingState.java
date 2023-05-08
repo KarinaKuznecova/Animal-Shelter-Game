@@ -81,6 +81,10 @@ public class WalkingState implements AnimalState {
             lookForWater(animal, game);
         }
         if (isSleepy(animal) && animal.getRoute().isEmpty() && !makingLastRouteMove) {
+            if (animal.getCurrentEnergy() < 2) {
+                animal.setFallingAsleepState();
+                return;
+            }
             if ((animal.getRoute().isEmpty() && isTherePillow(game, animal)) || animal.isFeral()) {
                 animal.setFallingAsleepState();
                 return;
