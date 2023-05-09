@@ -1049,6 +1049,10 @@ public class Game extends JFrame implements Runnable {
         return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, FOOD);
     }
 
+    public Route calculateRouteToPlant(Animal animal) {
+        return routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, PLANT);
+    }
+
     public Route calculateRouteToWater(Animal animal) {
         Route route = routeCalculator.calculateRoute(getGameMap(animal.getCurrentMap()), animal, WATER);
         if (!route.isEmpty()) {
@@ -1096,6 +1100,17 @@ public class Game extends JFrame implements Runnable {
                 if (bowl.isFull()) {
                     return mapName;
                 }
+            }
+        }
+        return currentMap;
+    }
+
+    public String getNearestMapWithPlants(String currentMap) {
+        List<String> mapsToCheck = NavigationService.getNearestMaps(currentMap);
+        for (String mapName : mapsToCheck) {
+            GameMap map = getGameMap(mapName);
+            if (!map.getPlants().isEmpty()) {
+                return mapName;
             }
         }
         return currentMap;
@@ -1457,5 +1472,9 @@ public class Game extends JFrame implements Runnable {
 
     private boolean isEnvironmentOn() {
         return false;
+    }
+
+    public Map<String, List<Plant>> getPlantsOnMaps() {
+        return plantsOnMaps;
     }
 }

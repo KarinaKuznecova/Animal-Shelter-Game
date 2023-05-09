@@ -22,6 +22,7 @@ public class RouteCalculator {
     public static final String WATER = "water";
     public static final String LAKE_WATER = "lake-water";
     public static final String FOOD = "food";
+    public static final String PLANT = "plant";
     public static final String PILLOW = "pillow";
     public static final String NPC_SPOT = "npc-spot";
     public static final String NPC = "npc";
@@ -59,6 +60,8 @@ public class RouteCalculator {
                     found = isTherePortal(portal, rectangleToCheck);
                 } else if (FOOD.equals(destination)) {
                     found = isThereFood(currentMap, rectangleToCheck);
+                } else if (PLANT.equals(destination)) {
+                    found = isTherePlant(currentMap, rectangleToCheck);
                 } else if (WATER.equals(destination)) {
                     found = isThereWater(currentMap, rectangleToCheck);
                 } else if (LAKE_WATER.equals(destination)) {
@@ -117,6 +120,8 @@ public class RouteCalculator {
                     found = isTherePortal(portal, rectangleToCheck);
                 } else if (FOOD.equals(destination)) {
                     found = isThereFood(currentMap, rectangleToCheck);
+                } else if (PLANT.equals(destination)) {
+                    found = isTherePlant(currentMap, rectangleToCheck);
                 } else if (WATER.equals(destination)) {
                     found = isThereWater(currentMap, rectangleToCheck);
                 } else if (NPC_SPOT.equals(destination)) {
@@ -178,7 +183,7 @@ public class RouteCalculator {
     }
 
     private boolean isAnotherMap(String destination) {
-        return !(WATER.equals(destination) || LAKE_WATER.equals(destination) || FOOD.equals(destination) || PILLOW.equals(destination) || NPC.equals(destination) || NPC_SPOT.equals(destination));
+        return !(WATER.equals(destination) || LAKE_WATER.equals(destination) || FOOD.equals(destination) || PLANT.equals(destination) || PILLOW.equals(destination) || NPC.equals(destination) || NPC_SPOT.equals(destination));
     }
 
     public void fillSearchQueue(GameMap gameMap, List<Map<Rectangle, Route>> searchQueue, Rectangle rectangleChecked, Route potentialRoute, List<Rectangle> searched, String destination) {
@@ -275,6 +280,15 @@ public class RouteCalculator {
         }
         for (Item item : gameMap.getItems()) {
             if (item != null && item.getRectangle().intersects(rectangle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isTherePlant(GameMap gameMap, Rectangle rectangle) {
+        for (Plant plant : gameMap.getPlants()) {
+            if (plant != null && plant.getRectangle().intersects(rectangle)) {
                 return true;
             }
         }

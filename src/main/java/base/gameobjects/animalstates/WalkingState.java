@@ -235,6 +235,32 @@ public class WalkingState implements AnimalState {
             if (!mapWithFood.equalsIgnoreCase(animal.getCurrentMap())) {
                 logger.info(String.format("%s is going to %s to get food", animal, mapWithFood));
                 Route routeToOtherMap = game.calculateRouteToOtherMap(animal, mapWithFood);
+                if (!routeToOtherMap.isEmpty()) {
+                    animal.setRoute(routeToOtherMap);
+                    movingTicks = 0;
+                }
+            }
+            if (animal.getRoute().isEmpty() && animal.getCurrentHungerInPercent() < 10) {
+                logger.info(String.format("%s will now look for plants", animal));
+                lookForPlantToEat(animal, game);
+            }
+            if (animal.getRoute().isEmpty()) {
+                logger.info("Can't find any food");
+                animal.setWaitingState();
+            }
+        }
+        if (animal.getRoute().isEmpty()) {
+            animal.setWaitingState(400);
+        }
+    }
+
+    private void lookForPlantToEat(Animal animal, Game game) {
+        animal.setRoute(game.calculateRouteToPlant(animal));
+        if (animal.getRoute().isEmpty()) {
+            String mapWithPlants = game.getNearestMapWithPlants(animal.getCurrentMap());
+            if (!mapWithPlants.equalsIgnoreCase(animal.getCurrentMap())) {
+                logger.info(String.format("%s is going to %s to eat plant", animal, mapWithPlants));
+                Route routeToOtherMap = game.calculateRouteToOtherMap(animal, mapWithPlants);
                 if (routeToOtherMap.isEmpty()) {
                     logger.info("Route to other map was empty");
                     animal.setWaitingState();
@@ -243,9 +269,6 @@ public class WalkingState implements AnimalState {
                     movingTicks = 0;
                 }
             }
-        }
-        if (animal.getRoute().isEmpty()) {
-            animal.setWaitingState(400);
         }
     }
 
@@ -279,6 +302,13 @@ public class WalkingState implements AnimalState {
         for (FoodBowl bowl : game.getGameMap(animal.getCurrentMap()).getFoodBowls()) {
             if (bowl.isFull() && animal.getRectangle().intersects(bowl.getRectangle())) {
                 return true;
+            }
+        }
+        if (animal.getCurrentHungerInPercent() < 10) {
+            for (Plant plant : game.getGameMap(animal.getCurrentMap()).getPlants()) {
+                if (plant.getRectangle().intersects(animal.getRectangle())) {
+                    return true;
+                }
             }
         }
         return false;
