@@ -5,6 +5,8 @@ import base.gameobjects.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static base.constants.Constants.MAX_HUNGER;
 import static base.constants.Constants.MAX_THIRST;
 import static base.navigationservice.Direction.*;
@@ -16,6 +18,7 @@ public class EatingState implements AnimalState {
     private int movingTicks = 0;
 
     private final String RAW_MEAL = "rawMeal";
+    private final String TINY_PLANT = "tinyPlant";
     private String foodTypeEating = RAW_MEAL;
 
     @Override
@@ -52,6 +55,8 @@ public class EatingState implements AnimalState {
                 return 100;
             case RAW_MEAL:
                 return 25;
+            case TINY_PLANT:
+                return 15;
             default:
                 return 0;
         }
@@ -79,6 +84,21 @@ public class EatingState implements AnimalState {
                 foodTypeEating = bowl.getFoodType();
                 bowl.emptyBowl();
                 return true;
+            }
+        }
+        if (animal.getCurrentHungerInPercent() < 10) {
+            for (Plant plant : game.getGameMap(animal.getCurrentMap()).getPlants()) {
+                if (plant.getRectangle().intersects(animal.getRectangle())) {
+                    if (plant.getGrowingStage() >= 3) {
+                        foodTypeEating = RAW_MEAL;
+                    } else {
+                        foodTypeEating = TINY_PLANT;
+                    }
+                    game.getGameMap(animal.getCurrentMap()).removePlant(plant);
+                    List<Plant> plantList = game.getPlantsOnMaps().get(animal.getCurrentMap());
+                    plantList.remove(plant);
+                    return true;
+                }
             }
         }
         return false;
