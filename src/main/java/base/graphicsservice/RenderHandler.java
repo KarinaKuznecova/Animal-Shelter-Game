@@ -278,7 +278,8 @@ public class RenderHandler {
 
     private void renderGameObjects(Game game, GameMap gameMap, int layer) {
         for (GameObject gameObject : gameMap.getGameMapObjects()) {
-            if (gameObject != null && gameObject.getLayer() == layer) {
+            if (gameObject != null && gameObject.getLayer() == layer &&
+                    isInRangeOfCamera(gameObject.getRectangle().getX(), gameObject.getRectangle().getY(), gameObject.getRectangle().getWidth(), gameObject.getRectangle().getHeight())) {
                 gameObject.render(this, ZOOM);
             }
         }
@@ -452,6 +453,13 @@ public class RenderHandler {
                 y >= camera.getY() &&
                 x <= camera.getX() + camera.getWidth() &&
                 y <= camera.getY() + camera.getHeight();
+    }
+
+    private boolean isInRangeOfCamera(int x, int y, int width, int height) {
+        return x + (width * ZOOM) >= camera.getX() &&
+                y + (height * ZOOM) >= camera.getY() &&
+                x - (width * ZOOM) <= camera.getX() + camera.getWidth() &&
+                y - (height * ZOOM) <= camera.getY() + camera.getHeight();
     }
 
     public void clear() {
