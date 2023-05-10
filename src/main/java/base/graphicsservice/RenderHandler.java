@@ -299,11 +299,11 @@ public class RenderHandler {
     }
 
     private void renderText(Graphics graphics) {
-        int xOffset = maxScreenWidth / 3;
         int yOffset = 20;
         for (int i = 0; i < textToDrawInCenter.size(); i++) {
             Color color = new Color(0xB3FFFFFF, true);
-            renderText(graphics, textToDrawInCenter.get(i), xOffset, maxScreenHeight / 3 + (yOffset * i), color, 24);
+            int lineLength = (int) graphics.getFontMetrics().getStringBounds(textToDrawInCenter.get(i), graphics).getWidth();
+            renderText(graphics, textToDrawInCenter.get(i), camera.getWidth() / 2 - lineLength / 2, maxScreenHeight / 3 + (yOffset * i), color, 24);
         }
     }
 

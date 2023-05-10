@@ -25,6 +25,8 @@ public class WalkingState implements AnimalState {
     private boolean isGoingToNpc;
     private boolean isGoingAway;
     private int arrivingCooldown = 15;
+    private boolean isStarving;
+    private int hungryTicks = 1_000;
 
     @Override
     public void update(Animal animal, Game game) {
@@ -73,6 +75,9 @@ public class WalkingState implements AnimalState {
         if (arrivingCooldown > 0) {
             arrivingCooldown--;
         }
+        if (isStarving && animal.getRoute().isEmpty()) {
+            hungryTicks--;
+        }
 
         if (isHungry(animal) && animal.getRoute().isEmpty() && !makingLastRouteMove) {
             lookForFood(animal, game);
@@ -98,6 +103,11 @@ public class WalkingState implements AnimalState {
             }
         }
         if ((isHungerLow(animal) && isNearFood(game, animal)) || (isThirstLow(animal) && isNearWater(game, animal))) {
+            if (isStarving) {
+                logger.info(String.format("%s is no longer starving", animal));
+                isStarving = false;
+                hungryTicks = 1_000;
+            }
             animal.setEatingState();
             return;
         }
@@ -105,6 +115,10 @@ public class WalkingState implements AnimalState {
         if (isGoingToNpc && animal.getRoute().isEmpty() && isArrivedToNpc(game, animal)) {
             isGoingToNpc = false;
             game.sendAnimalAway(animal);
+        }
+        if (isStarving && hungryTicks < 1 && animal.getRoute().isEmpty() && !isGoingAway) {
+            game.getRenderer().setTextToDraw(String.format("%s is very hungry and is going away!", animal), 400);
+            animal.goAway(game.calculateRouteToOtherMap(animal, CITY_MAP));
         }
         if (isGoingAway && animal.getRoute().isEmpty()) {
             game.removeAnimal(animal);
@@ -251,6 +265,11 @@ public class WalkingState implements AnimalState {
         }
         if (animal.getRoute().isEmpty()) {
             animal.setWaitingState(400);
+            if (animal.getCurrentHungerInPercent() < 1 && !isStarving) {
+                logger.info(String.format("%s is starving", animal));
+                isStarving = true;
+                game.getRenderer().setTextToDraw(String.format("%s is very hungry and will go away if nothing changes!", animal), 400);
+            }
         }
     }
 
