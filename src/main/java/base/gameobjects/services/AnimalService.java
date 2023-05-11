@@ -38,17 +38,21 @@ public class AnimalService {
         return previews;
     }
 
-    public Animal createAnimal(int x, int y, String animalType, String mapName) {
+    public Animal createNewAnimal(int x, int y, String animalType, String mapName) {
+        Animal newAnimal;
         if (animalType.contains("-")) {
             String[] split = animalType.split("-");
             String name = split[0];
             String color = split[1];
-            return createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, animalNamingService.getRandomName(random.nextBoolean()));
+            newAnimal = createAnimal(name, x, y, mapName, color, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, animalNamingService.getRandomName(random.nextBoolean()));
+        } else {
+            newAnimal = createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, animalNamingService.getRandomName(random.nextBoolean()));
         }
-        return createAnimal(animalType, x, y, mapName, null, MAX_HUNGER, MAX_THIRST, MAX_ENERGY, BABY, animalNamingService.getRandomName(random.nextBoolean()));
+        newAnimal.getPersonality().add(Trait.values()[random.nextInt(Trait.values().length)]);
+        return newAnimal;
     }
 
-    public Animal createAnimal(String animalType, int startX, int startY, String mapName, String color, int hunger, int thirst, int energy, AgeStage age, String name) {
+    private Animal createAnimal(String animalType, int startX, int startY, String mapName, String color, int hunger, int thirst, int energy, AgeStage age, String name) {
         Animal animal;
         switch (animalType.toLowerCase()) {
             case Rat.TYPE:
