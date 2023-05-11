@@ -247,6 +247,9 @@ public abstract class Animal implements GameObject, Walking {
     private void decreaseHungerLevel() {
         if (currentHunger > 0) {
             currentHunger--;
+            if (personality.contains(Trait.HUNGRY)) {
+                currentHunger--;
+            }
         }
         if (currentHunger != 0 && currentHunger % (MAX_HUNGER / 10) == 0) {
             logger.debug(String.format("Hunger level for %s is %d percent", this, currentHunger / (MAX_HUNGER / 100)));

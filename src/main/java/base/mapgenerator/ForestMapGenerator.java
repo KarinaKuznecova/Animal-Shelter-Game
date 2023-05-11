@@ -86,7 +86,7 @@ public class ForestMapGenerator {
         int randomY = getRandomY(gameMap);
         if (foundPlaceForAnimal(gameMap, randomX, randomY)) {
             logger.info(String.format("Creating animal in generated forest at x: %d, y: %d", randomX, randomY));
-            Animal animal = game.getAnimalService().createAnimal(randomX, randomY, game.getAnimalService().getRandomAnimalType(), gameMap.getMapName());
+            Animal animal = game.getAnimalService().createNewAnimal(randomX, randomY, game.getAnimalService().getRandomAnimalType(), gameMap.getMapName());
             if (animal instanceof Wolf) {
                 animal.getPersonality().add(Trait.WILD);
             }

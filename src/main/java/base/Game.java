@@ -781,7 +781,7 @@ public class Game extends JFrame implements Runnable {
         }
         int tileX = x * CELL_SIZE;
         int tileY = y * CELL_SIZE;
-        Animal newAnimal = animalService.createAnimal(tileX, tileY, selectedAnimal, gameMap.getMapName());
+        Animal newAnimal = animalService.createNewAnimal(tileX, tileY, selectedAnimal, gameMap.getMapName());
         animalsOnMaps.get(gameMap.getMapName()).add(newAnimal);
         addAnimalToPanel(newAnimal);
     }
