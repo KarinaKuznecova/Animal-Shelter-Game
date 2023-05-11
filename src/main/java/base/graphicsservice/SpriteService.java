@@ -1,6 +1,7 @@
 package base.graphicsservice;
 
 import base.gameobjects.*;
+import base.gameobjects.animaltraits.Trait;
 import base.gameobjects.services.PlantService;
 import base.map.TileService;
 
@@ -259,4 +260,38 @@ public class SpriteService {
     public void setPerfectMealSprite(Sprite perfectMealSprite) {
         this.perfectMealSprite = perfectMealSprite;
     }
+
+    /**
+     * =================================== TRAITS & PERSONALITY ======================================
+     */
+
+    private Sprite friendlyIcon;
+    private Sprite wildIcon;
+
+    public void setFriendlyIcon(Sprite friendlyIcon) {
+        this.friendlyIcon = friendlyIcon;
+    }
+
+    public void setWildIcon(Sprite wildIcon) {
+        this.wildIcon = wildIcon;
+    }
+
+    public Sprite getFriendlyIcon() {
+        return friendlyIcon;
+    }
+
+    public Sprite getWildIcon() {
+        return wildIcon;
+    }
+
+    public Sprite getTraitIcon(Trait trait) {
+        switch (trait) {
+            case WILD:
+                return wildIcon;
+            case FRIENDLY:
+                return friendlyIcon;
+        }
+        return null;
+    }
+
 }

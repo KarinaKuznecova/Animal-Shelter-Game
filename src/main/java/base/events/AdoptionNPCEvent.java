@@ -2,6 +2,7 @@ package base.events;
 
 import base.Game;
 import base.gameobjects.Animal;
+import base.gameobjects.animaltraits.Trait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,7 @@ public class AdoptionNPCEvent extends Event {
         boolean isAvailableAnimal = false;
         for (List<Animal> animalList : game.getAnimalsOnMaps().values()) {
             for (Animal animal : animalList) {
-                if (!animal.isFavorite()) {
+                if (!animal.isFavorite() && !animal.getPersonality().contains(Trait.WILD)) {
                     chance++;
                     isAvailableAnimal = true;
                 }

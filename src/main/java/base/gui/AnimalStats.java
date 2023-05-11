@@ -3,11 +3,15 @@ package base.gui;
 import base.Game;
 import base.gameobjects.AgeStage;
 import base.gameobjects.Animal;
+import base.gameobjects.animaltraits.Trait;
 import base.graphicsservice.Position;
 import base.graphicsservice.Rectangle;
 import base.graphicsservice.RenderHandler;
 
-import static base.constants.ColorConstant.*;
+import java.util.List;
+
+import static base.constants.ColorConstant.BROWN;
+import static base.constants.ColorConstant.LIGHT_BLUE;
 import static base.constants.Constants.DEBUG_MODE;
 import static base.constants.Constants.GROWING_UP_TIME;
 import static base.constants.MapConstants.PRETTIER_MAP_NAMES;
@@ -20,8 +24,10 @@ public class AnimalStats {
     private boolean isVisible;
     private final EditIcon editIcon;
     private final HeartIcon heartIcon;
+    private Game game;
 
-    public AnimalStats(Animal animal, Rectangle region) {
+    public AnimalStats(Game game, Animal animal, Rectangle region) {
+        this.game = game;
         this.animal = animal;
         this.region = region;
         editIcon = new EditIcon();
@@ -31,9 +37,12 @@ public class AnimalStats {
     void renderStats(RenderHandler renderer, Rectangle rectangle) {
         Rectangle statsRectangle;
         if (DEBUG_MODE && animal.getAge() != AgeStage.ADULT) {
-            statsRectangle = new Rectangle(region.getX() - 280, region.getY(), 270, 160);
+            statsRectangle = new Rectangle(region.getX() - 280, region.getY(), 270, 180);
         } else {
-            statsRectangle = new Rectangle(region.getX() - 280, region.getY(), 270, 140);
+            statsRectangle = new Rectangle(region.getX() - 280, region.getY(), 270, 160);
+        }
+        if (animal.getPersonality().size() > 4) {
+            statsRectangle.setHeight(statsRectangle.getHeight() + (20 * (animal.getPersonality().size() / 4)));
         }
         statsRectangle.generateBorder(2, BROWN, LIGHT_BLUE);
         renderer.renderRectangle(statsRectangle, rectangle, 1, true);
@@ -44,13 +53,21 @@ public class AnimalStats {
         renderer.renderText(location + ": " + PRETTIER_MAP_NAMES.get(animal.getCurrentMap()), new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 110));
         renderer.renderText(age + ": " + animal.getAge().toString().toLowerCase(), new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 130));
         if (DEBUG_MODE && animal.getAge() != AgeStage.ADULT) {
-            renderer.renderText(age + ": " + animal.getCurrentAge() + " / " + GROWING_UP_TIME, new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 150));
+            renderer.renderText(age + ": " + animal.getCurrentAge() + " / " + GROWING_UP_TIME, new Position(statsRectangle.getX() + 30, statsRectangle.getY() + 170));
         }
 
         editIcon.render(renderer, 1);
         if (animal.isFavorite()) {
             heartIcon.changePosition(new Position(statsRectangle.getX() + 230, statsRectangle.getY() + 16));
             heartIcon.render(renderer, 1);
+        }
+
+        List<Trait> personality = animal.getPersonality();
+        for (int i = 1; i <= personality.size(); i++) {
+            Trait trait = personality.get(i-1);
+            int traitX = statsRectangle.getX() + (i * 30);
+            int traitY = statsRectangle.getY() + 140 + (i / 4 * 20);
+            renderer.renderSprite(game.getSpriteService().getTraitIcon(trait), traitX, traitY, 1, true);
         }
     }
 

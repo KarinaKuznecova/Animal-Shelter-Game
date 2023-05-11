@@ -2,6 +2,7 @@ package base.gameobjects;
 
 import base.Game;
 import base.gameobjects.animals.Wolf;
+import base.gameobjects.animaltraits.Trait;
 import base.gameobjects.interactionzones.InteractionZoneBushWithAnimal;
 import base.gameobjects.services.AnimalService;
 import base.graphicsservice.*;
@@ -133,6 +134,9 @@ public class Bush implements GameObject {
                 animal.setCurrentMap(mapName);
             } else {
                 animal.setCurrentMap(game.getGameMap().getMapName());
+            }
+            if (animal instanceof Wolf) {
+                animal.getPersonality().add(Trait.WILD);
             }
             animal.setHungerInPercent(random.nextInt(100));
             animal.setThirstInPercent(random.nextInt(100));

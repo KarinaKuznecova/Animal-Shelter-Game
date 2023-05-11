@@ -19,7 +19,6 @@ import static base.constants.Constants.CELL_SIZE;
 import static base.constants.Constants.CHEST_TILE_ID;
 import static base.constants.FilePath.QUESTION_ICON_PATH;
 import static base.constants.MapConstants.FOREST_GENERATED_MAP;
-import static base.constants.MapConstants.TEST_MAP;
 
 public class SpritesLoadingService {
 
@@ -47,6 +46,9 @@ public class SpritesLoadingService {
         spriteService.setSimpleMealSprite(tileService.getTiles().get(PetFood.SIMPLE_MEAL_SPRITE_ID).getSprite());
         spriteService.setTastyMealSprite(tileService.getTiles().get(PetFood.TASTY_MEAL_SPRITE_ID).getSprite());
         spriteService.setPerfectMealSprite(tileService.getTiles().get(PetFood.PERFECT_MEAL_SPRITE_ID).getSprite());
+
+        spriteService.setFriendlyIcon(ImageLoader.getPreviewSprite("img/friendly.png"));
+        spriteService.setWildIcon(ImageLoader.getPreviewSprite("img/wild.png"));
     }
 
     public void setSpritesToGameMapObjects(Game game, GameMap gameMap) {
