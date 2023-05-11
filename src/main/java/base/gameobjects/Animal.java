@@ -226,6 +226,9 @@ public abstract class Animal implements GameObject, Walking {
     private void decreaseEnergyLevel() {
         if (!isSleeping() && currentEnergy > MIN_ENERGY) {
             currentEnergy--;
+            if (personality.contains(Trait.LAZY)) {
+                currentEnergy--;
+            }
         }
         if (currentEnergy != 0 && currentEnergy % (MAX_ENERGY / 10) == 0) {
             logger.debug(String.format("Energy level for %s is %d percent", this, currentEnergy / (MAX_ENERGY / 100)));
@@ -259,6 +262,9 @@ public abstract class Animal implements GameObject, Walking {
     private void decreaseThirstLevel() {
         if (currentThirst > 0) {
             currentThirst--;
+            if (personality.contains(Trait.THIRSTY)) {
+                currentThirst--;
+            }
         }
         if (currentThirst != 0 && currentThirst % (MAX_THIRST / 10) == 0) {
             logger.debug(String.format("Thirst level for %s is %d percent", this, currentThirst / (MAX_THIRST / 100)));

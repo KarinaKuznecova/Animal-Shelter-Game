@@ -74,7 +74,7 @@ public abstract class InteractionZone implements GameObject {
 
     @Override
     public Rectangle getRectangle() {
-        return null;
+        return new Rectangle(0,0,1,1);
     }
 
     public int getCenterPointX() {

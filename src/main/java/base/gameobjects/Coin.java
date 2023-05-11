@@ -53,7 +53,7 @@ public class Coin implements GameObject {
 
     @Override
     public Rectangle getRectangle() {
-        return null;
+        return rectangle;
     }
 
     public int getAmount() {

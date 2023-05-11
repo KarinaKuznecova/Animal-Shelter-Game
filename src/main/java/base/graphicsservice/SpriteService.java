@@ -268,6 +268,8 @@ public class SpriteService {
     private Sprite friendlyIcon;
     private Sprite wildIcon;
     private Sprite hungryIcon;
+    private Sprite thirstyIcon;
+    private Sprite lazyIcon;
 
     public void setFriendlyIcon(Sprite friendlyIcon) {
         this.friendlyIcon = friendlyIcon;
@@ -279,6 +281,14 @@ public class SpriteService {
 
     public void setHungryIcon(Sprite hungryIcon) {
         this.hungryIcon = hungryIcon;
+    }
+
+    public void setThirstyIcon(Sprite thirstyIcon) {
+        this.thirstyIcon = thirstyIcon;
+    }
+
+    public void setLazyIcon(Sprite lazyIcon) {
+        this.lazyIcon = lazyIcon;
     }
 
     public Sprite getFriendlyIcon() {
@@ -293,6 +303,14 @@ public class SpriteService {
         return hungryIcon;
     }
 
+    public Sprite getThirstyIcon() {
+        return thirstyIcon;
+    }
+
+    public Sprite getLazyIcon() {
+        return lazyIcon;
+    }
+
     public Sprite getTraitIcon(Trait trait) {
         switch (trait) {
             case WILD:
@@ -301,6 +319,10 @@ public class SpriteService {
                 return friendlyIcon;
             case HUNGRY:
                 return hungryIcon;
+            case THIRSTY:
+                return thirstyIcon;
+            case LAZY:
+                return lazyIcon;
         }
         return null;
     }
