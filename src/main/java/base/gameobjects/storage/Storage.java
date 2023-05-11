@@ -98,7 +98,7 @@ public class Storage implements GameObject {
 
     @Override
     public Rectangle getRectangle() {
-        return null;
+        return chestRectangle;
     }
 
     public void setVisible(boolean visible) {

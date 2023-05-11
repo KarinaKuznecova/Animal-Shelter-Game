@@ -4,5 +4,7 @@ public enum Trait {
 
     FRIENDLY,
     HUNGRY,
-    WILD
+    WILD,
+    THIRSTY,
+    LAZY
 }

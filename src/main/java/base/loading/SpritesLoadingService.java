@@ -50,6 +50,8 @@ public class SpritesLoadingService {
         spriteService.setFriendlyIcon(ImageLoader.getPreviewSprite("img/friendly.png"));
         spriteService.setWildIcon(ImageLoader.getPreviewSprite("img/wild.png"));
         spriteService.setHungryIcon(ImageLoader.getPreviewSprite("img/hungry.png"));
+        spriteService.setLazyIcon(ImageLoader.getPreviewSprite("img/lazy.png"));
+        spriteService.setThirstyIcon(ImageLoader.getPreviewSprite("img/thirsty.png"));
     }
 
     public void setSpritesToGameMapObjects(Game game, GameMap gameMap) {
