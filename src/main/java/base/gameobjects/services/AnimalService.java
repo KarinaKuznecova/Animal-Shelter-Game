@@ -4,6 +4,7 @@ import base.Game;
 import base.gameobjects.AgeStage;
 import base.gameobjects.Animal;
 import base.gameobjects.animals.*;
+import base.gameobjects.animaltraits.Trait;
 import base.graphicsservice.Sprite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +16,11 @@ import java.io.PrintWriter;
 import java.util.*;
 
 import static base.constants.Constants.*;
-import static base.constants.FilePath.*;
+import static base.constants.FilePath.ANIMALS_DIR_PATH;
 import static base.constants.MapConstants.*;
 import static base.gameobjects.AgeStage.ADULT;
 import static base.gameobjects.AgeStage.BABY;
+import static base.gameobjects.animaltraits.Trait.WILD;
 
 public class AnimalService {
 
@@ -142,6 +144,7 @@ public class AnimalService {
             printWriter.println("Favorite:" + animal.isFavorite());
             printWriter.println("X:" + animal.getCurrentX());
             printWriter.println("Y:" + animal.getCurrentY());
+            printWriter.println("Personality:" + animal.getPersonality());
 
             printWriter.close();
 
@@ -182,6 +185,7 @@ public class AnimalService {
             boolean favorite = false;
             int x = 0;
             int y = 0;
+            List<Trait> traits = new ArrayList<>();
             try (Scanner scanner = new Scanner(file)) {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
@@ -246,6 +250,22 @@ public class AnimalService {
                     if (line.startsWith("Y:")) {
                         String[] splitLine = line.split(":");
                         y = Integer.parseInt(splitLine[1]);
+                        continue;
+                    }
+                    if (line.startsWith("Personality:")) {
+                        String[] splitLine = line.split(":");
+                        String traitsLine = splitLine[1];
+                        traitsLine = traitsLine.replace('[', ' ');
+                        traitsLine = traitsLine.replace(']', ' ');
+                        traitsLine = traitsLine.strip();
+                        String[] splitTraits = traitsLine.split(",");
+                        for (String splitTrait : splitTraits) {
+                            String trait = splitTrait;
+                            trait = trait.strip();
+                            if (!trait.isEmpty()) {
+                                traits.add(Trait.valueOf(trait));
+                            }
+                        }
                     }
                 }
             } catch (FileNotFoundException e) {
@@ -253,6 +273,7 @@ public class AnimalService {
             }
             if (animalType != null) {
                 Animal animal = createAnimal(animalType, x, y, mapName, color, hunger, thirst, energy, age, name);
+                animal.setPersonality(traits);
                 animal.setCurrentAge(currentAge);
                 animal.setFavorite(favorite);
                 animal.setFileName(file.getName());
@@ -352,6 +373,6 @@ public class AnimalService {
 
 
     public boolean isAnimalAvailableForAdoption(Animal animal) {
-        return animal != null && !animal.isFavorite();
+        return animal != null && !animal.isFavorite() && !animal.getPersonality().contains(WILD);
     }
 }

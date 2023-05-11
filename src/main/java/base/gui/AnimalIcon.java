@@ -23,7 +23,7 @@ public class AnimalIcon extends GUIButton {
         this.game = game;
 
         rectangle.generateBorder(3, getBorderColor(), getBackgroundColor());
-        stats = new AnimalStats(animal, this.rectangle);
+        stats = new AnimalStats(game, animal, this.rectangle);
     }
 
     private boolean isAnimalOnActiveMap(Game game) {

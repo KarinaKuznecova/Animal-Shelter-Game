@@ -2,6 +2,7 @@ package base.gameobjects;
 
 import base.Game;
 import base.gameobjects.animalstates.*;
+import base.gameobjects.animaltraits.Trait;
 import base.gameobjects.interactionzones.InteractionZonePetHeart;
 import base.graphicsservice.*;
 import base.gui.HeartIcon;
@@ -11,11 +12,13 @@ import base.navigationservice.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.ColorConstant.YELLOW;
 import static base.constants.Constants.*;
 import static base.constants.FilePath.IMAGES_PATH;
-import static base.constants.MapConstants.FOREST_GENERATED_MAP;
 import static base.constants.MapConstants.FOREST_MAP;
 import static base.constants.VisibleText.ANIMAL_TYPES;
 import static base.constants.VisibleText.named;
@@ -25,8 +28,8 @@ import static base.navigationservice.Direction.*;
 
 public abstract class Animal implements GameObject, Walking {
 
-    private Sprite previewSprite;
-    protected AnimatedSprite animatedSprite;
+    private transient Sprite previewSprite;
+    protected transient AnimatedSprite animatedSprite;
     protected final Rectangle rectangle;
     protected final int tileSize;
     private String fileName;
@@ -51,6 +54,7 @@ public abstract class Animal implements GameObject, Walking {
     private boolean favorite;
 
     protected AgeStage age;
+    private List<Trait> personality;
 
     private int currentAge;
     private int currentHunger;
@@ -79,6 +83,7 @@ public abstract class Animal implements GameObject, Walking {
         this.currentEnergy = currentEnergy;
         this.age = age;
         this.name = name;
+        this.personality = new ArrayList<>();
 
         loadAnimatedSprite();
         setPreviewSprite();
@@ -567,5 +572,13 @@ public abstract class Animal implements GameObject, Walking {
 
     public void setFeral(boolean feral) {
         isFeral = feral;
+    }
+
+    public List<Trait> getPersonality() {
+        return personality;
+    }
+
+    public void setPersonality(List<Trait> personality) {
+        this.personality = personality;
     }
 }

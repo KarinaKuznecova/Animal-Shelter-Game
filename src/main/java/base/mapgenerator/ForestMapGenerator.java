@@ -2,6 +2,8 @@ package base.mapgenerator;
 
 import base.Game;
 import base.gameobjects.*;
+import base.gameobjects.animals.Wolf;
+import base.gameobjects.animaltraits.Trait;
 import base.gameobjects.services.PlantService;
 import base.gameobjects.tree.Oak;
 import base.gameobjects.tree.Spruce;
@@ -85,6 +87,9 @@ public class ForestMapGenerator {
         if (foundPlaceForAnimal(gameMap, randomX, randomY)) {
             logger.info(String.format("Creating animal in generated forest at x: %d, y: %d", randomX, randomY));
             Animal animal = game.getAnimalService().createAnimal(randomX, randomY, game.getAnimalService().getRandomAnimalType(), gameMap.getMapName());
+            if (animal instanceof Wolf) {
+                animal.getPersonality().add(Trait.WILD);
+            }
             animal.setFeral(true);
             animal.setCurrentEnergy(Integer.MIN_VALUE);
             animal.setCurrentAge(0);
