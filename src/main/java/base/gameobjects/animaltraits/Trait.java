@@ -6,5 +6,9 @@ public enum Trait {
     HUNGRY,
     WILD,
     THIRSTY,
-    LAZY
+    LAZY,
+    PLAYFUL,
+    LOVES_KIDS,
+    AFRAID_OF_CARS,
+    LOVES_MUSIC
 }

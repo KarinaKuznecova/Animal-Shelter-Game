@@ -17,7 +17,7 @@ import base.map.TileService;
 import static base.constants.ColorConstant.GREEN;
 import static base.constants.Constants.CELL_SIZE;
 import static base.constants.Constants.CHEST_TILE_ID;
-import static base.constants.FilePath.QUESTION_ICON_PATH;
+import static base.constants.FilePath.*;
 import static base.constants.MapConstants.FOREST_GENERATED_MAP;
 
 public class SpritesLoadingService {
@@ -47,11 +47,15 @@ public class SpritesLoadingService {
         spriteService.setTastyMealSprite(tileService.getTiles().get(PetFood.TASTY_MEAL_SPRITE_ID).getSprite());
         spriteService.setPerfectMealSprite(tileService.getTiles().get(PetFood.PERFECT_MEAL_SPRITE_ID).getSprite());
 
-        spriteService.setFriendlyIcon(ImageLoader.getPreviewSprite("img/friendly.png"));
-        spriteService.setWildIcon(ImageLoader.getPreviewSprite("img/wild.png"));
-        spriteService.setHungryIcon(ImageLoader.getPreviewSprite("img/hungry.png"));
-        spriteService.setLazyIcon(ImageLoader.getPreviewSprite("img/lazy.png"));
-        spriteService.setThirstyIcon(ImageLoader.getPreviewSprite("img/thirsty.png"));
+        spriteService.setFriendlyIcon(ImageLoader.getPreviewSprite(FRIENDLY_ICON_PATH));
+        spriteService.setWildIcon(ImageLoader.getPreviewSprite(WILD_ICON_PATH));
+        spriteService.setHungryIcon(ImageLoader.getPreviewSprite(HUNGRY_ICON_PATH));
+        spriteService.setLazyIcon(ImageLoader.getPreviewSprite(LAZY_ICON_PATH));
+        spriteService.setThirstyIcon(ImageLoader.getPreviewSprite(THIRSTY_ICON_PATH));
+        spriteService.setAfraidOfCarsIcon(ImageLoader.getPreviewSprite(AFRAID_OF_CARS_ICON_PATH));
+        spriteService.setLovesKidsIcon(ImageLoader.getPreviewSprite(LOVES_KIDS_ICON_PATH));
+        spriteService.setLovesMusicIcon(ImageLoader.getPreviewSprite(MUSIC_LOVER_ICON_PATH));
+        spriteService.setPlayfulIcon(ImageLoader.getPreviewSprite(PLAYFUL_ICON_PATH));
     }
 
     public void setSpritesToGameMapObjects(Game game, GameMap gameMap) {

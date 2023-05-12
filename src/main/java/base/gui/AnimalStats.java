@@ -37,12 +37,12 @@ public class AnimalStats {
     void renderStats(RenderHandler renderer, Rectangle rectangle) {
         Rectangle statsRectangle;
         if (DEBUG_MODE && animal.getAge() != AgeStage.ADULT) {
-            statsRectangle = new Rectangle(region.getX() - 280, region.getY(), 270, 180);
+            statsRectangle = new Rectangle(region.getX() - 280, region.getY(), 270, 200);
         } else {
-            statsRectangle = new Rectangle(region.getX() - 280, region.getY(), 270, 160);
+            statsRectangle = new Rectangle(region.getX() - 280, region.getY(), 270, 180);
         }
         if (animal.getPersonality().size() > 4) {
-            statsRectangle.setHeight(statsRectangle.getHeight() + (20 * (animal.getPersonality().size() / 4)));
+            statsRectangle.setHeight(statsRectangle.getHeight() + (30 * (animal.getPersonality().size() / 4)));
         }
         statsRectangle.generateBorder(2, BROWN, LIGHT_BLUE);
         renderer.renderRectangle(statsRectangle, rectangle, 1, true);
@@ -65,9 +65,9 @@ public class AnimalStats {
         List<Trait> personality = animal.getPersonality();
         for (int i = 1; i <= personality.size(); i++) {
             Trait trait = personality.get(i-1);
-            int traitX = statsRectangle.getX() + (i * 30);
-            int traitY = statsRectangle.getY() + 140 + (i / 4 * 20);
-            renderer.renderSprite(game.getSpriteService().getTraitIcon(trait), traitX, traitY, 1, true);
+            int traitX = statsRectangle.getX() + (i * 40);
+            int traitY = statsRectangle.getY() + 140 + (i / 4 * 30);
+            renderer.renderSprite(game.getSpriteService().getTraitIcon(trait), traitX, traitY, 2, true);
         }
     }
 

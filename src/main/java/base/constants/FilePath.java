@@ -80,4 +80,15 @@ public class FilePath {
 
     public static final String IMAGES_PATH = "img/";
     public static final String ANIMALS_DIR_PATH = "animals/";
+
+    //personality icons
+    public static final String FRIENDLY_ICON_PATH = "img/friendly.png";
+    public static final String WILD_ICON_PATH = "img/wild.png";
+    public static final String HUNGRY_ICON_PATH = "img/hungry.png";
+    public static final String LAZY_ICON_PATH = "img/lazy.png";
+    public static final String THIRSTY_ICON_PATH = "img/thirsty.png";
+    public static final String AFRAID_OF_CARS_ICON_PATH = "img/afraid-of-cars.png";
+    public static final String LOVES_KIDS_ICON_PATH = "img/loves-kids.png";
+    public static final String MUSIC_LOVER_ICON_PATH = "img/music-lover.png";
+    public static final String PLAYFUL_ICON_PATH = "img/playful.png";
 }
