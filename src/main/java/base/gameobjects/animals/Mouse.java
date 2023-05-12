@@ -45,5 +45,8 @@ public class Mouse extends Animal {
         if (interactionZone.isPlayerInRange()|| (!isFeral()) && getCurrentMap().startsWith(FOREST_MAP)) {
             heartIcon.render(renderer, 1);
         }
+        if (isLoveState()) {
+            getLoveState().render(this, renderer);
+        }
     }
 }
