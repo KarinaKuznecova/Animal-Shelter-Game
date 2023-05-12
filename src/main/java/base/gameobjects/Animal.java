@@ -44,6 +44,7 @@ public abstract class Animal implements GameObject, Walking {
     private SleepingState sleepingState = new SleepingState();
     private FallingAsleepState fallingAsleepState = new FallingAsleepState();
     private WakingUpState wakingUpState = new WakingUpState();
+    private LoveState loveState = new LoveState();
 
     private String currentMap;
     private int speed;
@@ -179,6 +180,9 @@ public abstract class Animal implements GameObject, Walking {
         if (interactionZone.isPlayerInRange() || (!isFeral && getCurrentMap().startsWith(FOREST_MAP))) {
             heartIcon.render(renderer, 1);
         }
+        if (state == loveState) {
+            loveState.render(this, renderer);
+        }
     }
 
     @Override
@@ -201,7 +205,7 @@ public abstract class Animal implements GameObject, Walking {
         isSelected = this.equals(game.getYourSelectedAnimal());
     }
 
-    private void updateHeart(Game game) {
+    public void updateHeart(Game game) {
         int xPosition = rectangle.getX() - game.getRenderer().getCamera().getX() + 16 - 24;
         int yPosition = rectangle.getY() - game.getRenderer().getCamera().getY() - 16 - 38;
         Position heartPosition = new Position(xPosition, yPosition);
@@ -331,6 +335,9 @@ public abstract class Animal implements GameObject, Walking {
                 logger.info("Setting map name - " + game.getGameMap().getMapName());
                 game.saveMaps();
                 logger.info("Animal is no longer feral");
+            } else {
+                logger.info("Setting love state");
+                setLoveState();
             }
             return true;
         }
@@ -403,6 +410,14 @@ public abstract class Animal implements GameObject, Walking {
 
     public void setFallingAsleepState() {
         state = fallingAsleepState;
+    }
+
+    public void setLoveState() {
+        state = loveState;
+    }
+
+    public boolean isLoveState() {
+        return state == loveState;
     }
 
     /**
@@ -589,5 +604,13 @@ public abstract class Animal implements GameObject, Walking {
 
     public void setPersonality(List<Trait> personality) {
         this.personality = personality;
+    }
+
+    public HeartIcon getHeartIcon() {
+        return heartIcon;
+    }
+
+    public LoveState getLoveState() {
+        return loveState;
     }
 }
