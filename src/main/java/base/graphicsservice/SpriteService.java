@@ -270,6 +270,10 @@ public class SpriteService {
     private Sprite hungryIcon;
     private Sprite thirstyIcon;
     private Sprite lazyIcon;
+    private Sprite lovesKidsIcon;
+    private Sprite lovesMusicIcon;
+    private Sprite afraidOfCarsIcon;
+    private Sprite playfulIcon;
 
     public void setFriendlyIcon(Sprite friendlyIcon) {
         this.friendlyIcon = friendlyIcon;
@@ -291,24 +295,20 @@ public class SpriteService {
         this.lazyIcon = lazyIcon;
     }
 
-    public Sprite getFriendlyIcon() {
-        return friendlyIcon;
+    public void setLovesKidsIcon(Sprite lovesKidsIcon) {
+        this.lovesKidsIcon = lovesKidsIcon;
     }
 
-    public Sprite getWildIcon() {
-        return wildIcon;
+    public void setLovesMusicIcon(Sprite lovesMusicIcon) {
+        this.lovesMusicIcon = lovesMusicIcon;
     }
 
-    public Sprite getHungryIcon() {
-        return hungryIcon;
+    public void setAfraidOfCarsIcon(Sprite afraidOfCarsIcon) {
+        this.afraidOfCarsIcon = afraidOfCarsIcon;
     }
 
-    public Sprite getThirstyIcon() {
-        return thirstyIcon;
-    }
-
-    public Sprite getLazyIcon() {
-        return lazyIcon;
+    public void setPlayfulIcon(Sprite playfulIcon) {
+        this.playfulIcon = playfulIcon;
     }
 
     public Sprite getTraitIcon(Trait trait) {
@@ -323,6 +323,14 @@ public class SpriteService {
                 return thirstyIcon;
             case LAZY:
                 return lazyIcon;
+            case PLAYFUL:
+                return playfulIcon;
+            case LOVES_KIDS:
+                return lovesKidsIcon;
+            case LOVES_MUSIC:
+                return lovesMusicIcon;
+            case AFRAID_OF_CARS:
+                return afraidOfCarsIcon;
         }
         return null;
     }
