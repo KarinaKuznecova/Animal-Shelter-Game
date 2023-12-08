@@ -35,6 +35,7 @@ public class Constants {
     private static final String GERMAN = "ger";
     private static final String ITALIAN = "it";
     private static final String SPANISH = "spn";
+    private static final String FRENCH - "frn";
 
     public static final String LANGUAGE_PROPERTY = "language";
     public static String LANGUAGE;
